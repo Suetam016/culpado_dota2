@@ -670,7 +670,7 @@ details.mais summary { cursor: pointer; color: var(--muted); font-size: var(--t-
 .ranking-texto button { width: 100%; display: grid; grid-template-columns: 28px 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border: 0; border-top: 1px solid var(--line); background: transparent; cursor: pointer; text-align: left; }
 .ranking-texto li:first-child button { border-top: 0; }
 .ranking-texto .pos { font-family: var(--font-display); font-weight: 800; font-size: var(--t-lg); color: var(--muted); }
-.ranking-texto li:first-child .pos { color: var(--eles); }
+.ranking-texto li.e-culpado .pos { color: var(--eles); }
 .ranking-texto .quem { display: grid; min-width: 0; }
 .ranking-texto .quem strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ranking-texto .quem span { color: var(--muted); font-size: var(--t-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -725,6 +725,53 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .fig-linha.ruim strong { color: var(--bad-ink); }
 .fig-linha.plano strong { color: var(--gold); }
 .fig-ver { justify-self: start; margin-top: 2px; background: none; border: 0; padding: 0; color: var(--ink-2); font-size: var(--t-xs); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* veredito simples ou dividido */
+.veredito { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.veredito-titulo { padding-right: 160px; }
+.reus { display: grid; gap: 24px; }
+.veredito.dividido .reus { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.reu { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start; min-width: 0; }
+.veredito.dividido .reu + .reu { border-left: 1px solid var(--line); padding-left: 24px; }
+.veredito.dividido h3 { font-size: var(--t-xl); }
+.veredito.dividido .frase { font-size: var(--t-md); }
+@media (max-width: 860px) {
+  .veredito.dividido .reus { grid-template-columns: minmax(0, 1fr); }
+  .veredito.dividido .reu + .reu { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 20px; }
+  .veredito-titulo { padding-right: 120px; }
+}
+
+/* fase de rotas */
+.lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.lane { padding: 16px 18px; display: grid; gap: 14px; border-top-width: 3px; }
+.lane.ganhou { border-top-color: var(--nos); }
+.lane.perdeu { border-top-color: var(--eles); }
+.lane-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.selo { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; line-height: 1; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 10px 2px; border-radius: 6px; border: 2px solid currentColor; }
+.selo.ganhou { color: var(--nos); }
+.selo.perdeu { color: var(--eles); }
+.selo.empate { color: var(--muted); }
+.confronto { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.confronto .vs { font-family: var(--font-display); font-weight: 800; color: var(--muted); font-size: var(--t-lg); }
+.lado { display: grid; gap: 8px; min-width: 0; }
+.lado.eles .heroi-rota { grid-template-columns: minmax(0, 1fr) 32px; text-align: right; }
+.lado.eles .heroi-rota .retrato { order: 2; }
+.heroi-rota { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 8px; align-items: center; }
+.heroi-rota span { display: grid; min-width: 0; }
+.heroi-rota strong { font-size: var(--t-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.heroi-rota small { font-size: var(--t-xs); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lado.nos strong { color: var(--nos); }
+.lado.eles strong { color: var(--eles); }
+.cabo { display: flex; gap: 3px; height: 10px; }
+.cabo .n { background: var(--nos); border-radius: 5px 0 0 5px; }
+.cabo .e { background: var(--eles); border-radius: 0 5px 5px 0; }
+.placares { display: grid; gap: 4px; }
+.placar-rota { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; font-variant-numeric: tabular-nums; font-size: var(--t-sm); color: var(--ink-2); }
+.placar-rota span:first-child { text-align: left; }
+.placar-rota span:last-child { text-align: right; }
+.placar-rota .rot { color: var(--muted); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); align-self: center; }
+.placar-rota .vence { color: var(--ink); font-weight: 700; }
+.lane-frase { font-size: var(--t-sm); color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 10px; }
 
 </style>
 <header class="topo">
@@ -1935,7 +1982,26 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       const b = eles.filter((p) => p.raw.lane === lane);
       const nw = (j) => (j.raw.networth_t || j.raw.gold_t || [])[10];
       if (!a.length || !b.length || [...a, ...b].some((j) => nw(j) == null)) continue;
-      rotas.push({ lane, nos: a, eles: b, nwNos: soma(a, nw), nwEles: soma(b, nw) });
+      const lh = (j) => (j.raw.lh_t || [])[10] || 0;
+      // abates entre os jogadores da rota nos primeiros 10 min
+      const abates = (vitimas, matadores) => soma(vitimas, (v) => (mortes ? mortes[v.idx] : []).filter((d) => d.t < 600 && matadores.some((m) => m.idx === d.assassino)).length);
+      const nwNos = soma(a, nw);
+      const nwEles = soma(b, nw);
+      const diff = nwNos - nwEles;
+      const resultado = diff > 500 ? 'ganhou' : diff < -500 ? 'perdeu' : 'empate';
+      // quem decidiu: o jogador com a maior diferença de patrimônio para o rival direto mais rico
+      // pareia por importância: o mais rico de cada lado entre si, suporte com suporte
+      const ordA = [...a].sort((x, y) => nw(y) - nw(x));
+      const ordB = [...b].sort((x, y) => nw(y) - nw(x));
+      const duelos = ordA.map((j, i) => { const rival = ordB[Math.min(i, ordB.length - 1)]; return { jogador: j, rival, diff: nw(j) - nw(rival) }; });
+      const destaque = resultado === 'perdeu' ? [...duelos].sort((x, y) => x.diff - y.diff)[0] : [...duelos].sort((x, y) => y.diff - x.diff)[0];
+      const papel = { 1: 'Safe lane', 2: 'Mid', 3: 'Offlane' }[a[0].raw.lane_role] || 'Rota';
+      rotas.push({
+        lane, papel, nos: a, eles: b, nwNos, nwEles, diff, resultado, destaque,
+        lhNos: soma(a, lh), lhEles: soma(b, lh),
+        abatesNos: abates(b, a), abatesEles: abates(a, b),
+        eficiencia: a.map((j) => j.raw.lane_efficiency_pct).filter((x) => x != null),
+      });
     }
 
     const itensQueMudamALuta = ctx.itensEles
@@ -2196,6 +2262,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     el.pagina.append(
       secaoProcesso(r),
       secaoFigurinhas(r),
+      secaoRotas(r),
       secaoLinhaDoTempo(r),
       secaoMomentos(r),
       secaoTribunal(r),
@@ -2267,6 +2334,47 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return h('div', { class: 'cartao aviso-parse' },
       h('p', {}, 'O replay desta partida ainda não foi analisado pelo OpenDota. Sem ele, o painel só tem placar, farm e comparação por herói: faltam lutas, wards, tempo morto, horário das mortes e itens.'),
       pode ? h('button', { class: 'botao secundario', type: 'button', onclick: () => { parseJaPedido.add(String(p.id)); pedirParse(p.id).catch((e) => mostrarStatus(mensagemDeErro(e, p.id), 'erro')); } }, parseJaPedido.has(String(p.id)) ? 'Pedir de novo' : 'Pedir análise do replay') : null);
+  }
+
+  // -------- fase de rotas: quem ganhou cada lane aos 10 min
+
+  function secaoRotas(r) {
+    if (!r.rotas.length) return null;
+    const ganhas = r.rotas.filter((l) => l.resultado === 'ganhou').length;
+    const perdidas = r.rotas.filter((l) => l.resultado === 'perdeu').length;
+    const resumo = ganhas > perdidas ? `Vocês ganharam ${ganhas} de ${r.rotas.length} rotas.` : perdidas > ganhas ? `Vocês perderam ${perdidas} de ${r.rotas.length} rotas.` : 'Fase de rotas equilibrada.';
+    return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-rotas' },
+      cabecalho('Fase de rotas', `${resumo} Quem saiu na frente aos 10 minutos, em patrimônio, last hits e abates entre os jogadores de cada rota.`, 'titulo-rotas'),
+      h('div', { class: 'lanes' }, r.rotas.map(cartaoRota)));
+  }
+
+  function cartaoRota(l) {
+    const selo = { ganhou: 'Ganharam', perdeu: 'Perderam', empate: 'Empate' }[l.resultado];
+    const lado = (time, classe) => h('div', { class: `lado ${classe}` }, [...time].sort((x, y) => x.posicao - y.posicao).map((p) => h('div', { class: 'heroi-rota' },
+      retrato(p.heroi), h('span', {}, h('strong', {}, p.heroi.nome), h('small', {}, p.nome)))));
+    const total = l.nwNos + l.nwEles || 1;
+    const linha = (rotulo, a, b, fmt = String) => h('div', { class: 'placar-rota' },
+      h('span', { class: a > b ? 'vence' : '' }, fmt(a)), h('span', { class: 'rot' }, rotulo), h('span', { class: b > a ? 'vence' : '' }, fmt(b)));
+    const d = l.destaque;
+    let frase = '';
+    if (d) {
+      const quem = `${d.jogador.nome} (${d.jogador.heroi.nome})`;
+      if (l.resultado === 'perdeu') frase = d.diff < 0 ? `${quem} saiu ${fmtK(-d.diff)} atrás de ${d.rival.heroi.nome}.` : `A rota foi perdida no conjunto, não no duelo de ${quem}.`;
+      else if (l.resultado === 'ganhou') frase = d.diff > 0 ? `${quem} saiu ${fmtK(d.diff)} na frente de ${d.rival.heroi.nome}.` : `Ganharam no conjunto, mesmo com ${quem} atrás no duelo.`;
+      else frase = `Empate no total da rota (diferença de ${fmtK(Math.abs(l.diff))} de patrimônio)${d.diff > 500 ? `, com ${quem} ${fmtK(d.diff)} na frente de ${d.rival.heroi.nome}` : d.diff < -500 ? `, com ${quem} ${fmtK(-d.diff)} atrás de ${d.rival.heroi.nome}` : ''}.`;
+    }
+    return h('article', { class: `cartao lane ${l.resultado}` },
+      h('div', { class: 'lane-cab' },
+        h('p', { class: 'eyebrow' }, `${l.papel} · ${LANES[l.lane] || ''}`),
+        h('span', { class: `selo ${l.resultado}` }, selo)),
+      h('div', { class: 'confronto' }, lado(l.nos, 'nos'), h('span', { class: 'vs' }, 'vs'), lado(l.eles, 'eles')),
+      h('div', { class: 'cabo', role: 'img', 'aria-label': `Patrimônio aos 10 min: vocês ${fmtInt(l.nwNos)}, eles ${fmtInt(l.nwEles)}` },
+        h('span', { class: 'n', style: `flex:${l.nwNos / total}` }), h('span', { class: 'e', style: `flex:${l.nwEles / total}` })),
+      h('div', { class: 'placares' },
+        linha('patrimônio', l.nwNos, l.nwEles, fmtK),
+        linha('last hits', l.lhNos, l.lhEles),
+        linha('abates na rota', l.abatesNos, l.abatesEles)),
+      frase ? h('p', { class: 'lane-frase' }, frase) : null);
   }
 
   // -------- linha do tempo
@@ -2589,7 +2697,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const vs = r.vereditos;
     return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-tribunal' },
       cabecalho('O tribunal', 'O parecer do coach para cada um: o que custou o jogo, o que deu certo e o plano para a próxima.', 'titulo-tribunal'),
-      h('ol', { class: 'cartao ranking-texto', 'aria-label': 'Ranking de culpa' }, vs.map((v, i) => h('li', {},
+      h('ol', { class: 'cartao ranking-texto', 'aria-label': 'Ranking de culpa' }, vs.map((v, i) => h('li', { class: culpados(r).includes(v) ? 'e-culpado' : null },
         h('button', { type: 'button', onclick: () => document.getElementById(`dossie-${v.jogador.idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' }) },
           h('span', { class: 'pos' }, `${i + 1}º`),
           retrato(v.jogador.heroi),
@@ -2599,17 +2707,25 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   }
 
   // Topo: o culpado e uma figurinha de cada jogador do time
-  function secaoFigurinhas(r) {
+  // Culpa dividida: se o 2º está a menos de 5 pontos percentuais do 1º, os dois dividem o veredito.
+  const EMPATE_TECNICO = 0.05;
+  function culpados(r) {
     const vs = r.vereditos;
-    return h('section', { class: 'bloco', 'aria-label': 'Veredito e figurinhas do time' },
-      cartaoVeredito(vs[0], r),
-      h('div', { class: 'figurinhas' }, vs.map((v, i) => figurinha(v, i))));
+    return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : [vs[0]];
   }
 
-  function figurinha(v, i) {
+  function secaoFigurinhas(r) {
+    const vs = r.vereditos;
+    const cs = culpados(r);
+    return h('section', { class: 'bloco', 'aria-label': 'Veredito e figurinhas do time' },
+      cartaoVeredito(cs, r),
+      h('div', { class: 'figurinhas' }, vs.map((v, i) => figurinha(v, i, cs.includes(v)))));
+  }
+
+  function figurinha(v, i, eCulpado) {
     const p = v.jogador;
     const linha = (rotulo, texto, classe) => (texto ? h('p', { class: `fig-linha ${classe}` }, h('strong', {}, rotulo), texto) : null);
-    return h('article', { class: `cartao figurinha${i === 0 ? ' e-culpado' : ''}` },
+    return h('article', { class: `cartao figurinha${eCulpado ? ' e-culpado' : ''}` },
       h('div', { class: 'fig-topo' },
         h('span', { class: 'fig-num' }, `Nº ${i + 1}`),
         h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
@@ -2637,17 +2753,26 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       h('ul', { class: 'mini-attrs' }, [...f.atributos].sort((a, b) => b.valor - a.valor).slice(0, 3).map((a) => h('li', { title: a.explica }, h('span', {}, a.nome), h('b', {}, a.valor)))));
   }
 
-  function cartaoVeredito(v, r) {
-    const p = v.jogador;
+  function cartaoVeredito(cs, r) {
     const derrota = !r.partida.venceu;
-    return h('article', { class: 'cartao veredito' },
-      derrota ? h('span', { class: 'carimbo', 'aria-hidden': 'true' }, 'Culpado') : null,
-      retrato(p.heroi, true),
-      h('div', { class: 'quem-e' },
-        h('p', { class: 'eyebrow' }, derrota ? `Veredito · ${pct(v.fatia)} da culpa do time` : `Elo mais fraco · ${pct(v.fatia)}`),
-        h('h3', {}, p.nome),
-        h('p', { class: 'heroi' }, `${p.heroi.nome} · pos ${p.posicao} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`),
-        v.diagnostico ? h('p', { class: 'frase' }, v.diagnostico) : null));
+    const dividido = cs.length > 1;
+    const reu = (v) => {
+      const p = v.jogador;
+      return h('div', { class: 'reu' },
+        retrato(p.heroi, true),
+        h('div', { class: 'quem-e' },
+          h('p', { class: 'eyebrow' }, `${pct(v.fatia)} da culpa do time`),
+          h('h3', {}, p.nome),
+          h('p', { class: 'heroi' }, `${p.heroi.nome} · pos ${p.posicao} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`),
+          v.diagnostico ? h('p', { class: 'frase' }, v.diagnostico) : null));
+    };
+    const diferenca = dividido ? Math.round((cs[0].fatia - cs[1].fatia) * 100) : 0;
+    return h('article', { class: `cartao veredito${dividido ? ' dividido' : ''}` },
+      derrota ? h('span', { class: 'carimbo', 'aria-hidden': 'true' }, dividido ? 'Culpados' : 'Culpado') : null,
+      h('p', { class: 'eyebrow veredito-titulo' }, !derrota ? 'Elo mais fraco' : dividido
+        ? `Veredito dividido · ${diferenca === 0 ? 'empate' : `${diferenca} ${diferenca === 1 ? 'ponto' : 'pontos'} de diferença`}`
+        : 'Veredito'),
+      h('div', { class: 'reus' }, cs.map(reu)));
   }
 
   // Hexágono de atributos negativos, estilo ficha de RPG
@@ -2753,16 +2878,6 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         h('span', { class: 'v', 'aria-label': `${quem}: ${fmtInt(v)}` }, fmtK(v)));
       return h('div', { class: 'linha' }, h('span', { class: 'rotulo' }, c.label), h('div', { class: 'pares' }, par('nos', c.nos, 'Vocês'), par('eles', c.eles, 'Eles')));
     });
-    const rotas = r.rotas.map((l) => {
-      const total = l.nwNos + l.nwEles || 1;
-      return h('div', { class: 'cartao rota' },
-        h('p', { class: 'eyebrow' }, `${LANES[l.lane] || `Rota ${l.lane}`} · aos 10 min`),
-        h('div', { class: 'lados' },
-          h('div', { class: 'nos' }, h('strong', {}, fmtK(l.nwNos)), h('span', {}, l.nos.map((p) => p.heroi.nome).join(' + '))),
-          h('div', { class: 'eles' }, h('strong', {}, fmtK(l.nwEles)), h('span', {}, l.eles.map((p) => p.heroi.nome).join(' + ')))),
-        h('div', { class: 'barra-rota', 'aria-hidden': 'true' }, h('span', { class: 'n', style: `width:${(l.nwNos / total) * 100}%` }), h('span', { class: 'e', style: `width:${(l.nwEles / total) * 100}%` })),
-        h('p', { class: 'vazio' }, l.nwNos >= l.nwEles ? `Vocês saíram da rota ${fmtK(l.nwNos - l.nwEles)} na frente.` : `Vocês saíram da rota ${fmtK(l.nwEles - l.nwNos)} atrás.`));
-    });
     return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-time' },
       cabecalho('Time contra time', 'Os totais de cada lado. O que vocês fizeram a mais e a menos que o outro time.', 'titulo-time'),
       h('div', { class: 'legenda' },
@@ -2772,7 +2887,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       r.itensQueMudamALuta && r.itensQueMudamALuta.length ? h('div', { class: 'cartao itens-deles' },
         h('h3', {}, 'Itens deles que mudam a luta'),
         h('ul', {}, r.itensQueMudamALuta.map((x) => h('li', {}, h('span', { class: 't' }, mmss(x.t)), h('span', {}, x.texto))))) : null,
-      rotas.length ? h('div', { class: 'rotas' }, rotas) : null);
+      null);
   }
 
   function rodape(r) {
