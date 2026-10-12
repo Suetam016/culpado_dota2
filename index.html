@@ -816,6 +816,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   .plano-time .item, .plano-time .ate { grid-column: 2; }
 }
 
+/* conta da culpa: pontos por cenário */
+.conta-culpa { display: grid; gap: 8px; font-size: var(--t-sm); line-height: 1.5; }
+.conta-culpa li { display: grid; grid-template-columns: 3.2em minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.conta-culpa .pts { font-family: var(--font-mono); font-weight: 700; text-align: right; color: var(--eles); font-variant-numeric: tabular-nums; }
+.conta-culpa li.credito .pts { color: var(--good); }
+.nota-culpa { margin-top: 8px; font-size: var(--t-xs); color: var(--muted); max-width: 75ch; }
+
 </style>
 <header class="topo">
   <div class="topo-inner">
@@ -869,49 +876,48 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   const ITENS_INVIS = new Set(['invis_sword', 'silver_edge']);
   const ITENS_CORTE_CURA = new Set(['spirit_vessel', 'skadi', 'shivas_guard']);
 
-  const WEIGHTS = {
-    core: {
-      mortes: 1.5, ouro_entregue: 1.5, tempo_morto: 0.8, mortes_tardias: 1.0, throw: 1.0,
-      lutas_perdidas: 1.0, farm: 2.0, last_hits: 1.0, dano: 1.5,
-      participacao: 1.0, lane: 1.0, visao: 0.0, objetivos: 0.8,
-    },
-    suporte: {
-      mortes: 1.2, ouro_entregue: 1.2, tempo_morto: 0.6, mortes_tardias: 1.0, throw: 1.0,
-      lutas_perdidas: 1.0, farm: 0.3, last_hits: 0.0, dano: 0.6,
-      participacao: 1.5, lane: 0.7, visao: 2.0, objetivos: 0.0,
-    },
+  // Índice de culpa em pontos de impacto (= culpado/blame.py). 1 ponto = 100 de ouro que o jogador
+  // custou ao time em um cenário comum de Dota; créditos (rota ganha, abates) abatem até 65% da culpa.
+  const CULPA = {
+    escala: 100, rotaMin: 10, rotaMult: 1.5, rotaCredito: 0.5, rotaEsperado: { safe: 200, off: -200, mid: 0 }, xpPeso: 0.5,
+    rotacaoAte: 12 * 60, rotacaoFracao: 0.5, snowballAbates: 5, snowballAte: 25 * 60, snowballExtra: 0.3,
+    pickoffExtra: 0.25, pickoffJanela: 20, throwLead: 2000, throwExtra: 0.5, troca: 0.6,
+    objetivos: { tower1: 300, tower2: 500, tower3: 700, tower4: 600, melee_rax: 900, range_rax: 600 }, roshan: 800,
+    ausencia: 400, creditoAbates: 0.25, creditoMax: 0.65,
   };
+  const tempoMorte = (t) => (t < 600 ? 0.6 : t < 1200 ? 1.3 : 1.0);
+  const ouroEstimado = (t) => 150 + (10 * t) / 60;
 
   const LABELS = {
-    mortes: 'Mortes',
-    ouro_entregue: 'Ouro entregue ao inimigo',
-    tempo_morto: 'Tempo morto',
-    mortes_tardias: 'Mortes no late',
+    rota: 'Rota perdida',
+    rotacoes: 'Mid deles rotacionou livre',
+    mortes: 'Ouro entregue morrendo',
+    snowball: 'Alimentou quem disparou',
+    pickoff: 'Pego sozinho',
     throw: 'Morreu com o jogo ganho',
-    lutas_perdidas: 'Mortes em lutas perdidas',
-    farm: 'Farm (GPM vs mesmo herói)',
-    last_hits: 'Last hits vs mesmo herói',
-    dano: 'Dano em herói vs mesmo herói',
-    participacao: 'Participação em lutas',
-    lane: 'Fase de rotas',
-    visao: 'Visão (wards)',
-    objetivos: 'Dano em torre vs mesmo herói',
+    objetivos: 'Morto quando caíram objetivos',
+    ausencia: 'Fora das lutas perdidas',
+    farm: 'Farm abaixo do herói',
+    dano: 'Pouco dano para o herói',
+    visao: 'Pouca visão',
+    participacao: 'Pouca participação nos abates',
+    credito_rota: 'Ganhou a rota',
+    credito_abates: 'Abates que fez',
   };
 
   const ZOEIRAS = {
-    mortes: 'passou mais tempo na fonte que o courier',
-    ouro_entregue: 'virou patrocinador oficial do time adversário',
-    tempo_morto: 'assistiu metade da partida em tela cinza',
-    mortes_tardias: 'esperou o jogo ficar decisivo para começar a doar',
+    rota: 'perdeu a rota antes do primeiro Bounty',
+    rotacoes: 'deixou o mid deles passear pelo mapa',
+    mortes: 'virou patrocinador oficial do time adversário',
+    snowball: 'criou o monstro que matou o time',
+    pickoff: 'andava sozinho como se tivesse Aegis',
     throw: 'recebeu o jogo ganho e devolveu com juros',
-    lutas_perdidas: 'sempre o último a sair da luta perdida, de preferência morto',
+    objetivos: 'assistiu às torres caírem da tela cinza',
+    ausencia: 'esteve presente nas lutas só em espírito',
     farm: 'farm de suporte jogando de core',
-    last_hits: 'os creeps saíram mais vivos do que entraram',
     dano: 'batia com a força de uma folha caindo',
-    participacao: 'esteve presente nas lutas só em espírito',
-    lane: 'perdeu a rota antes do primeiro Bounty',
     visao: 'jogou o mapa inteiro no escuro',
-    objetivos: 'tinha alergia a torre',
+    participacao: 'esteve presente nas lutas só em espírito',
   };
 
   // ---------------------------------------------------------------- utilidades
@@ -1267,66 +1273,220 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return s;
   }
 
-  function componentes(p, time, duracao) {
-    const s = p.stats;
-    const minutos = duracao / 60;
-    const out = [];
-    let sh = fatia(s.deaths, soma(time, (t) => t.stats.deaths));
-    out.push(['mortes', notaFatia(sh), `${plural(s.deaths, 'morte', 'mortes')} (${pct(sh)} das mortes do time)`]);
-    if (s.goldFed != null) {
-      sh = fatia(s.goldFed, soma(time, (t) => t.stats.goldFed));
-      out.push(['ouro_entregue', notaFatia(sh), `${fmtInt(s.goldFed)} de ouro para o inimigo ao morrer (${pct(sh)} do time)`]);
-    }
-    if (s.timeDead != null) {
-      sh = fatia(s.timeDead, soma(time, (t) => t.stats.timeDead));
-      out.push(['tempo_morto', notaFatia(sh), `${(s.timeDead / 60).toLocaleString('pt-BR', { maximumFractionDigits: 1, minimumFractionDigits: 1 })} min morto (${pct(s.timeDead / duracao)} da partida, ${pct(sh)} do tempo morto do time)`]);
-    }
-    if (s.deathTimes && minutos > 30) {
-      sh = fatia(s.lateDeaths, soma(time, (t) => t.stats.lateDeaths));
-      out.push(['mortes_tardias', notaFatia(sh), `${plural(s.lateDeaths, 'morte', 'mortes')} depois dos 30 min (${pct(sh)} do time)`]);
-    }
-    if (s.deathsAhead != null) out.push(['throw', clamp(s.deathsAhead / 4), `${plural(s.deathsAhead, 'morte', 'mortes')} com o time +2k de ouro na frente`]);
-    if (s.lostFightDeaths != null) {
-      sh = fatia(s.lostFightDeaths, soma(time, (t) => t.stats.lostFightDeaths));
-      out.push(['lutas_perdidas', notaFatia(sh), `${plural(s.lostFightDeaths, 'morte', 'mortes')} em lutas que o time perdeu (${pct(sh)} do time)`]);
-    }
-    for (const [key, bench, label] of [
-      ['farm', 'gold_per_min', `${s.gpm} GPM`],
-      ['last_hits', 'last_hits_per_min', `${s.lastHits} LH`],
-      ['dano', 'hero_damage_per_min', `${fmtInt(s.heroDamage)} de dano`],
-      ['objetivos', 'tower_damage', `${fmtInt(s.towerDamage)} em torre`],
-    ]) {
-      const v = s.bench[bench];
-      if (v != null) out.push([key, clamp((0.6 - v) / 0.5), `${label}, percentil ${pct(v)} de quem joga de ${p.heroi.nome}`]);
-    }
-    const tfp = s.tfp != null ? s.tfp : fatia(s.kills + s.assists, soma(time, (t) => t.stats.kills)) || 0;
-    out.push(['participacao', clamp((0.65 - tfp) / 0.45), `participou de ${pct(tfp)} dos abates do time`]);
-    if (s.laneEff != null) out.push(['lane', clamp((65 - s.laneEff) / 50), `eficiência de rota ${Math.round(s.laneEff)}% aos 10 min`]);
-    if (s.obs != null && s.sen != null) {
-      const wards = s.obs + s.sen;
-      const doTime = soma(time, (t) => (t.stats.obs || 0) + (t.stats.sen || 0)) || 1;
-      const esperado = Math.max(minutos * 0.35, 1);
-      const falta = Math.max(1 - wards / esperado, 0.35 - wards / doTime);
-      out.push(['visao', clamp(falta), `${s.obs} obs + ${s.sen} sentry (${pct(wards / doTime)} das wards do time)`]);
-    }
-    return out;
+  function laneDe(raw, radiant) {
+    if (raw.lane >= 1 && raw.lane <= 3) return raw.lane;
+    if (raw.lane_role === 2) return 2;
+    if (raw.lane_role === 1) return radiant ? 1 : 3;
+    if (raw.lane_role === 3) return radiant ? 3 : 1;
+    return null;
   }
 
-  function julgar(time, duracao) {
-    const vereditos = time.map((p) => {
-      const pesos = WEIGHTS[p.funcao];
-      const comps = componentes(p, time, duracao)
-        .filter(([k]) => pesos[k] > 0)
-        .map(([key, valor, evidencia]) => ({ key, label: LABELS[key], valor, peso: pesos[key], pontos: valor * pesos[key], evidencia }));
-      const totalPeso = soma(comps, (c) => c.peso) || 1;
-      const score = Math.round((1000 * soma(comps, (c) => c.pontos)) / totalPeso) / 10;
-      return { jogador: p, score, fatia: 0, componentes: comps };
+  function serie(raw, key, minuto) {
+    const sr = raw[key] || (key === 'networth_t' ? raw.gold_t : null);
+    if (!sr || !sr.length) return null;
+    return Number(sr[Math.min(minuto, sr.length - 1)]);
+  }
+
+  // {idx: {chave: {ouro, infos[]}}} para o time julgado. Mesmas regras e mesma ordem de culpado/blame.py.
+  function cenariosDeCulpa(ctx, match) {
+    const C = CULPA;
+    const { nos, eles, duracao } = ctx;
+    const minutos = duracao / 60;
+    const lead = ctx.lead || [];
+    const acc = Object.fromEntries(nos.map((p) => [p.idx, {}]));
+    const add = (i, k, ouro, info) => {
+      const slot = acc[i][k] || (acc[i][k] = { ouro: 0, infos: [] });
+      slot.ouro += ouro;
+      if (info !== undefined) slot.infos.push(info);
+    };
+    const mortesDe = (i) => (ctx.mortes ? ctx.mortes[i] : []).map((d) => ({ ...d, ouro: d.ouro == null ? ouroEstimado(d.t) : d.ouro, morto: d.morto || 0 }));
+    const nosIdx = nos.map((p) => p.idx);
+    const elesIdx = eles.map((p) => p.idx);
+    const lutas = (match.teamfights || []).filter((tf) => (tf.players || []).length >= 10 && tf.start != null).map((tf) => {
+      const dn = soma(nosIdx, (i) => tf.players[i].deaths);
+      const de = soma(elesIdx, (j) => tf.players[j].deaths);
+      return { ini: tf.start - 10, fim: (tf.end ?? tf.start) + 10, start: tf.start, res: de > dn ? 'venceu' : dn > de ? 'perdeu' : 'empate', mortos: dn, players: tf.players };
+    });
+    const radiant = nos[0] ? nos[0].radiant : true;
+
+    // rota (10 min)
+    let deficitMid = 0;
+    const midNos = nos.filter((p) => laneDe(p.raw, radiant) === 2).map((p) => p.idx);
+    const midEles = eles.filter((p) => laneDe(p.raw, !radiant) === 2).map((p) => p.idx);
+    for (const lane of [1, 2, 3]) {
+      const a = nos.filter((p) => laneDe(p.raw, radiant) === lane);
+      const b = eles.filter((p) => laneDe(p.raw, !radiant) === lane);
+      if (!a.length || !b.length) continue;
+      if ([...a, ...b].some((x) => serie(x.raw, 'networth_t', C.rotaMin) == null || serie(x.raw, 'xp_t', C.rotaMin) == null)) continue;
+      const med = (xs, key) => soma(xs, (x) => serie(x.raw, key, C.rotaMin)) / xs.length;
+      const nwDiff = med(a, 'networth_t') - med(b, 'networth_t');
+      const xpDiff = med(a, 'xp_t') - med(b, 'xp_t');
+      const diff = nwDiff + C.xpPeso * xpDiff;
+      const tipo = lane === 2 ? 'mid' : a[0].raw.lane_role === 1 ? 'safe' : 'off';
+      const d = (C.rotaEsperado[tipo] - diff) * a.length;
+      const cedo = Object.fromEntries(a.map((p) => [p.idx, mortesDe(p.idx).filter((x) => x.t < 600).length]));
+      const w = Object.fromEntries(a.map((p) => [p.idx, 1 + 0.2 * cedo[p.idx]]));
+      const sw = soma(Object.values(w));
+      const rivais = b.map((x) => x.heroi.nome).join(' e ');
+      for (const p of a) {
+        if (d > 0) add(p.idx, 'rota', (C.rotaMult * d * w[p.idx]) / sw, { tipo, nwDiff, xpDiff, rivais, cedo: cedo[p.idx] });
+        else if (d < 0) add(p.idx, 'credito_rota', (-C.rotaCredito * -d * w[p.idx]) / sw, { tipo, nwDiff, xpDiff, rivais });
+      }
+      if (lane === 2) deficitMid = Math.max(d, 0);
+    }
+
+    if (ctx.mortes) {
+      const abates20 = Object.fromEntries(elesIdx.map((j) => [j, soma(nosIdx, (i) => mortesDe(i).filter((x) => x.assassino === j && x.t < 1200).length)]));
+      const disparou = new Set(elesIdx.filter((j) => abates20[j] >= C.snowballAbates));
+      const todas = nosIdx.flatMap((i) => mortesDe(i).map((x) => ({ t: x.t, v: i })));
+      for (const i of nosIdx) {
+        for (const x of mortesDe(i)) {
+          const luta = lutas.find((l) => l.ini <= x.t && x.t <= l.fim) || null;
+          let base = x.ouro * tempoMorte(x.t) * (luta && luta.res === 'venceu' ? C.troca : 1);
+          if (midEles.includes(x.assassino) && !midNos.includes(i) && x.t < C.rotacaoAte && deficitMid > 500 && midNos.length) {
+            add(midNos[0], 'rotacoes', C.rotacaoFracao * base, { t: x.t, assassino: x.assassino, vitima: i });
+            base *= 1 - C.rotacaoFracao;
+          }
+          add(i, 'mortes', base, x.t);
+          if (disparou.has(x.assassino) && x.t < C.snowballAte) add(i, 'snowball', C.snowballExtra * base, x.assassino);
+          const sozinho = x.t >= 600 && !luta && !todas.some((o) => Math.abs(o.t - x.t) <= C.pickoffJanela && !(o.t === x.t && o.v === i));
+          if (sozinho) add(i, 'pickoff', C.pickoffExtra * base, x.t);
+          const minuto = Math.floor(x.t / 60);
+          if (minuto >= 0 && minuto < lead.length && lead[minuto] >= C.throwLead) add(i, 'throw', C.throwExtra * base, x.t);
+        }
+      }
+      // objetivos que caíram com o jogador morto
+      const meu = radiant ? 'goodguys' : 'badguys';
+      const timeInimigo = radiant ? 3 : 2;
+      for (const o of match.objectives || []) {
+        let valor = 0;
+        let nome = null;
+        if (o.type === 'building_kill' && (o.key || '').includes(meu)) {
+          const k = Object.keys(C.objetivos).find((x) => o.key.includes(x));
+          if (k) { valor = C.objetivos[k]; nome = k.includes('rax') ? 'quartel' : 'torre'; }
+        } else if (o.type === 'CHAT_MESSAGE_ROSHAN_KILL' && o.team === timeInimigo) {
+          valor = C.roshan; nome = 'Roshan';
+        }
+        if (!valor) continue;
+        const T = o.time || 0;
+        const mortos = nosIdx.filter((i) => mortesDe(i).some((x) => x.t <= T && T < x.t + x.morto));
+        for (const i of mortos) add(i, 'objetivos', valor / mortos.length, nome);
+      }
+      // vivo e fora de luta perdida
+      for (const l of lutas) {
+        if (l.res !== 'perdeu' || l.mortos < 3) continue;
+        for (const p of nos) {
+          const fp = l.players[p.idx];
+          const mortoAntes = mortesDe(p.idx).some((x) => x.t <= l.start && l.start < x.t + x.morto);
+          const usou = fp.ability_uses && Object.keys(fp.ability_uses).length;
+          if (!fp.deaths && !mortoAntes && !fp.damage && !usou) add(p.idx, 'ausencia', C.ausencia * (p.posicao <= 3 ? 1.2 : 1), l.start);
+        }
+      }
+      // créditos: ouro tirado do inimigo nos próprios abates
+      for (const j of elesIdx) for (const x of mortesDe(j)) if (x.assassino in acc) add(x.assassino, 'credito_abates', -C.creditoAbates * x.ouro, 1);
+    } else {
+      const tMedio = duracao / 2;
+      const totalAbates = soma(nos, (p) => p.raw.kills) || 1;
+      for (const p of nos) {
+        const s = p.stats;
+        if (s.deaths) add(p.idx, 'mortes', s.deaths * ouroEstimado(tMedio), null);
+        if (s.kills) add(p.idx, 'credito_abates', -C.creditoAbates * s.kills * ouroEstimado(tMedio), null);
+        if (!lutas.length) {
+          const kp = (s.kills + s.assists) / totalAbates;
+          add(p.idx, 'participacao', Math.max(0, 0.55 - kp) * minutos * 40, kp);
+        }
+      }
+    }
+
+    // farm, dano (cores) e visão (suportes)
+    const l20 = lead.length > 20 ? lead[20] : lead.length ? lead[lead.length - 1] : 0;
+    const espaco = l20 <= -5000 ? 0.7 : l20 <= -2500 ? 0.85 : 1;
+    for (const p of nos) {
+      const s = p.stats;
+      if (p.posicao <= 3) {
+        let pc = s.bench.gold_per_min;
+        if (pc != null) add(p.idx, 'farm', Math.max(0, 0.45 - pc) * 2 * minutos * 60 * ({ 1: 1, 2: 0.8, 3: 0.5 }[p.posicao] ?? 0.5) * espaco, { pc, espaco });
+        pc = s.bench.hero_damage_per_min;
+        if (pc != null) add(p.idx, 'dano', Math.max(0, 0.4 - pc) * 2 * minutos * 25 * espaco, { pc, espaco });
+      } else if (s.obs != null && s.sen != null) {
+        const wards = s.obs + s.sen;
+        const esperado = Math.max(minutos * 0.35, 1);
+        add(p.idx, 'visao', Math.max(0, 1 - wards / esperado) * minutos * 30, { wards, esperado });
+      }
+    }
+    return acc;
+  }
+
+  function evidenciaDeCulpa(k, ouro, infos, p, ctx) {
+    const heroiDe = (i) => ctx.jog[i].heroi.nome;
+    const n = infos.length;
+    switch (k) {
+      case 'rota': {
+        const { tipo, nwDiff, xpDiff, rivais, cedo } = infos[0];
+        const nome = { mid: 'a mid', safe: 'a safe lane', off: 'a offlane' }[tipo];
+        return `perdeu ${nome} contra ${rivais}: aos 10 min, ${nwDiff < 0 ? fmtK(-nwDiff) : 'nada'} de patrimônio${xpDiff < 0 ? ` e ${fmtK(-xpDiff)} de XP atrás` : ' atrás'} (média por herói)${cedo ? `, com ${plural(cedo, 'morte', 'mortes')} antes dos 10 min` : ''}`;
+      }
+      case 'credito_rota': {
+        const { nwDiff, rivais } = infos[0];
+        return `ganhou a rota contra ${rivais}: ${fmtK(nwDiff)} de patrimônio na frente aos 10 min (média por herói)`;
+      }
+      case 'rotacoes': {
+        const quem = [...new Set(infos.map((x) => heroiDe(x.assassino)))].sort().join(' e ');
+        return `com a mid perdida, ${quem} rotacionou e matou ${plural(n, 'vez', 'vezes')} em outras rotas antes dos 12 min`;
+      }
+      case 'mortes': {
+        const total = infos.length === 1 && infos[0] === null ? p.stats.deaths : n;
+        const meio = infos.filter((t) => t != null && t >= 600 && t < 1200).length;
+        return `${plural(total, 'morte', 'mortes')}${meio ? `, ${meio} entre os 10 e os 20 min, quando o ouro vira item decisivo` : ''}`;
+      }
+      case 'snowball': {
+        const quem = [...new Set(infos.map(heroiDe))].sort();
+        return `${plural(n, 'morte', 'mortes')} antes dos 25 min para ${quem.join(' e ')}, que ${quem.length > 1 ? 'dispararam' : 'disparou'} no jogo`;
+      }
+      case 'pickoff': return `${plural(n, 'morte', 'mortes')} sozinho, fora de luta`;
+      case 'throw': return `${plural(n, 'morte', 'mortes')} com o time 2k+ na frente`;
+      case 'objetivos': {
+        const c = (x) => infos.filter((y) => y === x).length;
+        const partes = [c('torre') ? plural(c('torre'), 'torre', 'torres') : '', c('quartel') ? plural(c('quartel'), 'quartel', 'quartéis') : '', c('Roshan') ? 'Roshan' : ''].filter(Boolean);
+        return `estava morto quando caíram ${partes.join(' e ')}`;
+      }
+      case 'ausencia': return `vivo e fora de ${plural(n, 'luta perdida', 'lutas perdidas')} em que o time levou 3+ mortes`;
+      case 'farm':
+      case 'dano': {
+        const { pc, espaco } = infos[0];
+        return `${k === 'farm' ? 'GPM' : 'dano em heróis'} no percentil ${pct(pc)} de quem joga de ${p.heroi.nome}${espaco < 1 ? ' (o time estava muito atrás aos 20 min: pesa menos)' : ''}`;
+      }
+      case 'visao': {
+        const { wards, esperado } = infos[0];
+        return `${plural(wards, 'ward', 'wards')} na partida; o esperado para suporte era umas ${Math.round(esperado)}`;
+      }
+      case 'participacao': return `esteve em ${pct(infos[0])} dos abates do time`;
+      case 'credito_abates': return `${fmtK(-ouro / CULPA.creditoAbates)} de ouro tirado do inimigo nos próprios abates`;
+      default: return '';
+    }
+  }
+
+  function julgar(ctx, match) {
+    const acc = cenariosDeCulpa(ctx, match);
+    const arred = (x) => Math.round(x * 10) / 10;
+    const vereditos = ctx.nos.map((p) => {
+      const cs = Object.entries(acc[p.idx])
+        .filter(([, c]) => Math.abs(c.ouro) >= CULPA.escala * 0.05)
+        .map(([key, c]) => {
+          const pontos = arred(c.ouro / CULPA.escala);
+          return { key, label: LABELS[key], pontos, valor: pontos, evidencia: evidenciaDeCulpa(key, c.ouro, c.infos, p, ctx) };
+        })
+        .sort((a, b) => b.pontos - a.pontos);
+      const culpa = soma(Object.values(acc[p.idx]).filter((c) => c.ouro > 0), (c) => c.ouro);
+      const credito = -soma(Object.values(acc[p.idx]).filter((c) => c.ouro < 0), (c) => c.ouro);
+      const liquido = Math.max((1 - CULPA.creditoMax) * culpa, culpa - credito);
+      return { jogador: p, score: arred(liquido / CULPA.escala), fatia: 0, componentes: cs };
     });
     const total = soma(vereditos, (v) => v.score) || 1;
     vereditos.forEach((v) => {
       v.fatia = v.score / total;
-      v.pesou = v.componentes.filter((c) => c.valor > 0.05).sort((a, b) => b.pontos - a.pontos).slice(0, 3);
-      v.atenuantes = v.componentes.filter((c) => c.peso >= 1 && c.valor < 0.25).sort((a, b) => a.valor - b.valor).slice(0, 2);
+      v.pesou = v.componentes.filter((c) => c.pontos >= 1).slice(0, 3);
+      v.atenuantes = v.componentes.filter((c) => c.pontos <= -1).sort((a, b) => a.pontos - b.pontos).slice(0, 2);
     });
     return vereditos.sort((a, b) => b.score - a.score);
   }
@@ -1764,7 +1924,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   function fichaRPG(v, ctx) {
     const p = v.jogador;
     const s = p.stats;
-    const comp = Object.fromEntries(v.componentes.map((c) => [c.key, c.valor]));
+    const alimentou = (x) => soma(x.componentes.filter((c) => c.key === 'mortes' || c.key === 'snowball'), (c) => c.pontos);
     const emLuta = (t) => ctx.lutas.some((l) => t >= l.inicio - 10 && t <= l.fim + 10);
     const pickoffsDe = (j) => (ctx.mortes ? ctx.mortes[j.idx] : []).filter((d) => !emLuta(d.t)).length;
     const meus = pickoffsDe(p);
@@ -1772,12 +1932,12 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const tfp = s.tfp != null ? s.tfp : 0.5;
     const farmPct = s.bench.gold_per_min != null ? s.bench.gold_per_min : 0.5;
     const atributos = [
-      { nome: 'Feeder', valor: Math.max(comp.mortes || 0, comp.ouro_entregue || 0), explica: `${s.deaths} mortes, ${fmtK(s.goldFed || 0)} de ouro entregue` },
-      { nome: 'Turista', valor: comp.participacao || 0, explica: `esteve em ${pct(tfp)} dos abates do time` },
+      { nome: 'Feeder', valor: notaFatia(fatia(alimentou(v), soma(ctx.vereditosTime || [v], alimentou))), explica: `${s.deaths} mortes, ${fmtK(s.goldFed || 0)} de ouro entregue` },
+      { nome: 'Turista', valor: clamp((0.65 - tfp) / 0.45), explica: `esteve em ${pct(tfp)} dos abates do time` },
       { nome: 'Pickoff Ambulante', valor: ctx.lutas.length ? notaFatia(fatia(meus, doTime)) : 0, explica: `${meus} ${meus === 1 ? 'morte' : 'mortes'} sozinho, fora de luta` },
-      { nome: 'Throw', valor: comp.throw || 0, explica: `${s.deathsAhead || 0} mortes com o time na frente` },
+      { nome: 'Throw', valor: clamp((s.deathsAhead || 0) / 4), explica: `${s.deathsAhead || 0} mortes com o time na frente` },
       { nome: 'Farm Simulator', valor: clamp(farmPct * clamp((0.75 - tfp) / 0.45) * (p.funcao === 'core' ? 1.6 : 0.6)), explica: `farm no percentil ${pct(farmPct)} e ${pct(tfp)} de participação` },
-      { nome: 'Mão de Alface', valor: (comp.dano || 0) * (p.funcao === 'core' ? 1 : 0.5), explica: `${fmtK(s.heroDamage)} de dano em heróis` },
+      { nome: 'Mão de Alface', valor: (s.bench.hero_damage_per_min != null ? clamp((0.6 - s.bench.hero_damage_per_min) / 0.5) : 0) * (p.funcao === 'core' ? 1 : 0.5), explica: `${fmtK(s.heroDamage)} de dano em heróis` },
     ].map((a) => ({ ...a, valor: Math.round(a.valor * 100) }));
     const top = [...atributos].sort((a, b) => b.valor - a.valor)[0];
     const classe = top.valor >= 25 ? `${top.nome} nível ${top.valor}` : 'Cidadão de bem';
@@ -2139,6 +2299,9 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const p = v.jogador;
     const s = p.stats;
     const top = v.pesou.map((c) => c.key);
+    // rota perdida é causa, mortes depois são consequência: se a rota pesou de verdade, a história começa nela
+    const rotaPesou = v.componentes.find((c) => c.key === 'rota' && c.pontos >= 15 && c.pontos >= 0.5 * (v.pesou[0] ? v.pesou[0].pontos : 0));
+    if (rotaPesou && top[0] !== 'rota') top.unshift('rota');
     const ameaca = v.itens.ameacas[0];
     const pior = ctx.quedas[0];
     const noColapso = pior ? pior.mortes.filter((m) => m.jogador === p).length : 0;
@@ -2148,38 +2311,43 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const maxM = Math.max(0, ...porInimigo.map((a) => a.mortes));
     const assassinos = porInimigo.filter((a) => a.mortes === maxM && maxM > 0).map((a) => a.nome);
     const quem = assassinos.length ? `${assassinos.join(' e ')} (${maxM} ${maxM === 1 ? 'morte' : 'mortes'}${assassinos.length > 1 ? ' cada' : ''})` : null;
-    if (top[0] === 'ouro_entregue' || top[0] === 'mortes' || top[0] === 'tempo_morto') {
-      frases.push(`${farmBom ? `Farmou bem (${s.gpm} GPM), mas` : 'Você'} morreu ${s.deaths} vezes${quem ? `, mais para ${quem}` : ''}, e o farm virou ${fmtK(s.goldFed || 0)} de ouro para o outro time${s.buybacks === 0 && s.lateDeaths >= 3 ? ' sem nenhum buyback no late' : ''}.`);
-    } else if (top[0] === 'participacao') {
-      frases.push(`Você esteve em só ${pct(s.tfp || 0)} dos abates do time, e quando apareceu morreu ${s.lostFightDeaths || 0} vezes em lutas perdidas${quem ? `, quase sempre para ${quem}` : ''}.`);
+    const evid = (k) => { const c = v.componentes.find((x) => x.key === k); return c ? c.evidencia : null; };
+    const frase = (t) => (t ? t.charAt(0).toUpperCase() + t.slice(1) : '');
+    const depois = `Depois ainda morreu ${plural(s.deaths, 'vez', 'vezes')}${quem ? `, mais para ${quem}` : ''}`;
+    if (top[0] === 'rota') {
+      const rot = evid('rotacoes');
+      frases.push(`${frase(evid('rota'))}.${rot ? ` ${frase(rot)}.` : ''} ${depois}.`);
+    } else if (top[0] === 'rotacoes') {
+      frases.push(`${frase(evid('rotacoes'))}: perder a mid deixa o mid deles livre para decidir as outras rotas. ${depois}.`);
+    } else if (top[0] === 'mortes' || top[0] === 'snowball' || top[0] === 'objetivos' || top[0] === 'pickoff') {
+      const extra = top[0] === 'snowball' ? `; ${evid('snowball')}` : top[0] === 'objetivos' ? `; ${evid('objetivos')}` : top[0] === 'pickoff' ? `; ${evid('pickoff')}` : '';
+      frases.push(`${farmBom ? `Farmou bem (${s.gpm} GPM), mas` : 'Você'} morreu ${s.deaths} vezes${quem ? `, mais para ${quem}` : ''}, e isso virou ${fmtK(s.goldFed || 0)} de ouro para o outro time${extra}.`);
+    } else if (top[0] === 'ausencia' || top[0] === 'participacao') {
+      frases.push(`${frase(evid(top[0]))}${s.tfp != null ? `: esteve em ${pct(s.tfp)} dos abates do time` : ''}.`);
     } else if (top[0] === 'throw') {
-      frases.push(`Com o time na frente você morreu ${s.deathsAhead} ${s.deathsAhead === 1 ? 'vez' : 'vezes'}, e cada uma devolveu ouro que o time tinha construído${quem ? `; no jogo todo, ${ameaca.jogador.heroi.nome} te matou ${ameaca.mortes} ${ameaca.mortes === 1 ? 'vez' : 'vezes'}` : ''}.`);
-    } else if (top[0] === 'farm' || top[0] === 'last_hits') {
+      frases.push(`Com o time na frente você morreu ${s.deathsAhead} ${s.deathsAhead === 1 ? 'vez' : 'vezes'}, e cada uma devolveu ouro que o time tinha construído${quem ? `; no jogo todo, quem mais te pegou foi ${quem}` : ''}.`);
+    } else if (top[0] === 'farm') {
       frases.push(`Seu farm ficou no percentil ${pct(s.bench.gold_per_min || 0)} de quem joga de ${p.heroi.nome} (${s.gpm} GPM): os itens chegaram tarde para as lutas do mid game.`);
-    } else if (top[0] === 'mortes_tardias' || top[0] === 'lutas_perdidas') {
-      frases.push(`${s.lateDeaths != null ? `${s.lateDeaths} das suas ${s.deaths} mortes vieram depois dos 30 min` : `Você morreu ${s.deaths} vezes`}${noColapso ? `, ${noColapso} delas no colapso dos min ${pior.inicio}–${pior.fim}` : ''}${quem ? `; quem mais te pegou foi ${quem}` : ''}.`);
     } else if (top[0] === 'visao') {
       frases.push(`${s.obs} obs e ${s.sen} sentries numa partida de ${Math.round(s.duracao / 60)} min: o time lutou sem saber onde eles estavam.`);
-    } else if (top[0] === 'lane') {
-      frases.push(`A rota terminou com ${Math.round(s.laneEff)}% de eficiência: você começou o jogo atrás e o mid game veio sem os itens.`);
     } else if (top[0]) {
-      frases.push(v.pesou[0].evidencia.charAt(0).toUpperCase() + v.pesou[0].evidencia.slice(1) + '.');
+      frases.push(`${frase(v.pesou[0].evidencia)}.`);
     }
     const alvo = ameaca ? ameaca.jogador.heroi.nome : 'o time deles';
+    const disparou = (v.componentes.find((x) => x.key === 'snowball') || {}).evidencia;
     const TATICA = {
-      mortes: core => (core ? `farme do lado do mapa que vocês controlam quando ${alvo} sumir do minimapa` : `ande atrás dos cores e não fique sozinho onde ${alvo} pode te pegar`),
-      ouro_entregue: core => (core ? `farme do lado do mapa que vocês controlam quando ${alvo} sumir do minimapa e guarde ouro de buyback a partir dos 30 min` : `ande atrás dos cores e não fique sozinho onde ${alvo} pode te pegar`),
-      tempo_morto: core => (core ? 'guarde ouro de buyback a partir dos 30 min e não lute com ele em recarga' : 'evite morrer primeiro: entre na luta depois do iniciador'),
+      rota: () => (p.posicao === 2 ? 'na mid, se a rota estiver perdida, empurre a wave antes de sair da torre e avise o time toda vez que o mid deles sumir' : 'combinem a rota antes do jogo: quem busca o primeiro golpe, quando recuar, e peçam rotação antes de a lane cair'),
+      rotacoes: () => 'quando o mid deles sumir, avise na hora e empurre a wave para ir atrás ou pegar a torre dele',
+      mortes: (core) => (core ? `farme do lado do mapa que vocês controlam quando ${alvo} sumir do minimapa` : `ande atrás dos cores e não fique sozinho onde ${alvo} pode te pegar`),
+      snowball: () => `não dê luta sozinho para quem disparou${disparou ? ` (${disparou.split('para ').pop().replace(/, que dispar\w+ no jogo/, '')})` : ''}: jogue perto do time até ter o item de defesa`,
+      pickoff: () => 'sem saber onde eles estão, não ande sozinho: farme com visão e perto de um aliado',
+      objetivos: (core) => (core ? 'no mid e late, guarde ouro de buyback e não morra perto de torre em desvantagem' : 'no mid e late, quem morre primeiro abre a torre: entre na luta depois do iniciador'),
+      ausencia: () => 'tenha TP sempre e chegue nas lutas junto com o time, não depois',
       participacao: () => 'tenha TP sempre e chegue nas lutas junto com o time, não depois',
       throw: () => 'com vantagem, agrupe e derrube torre em vez de caçar abate no lado deles',
       farm: () => 'mantenha uma wave ou camp no caminho entre uma luta e outra',
-      last_hits: () => 'treine last hit e peça stack ao suporte',
-      mortes_tardias: () => 'no late, saia da luta assim que ela virar em vez de morrer por último',
-      lutas_perdidas: () => 'no late, saia da luta assim que ela virar em vez de morrer por último',
       visao: () => 'compre obs a cada recarga e coloque sentry antes de Roshan e das lutas em torre',
-      lane: () => 'combine a rota com o parceiro e peça rotação antes de perder a lane',
       dano: () => 'posicione-se para bater do começo ao fim da luta',
-      objetivos: () => 'depois de ganhar uma luta, empurre',
     };
     const core = p.funcao === 'core';
     const tatica = TATICA[top[0]] ? TATICA[top[0]](core) : null;
@@ -2197,19 +2365,18 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   }
 
   const CONSELHOS = {
+    rota: (p) => (p.posicao === 2 ? 'Mid perdida contamina o mapa inteiro: se a rota estiver ruim, peça um suporte cedo, empurre a wave antes de recuar e avise sempre que o mid deles sumir.' : 'Rota perdida aos 10 min é desvantagem que o jogo cobra depois: combinem o plano de rota (nível 2, quem bate, quando recuar) e peçam rotação antes de perder a lane.'),
+    rotacoes: () => 'Com a mid perdida, o mid deles fica livre para matar nas outras rotas. Empurre a wave e avise o time na hora em que ele sumir.',
     mortes: (p) => `Antes de avançar, conte quantos inimigos estão fora do mapa. ${p.stats.deaths} mortes viram ${p.stats.goldFed != null ? `${fmtK(p.stats.goldFed)} de ouro` : 'muito ouro'} para o outro time.`,
-    ouro_entregue: (p) => `Você entregou ${fmtK(p.stats.goldFed || 0)} de ouro morrendo. ${p.funcao === 'core' ? 'Com o farm do time em você, jogue atrás da wave e só entre na luta junto.' : 'Ande atrás dos cores e guarde um item de fuga.'}`,
-    tempo_morto: (p) => `${(p.stats.timeDead / 60).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} min morto é tempo sem farm e sem defesa. A partir dos 30 min, guarde ouro de buyback.`,
-    mortes_tardias: (p) => `${p.stats.lateDeaths} mortes depois dos 30 min, quando cada morte custa um quartel. No late, só entre na luta com o time e com visão.`,
+    snowball: () => 'Cada morte para o herói que já está na frente vira o próximo item dele. Contra quem disparou, só lute junto com o time.',
+    pickoff: () => 'Morrer sozinho é a morte mais cara: o time luta 4x5 e o inimigo ganha o mapa. Farme com visão e perto de alguém.',
     throw: (p) => `Com o time na frente você morreu ${p.stats.deathsAhead} vezes. Com vantagem, agrupe e derrube torre em vez de caçar abate no lado deles do mapa.`,
-    lutas_perdidas: (p) => `Você morreu ${p.stats.lostFightDeaths} vezes em lutas que o time perdeu. Quando a luta virar, saia cedo: morrer por último só aumenta o prejuízo.`,
-    farm: (p) => `GPM de ${p.stats.gpm}, abaixo do esperado para ${p.heroi.nome}. Mantenha sempre uma wave ou camp no caminho entre uma luta e outra.`,
-    last_hits: (p) => `${p.stats.lastHits} last hits é pouco para ${p.heroi.nome}. Treine o last hit no demo mode e peça stack ao suporte.`,
-    dano: (p) => `${fmtK(p.stats.heroDamage)} de dano é pouco para ${p.heroi.nome}. Posicione-se para bater do começo ao fim da luta.`,
+    objetivos: (p) => (p.funcao === 'core' ? 'Torre cai quando core está morto. Do mid game em diante, guarde ouro de buyback e não lute em desvantagem perto de objetivo.' : 'As torres caíram com você morto: no mid e late, entre na luta depois do iniciador e não morra primeiro.'),
+    ausencia: () => 'O time perdeu lutas com você vivo e longe. Tenha TP sempre e acompanhe os timings do time (smoke, Roshan, torres).',
     participacao: (p) => `Participou de ${pct(p.stats.tfp != null ? p.stats.tfp : 0)} dos abates. Acompanhe os timings do time (smoke, Roshan, torres) e use TP nas lutas.`,
-    lane: (p) => `Rota com ${Math.round(p.stats.laneEff)}% de eficiência. Combine o plano de rota com o parceiro e peça rotação antes de perder a lane.`,
+    farm: (p) => `GPM de ${p.stats.gpm}, abaixo do esperado para ${p.heroi.nome}. Mantenha sempre uma wave ou camp no caminho entre uma luta e outra.`,
+    dano: (p) => `${fmtK(p.stats.heroDamage)} de dano é pouco para ${p.heroi.nome}. Posicione-se para bater do começo ao fim da luta.`,
     visao: (p) => `${p.stats.obs} obs e ${p.stats.sen} sentries em ${Math.round(p.stats.duracao / 60)} min. Compre obs a cada recarga e coloque sentry antes de Roshan e de lutas em torre.`,
-    objetivos: (p) => `${fmtK(p.stats.towerDamage)} de dano em torre. Abate sem torre não vira vitória: depois de ganhar uma luta, empurre.`,
   };
 
   // ---------------------------------------------------------------- análise completa
@@ -2270,7 +2437,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     ctx.timings = dados.timings || {};
     ctx.matchups = dados.matchups || {};
 
-    const vereditos = julgar(nos, duracao);
+    const vereditos = julgar(ctx, match);
+    ctx.vereditosTime = vereditos;
     const inimigo = contextoInimigo(ctx);
     ctx.alocacao = alocarItensDoTime(ctx, inimigo);
     const dados_ = { timings: dados.timings || {}, popularidade: dados.popularidade || {} };
@@ -2304,7 +2472,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         return `${x.nome} aos ${mmss(x.t)}: horário de quem vence ${pct(f.wr)} com ${p.heroi.nome}.`;
       });
       v.fezBem = [...v.provas.filter((x) => x.tipo === 'bom').map((x) => x.texto), ...(v.itens.acertosContra || []), ...timingsBons].slice(0, 3);
-      const ranked = v.componentes.filter((c) => c.valor > 0.05).sort((a, b) => b.pontos - a.pontos);
+      const ranked = v.componentes.filter((c) => c.pontos >= 1 && CONSELHOS[c.key]);
       const chave = (ranked.find((c) => !dadoConselho.has(c.key)) || ranked[0] || {}).key;
       if (chave) {
         dadoConselho.add(chave);
@@ -3276,10 +3444,16 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     });
     const ameacas = it.ameacasTexto || [];
     const como = it.observacoes || [];
-    if (!ameacas.length && !como.length && !ordem.length) return null;
+    const fmtPts = (x) => `${x > 0 ? '+' : '−'}${Math.round(Math.abs(x))}`;
+    const culpa = v.componentes.filter((c) => Math.abs(c.pontos) >= 1).map((c) => h('li', { class: c.pontos < 0 ? 'credito' : null },
+      h('span', { class: 'pts' }, fmtPts(c.pontos)),
+      h('span', {}, h('strong', {}, c.label), ` — ${c.evidencia}.`)));
     return h('details', { class: 'detalhes' },
-      h('summary', {}, 'Ver detalhes: contra quem você jogou e a ordem de compra'),
+      h('summary', {}, 'Ver detalhes: de onde veio a culpa, contra quem você jogou e a ordem de compra'),
       h('div', { class: 'detalhes-grid' },
+        culpa.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, `De onde vieram os ${Math.round(v.score)} pontos de culpa`),
+          h('ul', { class: 'conta-culpa' }, culpa),
+          h('p', { class: 'nota-culpa' }, 'Cada ponto é 100 de ouro que o jogador custou ao time (ou devolveu, no caso dos créditos). A culpa da partida é a soma de cada um dividida pelo total do time.')) : null,
         ameacas.length ? h('div', {}, h('h4', {}, 'Contra quem você jogou'), lista('pontos', ameacas)) : null,
         como.length ? h('div', {}, h('h4', {}, 'Como jogar contra eles'), lista('pontos', como)) : null,
         ordem.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, 'Ordem de compra'), h('ol', { class: 'ordem-build' }, ordem)) : null));
@@ -3312,7 +3486,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return h('footer', { class: 'rodape' },
       h('p', {}, 'Dados do ', h('a', { href: `https://www.opendota.com/matches/${id}`, target: '_blank', rel: 'noopener' }, 'OpenDota'),
         ': a partida, o replay analisado, a comparação com quem joga o mesmo herói, os itens mais comprados por herói e a taxa de vitória por horário de item (amostras de partidas públicas; faixas com menos de 30 partidas são ignoradas).'),
-      h('p', {}, 'O índice de culpa é um ponto de partida para conversar sobre o jogo, não uma sentença final. Taxa de vitória por horário mostra correlação: quem fecha item cedo geralmente já está ganhando.'),
+      h('p', {}, 'Como a culpa é calculada: cada jogador soma pontos (1 ponto = 100 de ouro) pelo que custou ao time em situações comuns de Dota. Entram rota perdida aos 10 min (pesa 1,5x, porque ouro cedo vira bola de neve; a mid é 1x1 e é toda do mid), mortes pesadas pelo momento (entre 10 e 20 min pesam mais), morrer para quem disparou no jogo, morrer sozinho, morrer com o jogo ganho, estar morto quando caem torres e quartéis, ficar fora de lutas perdidas e farm ou visão abaixo do papel. Farm baixo pesa menos quando o time já estava muito atrás. Rota ganha e abates viram crédito. A fatia é a parte de cada um no total do time.'),
+      h('p', {}, 'O índice é um ponto de partida para conversar sobre o jogo, não uma sentença final. Taxa de vitória por horário mostra correlação: quem fecha item cedo geralmente já está ganhando.'),
       r.partida.replay ? h('p', {}, 'Replay: ', h('span', { class: 'mono' }, r.partida.replay)) : null);
   }
 
