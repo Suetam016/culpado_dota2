@@ -783,6 +783,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .placar-rota span:last-child { text-align: right; }
 .placar-rota .rot { color: var(--muted); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); align-self: center; }
 .placar-rota .vence { color: var(--ink); font-weight: 700; }
+.placar-rota .rot { display: grid; justify-items: center; text-align: center; }
+.placar-rota .rot small { text-transform: none; letter-spacing: 0; font-family: var(--font-body); font-size: var(--t-xs); color: var(--muted); opacity: 0.85; }
 .lane-frase { font-size: var(--t-sm); color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 10px; }
 
 /* dicas de rota */
@@ -2384,6 +2386,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       rotas.push({
         lane, papel, nos: a, eles: b, nwNos, nwEles, diff, resultado, destaque, dicas,
         lhNos: soma(a, lh), lhEles: soma(b, lh),
+        // last hit é métrica de core: compara o core de cada lado (menor posição na rota), não a soma com o suporte
+        coreNos: [...a].sort((x, y) => x.posicao - y.posicao)[0], coreEles: [...b].sort((x, y) => x.posicao - y.posicao)[0],
         abatesNos: abates(b, a), abatesEles: abates(a, b),
         eficiencia: a.map((j) => j.raw.lane_efficiency_pct).filter((x) => x != null),
       });
@@ -2731,7 +2735,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const perdidas = r.rotas.filter((l) => l.resultado === 'perdeu').length;
     const resumo = ganhas > perdidas ? `Vocês ganharam ${ganhas} de ${r.rotas.length} rotas.` : perdidas > ganhas ? `Vocês perderam ${perdidas} de ${r.rotas.length} rotas.` : 'Fase de rotas equilibrada.';
     return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-rotas' },
-      cabecalho('Fase de rotas', `${resumo} Quem saiu na frente aos 10 minutos, em patrimônio, last hits e abates entre os jogadores de cada rota.`, 'titulo-rotas'),
+      cabecalho('Fase de rotas', `${resumo} Quem saiu na frente aos 10 minutos: patrimônio somado da rota, last hits de core contra core e abates entre quem jogou nela.`, 'titulo-rotas'),
       h('div', { class: 'lanes' }, r.rotas.map(cartaoRota)));
   }
 
@@ -2740,8 +2744,10 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const lado = (time, classe) => h('div', { class: `lado ${classe}` }, [...time].sort((x, y) => x.posicao - y.posicao).map((p) => h('div', { class: 'heroi-rota' },
       retrato(p.heroi), h('span', {}, h('strong', {}, p.heroi.nome), h('small', {}, p.nome)))));
     const total = l.nwNos + l.nwEles || 1;
-    const linha = (rotulo, a, b, fmt = String) => h('div', { class: 'placar-rota' },
-      h('span', { class: a > b ? 'vence' : '' }, fmt(a)), h('span', { class: 'rot' }, rotulo), h('span', { class: b > a ? 'vence' : '' }, fmt(b)));
+    const linha = (rotulo, a, b, fmt = String, sub = null) => h('div', { class: 'placar-rota' },
+      h('span', { class: a > b ? 'vence' : '' }, fmt(a)), h('span', { class: 'rot' }, rotulo, sub ? h('small', {}, sub) : null), h('span', { class: b > a ? 'vence' : '' }, fmt(b)));
+    const dupla = l.nos.length > 1 || l.eles.length > 1;
+    const lhDe = (p) => ((p && p.raw.lh_t) || [])[10] ?? 0;
     const d = l.destaque;
     let frase = '';
     if (d) {
@@ -2758,8 +2764,10 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       h('div', { class: 'cabo', role: 'img', 'aria-label': `Patrimônio aos 10 min: vocês ${fmtInt(l.nwNos)}, eles ${fmtInt(l.nwEles)}` },
         h('span', { class: 'n', style: `flex:${l.nwNos / total}` }), h('span', { class: 'e', style: `flex:${l.nwEles / total}` })),
       h('div', { class: 'placares' },
-        linha('patrimônio', l.nwNos, l.nwEles, fmtK),
-        linha('last hits', l.lhNos, l.lhEles),
+        linha(dupla ? 'patrimônio da rota' : 'patrimônio', l.nwNos, l.nwEles, fmtK, dupla ? 'soma de quem jogou nela' : null),
+        dupla && l.coreNos && l.coreEles
+          ? linha('last hits dos cores', lhDe(l.coreNos), lhDe(l.coreEles), String, `${l.coreNos.heroi.nome} × ${l.coreEles.heroi.nome}`)
+          : linha('last hits', l.lhNos, l.lhEles),
         linha('abates na rota', l.abatesNos, l.abatesEles)),
       frase ? h('p', { class: 'lane-frase' }, frase) : null,
       l.dicas && l.dicas.length ? h('ul', { class: 'lane-dicas' }, l.dicas.map((d) => h('li', { class: d.tipo },
