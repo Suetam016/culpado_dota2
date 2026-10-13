@@ -2110,6 +2110,44 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
   .cinema-botoes .mapa-botao { min-width: 44px; min-height: 44px; }
 }
 
+/* "Ver parecer completo": o botão principal da carta (é a parte mais legal do site) */
+.fig-rodape .fig-raridade { order: 0; }
+.fig-rodape .fig-ver { order: 1; }
+.fig-rodape .fig-virar { order: 2; }
+.fig-rodape .fig-ver {
+  position: relative; overflow: hidden; flex-basis: 100%; width: 100%; margin: 2px 0 0; min-height: 52px;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 8px 14px;
+  border: 1px solid #6b4a14; border-radius: var(--radius-sm, 8px); cursor: pointer; text-align: left; text-decoration: none;
+  background: linear-gradient(180deg, var(--gold-2), var(--gold) 45%, #b8862b); color: var(--on-gold, #1b1206);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 2px 0 #3a2a10, 0 0 0 1px rgba(227, 180, 72, 0.25), 0 8px 22px rgba(200, 145, 63, 0.28);
+  transition: filter 0.15s, transform 0.08s, box-shadow 0.2s;
+}
+.fig-ver .ic { flex: none; }
+.fig-ver .ic-traco { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fig-ver-txt { display: grid; gap: 1px; min-width: 0; }
+.fig-ver-txt strong { font: 800 0.92rem/1.1 var(--font-display); letter-spacing: 0.05em; text-transform: uppercase; }
+.fig-ver-txt small { font: 600 0.74rem/1.2 var(--font-body); opacity: 0.82; }
+.fig-ver .ic-seta { transition: transform 0.2s; }
+.fig-rodape .fig-ver:hover { filter: brightness(1.08); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 2px 0 #3a2a10, 0 0 0 2px rgba(246, 210, 122, 0.55), 0 10px 28px rgba(200, 145, 63, 0.4); }
+.fig-rodape .fig-ver:hover .ic-seta, .fig-rodape .fig-ver:focus-visible .ic-seta { transform: translateX(4px); }
+.fig-rodape .fig-ver:active { transform: translateY(1px); }
+.fig-rodape .fig-ver:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px #2b1f12, inset 0 0 0 4px var(--gold-2), 0 8px 22px rgba(200, 145, 63, 0.35); }
+/* um brilho que passa de tempos em tempos para o olho achar o botão */
+.fig-rodape .fig-ver::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 250, 230, 0.55) 48%, transparent 66%);
+  transform: translateX(-120%); animation: fig-ver-brilho 4.5s ease-in-out 1.2s infinite;
+}
+@keyframes fig-ver-brilho { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.fig-rodape .fig-virar { margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .fig-rodape .fig-ver::after { animation: none; display: none; } .fig-ver .ic-seta { transition: none; } }
+.figurinha { container-type: inline-size; }
+@container (max-width: 240px) {
+  .fig-rodape .fig-ver { grid-template-columns: 1fr auto; padding: 8px 10px; gap: 6px; }
+  .fig-rodape .fig-ver .ic-pergaminho { display: none; }
+  .fig-ver-txt strong { font-size: 0.82rem; letter-spacing: 0.03em; }
+}
+
 </style>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false">
   <defs>
@@ -5729,6 +5767,8 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     link: [['path', { d: 'M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2', class: 'ic-traco' }], ['path', { d: 'M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2', class: 'ic-traco' }]],
     ok: [['path', { d: 'M5 12.5l4.5 4.5L19 7.5', class: 'ic-traco' }]],
     sair: [['path', { d: 'M6 6l12 12M18 6L6 18', class: 'ic-traco' }]],
+    pergaminho: [['path', { d: 'M6 4h11a2 2 0 0 1 2 2v13a1.5 1.5 0 0 1-3 0V7H6a1.5 1.5 0 0 1 0-3z', class: 'ic-traco' }], ['path', { d: 'M9 11h5M9 14h5M9 17h3', class: 'ic-traco' }]],
+    seta: [['path', { d: 'M5 12h13M13 6l6 6-6 6', class: 'ic-traco' }]],
     pular: [['path', { d: 'M6 5l9 7-9 7z', class: 'ic-cheio' }], ['path', { d: 'M17 5h2.5v14H17z', class: 'ic-cheio' }]],
     balanca: [['path', { d: 'M12 5v15M8 20h8M4 7h16', class: 'ic-traco' }], ['path', { d: 'M5 7l-2.6 6M5 7l2.6 6M19 7l-2.6 6M19 7l2.6 6', class: 'ic-traco' }], ['path', { d: 'M2 13h6a3 3 0 0 1-6 0zM16 13h6a3 3 0 0 1-6 0z', class: 'ic-cheio' }], ['circle', { cx: 12, cy: 4.2, r: 1.5, class: 'ic-cheio' }]],
   };
@@ -7960,7 +8000,12 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
         botao.textContent = 'Virar a figurinha: lado ruim';
       }
     }
-    rodape.append(h('button', { class: 'fig-ver', type: 'button', onclick: () => abrirDossie(p.idx) }, 'Ver parecer completo'));
+    // o parecer completo é a melhor parte: botão grande, o primeiro do rodapé, dizendo o que tem lá dentro
+    const dentro = v.highlight ? 'ficha, replay e plano' : 'ficha e plano para a próxima';
+    rodape.prepend(h('button', { class: 'fig-ver', type: 'button', onclick: () => abrirDossie(p.idx), 'aria-label': `Ver o parecer completo de ${p.nome}: ${dentro}` },
+      iconeSvg('pergaminho', 20),
+      h('span', { class: 'fig-ver-txt' }, h('strong', {}, 'Parecer completo'), h('small', {}, dentro)),
+      iconeSvg('seta', 18)));
     return card;
   }
 
