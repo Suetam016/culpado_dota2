@@ -4204,6 +4204,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const HAB = mapa.hab || [];
     const USOS = (mapa.usos || []).map(([tt, k, hb, alvo]) => ({ t: tt, quem: pos.idxDe[k], hab: HAB[hb], alvo: alvo >= 0 ? pos.idxDe[alvo] : null })).filter((x) => x.hab);
     const DURA = 1.8;
+    const candidatosSom = [];
+    let ultimoSom = 0;
     const popsVivos = new Map();
     const iconeHab = ([chave, , tipo]) => `${CDN}/apps/dota2/images/dota_react/${tipo === 'i' ? 'items' : 'abilities'}/${chave}.png`;
     const criarPop = (u) => {
@@ -4240,6 +4242,46 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       'hoodwink_sharpshooter', 'marci_grapple', 'primal_beast_onslaught', 'primal_beast_pulverize', 'muerta_dead_shot']);
     const nomeDe = (i) => (todos.find((x) => x.idx === i) || { heroi: { nome: '?' } }).heroi.nome;
     const heroiDe = (i) => (todos.find((x) => x.idx === i) || {}).heroi;
+    const danoPorSkill = {};
+    for (const d of DANO) if (d.hab) (danoPorSkill[`${d.quem}:${d.hab[0]}`] = danoPorSkill[`${d.quem}:${d.hab[0]}`] || []).push(d);
+    const temSkillNoDano = DANO.some((d) => d.hab);
+    // o que um uso de skill causou: dano com ela nos 3 s seguintes e quantos heróis pegou
+    const efeitoDoUso = (uso) => {
+      if (uso.efeito) return uso.efeito;
+      let v = 0;
+      const alvos = new Set();
+      if (temSkillNoDano) {
+        for (const d of danoPorSkill[`${uso.quem}:${uso.hab[0]}`] || []) if (d.t >= Math.floor(uso.t) && d.t <= uso.t + 3) { v += d.v; alvos.add(d.alvo); }
+      } else {
+        for (const d of DANO) if (d.quem === uso.quem && d.t >= Math.floor(uso.t) && d.t <= uso.t + 3) { v += d.v; alvos.add(d.alvo); }
+        v *= 0.6; // sem saber a skill do dano, só parte do dano do herói é dela
+      }
+      uso.efeito = { v, alvos: alvos.size };
+      return uso.efeito;
+    };
+    // ultimates que sempre mudam a luta (o resto precisa mostrar serviço: dano, vários alvos ou abate)
+    const ULT_SEMPRE = new Set(['enigma_black_hole', 'tidehunter_ravage', 'earthshaker_echo_slam', 'faceless_void_chronosphere',
+      'magnataur_reverse_polarity', 'necrolyte_reapers_scythe', 'lion_finger_of_death', 'lina_laguna_blade', 'axe_culling_blade',
+      'phoenix_supernova', 'warlock_rain_of_chaos', 'treant_overgrowth', 'elder_titan_earth_splitter', 'jakiro_macropyre',
+      'kunkka_ghostship', 'puck_dream_coil', 'disruptor_static_storm', 'winter_wyvern_winters_curse', 'mars_arena_of_blood',
+      'bane_fiends_grip', 'legion_commander_duel', 'doom_bringer_doom', 'zuus_thundergods_wrath', 'medusa_stone_gaze',
+      'dark_willow_terrorize', 'sandking_epicenter', 'beastmaster_primal_roar', 'pudge_dismember', 'shadow_demon_demonic_purge',
+      'silencer_global_silence', 'obsidian_destroyer_sanity_eclipse', 'death_prophet_exorcism', 'naga_siren_song_of_the_siren']);
+    const ultForte = (uso) => {
+      if (ULT_SEMPRE.has(uso.hab[0])) return true;
+      const ef = efeitoDoUso(uso);
+      // sem a skill de cada dano (mapas antigos) o dano do herói engana: aí só vale se levou a abate
+      if (temSkillNoDano && (ef.v >= 600 || (ef.alvos >= 2 && ef.v >= 300))) return true;
+      // levou a abate: alguém que ele machucou morreu logo depois
+      return todos.some((p) => !nosSet.has(p.idx) !== !nosSet.has(uso.quem) && (r.mortes ? r.mortes[p.idx] : []).some((d) => d.t >= uso.t && d.t <= uso.t + 4)
+        && DANO.some((x) => x.quem === uso.quem && x.alvo === p.idx && x.t >= Math.floor(uso.t) && x.t <= uso.t + 4));
+    };
+    // só vira momento o que acontece dentro do enquadramento do lance
+    const naTela = (q) => {
+      if (!q) return false;
+      const x = u(q[0]); const y = v(q[1]);
+      return x >= caixa[0] + 1 && x <= caixa[0] + caixa[2] - 1 && y >= caixa[1] + 1 && y <= caixa[1] + caixa[2] - 1;
+    };
     const batidas = (l) => {
       const bs = [];
       // ultimate: só o primeiro uso de uma série (Fire Remnant, Ball Lightning... se usam várias vezes seguidas)
@@ -4250,6 +4292,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         const antes = ultima[k];
         ultima[k] = uso.t;
         if (antes != null && uso.t - antes < 10) continue;
+        if (!naTela(pos(uso.t)[uso.quem]) || !ultForte(uso)) continue;
         bs.push({ t: uso.t, tipo: 'ult', uso });
       }
       const visto = new Set();
@@ -4270,11 +4313,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         visto.add(k);
         const tHit = Math.max(cast.t + 0.25, d.t + 0.5);
         if (tHit < l.ini || tHit > l.fim) continue;
+        if (!naTela(pos(tHit)[d.alvo]) && !naTela(pos(cast.t)[d.quem])) continue;
         bs.push({ t: tHit, tipo: 'acerto', chave: k, cast, quem: d.quem, alvos: [d.alvo], hab: d.hab, v: d.v });
       }
       for (const p of todos) {
         for (const d of r.mortes ? r.mortes[p.idx] : []) {
           if (d.t < l.ini || d.t > l.fim) continue;
+          if (!naTela(pos(d.t - 0.5)[p.idx])) continue;
           // explosão: quanto o maior agressor tirou dele nos 3 s antes da morte
           const por = {};
           let total = 0;
@@ -4335,9 +4380,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       setTimeout(() => cartao.classList.add('sai'), HOLD[b.tipo] + 900);
       setTimeout(() => cartao.remove(), HOLD[b.tipo] + 1300);
       const forte = b.tipo === 'ult' || (b.tipo === 'abate' && b.explosao);
-      if (b.tipo === 'ult') somDaSkill(b.uso.hab[0], true);
-      else if (b.tipo === 'acerto') somDaSkill(b.hab[0], false);
-      else if (forte) impacto(true);
+      if (b.tipo === 'abate' && b.explosao) impacto(true);
       if (forte && !reduzMov) { palco.classList.remove('tremor'); void palco.offsetWidth; palco.classList.add('tremor'); }
     };
     // efeitos dentro do mapa: onda da ult, projétil do acerto, números de dano
@@ -4434,7 +4477,15 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         if (!q || morto(r, uso.quem, uso.t)) return;
         agora.add(i);
         let pop = popsVivos.get(i);
-        if (!pop) { pop = criarPop(uso); popsVivos.set(i, pop); }
+        if (!pop) {
+          pop = criarPop(uso);
+          popsVivos.set(i, pop);
+          if (tocando && t - uso.t < 0.6 && naTela(q)) {
+            const ef = efeitoDoUso(uso);
+            const prio = (uso.hab[2] === 'u' ? 30 : 0) + (IMPACTO.has(uso.hab[0]) ? 8 : 0) + ef.v / 100 + ef.alvos * 2 + (uso.hab[2] === 'i' ? 2 : 0);
+            candidatosSom.push({ chave: uso.hab[0], prio, forte: uso.hab[2] === 'u' });
+          }
+        }
         const n = pilha[uso.quem] = (pilha[uso.quem] ?? -1) + 1; // várias skills juntas fazem fila ao lado do herói
         const idade = (t - uso.t) / DURA;
         const sobe = Math.min(1, idade * 6);
@@ -4451,6 +4502,16 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         }
       });
       for (const [i, pop] of popsVivos) if (!agora.has(i)) { pop.g.remove(); popsVivos.delete(i); }
+      // um som por vez: o de maior impacto entre as skills que saíram juntas
+      if (candidatosSom.length) {
+        const agoraMs = performance.now();
+        const melhor = candidatosSom.sort((a, b) => b.prio - a.prio)[0];
+        if (agoraMs - ultimoSom > 450 || melhor.forte) {
+          somDaSkill(melhor.chave, melhor.forte);
+          ultimoSom = agoraMs;
+          candidatosSom.length = 0;
+        } else if (agoraMs - ultimoSom > 900) candidatosSom.length = 0;
+      }
     };
     let atual = null;
     let t = 0;
