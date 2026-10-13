@@ -1540,6 +1540,19 @@ body::before { content: ""; position: fixed; inset: 0; background: var(--tex-rui
 .veredito.pergaminho.dividido .reu { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; }
 .veredito.pergaminho.dividido .reu .recompensa { justify-content: center; }
 .veredito.pergaminho.dividido .reu + .reu { border-left: 2px dotted var(--parch-borda); padding-left: 24px; }
+/* compartilhar o veredito: botões no pé do cartaz */
+.cartaz-acoes { display: grid; justify-items: center; gap: 6px; border-top: 1px dashed var(--parch-borda); padding-top: 14px; margin-top: 2px; }
+.cartaz-botoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.cartaz-acoes .botao { display: inline-flex; align-items: center; gap: 8px; }
+.cartaz-acoes .botao .ic { width: 18px; height: 18px; }
+.cartaz-acoes .botao[aria-busy="true"] { cursor: progress; filter: saturate(0.7); }
+.cartaz-link.copiado { border-color: var(--good-ink); color: var(--good-ink); }
+.cartaz-aviso { min-height: 1.3em; margin: 0; font-size: 0.95rem; color: var(--parch-ink-2); text-align: center; }
+.cartaz-aviso:empty { min-height: 0; }
+@media (max-width: 640px) {
+  .cartaz-botoes { display: grid; grid-template-columns: minmax(0, 1fr); width: min(100%, 320px); gap: 8px; }
+  .cartaz-acoes .botao { justify-content: center; padding-inline: 16px; }
+}
 .ver-elo { display: inline-flex; align-items: center; gap: 8px; }
 .ver-elo-ic { font-size: 1.1em; color: var(--gold); }
 .veredito.elo { border-color: transparent; }
@@ -2019,6 +2032,83 @@ details.detalhes summary:hover { border-color: var(--line-strong); color: var(--
 /* ---------- resumo dos detalhes em texto corrido */
 details.detalhes summary .detalhes-rot { color: var(--ink); font-weight: 700; }
 details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
+
+/* ---------- modo cinema: o resumo da partida no player principal */
+.cinema-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 4px; }
+.cinema-botao { display: inline-flex; align-items: center; gap: 8px; }
+.cinema-botao .ic { width: 16px; height: 16px; }
+.cinema-dica { margin: 0; color: var(--ink-2); font-size: 0.95rem; max-width: 52ch; }
+.cinema-barra {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 6px 4px; padding: 7px 8px 7px 12px;
+  border: 1px solid var(--bronze); border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, var(--surface-3), var(--surface));
+  box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.06), 0 0 18px -6px rgba(232, 176, 74, 0.35);
+}
+.cinema-barra[hidden] { display: none; }
+.cinema-rot { display: inline-flex; align-items: center; gap: 6px; font: 700 0.78rem/1 var(--font-display); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+.cinema-selo { font-size: 0.7rem; }
+.cinema-barra.pausado .cinema-selo { opacity: 0.5; }
+.cinema-contador { font: 700 0.95rem/1 var(--font-body); letter-spacing: 0.04em; color: var(--ink); font-variant-numeric: lining-nums tabular-nums; }
+.cinema-pontos { display: inline-flex; gap: 6px; align-items: center; }
+.cinema-ponto { width: 8px; height: 8px; transform: rotate(45deg); background: var(--line-strong); }
+.cinema-ponto.feito { background: var(--bronze); }
+.cinema-ponto.agora { background: var(--gold-2); box-shadow: 0 0 8px rgba(232, 176, 74, 0.7); }
+.cinema-botoes { display: inline-flex; gap: 6px; margin-left: auto; }
+.cinema-botoes .mapa-botao[hidden] { display: none; }
+.cartao.lances.em-cinema .lances-lista-wrap { opacity: 0.55; transition: opacity 0.3s; }
+.cartao.lances.em-cinema .lances-lista-wrap:hover, .cartao.lances.em-cinema .lances-lista-wrap:focus-within { opacity: 1; }
+.cartao.lances.em-cinema .mapa-palco { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(0, 0, 0, 0.55), 0 0 0 1px #5a4732, 0 0 0 5px #1a1612, 0 0 0 6px rgba(232, 176, 74, 0.9), 0 0 40px rgba(232, 176, 74, 0.25), 0 24px 48px -16px rgba(0, 0, 0, 0.85); }
+@container (max-width: 520px) {
+  .cinema-txt, .cinema-pontos, .cinema-rot-txt { display: none; }
+  .cinema-botoes .mapa-botao { min-width: 36px; min-height: 36px; padding: 4px 8px; }
+  .cinema-barra { gap: 6px 10px; }
+}
+/* cartela de capítulo entre os lances: placa de pergaminho sobre o mapa escurecido */
+.cinema-cartela {
+  position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; padding: 14px; cursor: default;
+  background: radial-gradient(circle at 50% 45%, rgba(20, 16, 12, 0.86), rgba(6, 5, 4, 0.97));
+  animation: cc-entra 0.35s ease both;
+}
+.cinema-cartela[hidden] { display: none; }
+.cc-placa {
+  position: relative; isolation: isolate; display: grid; justify-items: center; gap: 6px; max-width: min(88%, 460px); padding: 22px 26px 20px;
+  text-align: center; color: #2b1f12; border-radius: 3px;
+  background: radial-gradient(130% 100% at 50% 0%, transparent 55%, rgba(120, 80, 30, 0.35)), var(--tex-ruido), linear-gradient(180deg, #e9dcbf, #d6c39b);
+  box-shadow: inset 0 0 0 1px rgba(90, 60, 20, 0.35), inset 0 0 30px rgba(110, 70, 20, 0.35), 0 18px 40px -10px rgba(0, 0, 0, 0.9);
+  animation: cc-placa 0.45s cubic-bezier(.2, 1.3, .5, 1) both;
+}
+.cc-placa::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(90, 60, 20, 0.4); border-radius: 2px; pointer-events: none; z-index: -1; }
+.cc-placa::after { content: ""; position: absolute; left: 22px; right: 22px; bottom: 10px; height: 2px; background: linear-gradient(90deg, #8a5a12, #e8b04a); transform-origin: left; animation: cc-barra 1.5s linear both; }
+.cinema-cartela.fim .cc-placa::after { display: none; }
+.cinema-cartela.pausada .cc-placa::after { animation-play-state: paused; }
+.cc-cap { margin: 0; font: 600 0.72rem/1.2 var(--font-display); letter-spacing: 0.2em; text-transform: uppercase; color: #3f2f1e; }
+.cc-selo { margin: 2px 0 0; font: 700 0.82rem/1 var(--font-display); letter-spacing: 0.12em; text-transform: uppercase; }
+.cc-selo.potg { color: #7a4d0c; }
+.cc-selo.throw { color: #9e1f17; }
+.cc-tit { margin: 0; font: 900 clamp(1.25rem, 7cqi, 2.2rem)/1.05 var(--font-display); letter-spacing: 0.03em; text-transform: uppercase; color: #2b1f12; text-wrap: balance; }
+.cc-min { margin: 0; font: 700 0.95rem/1 var(--font-display); letter-spacing: 0.08em; color: #3f2f1e; }
+.cinema-cartela.bom .cc-min { color: #1f4f9a; }
+.cinema-cartela.ruim .cc-min { color: #9e1f17; }
+.cc-leg { margin: 2px 0 6px; font-size: 1rem; line-height: 1.35; color: #3f2f1e; max-width: 40ch; }
+.cc-botoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 4px; }
+.cc-botoes .botao { display: inline-flex; align-items: center; gap: 8px; }
+@keyframes cc-entra { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cc-placa { from { opacity: 0; transform: translateY(10px) scale(0.94); } to { opacity: 1; transform: none; } }
+@keyframes cc-barra { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@container (max-width: 420px) {
+  .cc-placa { padding: 16px; gap: 4px; }
+  .cc-leg { font-size: 0.92rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-cartela, .cc-placa { animation: none; }
+  .cc-placa::after { display: none; }
+}
+
+/* alvos de toque de 44px no celular (botões novos da rodada 2) */
+@media (max-width: 640px) {
+  .cartaz-share, .cartaz-link, .cinema-botao { min-height: 44px; }
+  .cinema-botoes .mapa-botao { min-width: 44px; min-height: 44px; }
+}
 
 </style>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false">
@@ -4774,15 +4864,26 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
   const ladoNome = (radiant) => (radiant ? 'Iluminados' : 'Temidos');
   const dataBR = (t) => new Date(t * 1000).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
   const iniciais = (nome) => nome.split(/[\s-]+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+  // sigla do herói quando o retrato não carrega: iniciais nos nomes compostos ("Anti-Mage" → AM), as três primeiras
+  // letras nos de uma palavra ("Invoker" → INV); uma letra só parecia o romano I
+  const siglaHeroi = (nome) => {
+    const partes = String(nome || '?').replace(/['’]/g, '').split(/[\s-]+/).filter((p) => p && !/^(of|the|de|do|da)$/i.test(p));
+    return (partes.length > 1 ? partes.slice(0, 3).map((p) => p[0]).join('') : (partes[0] || '?').slice(0, 3)).toUpperCase();
+  };
   const LANES = { 1: 'Rota de baixo', 2: 'Meio', 3: 'Rota de cima' };
 
   function retrato(heroi, grande) {
     const box = h('span', { class: `retrato${grande ? ' grande' : ''}`, 'aria-hidden': 'true' });
+    const semImagem = () => {
+      const sg = siglaHeroi(heroi.nome);
+      box.classList.add('sem-img', `sigla-${Math.min(sg.length, 3)}`);
+      box.replaceChildren(h('span', { class: 'sigla' }, sg));
+    };
     if (MOSTRAR_IMAGENS && heroi.img) {
       const img = h('img', { src: CDN + heroi.img.replace(/\?$/, ''), alt: '', loading: 'lazy' });
-      img.addEventListener('error', () => { box.textContent = iniciais(heroi.nome); });
+      img.addEventListener('error', semImagem);
       box.append(img);
-    } else box.textContent = iniciais(heroi.nome);
+    } else semImagem();
     return box;
   }
   function iconeItem(item) {
@@ -4880,7 +4981,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
 
   const parseJaPedido = new Set();
 
-  async function carregar(id, { exemplo = false } = {}) {
+  async function carregar(id, { exemplo = false, lado = null } = {}) {
     if (estado.carregando) return;
     let pedirAnalise = false;
     estado.carregando = true;
@@ -4891,7 +4992,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       dados.amigos = AMIGOS;
       estado.id = String(id);
       estado.dados = dados;
-      estado.lado = null;
+      estado.lado = lado;
       estado.exemplo = exemplo;
       estado.resultado = E.analisar({ ...estado.dados, modeloVitoria: EMBUTIDO.modeloVitoria || null }, { lado: estado.lado });
       mostrarStatus('');
@@ -4905,7 +5006,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       pedirAnalise = !exemplo && !SO_EMBUTIDO && dados.match.version == null && !parseJaPedido.has(estado.id);
       if (!exemplo) {
         guardar('culpado:ultimo', estado.id);
-        try { history.replaceState(null, '', `#${estado.id}`); } catch (e) { /* frame sem history */ }
+        try { history.replaceState(null, '', `#${estado.id}${estado.lado ? `-${estado.lado}` : ''}`); } catch (e) { /* frame sem history */ }
       }
     } catch (err) {
       mostrarStatus(mensagemDeErro(err, id), 'erro');
@@ -4973,7 +5074,12 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     const botao = (radiant) => h('button', {
       type: 'button',
       'aria-pressed': String(atual === radiant),
-      onclick: () => { if (atual !== radiant) { estado.lado = radiant ? 'radiant' : 'dire'; analisarERender(); } },
+      onclick: () => {
+        if (atual === radiant) return;
+        estado.lado = radiant ? 'radiant' : 'dire';
+        try { history.replaceState(null, '', `#${estado.id}-${estado.lado}`); } catch (e) { /* frame sem history */ }
+        analisarERender();
+      },
     }, ladoNome(radiant));
     return h('div', { class: 'seletor' },
       h('span', { class: 'eyebrow' }, 'Time julgado'),
@@ -5038,17 +5144,20 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     const parcial = !r.partida.parseado;
     const vitoria = r.partida.venceu && r.craques && r.craques.length;
     let principal = cartaoVeredito(cs, r);
+    if (!vitoria) principal.append(barraCompartilhar(r));
     if (vitoria) {
       const elo = cartaoVeredito(cs, r);
       elo.hidden = true;
       const rotulo = h('span', {}, 'Ver o elo fraco');
-      const botao = h('button', { class: 'botao secundario ver-elo', type: 'button', 'aria-expanded': 'false' }, h('span', { class: 'ver-elo-ic', 'aria-hidden': 'true' }, '⚖'), rotulo);
+      const botao = h('button', { class: 'botao secundario ver-elo', type: 'button', 'aria-expanded': 'false' }, h('span', { class: 'ver-elo-ic', 'aria-hidden': 'true' }, iconeSvg('balanca', 18)), rotulo);
       botao.addEventListener('click', () => {
         elo.hidden = !elo.hidden;
         botao.setAttribute('aria-expanded', String(!elo.hidden));
         rotulo.textContent = elo.hidden ? 'Ver o elo fraco' : 'Esconder o elo fraco';
       });
-      principal = h('div', { class: 'topo-vitoria' }, cartaoCraques(r), botao, elo);
+      const cartaz = cartaoCraques(r);
+      cartaz.append(barraCompartilhar(r));
+      principal = h('div', { class: 'topo-vitoria' }, cartaz, botao, elo);
     }
     return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
       principal,
@@ -5060,6 +5169,543 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
         : h('div', { class: 'topo-time' },
           seletorDeTime(r),
           h('div', { class: 'figurinhas' }, (vitoria ? r.craques.map((c) => r.vereditos.find((v) => v.jogador === c.jogador)) : r.vereditos).map((v, i) => figurinha(v, i, !vitoria && cs.includes(v), vitoria ? r.craques.find((c) => c.jogador === v.jogador) : null, vitoria && craquesDe(r).some((c) => c.jogador === v.jogador))))));
+  }
+
+  // -------- compartilhar o veredito: o cartaz vira uma imagem 1200x630 (canvas, desenhado à mão) e o link da partida
+
+  const SITE = 'https://suetam016.github.io/culpado_dota2/';
+  const linkDaPartida = (id, radiant) => `${SITE}#${id}${radiant == null ? '' : radiant ? '-radiant' : '-dire'}`;
+  const CARTAZ_W = 1200;
+  const CARTAZ_H = 630;
+  const F_CINZEL = '"Cinzel", "Trajan Pro", Georgia, serif';
+  const F_CORPO = '"Alegreya Sans", system-ui, "Segoe UI", sans-serif';
+
+  // o que vai na imagem: o mesmo que o cartaz mostra (culpado na derrota, craque na vitória; dois no veredito dividido)
+  function dadosDoCartaz(r) {
+    const vitoria = Boolean(r.partida.venceu && r.craques && r.craques.length);
+    const p = r.partida;
+    const placar = `${p.venceu ? 'Vitória' : 'Derrota'} dos ${ladoNome(p.ladoRadiant)} · ${p.placarNos} × ${p.placarEles} · ${mmss(p.duracao)}`;
+    if (vitoria) {
+      const cs = craquesDe(r);
+      const pessoas = cs.map((v) => {
+        const c = componenteElogio(r, v) || v.brilhou[0];
+        const fv = r.vereditos.find((x) => x.jogador === v.jogador);
+        return { v, numero: pct(v.fatia), frase: c ? `${capital(c.elogio)}: ${c.evidencia}.` : '', classe: fv && fv.fichaBoa ? fv.fichaBoa.classe : '', recompensa: 0 };
+      });
+      const dupla = pessoas.length > 1;
+      return {
+        vitoria, pessoas, placar, titulo: 'Proclamação do Reino', selo: dupla ? 'Craques' : 'Craque',
+        sub: dupla ? 'Heróis da partida · mérito dividido' : 'Herói da partida', rotulo: 'do mérito da vitória',
+      };
+    }
+    const cs = culpados(r);
+    const dif = cs.length > 1 ? Math.round(cs[0].fatia * 100) - Math.round(cs[1].fatia * 100) : 0;
+    return {
+      vitoria, placar, titulo: cs.length > 1 ? 'Procuram-se' : 'Procura-se', selo: cs.length > 1 ? 'Culpados' : 'Culpado',
+      sub: cs.length > 1 ? `por crimes contra o time · dividido, ${dif === 0 ? 'empate' : `${dif} ${dif === 1 ? 'ponto' : 'pontos'} de diferença`}` : 'por crimes contra o próprio time',
+      rotulo: 'da culpa do time',
+      pessoas: cs.map((v) => ({ v, numero: pct(v.fatia), frase: v.diagnostico || (v.ficha && v.ficha.zoeira) || '', classe: v.ficha ? v.ficha.classe : '', recompensa: p.venceu ? 0 : ouroEntregue(r, v.jogador) })),
+    };
+  }
+
+  // espera a Cinzel e a Alegreya Sans (o canvas não espera sozinho; sem isso sai em Georgia)
+  async function fontesDoCartaz() {
+    if (!document.fonts || typeof document.fonts.load !== 'function') return;
+    const pedidos = [
+      ...['900 72px', '700 24px', '600 18px'].map((f) => document.fonts.load(`${f} Cinzel`, 'PROCURA-SE ÇÃ 0123')),
+      ...['italic 400 28px', '500 26px', '700 22px'].map((f) => document.fonts.load(`${f} "Alegreya Sans"`, 'Ação 0123')),
+    ];
+    await Promise.race([Promise.all(pedidos).catch(() => null), new Promise((ok) => setTimeout(ok, 3500))]);
+  }
+
+  // retrato com CORS (os CDNs da Steam mandam o cabeçalho); se falhar, o cartaz desenha as iniciais
+  function carregarImagem(url) {
+    return new Promise((ok) => {
+      let tm = null;
+      const img = new Image();
+      const fim = (x) => { clearTimeout(tm); img.onload = img.onerror = null; ok(x); };
+      tm = setTimeout(() => fim(null), 6000);
+      img.crossOrigin = 'anonymous';
+      img.decoding = 'async';
+      img.onload = () => fim(img.naturalWidth ? img : null);
+      img.onerror = () => fim(null);
+      img.src = url;
+    });
+  }
+
+  // texto com espaço entre as letras, letra por letra (ctx.letterSpacing ainda não existe em todo navegador)
+  const largEspacado = (c, txt, esp) => [...txt].reduce((a, ch) => a + c.measureText(ch).width, 0) + esp * Math.max(0, [...txt].length - 1);
+  function textoEspacado(c, txt, x, y, esp, alinhar = 'left') {
+    const larg = largEspacado(c, txt, esp);
+    let px = alinhar === 'center' ? x - larg / 2 : alinhar === 'right' ? x - larg : x;
+    c.textAlign = 'left';
+    for (const ch of txt) { c.fillText(ch, px, y); px += c.measureText(ch).width + esp; }
+    return larg;
+  }
+  // maior fonte (até max) em que o texto cabe na largura
+  function caber(c, txt, peso, familia, max, larg, espEm = 0) {
+    let tam = max;
+    for (; tam > 14; tam -= 2) {
+      c.font = `${peso} ${tam}px ${familia}`;
+      if (largEspacado(c, txt, tam * espEm) <= larg) break;
+    }
+    return tam;
+  }
+  // quebra em linhas; se sobrar texto, a última leva reticências (e fecha as aspas)
+  function quebrar(c, txt, larg, maxLinhas) {
+    const palavras = txt.split(/\s+/).filter(Boolean);
+    const linhas = [];
+    let atual = '';
+    for (const pal of palavras) {
+      const tenta = atual ? `${atual} ${pal}` : pal;
+      if (!atual || c.measureText(tenta).width <= larg) { atual = tenta; continue; }
+      linhas.push(atual);
+      atual = pal;
+      if (linhas.length === maxLinhas) break;
+    }
+    if (linhas.length < maxLinhas) { if (atual) linhas.push(atual); return linhas; }
+    const fecha = txt.startsWith('“') ? '…”' : '…';
+    let ult = linhas[maxLinhas - 1];
+    while (ult.includes(' ') && c.measureText(ult + fecha).width > larg) ult = ult.replace(/\s+\S+$/, '');
+    linhas[maxLinhas - 1] = ult.replace(/[,.;:]$/, '') + fecha;
+    return linhas;
+  }
+
+  // pergaminho de borda irregular, com manchas, grão e as bordas queimadas
+  function desenharPergaminho(c, x, y, w, alt) {
+    const rnd = mulberry32(1709);
+    const borda = [];
+    const passo = 20;
+    for (let px = x; px < x + w; px += passo) borda.push([px, y + (rnd() - 0.5) * 6]);
+    for (let py = y; py < y + alt; py += passo) borda.push([x + w + (rnd() - 0.5) * 6, py]);
+    for (let px = x + w; px > x; px -= passo) borda.push([px, y + alt + (rnd() - 0.5) * 6]);
+    for (let py = y + alt; py > y; py -= passo) borda.push([x + (rnd() - 0.5) * 6, py]);
+    const caminho = () => { c.beginPath(); borda.forEach(([a, b], i) => (i ? c.lineTo(a, b) : c.moveTo(a, b))); c.closePath(); };
+    c.save();
+    caminho();
+    c.shadowColor = 'rgba(0, 0, 0, 0.75)';
+    c.shadowBlur = 34;
+    c.shadowOffsetY = 14;
+    const base = c.createLinearGradient(0, y, 0, y + alt);
+    base.addColorStop(0, '#ecdfc2');
+    base.addColorStop(1, '#d3bf95');
+    c.fillStyle = base;
+    c.fill();
+    c.restore();
+    c.save();
+    caminho();
+    c.clip();
+    // manchas de tempo
+    for (let i = 0; i < 9; i++) {
+      const mx = x + rnd() * w; const my = y + rnd() * alt; const mr = 60 + rnd() * 160;
+      const g = c.createRadialGradient(mx, my, 0, mx, my, mr);
+      g.addColorStop(0, `rgba(140, 95, 40, ${(0.05 + rnd() * 0.07).toFixed(3)})`);
+      g.addColorStop(1, 'rgba(140, 95, 40, 0)');
+      c.fillStyle = g;
+      c.fillRect(mx - mr, my - mr, mr * 2, mr * 2);
+    }
+    // grão do papel
+    for (let i = 0; i < 4200; i++) {
+      c.fillStyle = rnd() < 0.5 ? `rgba(90, 60, 25, ${(rnd() * 0.12).toFixed(3)})` : `rgba(255, 248, 225, ${(rnd() * 0.18).toFixed(3)})`;
+      c.fillRect(x + rnd() * w, y + rnd() * alt, 1 + rnd() * 1.6, 1 + rnd() * 1.6);
+    }
+    // bordas escurecidas, como no cartaz do site
+    const vin = c.createRadialGradient(x + w / 2, y + alt * 0.42, alt * 0.35, x + w / 2, y + alt / 2, w * 0.62);
+    vin.addColorStop(0, 'rgba(120, 80, 30, 0)');
+    vin.addColorStop(1, 'rgba(110, 68, 22, 0.5)');
+    c.fillStyle = vin;
+    c.fillRect(x, y, w, alt);
+    c.lineWidth = 18;
+    c.strokeStyle = 'rgba(90, 55, 20, 0.22)';
+    c.filter = 'blur(8px)';
+    caminho();
+    c.stroke();
+    c.filter = 'none';
+    c.restore();
+    // filete duplo por dentro
+    c.strokeStyle = 'rgba(90, 60, 20, 0.45)';
+    c.lineWidth = 1.5;
+    c.strokeRect(x + 16, y + 16, w - 32, alt - 32);
+    c.strokeStyle = 'rgba(90, 60, 20, 0.25)';
+    c.lineWidth = 1;
+    c.strokeRect(x + 22, y + 22, w - 44, alt - 44);
+  }
+
+  // ornamento de bronze dos lados do título (linha que some e o losango dourado)
+  function ornamento(c, x, y, larg, praEsquerda) {
+    const fim = praEsquerda ? x - larg : x + larg;
+    const g = c.createLinearGradient(x, 0, fim, 0);
+    g.addColorStop(0, '#8a5a24');
+    g.addColorStop(1, 'rgba(138, 90, 36, 0)');
+    c.strokeStyle = g;
+    c.lineWidth = 2;
+    c.beginPath(); c.moveTo(x + (praEsquerda ? -10 : 10), y); c.lineTo(fim, y); c.stroke();
+    c.fillStyle = '#c8913f';
+    c.strokeStyle = '#5a3b1a';
+    c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(x, y - 7); c.lineTo(x + 7, y); c.lineTo(x, y + 7); c.lineTo(x - 7, y); c.closePath(); c.fill(); c.stroke();
+  }
+
+  // selo de cera (vermelho na derrota, de ouro na vitória), torto como o carimbo do site
+  function seloDeCera(c, cx, cy, raio, texto, ouro) {
+    const rnd = mulberry32(ouro ? 77 : 31);
+    c.save();
+    c.translate(cx, cy);
+    c.rotate((-12 * Math.PI) / 180);
+    c.beginPath();
+    const n = 48;
+    for (let i = 0; i <= n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const rr = raio * (1 + Math.sin(a * 5 + 0.7) * 0.035 + (rnd() - 0.5) * 0.05);
+      if (i) c.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); else c.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+    }
+    c.closePath();
+    c.shadowColor = 'rgba(40, 10, 5, 0.55)';
+    c.shadowBlur = 14;
+    c.shadowOffsetY = 6;
+    const g = c.createRadialGradient(-raio * 0.3, -raio * 0.35, raio * 0.1, 0, 0, raio * 1.05);
+    for (const [k, cor2] of (ouro ? [[0, '#fff1c2'], [0.5, '#e8b04a'], [1, '#8a5a12']] : [[0, '#c9402f'], [0.55, '#9e1f17'], [1, '#5e0f0b']])) g.addColorStop(k, cor2);
+    c.fillStyle = g;
+    c.fill();
+    c.shadowColor = 'transparent';
+    c.lineWidth = 7;
+    c.strokeStyle = ouro ? 'rgba(138, 90, 18, 0.35)' : 'rgba(94, 15, 11, 0.5)';
+    c.beginPath(); c.arc(0, 0, raio * 0.8, 0, Math.PI * 2); c.stroke();
+    c.setLineDash([5, 4]);
+    c.lineWidth = 1.6;
+    c.strokeStyle = ouro ? 'rgba(58, 38, 8, 0.5)' : 'rgba(243, 217, 201, 0.5)';
+    c.beginPath(); c.arc(0, 0, raio * 0.66, 0, Math.PI * 2); c.stroke();
+    c.setLineDash([]);
+    const tam = caber(c, texto.toUpperCase(), 900, F_CINZEL, 20, raio * 1.2, 0.1);
+    c.font = `900 ${tam}px ${F_CINZEL}`;
+    c.textBaseline = 'middle';
+    c.fillStyle = ouro ? 'rgba(255, 241, 194, 0.6)' : '#5e0f0b';
+    textoEspacado(c, texto.toUpperCase(), 0, ouro ? 2 : -1, tam * 0.1, 'center');
+    c.fillStyle = ouro ? '#3a2608' : '#f3d9c9';
+    textoEspacado(c, texto.toUpperCase(), 0, 1, tam * 0.1, 'center');
+    c.textBaseline = 'alphabetic';
+    c.restore();
+  }
+
+  // ramo de louro (o mesmo desenho do site), em volta do retrato do craque
+  function louroCanvas(c, x, y, escala, espelhado) {
+    c.save();
+    c.translate(x, y);
+    c.scale(espelhado ? -escala : escala, escala);
+    c.strokeStyle = '#b8862b';
+    c.fillStyle = '#b8862b';
+    c.lineWidth = 1.6;
+    c.beginPath(); c.moveTo(18, 94); c.bezierCurveTo(10, 70, 8, 40, 16, 6); c.stroke();
+    for (let k = 0; k < 7; k++) {
+      const fy = 82 - k * 11; const fx = 16 - Math.sin(k * 0.45) * 7;
+      c.beginPath(); c.ellipse(fx - 5, fy, 5.5, 2.4, (-35 * Math.PI) / 180, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.ellipse(fx + 4, fy - 4, 5, 2.2, (40 * Math.PI) / 180, 0, Math.PI * 2); c.fill();
+    }
+    c.restore();
+  }
+
+  // retrato na moldura de bronze; sem imagem, as iniciais do herói
+  function retratoCanvas(c, img, nome, x, y, lado, ouro) {
+    c.save();
+    c.shadowColor = 'rgba(40, 25, 10, 0.5)';
+    c.shadowBlur = 18;
+    c.shadowOffsetY = 8;
+    c.fillStyle = ouro ? 'rgba(232, 176, 74, 0.35)' : 'rgba(138, 106, 62, 0.35)';
+    c.fillRect(x - 15, y - 15, lado + 30, lado + 30);
+    c.shadowColor = 'transparent';
+    c.fillStyle = ouro ? '#8a5a12' : '#5a3b1a';
+    c.fillRect(x - 9, y - 9, lado + 18, lado + 18);
+    c.fillStyle = '#3a2a1a';
+    c.fillRect(x, y, lado, lado);
+    if (img) {
+      const esc = Math.max(lado / img.naturalWidth, lado / img.naturalHeight);
+      const sw = lado / esc; const sh = lado / esc;
+      c.filter = 'sepia(0.35) contrast(1.05)';
+      c.drawImage(img, (img.naturalWidth - sw) / 2, (img.naturalHeight - sh) / 2, sw, sh, x, y, lado, lado);
+      c.filter = 'none';
+    } else {
+      c.fillStyle = '#e9dcbf';
+      const sg = siglaHeroi(nome);
+      c.font = `900 ${Math.round(lado * (sg.length > 2 ? 0.26 : 0.32))}px ${F_CINZEL}`;
+      c.textBaseline = 'middle';
+      textoEspacado(c, sg, x + lado / 2, y + lado / 2 + 4, lado * 0.02, 'center');
+      c.textBaseline = 'alphabetic';
+    }
+    // sombra por dentro da moldura
+    const sombra = (x0, y0, x1, y1) => { const g = c.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, 'rgba(0, 0, 0, 0.45)'); g.addColorStop(1, 'rgba(0, 0, 0, 0)'); return g; };
+    c.fillStyle = sombra(x, y, x, y + 22); c.fillRect(x, y, lado, 22);
+    c.fillStyle = sombra(x, y + lado, x, y + lado - 22); c.fillRect(x, y + lado - 22, lado, 22);
+    c.fillStyle = sombra(x, y, x + 22, y); c.fillRect(x, y, 22, lado);
+    c.fillStyle = sombra(x + lado, y, x + lado - 22, y); c.fillRect(x + lado - 22, y, 22, lado);
+    c.strokeStyle = '#2b1f12';
+    c.lineWidth = 1.5;
+    c.strokeRect(x - 9.5, y - 9.5, lado + 19, lado + 19);
+    c.restore();
+  }
+
+  const linhaDoHeroi = (j) => `${j.heroi.nome} · pos ${j.posicao} · ${j.raw.kills}/${j.raw.deaths}/${j.raw.assists}`;
+  function moedaCanvas(c, x, y, raio) {
+    const g = c.createRadialGradient(x - raio * 0.25, y - raio * 0.3, 1, x, y, raio);
+    g.addColorStop(0, '#fff1c2'); g.addColorStop(0.5, '#e8b04a'); g.addColorStop(1, '#8a5a12');
+    c.fillStyle = g;
+    c.beginPath(); c.arc(x, y, raio, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = '#5a3b1a'; c.lineWidth = 1.2; c.stroke();
+  }
+  const TINTA = '#2b1f12';
+  const TINTA2 = '#3f2f1e';
+
+  function desenharCartaz(cv, d, imgs, id) {
+    const c = cv.getContext('2d');
+    const W = CARTAZ_W; const H = CARTAZ_H;
+    c.clearRect(0, 0, W, H);
+    // salão de pedra atrás do pergaminho
+    const pedra = c.createLinearGradient(0, 0, 0, H);
+    pedra.addColorStop(0, '#221c16');
+    pedra.addColorStop(1, '#0e0c0a');
+    c.fillStyle = pedra;
+    c.fillRect(0, 0, W, H);
+    const rnd = mulberry32(5);
+    for (let i = 0; i < 2600; i++) { c.fillStyle = `rgba(255, 230, 180, ${(rnd() * 0.05).toFixed(3)})`; c.fillRect(rnd() * W, rnd() * H, 1.5, 1.5); }
+    c.strokeStyle = 'rgba(168, 116, 58, 0.7)';
+    c.lineWidth = 2;
+    c.strokeRect(9, 9, W - 18, H - 18);
+    desenharPergaminho(c, 30, 26, W - 60, H - 52);
+
+    // título com os ornamentos dos lados
+    const titulo = d.titulo.toUpperCase();
+    const tamT = caber(c, titulo, 900, F_CINZEL, 76, 600, 0.12);
+    c.font = `900 ${tamT}px ${F_CINZEL}`;
+    c.fillStyle = 'rgba(255, 245, 220, 0.6)';
+    textoEspacado(c, titulo, W / 2, 128, tamT * 0.12, 'center');
+    c.fillStyle = TINTA;
+    const largT = textoEspacado(c, titulo, W / 2, 126, tamT * 0.12, 'center');
+    ornamento(c, W / 2 - largT / 2 - 26, 126 - tamT * 0.34, 120, true);
+    ornamento(c, W / 2 + largT / 2 + 26, 126 - tamT * 0.34, Math.max(0, Math.min(120, W - 132 - 66 - 16 - (W / 2 + largT / 2 + 26))), false);
+    const sub = d.sub.toUpperCase();
+    c.font = `600 ${caber(c, sub, 600, F_CINZEL, 17, 760, 0.2)}px ${F_CINZEL}`;
+    c.fillStyle = TINTA2;
+    textoEspacado(c, sub, W / 2, 162, 3.4, 'center');
+    seloDeCera(c, W - 132, 132, 66, d.selo, d.vitoria);
+
+    if (d.pessoas.length > 1) desenharDupla(c, d, imgs);
+    else desenharUm(c, d, d.pessoas[0], imgs[0]);
+
+    // rodapé: placar e o endereço do site
+    c.strokeStyle = 'rgba(138, 106, 62, 0.8)';
+    c.setLineDash([6, 5]);
+    c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(82, 548); c.lineTo(W - 82, 548); c.stroke();
+    c.setLineDash([]);
+    c.font = `700 18px ${F_CINZEL}`;
+    c.fillStyle = TINTA;
+    textoEspacado(c, d.placar.toUpperCase(), 84, 582, 1.4);
+    c.font = `500 21px ${F_CORPO}`;
+    c.fillStyle = TINTA2;
+    c.textAlign = 'right';
+    c.fillText(`suetam016.github.io/culpado_dota2 · partida ${id}`, W - 84, 582);
+    c.textAlign = 'left';
+  }
+
+  // um réu (ou um craque): retrato grande à esquerda, a porcentagem enorme, o nome e a frase
+  function desenharUm(c, d, pe, img) {
+    const lado = 250; const rx = 138; const ry = 204;
+    if (d.vitoria) {
+      louroCanvas(c, rx - 64, ry + 18, 2.3, false);
+      louroCanvas(c, rx + lado + 64, ry + 18, 2.3, true);
+    }
+    retratoCanvas(c, img, pe.v.jogador.heroi.nome, rx, ry, lado, d.vitoria);
+    if (pe.classe) {
+      c.font = `italic 400 ${caber(c, pe.classe, 'italic 400', F_CORPO, 22, lado + 60)}px ${F_CORPO}`;
+      c.fillStyle = TINTA2;
+      c.textAlign = 'center';
+      c.fillText(pe.classe, rx + lado / 2, ry + lado + 46);
+      c.textAlign = 'left';
+    }
+    const x0 = 470; const larg = 1100 - x0;
+    c.font = `900 92px ${F_CINZEL}`;
+    c.fillStyle = d.vitoria ? '#8a5a12' : '#9e1f17';
+    c.fillText(pe.numero, x0, 276);
+    const largN = c.measureText(pe.numero).width;
+    c.font = `700 22px ${F_CINZEL}`;
+    c.fillStyle = TINTA2;
+    textoEspacado(c, d.rotulo.toUpperCase(), x0 + largN + 18, 270, 2.6);
+    const nome = pe.v.jogador.nome;
+    const tamN = caber(c, nome, 900, F_CINZEL, 58, larg, 0.03);
+    c.font = `900 ${tamN}px ${F_CINZEL}`;
+    c.fillStyle = TINTA;
+    textoEspacado(c, nome, x0, 344, tamN * 0.03);
+    c.font = `500 26px ${F_CORPO}`;
+    c.fillStyle = TINTA2;
+    c.fillText(linhaDoHeroi(pe.v.jogador), x0, 384, larg);
+    let y = 432;
+    if (pe.recompensa > 0) {
+      moedaCanvas(c, x0 + 10, y - 8, 10);
+      c.font = `700 21px ${F_CINZEL}`;
+      c.fillStyle = TINTA;
+      textoEspacado(c, `RECOMPENSA: ${fmtK(pe.recompensa).toUpperCase()} DE OURO`, x0 + 30, y, 1.6);
+      y += 46;
+    }
+    if (pe.frase) {
+      c.font = `italic 400 28px ${F_CORPO}`;
+      c.fillStyle = TINTA;
+      quebrar(c, `“${pe.frase}”`, larg, Math.floor((530 - y) / 34) + 1).forEach((ln, i) => c.fillText(ln, x0, y + i * 34));
+    }
+  }
+
+  // veredito dividido: duas colunas, como no cartaz do site
+  function desenharDupla(c, d, imgs) {
+    c.strokeStyle = 'rgba(138, 106, 62, 0.75)';
+    c.setLineDash([2, 5]);
+    c.lineWidth = 2;
+    c.beginPath(); c.moveTo(600, 200); c.lineTo(600, 524); c.stroke();
+    c.setLineDash([]);
+    d.pessoas.slice(0, 2).forEach((pe, k) => {
+      const cx = k ? 636 : 84; const cw = 480;
+      const lado = 150; const ry = 200;
+      retratoCanvas(c, imgs[k], pe.v.jogador.heroi.nome, cx + 12, ry, lado, d.vitoria);
+      const x0 = cx + lado + 42; const larg = cx + cw - x0;
+      c.font = `900 64px ${F_CINZEL}`;
+      c.fillStyle = d.vitoria ? '#8a5a12' : '#9e1f17';
+      c.fillText(pe.numero, x0, 252);
+      c.font = `700 14px ${F_CINZEL}`;
+      c.fillStyle = TINTA2;
+      textoEspacado(c, d.rotulo.toUpperCase(), x0, 278, 2);
+      const nome = pe.v.jogador.nome;
+      const tamN = caber(c, nome, 900, F_CINZEL, 38, larg, 0.03);
+      c.font = `900 ${tamN}px ${F_CINZEL}`;
+      c.fillStyle = TINTA;
+      textoEspacado(c, nome, x0, 320, tamN * 0.03);
+      c.font = `500 20px ${F_CORPO}`;
+      c.fillStyle = TINTA2;
+      c.fillText(linhaDoHeroi(pe.v.jogador), x0, 348, larg);
+      if (pe.recompensa > 0) {
+        moedaCanvas(c, x0 + 8, 372, 8);
+        c.font = `700 16px ${F_CINZEL}`;
+        c.fillStyle = TINTA;
+        textoEspacado(c, `RECOMPENSA: ${fmtK(pe.recompensa).toUpperCase()}`, x0 + 24, 378, 1.2);
+      }
+      if (pe.frase) {
+        c.font = `italic 400 22px ${F_CORPO}`;
+        c.fillStyle = TINTA;
+        quebrar(c, `“${pe.frase}”`, cw - 12, 4).forEach((ln, i) => c.fillText(ln, cx + 12, 418 + i * 28));
+      }
+    });
+  }
+
+  const toBlob = (cv) => new Promise((ok, falha) => {
+    // JPEG: o PNG com o granulado do pergaminho passava de 1 MB (pesado para mandar pelo celular)
+    try { cv.toBlob((b) => (b ? ok(b) : falha(new Error('toBlob vazio'))), 'image/jpeg', 0.9); } catch (e) { falha(e); }
+  });
+  // uma imagem por partida e time julgado; a promessa fica guardada para o clique não esperar de novo
+  const cartazesCache = new Map();
+  function imagemDoCartaz(r) {
+    const chave = `${r.partida.id}:${r.partida.ladoRadiant}`;
+    if (!cartazesCache.has(chave)) {
+      const pronto = (async () => {
+        const d = dadosDoCartaz(r);
+        const retratos = d.pessoas.map(({ v }) => (MOSTRAR_IMAGENS && v.jogador.heroi.img ? carregarImagem(CDN + v.jogador.heroi.img.replace(/\?$/, '')) : null));
+        const [imgs] = await Promise.all([Promise.all(retratos), fontesDoCartaz()]);
+        const cv = document.createElement('canvas');
+        cv.width = CARTAZ_W;
+        cv.height = CARTAZ_H;
+        desenharCartaz(cv, d, imgs, r.partida.id);
+        try { return await toBlob(cv); } catch (e) {
+          // canvas "sujo" (imagem sem CORS): refaz sem os retratos
+          desenharCartaz(cv, d, [], r.partida.id);
+          return toBlob(cv);
+        }
+      })();
+      pronto.catch(() => cartazesCache.delete(chave));
+      cartazesCache.set(chave, pronto);
+    }
+    return cartazesCache.get(chave);
+  }
+
+  function baixarArquivo(blob, nome) {
+    const url = URL.createObjectURL(blob);
+    const a = h('a', { href: url, download: nome, hidden: true });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+  async function copiarTexto(txt) {
+    try { await navigator.clipboard.writeText(txt); return true; } catch (e) { /* sem permissão: tenta o jeito antigo */ }
+    const ta = h('textarea', { readonly: true, 'aria-hidden': 'true', style: 'position:fixed;top:0;left:-9999px;opacity:0' });
+    ta.value = txt;
+    document.body.append(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    return ok;
+  }
+  // a legenda que vai junto da imagem no share do celular
+  function textoDoShare(d) {
+    const [a, b] = d.pessoas;
+    const quem = (pe) => `${pe.v.jogador.nome} (${pe.v.jogador.heroi.nome})`;
+    if (d.vitoria) return b ? `${quem(a)} e ${quem(b)} dividem o mérito da vitória: ${a.numero} e ${b.numero}.` : `${quem(a)} levou ${a.numero} do mérito da vitória.`;
+    return b ? `Procuram-se: ${quem(a)} e ${quem(b)} dividem a culpa, ${a.numero} e ${b.numero}.` : `Procura-se: ${quem(a)}, com ${a.numero} da culpa do time.`;
+  }
+  const ehCelular = () => (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+  function barraCompartilhar(r) {
+    const id = r.partida.id;
+    const link = linkDaPartida(id, r.partida.ladoRadiant);
+    const aviso = h('p', { class: 'cartaz-aviso', role: 'status', 'aria-live': 'polite' });
+    const rotShare = h('span', {}, 'Compartilhar');
+    const rotLink = h('span', {}, 'Copiar link');
+    const bShare = h('button', { type: 'button', class: 'botao cartaz-share' }, iconeSvg('compartilhar', 18), rotShare);
+    const bLink = h('button', { type: 'button', class: 'botao secundario cartaz-link' }, iconeSvg('link', 18), rotLink);
+    let tmAviso = null;
+    const avisar = (txt) => { clearTimeout(tmAviso); aviso.textContent = txt; if (txt) tmAviso = setTimeout(() => { aviso.textContent = ''; }, 6000); };
+    // gera a imagem antes do clique (no celular o share precisa sair logo depois do toque)
+    const aquecer = () => { imagemDoCartaz(r).catch(() => {}); };
+    bShare.addEventListener('pointerenter', aquecer, { once: true });
+    bShare.addEventListener('focus', aquecer, { once: true });
+    bShare.addEventListener('touchstart', aquecer, { once: true, passive: true });
+    setTimeout(() => { if (bShare.isConnected) (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(aquecer); }, 2500);
+    bShare.addEventListener('click', async () => {
+      if (bShare.getAttribute('aria-busy') === 'true') return;
+      bShare.setAttribute('aria-busy', 'true');
+      rotShare.textContent = 'Gerando imagem…';
+      const d = dadosDoCartaz(r);
+      const nome = `culpado-${id}.jpg`;
+      try {
+        const blob = await imagemDoCartaz(r);
+        const arquivo = typeof File === 'function' ? new File([blob], nome, { type: 'image/jpeg' }) : null;
+        if (arquivo && ehCelular() && navigator.share && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+          try {
+            await navigator.share({ files: [arquivo], title: 'Quem é o culpado?', text: `${textoDoShare(d)} ${link}` });
+            avisar('Pronto, veredito enviado.');
+            return;
+          } catch (e) {
+            if (e && e.name === 'AbortError') { avisar(''); return; }
+            // o navegador recusou o share (sem gesto ou sem suporte ao arquivo): cai para o download
+          }
+        }
+        baixarArquivo(blob, nome);
+        avisar('Imagem baixada. É só arrastar para o Discord.');
+      } catch (e) {
+        avisar('Não deu para gerar a imagem agora. Tente de novo.');
+      } finally {
+        bShare.removeAttribute('aria-busy');
+        rotShare.textContent = 'Compartilhar';
+      }
+    });
+    let tmLink = null;
+    bLink.addEventListener('click', async () => {
+      const ok = await copiarTexto(link);
+      clearTimeout(tmLink);
+      if (ok) {
+        bLink.classList.add('copiado');
+        bLink.replaceChildren(iconeSvg('ok', 18), rotLink);
+        rotLink.textContent = 'Link copiado';
+        avisar('Link copiado. Cole no Discord.');
+        tmLink = setTimeout(() => { bLink.classList.remove('copiado'); bLink.replaceChildren(iconeSvg('link', 18), rotLink); rotLink.textContent = 'Copiar link'; }, 2200);
+      } else avisar(`Não consegui copiar. O link é ${link}`);
+    });
+    return h('div', { class: 'cartaz-acoes' }, h('div', { class: 'cartaz-botoes' }, bShare, bLink), aviso);
   }
 
   // -------- revelação: rufar de tambores e o culpado
@@ -5079,6 +5725,12 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     mudo: [['path', { d: 'M4 9h4l5-4v14l-5-4H4z', class: 'ic-cheio' }], ['path', { d: 'M16 9l6 6M22 9l-6 6', class: 'ic-traco' }]],
     olho: [['path', { d: 'M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z', class: 'ic-traco' }], ['circle', { cx: 12, cy: 12, r: 2.6, class: 'ic-cheio' }]],
     espadas: [['path', { d: 'M4 3l9 9M3 4l1-1M20 3l-9 9M21 4l-1-1M6 15l3 3M4 17l3 3M18 15l-3 3M20 17l-3 3', class: 'ic-traco' }]],
+    compartilhar: [['circle', { cx: 18, cy: 5, r: 2.6, class: 'ic-traco' }], ['circle', { cx: 6, cy: 12, r: 2.6, class: 'ic-traco' }], ['circle', { cx: 18, cy: 19, r: 2.6, class: 'ic-traco' }], ['path', { d: 'M8.4 10.7l7.2-4.2M8.4 13.3l7.2 4.2', class: 'ic-traco' }]],
+    link: [['path', { d: 'M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2', class: 'ic-traco' }], ['path', { d: 'M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2', class: 'ic-traco' }]],
+    ok: [['path', { d: 'M5 12.5l4.5 4.5L19 7.5', class: 'ic-traco' }]],
+    sair: [['path', { d: 'M6 6l12 12M18 6L6 18', class: 'ic-traco' }]],
+    pular: [['path', { d: 'M6 5l9 7-9 7z', class: 'ic-cheio' }], ['path', { d: 'M17 5h2.5v14H17z', class: 'ic-cheio' }]],
+    balanca: [['path', { d: 'M12 5v15M8 20h8M4 7h16', class: 'ic-traco' }], ['path', { d: 'M5 7l-2.6 6M5 7l2.6 6M19 7l-2.6 6M19 7l2.6 6', class: 'ic-traco' }], ['path', { d: 'M2 13h6a3 3 0 0 1-6 0zM16 13h6a3 3 0 0 1-6 0z', class: 'ic-cheio' }], ['circle', { cx: 12, cy: 4.2, r: 1.5, class: 'ic-cheio' }]],
   };
   function iconeSvg(nome, tam) {
     return s('svg', { class: `ic ic-${nome}`, width: tam, height: tam, viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' },
@@ -5544,12 +6196,184 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     const legenda = h('div', { class: 'mapa-legenda', 'aria-live': 'polite' });
     const lista = h('div', { class: 'lances-lista' });
     const controles = h('div', { class: 'mapa-controles' });
+    const bCinema = h('button', { type: 'button', class: 'botao cinema-botao', disabled: true, 'aria-describedby': 'cinema-dica' }, iconeSvg('play', 16), h('span', {}, 'Assistir o resumo'));
+    const dica = h('p', { class: 'cinema-dica', id: 'cinema-dica' }, 'Play of the Game, Throw of the Game e os melhores lances em sequência, com som.');
+    const barra = h('div', { class: 'cinema-barra', hidden: true, role: 'group', 'aria-label': 'Resumo da partida' });
+    const cartao = h('div', { class: 'cartao lances' }, h('div', { class: 'mapa-col' }, barra, palco, controles, legenda), h('div', { class: 'lances-lista-wrap' }, lista));
     const sec = h('section', { class: 'bloco', id: 'lances', 'aria-labelledby': 'titulo-lances' },
       cabecalho('Lances da partida', 'Os momentos que decidiram o jogo, no mapa. Azul são vocês, vermelho são eles; toque num lance.', 'titulo-lances'),
-      h('div', { class: 'cartao lances' }, h('div', { class: 'mapa-col' }, palco, controles, legenda), h('div', { class: 'lances-lista-wrap' }, lista)));
+      h('div', { class: 'cinema-acoes' }, bCinema, dica),
+      cartao);
     palco.append(h('p', { class: 'vazio' }, 'Carregando o mapa…'));
-    carregarMapa(r.partida.id).then((mapa) => montarLances(r, mapa, palco, legenda, lista, controles));
+    carregarMapa(r.partida.id).then((mapa) => {
+      const player = montarLances(r, mapa, palco, legenda, lista, controles);
+      if (!player || !player.roteiro().length) { bCinema.closest('.cinema-acoes').remove(); return; }
+      modoCinema(player, { botao: bCinema, barra, cartao });
+    });
     return sec;
+  }
+
+  // -------- modo cinema: o resumo da partida no player principal, lance a lance, com uma cartela de capítulo entre eles.
+  // Só começa com o clique (e com som, porque é gesto da pessoa); pausa, pula e sai (Esc ou botão).
+  const CARTELA_MS = 1500;
+  const ROMANOS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  function modoCinema(player, { botao, barra, cartao }) {
+    const { palco } = player;
+    const rotulo = botao.querySelector('span');
+    const cine = { ativo: false, roteiro: [], k: 0, fase: null, pausado: false, timer: null, resta: 0, t0: 0 };
+    const contador = h('span', { class: 'cinema-contador' });
+    const pontos = h('span', { class: 'cinema-pontos', 'aria-hidden': 'true' });
+    const anuncio = h('span', { class: 'sr-only', 'aria-live': 'polite' });
+    const bPausa = h('button', { type: 'button', class: 'mapa-botao cinema-pausa' });
+    const bPular = h('button', { type: 'button', class: 'mapa-botao cinema-pular', 'aria-label': 'Próximo lance', title: 'Próximo lance' }, iconeSvg('pular', 16), h('span', { class: 'cinema-txt' }, 'Pular'));
+    const bSair = h('button', { type: 'button', class: 'mapa-botao cinema-sair', 'aria-label': 'Sair do resumo (Esc)', title: 'Sair do resumo (Esc)' }, iconeSvg('sair', 16), h('span', { class: 'cinema-txt' }, 'Sair'));
+    barra.append(h('span', { class: 'cinema-rot' }, h('span', { class: 'cinema-selo', 'aria-hidden': 'true' }, iconeSvg('play', 12)), h('span', { class: 'cinema-rot-txt' }, 'Resumo')), contador, pontos, h('span', { class: 'cinema-botoes' }, bPausa, bPular, bSair), anuncio);
+    const cartela = h('div', { class: 'cinema-cartela', hidden: true });
+    // clique na cartela não chega no palco (lá ele tocaria/pausaria o lance de baixo)
+    cartela.addEventListener('click', (ev) => { ev.stopPropagation(); if (!ev.target.closest('button')) alternar(); });
+    palco.append(cartela);
+
+    const pintar = () => {
+      const n = cine.roteiro.length;
+      const k = Math.min(cine.k, n - 1);
+      contador.textContent = cine.fase === 'fim' ? `${n} lances` : `lance ${k + 1} de ${n}`;
+      pontos.replaceChildren(...cine.roteiro.map((_, i) => h('span', { class: `cinema-ponto${i < k || cine.fase === 'fim' ? ' feito' : i === k ? ' agora' : ''}` })));
+      bPausa.replaceChildren(iconeSvg(cine.pausado ? 'play' : 'pausa', 16), h('span', { class: 'cinema-txt' }, cine.pausado ? 'Continuar' : 'Pausar'));
+      bPausa.setAttribute('aria-label', cine.pausado ? 'Continuar o resumo' : 'Pausar o resumo');
+      bPausa.hidden = cine.fase === 'fim';
+      bPular.hidden = cine.fase === 'fim';
+      barra.classList.toggle('pausado', cine.pausado);
+      cartela.classList.toggle('pausada', cine.pausado);
+    };
+    const limparTimer = () => { clearTimeout(cine.timer); cine.timer = null; };
+    const agendar = (ms) => { limparTimer(); cine.t0 = performance.now(); cine.resta = ms; cine.timer = setTimeout(fimDaCartela, ms); };
+
+    const mostrarCartela = () => {
+      const l = player.lance(cine.roteiro[cine.k]);
+      cine.fase = 'cartela';
+      const selo = l.fixo ? h('p', { class: `cc-selo ${l.fixo}` }, l.fixo === 'potg' ? '★ Play of the Game' : '✕ Throw of the Game') : null;
+      const titulo = l.fixo ? l.titulo.replace(/^(Play|Throw) of the Game · /, 'Luta ') : l.titulo;
+      cartela.className = `cinema-cartela ${l.tipo || ''}`;
+      cartela.replaceChildren(h('div', { class: 'cc-placa' },
+        h('p', { class: 'cc-cap' }, `Capítulo ${ROMANOS[cine.k] || cine.k + 1}`),
+        selo,
+        h('h3', { class: 'cc-tit' }, titulo),
+        h('p', { class: 'cc-min' }, `aos ${mmss(l.t)}`),
+        l.legenda ? h('p', { class: 'cc-leg' }, l.legenda) : null));
+      cartela.hidden = false;
+      player.preparar(cine.roteiro[cine.k]); // por baixo da cartela o mapa já espera no lance (trilha, tempo e lista certos)
+      anuncio.textContent = `Lance ${cine.k + 1} de ${cine.roteiro.length}: ${titulo}, aos ${mmss(l.t)}.`;
+      pintar();
+      if (!cine.pausado) agendar(CARTELA_MS);
+    };
+    function fimDaCartela() {
+      limparTimer();
+      if (!cine.ativo) return;
+      if (!palco.isConnected) { sair(); return; } // a página foi redesenhada (outro time, outra partida)
+      cartela.hidden = true;
+      cine.fase = 'lance';
+      cine.pausado = false;
+      pintar();
+      player.tocar(cine.roteiro[cine.k]);
+    }
+    const proximo = () => {
+      cine.k++;
+      if (cine.k < cine.roteiro.length) mostrarCartela(); else mostrarFim();
+    };
+    const mostrarFim = () => {
+      cine.fase = 'fim';
+      cine.pausado = false;
+      limparTimer();
+      const bDeNovo = h('button', { type: 'button', class: 'botao' }, iconeSvg('denovo', 16), h('span', {}, 'Ver de novo'));
+      const bFechar = h('button', { type: 'button', class: 'botao secundario' }, 'Fechar');
+      bDeNovo.addEventListener('click', () => entrar());
+      bFechar.addEventListener('click', () => sair());
+      cartela.className = 'cinema-cartela fim';
+      cartela.replaceChildren(h('div', { class: 'cc-placa' },
+        h('p', { class: 'cc-cap' }, 'Fim do resumo'),
+        h('h3', { class: 'cc-tit' }, 'O tribunal viu tudo'),
+        h('p', { class: 'cc-leg' }, 'Escolha um lance da lista para rever com calma.'),
+        h('div', { class: 'cc-botoes' }, bDeNovo, bFechar)));
+      cartela.hidden = false;
+      anuncio.textContent = 'Fim do resumo.';
+      pintar();
+      bDeNovo.focus({ preventScroll: true });
+    };
+
+    const pausar = () => {
+      if (!cine.ativo || cine.pausado || cine.fase === 'fim') return;
+      cine.pausado = true;
+      if (cine.fase === 'cartela' && cine.timer) { cine.resta = Math.max(200, cine.resta - (performance.now() - cine.t0)); limparTimer(); }
+      if (cine.fase === 'lance') player.parar();
+      pintar();
+    };
+    const continuar = () => {
+      if (!cine.ativo || !cine.pausado) return;
+      cine.pausado = false;
+      if (cine.fase === 'cartela') agendar(cine.resta);
+      else if (cine.fase === 'lance') player.retomar();
+      pintar();
+    };
+    const alternar = () => (cine.pausado ? continuar() : pausar());
+    const pular = () => {
+      if (!cine.ativo) return;
+      cine.pausado = false;
+      if (cine.fase === 'cartela') { fimDaCartela(); return; }
+      if (cine.fase === 'lance') { player.parar(); proximo(); }
+    };
+    const teclas = (ev) => {
+      if (!palco.isConnected) { sair(); return; }
+      if (ev.key === 'Escape' && cine.ativo) { ev.preventDefault(); sair(); }
+    };
+    function sair() {
+      if (!cine.ativo) return;
+      cine.ativo = false;
+      limparTimer();
+      player.parar();
+      cartela.hidden = true;
+      barra.hidden = true;
+      cartao.classList.remove('em-cinema');
+      document.removeEventListener('keydown', teclas);
+      rotulo.textContent = 'Assistir o resumo';
+      if (botao.isConnected) botao.focus({ preventScroll: true });
+    }
+    function entrar() {
+      contextoAudio(); // clique da pessoa: libera o som já aqui (no iPhone o áudio só nasce dentro do gesto)
+      cine.ativo = false; // pausa os outros players antes, para os avisos deles não pausarem o resumo
+      for (const o of playersMapa) o.pausar();
+      player.parar();
+      cine.roteiro = player.roteiro(6);
+      if (!cine.roteiro.length) return;
+      cine.ativo = true;
+      cine.k = 0;
+      cine.pausado = false;
+      rotulo.textContent = 'Sair do resumo';
+      cartao.classList.add('em-cinema');
+      barra.hidden = false;
+      document.removeEventListener('keydown', teclas);
+      document.addEventListener('keydown', teclas);
+      const caixa = palco.getBoundingClientRect();
+      const topo = barra.getBoundingClientRect().top;
+      if (topo < 0 || caixa.bottom > window.innerHeight) barra.scrollIntoView({ block: 'start', behavior: reduzMovimento() ? 'auto' : 'smooth' });
+      palco.focus({ preventScroll: true });
+      mostrarCartela();
+    }
+
+    // o player avisa o que a pessoa fez nele
+    player.ganchos.fim = () => { if (cine.ativo && cine.fase === 'lance') proximo(); };
+    player.ganchos.pausou = () => { if (cine.ativo && cine.fase !== 'fim' && !cine.pausado) pausar(); };
+    player.ganchos.retomou = () => { if (cine.ativo && cine.fase === 'lance' && cine.pausado) { cine.pausado = false; pintar(); } };
+    player.ganchos.manual = () => { if (cine.ativo) sair(); };
+    player.ganchos.alternar = () => {
+      if (!cine.ativo || cine.fase === 'lance') return false;
+      if (cine.fase === 'cartela') alternar();
+      return true;
+    };
+    bPausa.addEventListener('click', alternar);
+    bPular.addEventListener('click', pular);
+    bSair.addEventListener('click', sair);
+    botao.addEventListener('click', () => (cine.ativo ? sair() : entrar()));
+    botao.disabled = false;
   }
 
   // -------- terreno do minimapa: pintado uma vez num canvas e reaproveitado por todos os mapas (até os mini)
@@ -5813,6 +6637,8 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     const saida = criarSaida(mini ? VOLUME_PADRAO : volumeMapa()); // cada player com o seu volume
     const recorteId = `m-recorte-${++contadorMapas}`;
     let lances = opts.unico ? [opts.unico] : [...r.lances];
+    // avisos para o modo cinema (resumo): fim do lance, pausa, play e quando a pessoa escolhe um lance na mão
+    const ganchos = {};
     const pos = mapa ? posicoes(mapa, r) : null;
     if (pos && !opts.unico) {
       const extra = lancesDoMapa(r, pos).filter((x) => !lances.some((l) => x.ini < l.fim && l.ini < x.fim));
@@ -5832,6 +6658,7 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
           const caixaPalco = palco.getBoundingClientRect();
           if (caixaPalco.top < 0 || caixaPalco.bottom > window.innerHeight) palco.scrollIntoView({ block: 'start', behavior: reduzMovimento() ? 'auto' : 'smooth' });
         }
+        if (ganchos.manual) ganchos.manual();
         tocar(i);
       });
       lista.append(b);
@@ -6379,7 +7206,8 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     palco.setAttribute('tabindex', '0');
     palco.setAttribute('role', 'group');
     palco.setAttribute('aria-label', 'Replay do lance no mapa. Espaço toca ou pausa.');
-    const eu = { pausar: () => { if (tocando) { tocando = false; pintarPlay(); } } };
+    const parar = () => { if (tocando) { tocando = false; pintarPlay(); } };
+    const eu = { pausar: () => { parar(); if (ganchos.pausou) ganchos.pausou(); } };
     for (const o of playersMapa) if (!o.vivo()) playersMapa.delete(o); // players de telas antigas
     eu.vivo = () => palco.isConnected;
     playersMapa.add(eu);
@@ -6441,12 +7269,14 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
       if (t >= atual.fim) { tocar(lances.indexOf(atual)); return; }
       for (const o of playersMapa) if (o !== eu) o.pausar();
       contextoAudio();
+      if (ganchos.retomou) ganchos.retomou();
       tocando = true;
       pintarPlay();
       ultimo = performance.now();
       requestAnimationFrame(quadro);
     };
-    const alternar = () => { if (tocando) eu.pausar(); else retomar(); };
+    // no resumo, entre um lance e outro (cartela), play/pausa valem para o resumo
+    const alternar = () => { if (ganchos.alternar && ganchos.alternar()) return; if (tocando) eu.pausar(); else retomar(); };
     bGrande.addEventListener('click', (ev) => { ev.stopPropagation(); retomar(); });
     palco.addEventListener('click', (ev) => { if (!atual || ev.target.closest('button, input, a')) return; alternar(); });
     palco.addEventListener('keydown', (ev) => {
@@ -6708,9 +7538,11 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
           break;
         }
       }
-      if (t >= atual.fim && agora >= congelaAte) { t = atual.fim; tocando = false; pintarPlay(); }
+      let acabou = false;
+      if (t >= atual.fim && agora >= congelaAte) { t = atual.fim; tocando = false; pintarPlay(); acabou = true; }
       desenhar();
       if (tocando) requestAnimationFrame(quadro);
+      else if (acabou && ganchos.fim) ganchos.fim();
     };
     // carrega o lance i: enquadra, zera o tempo e as batidas. Só toca com um gesto da pessoa (tocar).
     const carregarLance = (i, animar) => {
@@ -6737,6 +7569,7 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     const tocar = (i) => {
       for (const o of playersMapa) if (o !== eu) o.pausar();
       contextoAudio();
+      if (ganchos.retomou) ganchos.retomou();
       carregarLance(i, true);
       tocando = true;
       pintarPlay();
@@ -6750,9 +7583,10 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     }
     // lance pedido de fora (gráfico, selos): o da lista que cobre o instante, ou um lance avulso em volta dele
     tocarLance = (tAlvo, avulso) => {
+      if (ganchos.manual) ganchos.manual();
       let i = lances.findIndex((l) => tAlvo >= l.ini && tAlvo <= l.fim);
       if (i < 0 && avulso) {
-        lances.push({ t: tAlvo, ini: Math.max(0, tAlvo - 10), fim: tAlvo + 5, tipo: 'bom', foco: avulso.foco || [], titulo: avulso.titulo || 'Lance', legenda: avulso.legenda || mmss(tAlvo) });
+        lances.push({ avulso: true, t: tAlvo, ini: Math.max(0, tAlvo - 10), fim: tAlvo + 5, tipo: 'bom', foco: avulso.foco || [], titulo: avulso.titulo || 'Lance', legenda: avulso.legenda || mmss(tAlvo) });
         i = lances.length - 1;
       }
       document.getElementById('lances').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -6761,6 +7595,26 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     const abre = lances.findIndex((l) => l.fixo === (r.partida.venceu ? 'potg' : 'throw'));
     const primeiro = abre >= 0 ? abre : lances.findIndex((l) => l.tipo === 'ruim');
     preparar(primeiro >= 0 ? primeiro : 0);
+    // controle do player principal para o modo cinema (o mesmo motor, sem duplicar nada)
+    return {
+      ganchos,
+      lance: (i) => lances[i],
+      // Play of the Game, Throw of the Game e os lances de mais peso, em ordem de tempo (até max)
+      roteiro: (max = 6) => {
+        const base = lances.filter((l) => !l.avulso);
+        const fixos = base.filter((l) => l.fixo);
+        const outros = base.filter((l) => !l.fixo).map((l, k) => ({ l, k }))
+          .sort((a, b) => (b.l.peso || 0) - (a.l.peso || 0) || a.k - b.k)
+          .slice(0, Math.max(0, max - fixos.length)).map((x) => x.l);
+        return [...fixos, ...outros].sort((a, b) => a.t - b.t).map((l) => lances.indexOf(l));
+      },
+      tocar: (i) => tocar(i),
+      preparar: (i) => preparar(i),
+      parar,
+      retomar,
+      tocando: () => tocando,
+      palco,
+    };
   }
 
   // -------- o jogo em um gráfico: vantagem de ouro (ou chance de vitória) e os lances
@@ -7150,7 +8004,7 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
             h('strong', {}, `Recompensa: ${fmtK(entregue)} de ouro`), h('small', {}, ' (o que ele entregou ao inimigo)')) : null,
           v.diagnostico ? h('p', { class: 'frase' }, v.diagnostico) : null));
     };
-    const diferenca = dividido ? Math.round((cs[0].fatia - cs[1].fatia) * 100) : 0;
+    const diferenca = dividido ? Math.round(cs[0].fatia * 100) - Math.round(cs[1].fatia * 100) : 0;
     if (!derrota) {
       // na vitória, o elo fraco fica numa placa de pedra comum (escondida atrás do botão)
       return h('article', { class: `cartao veredito elo${dividido ? ' dividido' : ''}` },
@@ -7565,10 +8419,10 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
   }
 
   function iniciar() {
-    const doHash = (location.hash.match(/^#(\d{6,})$/) || [])[1];
+    const [, doHash, ladoHash] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];
     const ultimo = ler('culpado:ultimo');
     const exemploId = EMBUTIDO.exemplo;
-    if (doHash) { el.input.value = doHash; carregar(doHash); return; }
+    if (doHash) { el.input.value = doHash; carregar(doHash, { lado: ladoHash || null }); return; }
     if (ultimo && !SO_EMBUTIDO) { el.input.value = ultimo; carregar(ultimo); return; }
     if (exemploId) { carregar(exemploId, { exemplo: true }); return; }
     mostrarStatus('Cole o ID de uma partida no topo para começar.');
