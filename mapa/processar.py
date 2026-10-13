@@ -33,6 +33,35 @@ def post(caminho: str):
         return r.read()
 
 
+VERSAO = 2  # 2: uso de skills e itens (para o mapa mostrar o que aconteceu na luta)
+ITENS_DE_LUTA = {
+    "blink", "overwhelming_blink", "swift_blink", "arcane_blink", "black_king_bar", "refresher", "glimmer_cape",
+    "force_staff", "hurricane_pike", "lotus_orb", "sheepstick", "orchid", "bloodthorn", "nullifier", "abyssal_blade",
+    "manta", "satanic", "shivas_guard", "ghost", "ethereal_blade", "cyclone", "wind_waker", "pipe", "crimson_guard",
+    "guardian_greaves", "mekansm", "solar_crest", "rod_of_atos", "gungir", "disperser", "silver_edge", "invis_sword",
+    "blade_mail", "aeon_disk", "heavens_halberd", "meteor_hammer", "dagon", "bfury", "harpoon", "phylactery",
+    "boots_of_bearing", "spirit_vessel", "urn_of_shadows", "medallion_of_courage", "diffusal_blade", "tpscroll",
+    "travel_boots", "travel_boots_2", "smoke_of_deceit", "eternal_shroud", "sphere", "helm_of_the_overlord",
+}
+_CONST: dict = {}
+
+
+def constantes() -> dict:
+    """Heróis, habilidades e itens do OpenDota (uma vez por rodada): nome bonito e qual é a ultimate."""
+    if not _CONST:
+        herois = get("/constants/heroes")
+        _CONST["npc"] = {int(h["id"]): h["name"] for h in herois.values()}
+        _CONST["hab"] = get("/constants/abilities")
+        _CONST["itens"] = get("/constants/items")
+        ults = set()
+        for hab in get("/constants/hero_abilities").values():
+            lista = [a for a in hab.get("abilities") or [] if a and a != "generic_hidden"]
+            if lista:
+                ults.add(lista[-1])
+        _CONST["ults"] = ults
+    return _CONST
+
+
 def baixar(url: str, destino: Path) -> None:
     req = urllib.request.Request(url, headers={"User-Agent": "culpado-dota2-mapa"})
     with urllib.request.urlopen(req, timeout=300) as r, open(destino, "wb") as out:
@@ -80,7 +109,9 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
     slot_de = {}
     pos: dict[int, dict[int, tuple]] = {}
     tipos = Counter()
-    exemplo = None
+    exemplo = exemplo_hab = None
+    heroi_do_slot: dict[int, int] = {}
+    casts = []  # (tempo, nome do lançador, chave da habilidade, nome do alvo, item?)
     for ev in parsear(dem, parser):
         tipo = ev.get("type")
         tipos[tipo] += 1
@@ -90,9 +121,17 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
             if exemplo is None:
                 exemplo = ev
             pos.setdefault(int(ev["slot"]), {})[int(ev["time"])] = (round(float(ev["x"]), 1), round(float(ev["y"]), 1))
+            if ev.get("hero_id"):
+                heroi_do_slot[int(ev["slot"])] = int(ev["hero_id"])
+        elif tipo in ("DOTA_COMBATLOG_ABILITY", "DOTA_COMBATLOG_ITEM") and ev.get("inflictor"):
+            if exemplo_hab is None:
+                exemplo_hab = ev
+            if not ev.get("attackerillusion"):
+                casts.append((float(ev.get("time") or 0), ev.get("attackername"), ev["inflictor"], ev.get("targetname"), tipo.endswith("ITEM")))
     dem.unlink(missing_ok=True)
     print(f"  {match_id}: {sum(tipos.values())} eventos; tipos {tipos.most_common(8)}")
     print(f"  exemplo de interval: {json.dumps(exemplo)[:400]}")
+    print(f"  exemplo de habilidade: {json.dumps(exemplo_hab)[:400]}")
     if not pos:
         raise RuntimeError("parser não devolveu posições")
     t0 = min(min(d) for d in pos.values())
@@ -110,8 +149,43 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
         ys.append(uy)
     todos_x = [v for a in xs for v in a if v is not None]
     todos_y = [v for a in ys for v in a if v is not None]
-    return {"v": 1, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
-            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)]}
+    hab, usos = habilidades(casts, ordem, heroi_do_slot)
+    print(f"  {len(usos)} usos de skill/item de {len(casts)} no combat log")
+    return {"v": VERSAO, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
+            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab, "usos": usos}
+
+
+def habilidades(casts, ordem, heroi_do_slot):
+    """hab: [[chave, nome, tipo]] (tipo u = ultimate, h = skill, i = item); usos: [[t, quem, hab, alvo]]
+    com quem/alvo = índice em slots (-1 se o alvo não é herói)."""
+    try:
+        c = constantes()
+    except Exception as e:  # noqa: BLE001
+        print(f"  sem constantes do OpenDota ({e}): mapa sem skills")
+        return [], []
+    k_do_npc = {c["npc"].get(heroi_do_slot.get(s)): k for k, s in enumerate(ordem) if heroi_do_slot.get(s)}
+    hab, idx, usos = [], {}, []
+    for t, quem, chave, alvo, item in casts:
+        k = k_do_npc.get(quem)
+        if k is None:
+            continue
+        if item:
+            nome_item = chave.removeprefix("item_")
+            if nome_item not in ITENS_DE_LUTA:
+                continue
+            info = c["itens"].get(nome_item) or {}
+            nome, tipo, chave = info.get("dname") or nome_item.replace("_", " ").title(), "i", nome_item
+        else:
+            info = c["hab"].get(chave) or {}
+            if not info.get("dname") or chave.startswith(("special_bonus", "ability_", "plus_")):
+                continue
+            nome, tipo = info["dname"], "u" if chave in c["ults"] else "h"
+        if chave not in idx:
+            idx[chave] = len(hab)
+            hab.append([chave, nome, tipo])
+        usos.append([round(t, 1), k, idx[chave], k_do_npc.get(alvo, -1)])
+    usos.sort()
+    return hab, usos
 
 
 MAX_FALHAS = 6
@@ -129,7 +203,11 @@ def main() -> int:
     a = ap.parse_args()
     saida = Path(a.saida)
     saida.mkdir(parents=True, exist_ok=True)
-    feitos = {int(p.stem) for p in saida.glob("*.json") if p.stem.isdigit()}
+    feitos, antigos = set(), []
+    for arq in saida.glob("*.json"):
+        if arq.stem.isdigit():
+            # versão antiga entra de novo na fila (no fim) para ganhar as skills
+            (feitos.add if f'"v":{VERSAO},' in arq.read_text()[:20] else antigos.append)(int(arq.stem))
     fila, recentes = [], []
     pedidos = Path(a.pedidos)
     for f in sorted(pedidos.glob("*")) if pedidos.exists() else []:
@@ -144,6 +222,7 @@ def main() -> int:
                 print(f"  conta {conta}: {e}")
             time.sleep(1.2)
     fila += sorted(recentes, reverse=True)  # pedidos primeiro, depois as partidas mais novas
+    fila += sorted(antigos, reverse=True)
     falhas_arq = Path(a.falhas)
     falhas = json.loads(falhas_arq.read_text()) if falhas_arq.exists() else {}
     # partida que falhou muitas vezes (sem replay na Valve, por exemplo) sai da fila: o robô roda a cada 10 min
