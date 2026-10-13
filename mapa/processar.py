@@ -33,7 +33,7 @@ def post(caminho: str):
         return r.read()
 
 
-VERSAO = 2  # 2: uso de skills e itens (para o mapa mostrar o que aconteceu na luta)
+VERSAO = 3  # 2: uso de skills e itens; 3: dano entre heróis por segundo (explosões no mapa)
 ITENS_DE_LUTA = {
     "blink", "overwhelming_blink", "swift_blink", "arcane_blink", "black_king_bar", "refresher", "glimmer_cape",
     "force_staff", "hurricane_pike", "lotus_orb", "sheepstick", "orchid", "bloodthorn", "nullifier", "abyssal_blade",
@@ -119,6 +119,7 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
     exemplo = exemplo_hab = None
     heroi_do_slot: dict[int, int] = {}
     casts = []  # (tempo, nome do lançador, chave da habilidade, nome do alvo, item?)
+    dano_brut: Counter = Counter()  # (segundo, atacante, alvo) -> dano, só herói em herói de verdade
     for ev in parsear(dem, parser):
         tipo = ev.get("type")
         tipos[tipo] += 1
@@ -130,6 +131,8 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
             pos.setdefault(int(ev["slot"]), {})[int(ev["time"])] = (round(float(ev["x"]), 1), round(float(ev["y"]), 1))
             if ev.get("hero_id"):
                 heroi_do_slot[int(ev["slot"])] = int(ev["hero_id"])
+        elif tipo == "DOTA_COMBATLOG_DAMAGE" and ev.get("targethero") and not ev.get("targetillusion") and ev.get("value"):
+            dano_brut[(int(float(ev.get("time") or 0)), ev.get("attackername"), ev.get("targetname"))] += int(ev["value"])
         elif tipo in ("DOTA_COMBATLOG_ABILITY", "DOTA_COMBATLOG_ITEM") and ev.get("inflictor"):
             if exemplo_hab is None:
                 exemplo_hab = ev
@@ -157,9 +160,24 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
     todos_x = [v for a in xs for v in a if v is not None]
     todos_y = [v for a in ys for v in a if v is not None]
     hab, usos = habilidades(casts, ordem, heroi_do_slot)
+    dano = danos(dano_brut, ordem, heroi_do_slot) if hab is not None else []
+    print(f"  {len(dano)} registros de dano herói->herói")
     print(f"  {len(usos)} usos de skill/item de {len(casts)} no combat log")
     return {"v": VERSAO if hab is not None else 1, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
-            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos}
+            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos, "dano": dano}
+
+
+def danos(brut, ordem, heroi_do_slot):
+    """[[segundo, atacante, alvo, dano]] com atacante/alvo = índice em slots; ilusões contam para o dono."""
+    c = constantes()
+    k_do_npc = {c["npc"].get(heroi_do_slot.get(s)): k for k, s in enumerate(ordem) if heroi_do_slot.get(s)}
+    out = []
+    for (t, a, b), v in brut.items():
+        ka, kb = k_do_npc.get(a), k_do_npc.get(b)
+        if ka is not None and kb is not None and ka != kb and v >= 10:
+            out.append([t, ka, kb, v])
+    out.sort()
+    return out
 
 
 def habilidades(casts, ordem, heroi_do_slot):
