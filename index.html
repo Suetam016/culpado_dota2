@@ -3917,6 +3917,27 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     osc.stop(t0 + 0.85);
   }
 
+  // sons originais das skills (baixados da wiki pelo robô do site em sons/); sem arquivo, fica o "boom"
+  let sonsIndice = null;
+  const carregarSons = () => {
+    if (sonsIndice || SO_EMBUTIDO) return;
+    sonsIndice = {};
+    fetch('sons/indice.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).then((j) => { sonsIndice = j || {}; }).catch(() => {});
+  };
+  function somDaSkill(chave, forte) {
+    if (!somLigado()) return;
+    const arq = sonsIndice && sonsIndice[chave];
+    if (arq) {
+      try {
+        const a = new Audio(`sons/${arq}`);
+        a.volume = forte ? 0.8 : 0.55;
+        a.play().catch(() => impacto(forte));
+        return;
+      } catch (e) { /* cai no boom */ }
+    }
+    impacto(forte);
+  }
+
   function tambores(duracao) {
     if (!somLigado()) return () => {};
     try {
@@ -4269,6 +4290,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       if (vMvp >= 1200) bs.push({ t: l.fim - 0.6, tipo: 'resumo', quem: Number(mvp), v: vMvp });
       return bs.sort((a, b) => a.t - b.t).map((b) => ({ ...b, feito: false }));
     };
+    carregarSons();
     const HOLD = { ult: 900, acerto: 450, abate: 600, resumo: 1400 };
     const LENTO = { ult: 0.22, acerto: 0.4, abate: 0.35, resumo: 1 };
     const reduzMov = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -4313,7 +4335,9 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       setTimeout(() => cartao.classList.add('sai'), HOLD[b.tipo] + 900);
       setTimeout(() => cartao.remove(), HOLD[b.tipo] + 1300);
       const forte = b.tipo === 'ult' || (b.tipo === 'abate' && b.explosao);
-      if (forte || b.tipo === 'acerto') impacto(forte);
+      if (b.tipo === 'ult') somDaSkill(b.uso.hab[0], true);
+      else if (b.tipo === 'acerto') somDaSkill(b.hab[0], false);
+      else if (forte) impacto(true);
       if (forte && !reduzMov) { palco.classList.remove('tremor'); void palco.offsetWidth; palco.classList.add('tremor'); }
     };
     // efeitos dentro do mapa: onda da ult, projétil do acerto, números de dano
