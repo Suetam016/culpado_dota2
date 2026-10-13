@@ -959,6 +959,14 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
 .m-ligacao { stroke: #e3b448; stroke-dasharray: 1.5 1.2; opacity: 0.9; }
 
+.b-veredito { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.b-veredito p { display: grid; gap: 2px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); text-align: center; }
+.b-rot { font-family: var(--font-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.b-veredito strong { font-size: var(--t-md); color: var(--ink); text-transform: capitalize; }
+.b-veredito small { font-size: var(--t-xs); color: var(--ink-2); }
+.b-sigla { font-size: 8px; }
+.lanes .cartao.lane { align-content: start; }
+
 </style>
 <header class="topo">
   <div class="topo-inner">
@@ -4076,7 +4084,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   function secaoRotas(r) {
     if (!r.rotas.length) return null;
     return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-rotas' },
-      cabecalho('Fase de rotas', 'A balança pende pra quem saiu na frente aos 10 min. A tracejada é o que o matchup prometia.', 'titulo-rotas'),
+      cabecalho('Fase de rotas', 'A balança pende pra quem saiu na frente aos 10 min (patrimônio + metade da XP, por herói). A linha tracejada é o que o matchup prometia.', 'titulo-rotas'),
       h('div', { class: 'lanes' }, r.rotas.map(balanca)));
   }
 
@@ -4102,24 +4110,41 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       time.forEach((p, k) => {
         const yy = cy - 14 - k * 24;
         g.append(s('circle', { cx: x0, cy: yy, r: 11, class: `b-peso ${cls}` }));
-        g.append(s('text', { x: x0, y: yy + 4, 'text-anchor': 'middle', class: 'b-sigla' }, p.heroi.nome.split(/\s+/).map((w) => w[0]).join('').slice(0, 2)));
+        g.append(s('text', { x: x0, y: yy + 3.5, 'text-anchor': 'middle', class: 'b-sigla' }, p.heroi.nome.replace(/[^A-Za-z]/g, '').slice(0, 3)));
       });
       return g;
     };
     real.append(prato(-1, l.nos, 'nos'), prato(1, l.eles, 'eles'));
     svg.append(real);
     svg.append(s('circle', { cx, cy, r: 4, class: 'b-pino' }));
-    const res = diff > 150 ? `Vocês +${fmtK(diff)}` : diff < -150 ? `Eles +${fmtK(-diff)}` : 'Empate';
-    const papel = l.expectativa ? (Math.abs(esp) < 150 ? 'o papel dizia empate' : `o papel dizia ${esp < 0 ? 'eles' : 'vocês'} +${fmtK(Math.abs(Math.round(esp / 10) * 10))}`) : '';
+    const lado = (d) => (Math.abs(d) < 150 ? 'empate' : `${d > 0 ? 'vocês' : 'eles'} +${fmtK(Math.abs(Math.round(d / 10) * 10))}`);
+    const sobra = diff - esp;
+    const comparacao = !l.expectativa ? '' : sobra < -400 ? 'pior do que o matchup pedia' : sobra > 400 ? 'melhor do que o matchup prometia' : 'dentro do esperado pro matchup';
     const lh = (p) => (p && p.raw.lh_t ? p.raw.lh_t[Math.min(10, p.raw.lh_t.length - 1)] : null);
+    const linha = (rotulo, a, b, fmt = String, sub = null) => h('div', { class: 'placar-rota' },
+      h('span', { class: a > b ? 'vence' : '' }, fmt(a)), h('span', { class: 'rot' }, rotulo, sub ? h('small', {}, sub) : null), h('span', { class: b > a ? 'vence' : '' }, fmt(b)));
+    const dupla = l.nos.length > 1 || l.eles.length > 1;
+    const d = l.destaque;
+    let frase = '';
+    if (d) {
+      const quem = `${d.jogador.nome} (${d.jogador.heroi.nome})`;
+      if (d.diff < -300) frase = `${quem} saiu ${fmtK(-d.diff)} atrás de ${d.rival.heroi.nome} no duelo direto.`;
+      else if (d.diff > 300) frase = `${quem} saiu ${fmtK(d.diff)} na frente de ${d.rival.heroi.nome} no duelo direto.`;
+    }
     return h('article', { class: `cartao lane ${l.resultado}` },
       h('div', { class: 'lane-cab' }, h('p', { class: 'eyebrow' }, NOME[l.tipo] || 'Rota'), h('span', { class: `selo ${l.resultado}` }, { ganhou: 'Ganharam', perdeu: 'Perderam', empate: 'Empate' }[l.resultado])),
       h('p', { class: 'b-nomes' }, h('span', { class: 'nos' }, l.nos.map((p) => p.heroi.nome).join(' + ')), h('span', { class: 'vs' }, 'x'), h('span', { class: 'eles' }, l.eles.map((p) => p.heroi.nome).join(' + '))),
       svg,
-      h('p', { class: 'b-placar' }, h('strong', {}, res), ` por herói aos 10 min${papel ? ` · ${papel}` : ''}`),
-      l.coreNos && l.coreEles && lh(l.coreNos) != null && lh(l.coreEles) != null ? h('p', { class: 'b-lh' }, `Last hits: ${l.coreNos.heroi.nome} ${lh(l.coreNos)} × ${lh(l.coreEles)} ${l.coreEles.heroi.nome}`) : null,
-      l.dicas && l.dicas.length ? h('details', { class: 'b-dicas' }, h('summary', {}, `Dicas da rota (${l.dicas.length})`),
-        h('ul', { class: 'lane-dicas' }, l.dicas.map((d) => h('li', { class: d.tipo }, h('strong', {}, `${d.jogador.heroi.nome}: `), d.texto)))) : null);
+      h('div', { class: 'b-veredito' },
+        h('p', {}, h('span', { class: 'b-rot' }, 'Aos 10 min'), h('strong', {}, lado(diff)), h('small', {}, 'por herói')),
+        l.expectativa ? h('p', {}, h('span', { class: 'b-rot' }, 'Esperado pelo matchup'), h('strong', {}, lado(esp)), h('small', {}, comparacao)) : null),
+      h('div', { class: 'placares' },
+        linha(dupla ? 'patrimônio da rota' : 'patrimônio', l.nwNos, l.nwEles, fmtK),
+        l.coreNos && l.coreEles && lh(l.coreNos) != null && lh(l.coreEles) != null
+          ? linha(dupla ? 'last hits dos cores' : 'last hits', lh(l.coreNos), lh(l.coreEles), String, dupla ? `${l.coreNos.heroi.nome} × ${l.coreEles.heroi.nome}` : null) : null,
+        linha('abates na rota', l.abatesNos, l.abatesEles)),
+      frase ? h('p', { class: 'lane-frase' }, frase) : null,
+      l.dicas && l.dicas.length ? h('ul', { class: 'lane-dicas' }, l.dicas.map((x) => h('li', { class: x.tipo }, h('strong', {}, `${x.jogador.heroi.nome}: `), x.texto))) : null);
   }
   // -------- itens do time: quem devia ter comprado o quê, e a divisão para a próxima
 
