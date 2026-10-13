@@ -25,10 +25,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
-          cache: maven
-          cache-dependency-path: parser/pom.xml
-        continue-on-error: true
+          java-version: "21"
       - name: Parser de replays do OpenDota
         run: |
           git clone --depth 1 https://github.com/odota/parser.git parser
@@ -46,6 +43,7 @@ jobs:
       - name: Salvar
         if: always()
         run: |
+          mkdir -p mapas
           tail -50 parser.log > mapa/parser-log.txt 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
