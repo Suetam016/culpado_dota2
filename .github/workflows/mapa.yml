@@ -39,7 +39,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Processar partidas
-        run: python mapa/processar.py --amigos amigos.json | tee -a "$GITHUB_STEP_SUMMARY" mapa/ultimo-log.txt
+        run: |
+          pip install -q zstandard
+          python mapa/processar.py --amigos amigos.json | tee -a "$GITHUB_STEP_SUMMARY" mapa/ultimo-log.txt
       - name: Salvar
         if: always()
         run: |

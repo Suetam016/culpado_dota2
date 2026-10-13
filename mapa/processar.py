@@ -42,6 +42,12 @@ def baixar(url: str, destino: Path) -> None:
             out.write(dec.decompress(primeiro))
             while bloco := r.read(1 << 20):
                 out.write(dec.decompress(bloco))
+        elif primeiro[:4] == b"\x28\xb5\x2f\xfd":  # zstd (a Valve trocou o bz2 por zstd, mesmo com o nome .bz2)
+            import zstandard
+            dec = zstandard.ZstdDecompressor().decompressobj()
+            out.write(dec.decompress(primeiro))
+            while bloco := r.read(1 << 20):
+                out.write(dec.decompress(bloco))
         elif primeiro[:6] == b"PBDEMS":
             out.write(primeiro)
             while bloco := r.read(1 << 20):
