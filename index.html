@@ -916,7 +916,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .m-heroi.nos .m-anel { fill: #3987e5; stroke: #cfe2ff; }
 .m-heroi.eles .m-anel { fill: #e66767; stroke: #ffd7d7; }
 .m-heroi.foco .m-anel { stroke: #e3b448; stroke-width: 1.2; }
-.m-sigla { font-size: 2.2px; font-weight: 700; fill: #fff; font-family: var(--font-body); }
+.m-sigla { font-size: 1.6px; font-weight: 700; fill: #fff; font-family: var(--font-body); }
 .m-morte { font-weight: 800; }
 .m-morte.nos { fill: #9cc4ff; }
 .m-morte.eles { fill: #ffb3b3; }
@@ -956,6 +956,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .b-placar strong { color: var(--ink); font-size: var(--t-md); }
 .b-lh { font-size: var(--t-xs); color: var(--muted); text-align: center; font-family: var(--font-mono); }
 .b-dicas summary { cursor: pointer; font-size: var(--t-xs); color: var(--ink-2); }
+
+.m-ligacao { stroke: #e3b448; stroke-dasharray: 1.5 1.2; opacity: 0.9; }
 
 </style>
 <header class="topo">
@@ -3748,7 +3750,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
   // -------- lances no mapa
 
-  const MAPA = { min: 64, max: 192 }; // coordenadas de célula do replay (calibradas com os dados)
+  const MAPA = { min: 61, max: 195 }; // coordenadas de célula do replay (calibradas com os dados)
   const mapasCache = {};
 
   async function carregarMapa(id) {
@@ -3798,9 +3800,10 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         const ps = pos(d.t - 1);
         if (!ps[p.idx]) continue;
         const vivos = r.nos.filter((q) => q !== p && ps[q.idx] && !morto(r, q.idx, d.t - 1));
-        const perto = Math.min(...vivos.map((q) => dist(ps[q.idx], ps[p.idx])));
+        const aliado = [...vivos].sort((a, b) => dist(ps[a.idx], ps[p.idx]) - dist(ps[b.idx], ps[p.idx]))[0];
+        const perto = aliado ? dist(ps[aliado.idx], ps[p.idx]) : Infinity;
         if (Number.isFinite(perto) && perto >= 28) {
-          extra.push({ tipo: 'ruim', t: d.t, ini: d.t - 14, fim: d.t + 3, titulo: `Pickoff: ${p.heroi.nome} sozinho`, legenda: `aliado mais perto a ${Math.round(perto * 128 / 100) * 100} de distância`, foco: [p.idx], peso: 7 });
+          extra.push({ tipo: 'ruim', t: d.t, ini: d.t - 14, fim: d.t + 3, titulo: `Pickoff: ${p.heroi.nome} sozinho`, legenda: `${aliado.heroi.nome}, o aliado mais perto, estava a ${Math.round(perto * 128 / 100) * 100} de distância`, foco: [p.idx], ligar: [p.idx, aliado.idx], peso: 7 });
         }
       }
     }
@@ -3866,8 +3869,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     // mapa estilizado: rio, rotas e bases
     cam.append(s('rect', { x: 0, y: 0, width: W, height: W, class: 'm-chao' }));
     cam.append(s('path', { d: `M${W * 0.04},${W * 0.1} C${W * 0.35},${W * 0.38} ${W * 0.62},${W * 0.6} ${W * 0.96},${W * 0.9}`, class: 'm-rio' }));
-    for (const d of [`M${W * 0.1},${W * 0.86} L${W * 0.1},${W * 0.1} L${W * 0.86},${W * 0.1}`, `M${W * 0.14},${W * 0.9} L${W * 0.9},${W * 0.9} L${W * 0.9},${W * 0.14}`, `M${W * 0.13},${W * 0.87} L${W * 0.87},${W * 0.13}`]) cam.append(s('path', { d, class: 'm-rota' }));
-    cam.append(s('circle', { cx: W * 0.1, cy: W * 0.9, r: W * 0.07, class: 'm-base radiant' }), s('circle', { cx: W * 0.9, cy: W * 0.1, r: W * 0.07, class: 'm-base dire' }));
+    for (const d of [`M${W * 0.13},${W * 0.84} L${W * 0.13},${W * 0.13} L${W * 0.84},${W * 0.13}`, `M${W * 0.16},${W * 0.87} L${W * 0.87},${W * 0.87} L${W * 0.87},${W * 0.16}`, `M${W * 0.16},${W * 0.84} L${W * 0.84},${W * 0.16}`]) cam.append(s('path', { d, class: 'm-rota' }));
+    cam.append(s('circle', { cx: W * 0.11, cy: W * 0.89, r: W * 0.08, class: 'm-base radiant' }), s('circle', { cx: W * 0.89, cy: W * 0.11, r: W * 0.08, class: 'm-base dire' }));
     const camadaMortes = s('g', {});
     const camadaHerois = s('g', {});
     cam.append(camadaMortes, camadaHerois);
@@ -3879,7 +3882,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     for (const p of todos) {
       const g = s('g', { class: `m-heroi ${nosSet.has(p.idx) ? 'nos' : 'eles'}` });
       g.append(s('circle', { r: 2.2, class: 'm-anel' }));
-      g.append(s('text', { 'text-anchor': 'middle', y: 0.9, class: 'm-sigla' }, p.heroi.nome.split(/\s+/).map((w) => w[0]).join('').slice(0, 2)));
+      g.append(s('text', { 'text-anchor': 'middle', y: 0.65, class: 'm-sigla' }, p.heroi.nome.replace(/[^A-Za-z]/g, '').slice(0, 3)));
       camadaHerois.append(g);
       tokens[p.idx] = g;
     }
@@ -3911,7 +3914,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       if (!pts.length) return [0, 0, W, W];
       const xs = pts.map((q) => u(q[0]));
       const ys = pts.map((q) => v(q[1]));
-      let x0 = Math.min(...xs) - 6; let x1 = Math.max(...xs) + 6; let y0 = Math.min(...ys) - 6; let y1 = Math.max(...ys) + 6;
+      let x0 = Math.min(...xs) - 10; let x1 = Math.max(...xs) + 10; let y0 = Math.min(...ys) - 10; let y1 = Math.max(...ys) + 10;
       const lado = Math.max(24, x1 - x0, y1 - y0);
       const cx = (x0 + x1) / 2; const cy = (y0 + y1) / 2;
       x0 = Math.max(0, Math.min(W - lado, cx - lado / 2)); y0 = Math.max(0, Math.min(W - lado, cy - lado / 2));
@@ -3929,8 +3932,12 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         g.setAttribute('transform', `translate(${u(q[0]).toFixed(2)},${v(q[1]).toFixed(2)}) scale(${Math.max(0.35, escala).toFixed(3)})`);
         g.classList.toggle('foco', Boolean(atual && atual.foco.includes(p.idx)));
       }
-      // mortes da janela até agora
+      // mortes da janela até agora (e, no pickoff, a distância até o aliado mais perto)
       camadaMortes.textContent = '';
+      if (atual.ligar) {
+        const [a, b] = atual.ligar.map((i) => ps[i]);
+        if (a && b) camadaMortes.append(s('line', { x1: u(a[0]), y1: v(a[1]), x2: u(b[0]), y2: v(b[1]), class: 'm-ligacao', 'stroke-width': 0.6 * Math.max(0.35, escala) }));
+      }
       const evs = [];
       for (const p of todos) {
         for (const d of r.mortes ? r.mortes[p.idx] : []) {
