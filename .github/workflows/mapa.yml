@@ -34,16 +34,31 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+      # o parser leva ~3 min para compilar: guarda o .jar pronto em cache, pela versão do parser
+      - name: Versão do parser
+        id: versao
+        if: steps.fila.outputs.fila != '0'
+        run: echo "sha=$(git ls-remote https://github.com/odota/parser.git HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        if: steps.fila.outputs.fila != '0'
+        with:
+          path: parser-jar
+          key: parser-jar-${{ steps.versao.outputs.sha }}
       - name: Parser de replays do OpenDota
         if: steps.fila.outputs.fila != '0'
         run: |
-          git clone --depth 1 https://github.com/odota/parser.git parser
-          cd parser && mvn -q -DskipTests package
-          JAR=$(ls target/*.jar | grep -v original | head -1)
-          echo "jar: $JAR"
-          nohup java -Xmx5g -jar "$JAR" 5600 > ../parser.log 2>&1 &
+          if [ ! -f parser-jar/parser.jar ]; then
+            echo "compilando o parser (sem cache)"
+            git clone --depth 1 https://github.com/odota/parser.git parser
+            (cd parser && mvn -q -DskipTests package)
+            mkdir -p parser-jar
+            cp "$(ls parser/target/*.jar | grep -v original | head -1)" parser-jar/parser.jar
+          else
+            echo "parser do cache"
+          fi
+          nohup java -Xmx5g -jar parser-jar/parser.jar 5600 > parser.log 2>&1 &
           for i in $(seq 1 60); do nc -z localhost 5600 && break; sleep 2; done
-          nc -z localhost 5600 && echo "parser no ar" || { cat ../parser.log; exit 1; }
+          nc -z localhost 5600 && echo "parser no ar" || { cat parser.log; exit 1; }
       - name: Processar partidas
         if: steps.fila.outputs.fila != '0'
         run: |
