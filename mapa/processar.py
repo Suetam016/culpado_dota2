@@ -33,7 +33,7 @@ def post(caminho: str):
         return r.read()
 
 
-VERSAO = 3  # 2: uso de skills e itens; 3: dano entre heróis por segundo (explosões no mapa)
+VERSAO = 4  # 2: uso de skills e itens; 3: dano entre heróis; 4: dano com a skill que causou
 ITENS_DE_LUTA = {
     "blink", "overwhelming_blink", "swift_blink", "arcane_blink", "black_king_bar", "refresher", "glimmer_cape",
     "force_staff", "hurricane_pike", "lotus_orb", "sheepstick", "orchid", "bloodthorn", "nullifier", "abyssal_blade",
