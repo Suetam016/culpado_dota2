@@ -2878,6 +2878,57 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     };
   }
 
+  // ---------------------------------------------------------------- momentos de brilho (mecânica e jogadas)
+  // O osso para cada um: o que o replay mostra de bem feito, com número e minuto. O mapa acrescenta mais
+  // (esquivas, combos, saves) quando os dados de posição chegam.
+  const NOMES_RUNA = { 0: 'Dano Duplo', 1: 'Velocidade', 2: 'Ilusão', 3: 'Invisibilidade', 4: 'Regeneração', 6: 'Arcana', 9: 'Escudo' };
+  function brilhosDoJogador(p, ctx, match) {
+    const r = p.raw;
+    const minutos = ctx.duracao / 60;
+    const out = [];
+    const add = (peso, titulo, texto, t) => out.push({ peso, titulo, texto, t: t ?? null });
+    const nomeNpc = (npc) => { const j = ctx.jog.find((x) => x.heroi.npc === npc); return j ? j.heroi.nome : (npc || '').replace('npc_dota_hero_', '').replace(/_/g, ' '); };
+    const mk = r.multi_kills || {};
+    const maiorMulti = Math.max(0, ...Object.keys(mk).map(Number));
+    if (maiorMulti >= 3) {
+      const nome = { 3: 'Triple Kill', 4: 'Ultra Kill' }[maiorMulti] || 'RAMPAGE';
+      add(maiorMulti * 3, nome, `${nome}${mk[maiorMulti] > 1 ? ` (${mk[maiorMulti]} vezes)` : ''}: ${maiorMulti} heróis em sequência. O narrador gritou seu nome.`);
+    }
+    const ks = r.kill_streaks || {};
+    const maiorStreak = Math.max(0, ...Object.keys(ks).map(Number));
+    if (maiorStreak >= 7) add(maiorStreak, maiorStreak >= 10 ? 'Beyond Godlike' : 'Imparável', `Chegou a ${maiorStreak} abates sem morrer. Por um bom tempo o mapa foi seu.`);
+    const treads = (r.item_uses || {}).power_treads || 0;
+    if (treads >= 25 && treads / minutos >= 0.6) add(6, 'Troca de Treads', `Alternou o Power Treads ${treads} vezes (${(treads / minutos).toFixed(1)} por minuto): atributo certo na hora de usar skill e na hora de bater. Mecânica de quem sabe.`);
+    const hit = r.max_hero_hit;
+    if (hit && hit.value >= 700) {
+      const com = hit.inflictor && hit.inflictor !== 'null' ? ` com ${String(hit.inflictor).replace(/^item_/, '').replace(new RegExp(`^${(p.heroi.npc || '').replace('npc_dota_hero_', '')}_`), '').replace(/_/g, ' ')}` : '';
+      add(Math.min(8, hit.value / 150), 'Golpe do jogo', `Tirou ${fmtInt(hit.value)} de vida do ${nomeNpc(hit.key)} de uma vez${com}, aos ${mmss(hit.time)}.`, hit.time);
+    }
+    for (const b of r.buyback_log || []) {
+      const luta = (ctx.lutas || []).find((l) => l.inicio >= b.time - 5 && l.inicio <= b.time + 60 && l.resultado === 'venceu');
+      if (luta) { add(7, 'Buyback na hora certa', `Comprou a volta aos ${mmss(b.time)} e a luta que veio em seguida foi de vocês (${luta.mortesEles} x ${luta.mortesNos}).`, b.time); break; }
+    }
+    if ((r.camps_stacked || 0) >= 5) add(4, 'Stackador', `${r.camps_stacked} camps stackados: farm extra de graça para o time.`);
+    if ((r.observer_kills || 0) >= 3) add(4, 'Caça-wards', `Tirou ${r.observer_kills} observer wards deles (e ${r.sentry_kills || 0} sentries). Deixou o inimigo no escuro.`);
+    if (p.posicao <= 3 && (r.denies || 0) >= 15) add(3, 'Lane na mão', `${r.denies} denies: o rival passou fome na lane.`);
+    if (r.lane_efficiency_pct >= 75 && p.posicao <= 3) add(3, 'Lane eficiente', `${Math.round(r.lane_efficiency_pct)}% de eficiência na fase de rotas: pegou quase todo o ouro que estava na mesa.`);
+    const runas = (r.runes_log || []).filter((x) => String(x.key) in NOMES_RUNA && x.time <= 20 * 60);
+    if (runas.length >= 3) add(3, 'Dono das runas', `Pegou ${runas.length} runas de poder até os 20 min (${[...new Set(runas.map((x) => NOMES_RUNA[x.key]))].join(', ')}).`);
+    if ((r.courier_kills || 0) >= 1) add(3, 'Sniper de courier', `Matou ${r.courier_kills === 1 ? 'o courier' : `${r.courier_kills} couriers`} deles. Item que não chega é luta que não acontece.`);
+    // reserva para ninguém ficar sem: a luta ganha em que mais pesou
+    if (out.length < 2) {
+      const melhor = (ctx.lutas || []).filter((l) => l.mortesEles > l.mortesNos && l.jogadores[p.idx]).map((l) => {
+        const meu = l.jogadores[p.idx];
+        const total = soma(ctx.nos, (q) => (l.jogadores[q.idx] || {}).damage || 0) || 1;
+        return { l, fatia: (meu.damage || 0) / total, abates: meu.kills || 0 };
+      }).sort((a, b) => b.fatia + b.abates * 0.1 - (a.fatia + a.abates * 0.1))[0];
+      if (melhor && (melhor.fatia >= 0.15 || melhor.abates >= 1)) {
+        add(2, 'Sua melhor luta', `Aos ${mmss(melhor.l.inicio)} (${melhor.l.mortesEles} x ${melhor.l.mortesNos} para vocês): ${pct(melhor.fatia)} do dano do time${melhor.abates ? ` e ${plural(melhor.abates, 'abate', 'abates')}` : ''}.`, melhor.l.inicio);
+      }
+    }
+    return out.sort((a, b) => b.peso - a.peso).slice(0, 4);
+  }
+
   // ---------------------------------------------------------------- selos e a ficha do lado bom
 
   // Cada selo nasce de um lance real (minuto, contra quem, em que situação) e só aparece se passar
@@ -3582,6 +3633,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     }
 
     selosDaPartida(ctx, match, vereditos, rotas, venceu);
+    for (const v of vereditos) v.brilhos = parseado ? brilhosDoJogador(v.jogador, ctx, match) : [];
     const chance = parseado ? chanceDeVitoria(dados.modeloVitoria, match, ctx) : null;
     const decisivas = parseado && ctx.mortes ? jogadasDecisivas(ctx, curvaDeChance(ctx, chance, venceu)) : [];
     const lances = parseado && ctx.mortes ? lancesDaPartida(ctx, vereditos, decisivas) : [];
@@ -3994,18 +4046,34 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     sonsIndice = {};
     fetch('sons/indice.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).then((j) => { sonsIndice = j || {}; }).catch(() => {});
   };
+  // toca pelo Web Audio (com ganho): no iPhone o volume de um <audio> é ignorado e sai sempre no máximo
+  const buffersSom = {};
   function somDaSkill(chave, forte) {
     if (!somLigado() || volumeMapa() === 0) return;
     const arq = sonsIndice && sonsIndice[chave];
-    if (arq) {
-      try {
-        const a = new Audio(`sons/${arq}`);
-        a.volume = volumeMapa() * (forte ? 1 : 0.7);
-        a.play().catch(() => impacto(forte));
-        return;
-      } catch (e) { /* cai no boom */ }
+    if (!arq) { impacto(forte); return; }
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { return; }
+    const ac = audioCtx;
+    const tocar = (buf) => {
+      if (!buf) { impacto(forte); return; }
+      const fonte = ac.createBufferSource();
+      fonte.buffer = buf;
+      const g = ac.createGain();
+      g.gain.value = volumeMapa() * (forte ? 1 : 0.7);
+      fonte.connect(g).connect(ac.destination);
+      fonte.start();
+    };
+    if (chave in buffersSom) {
+      Promise.resolve(buffersSom[chave]).then(tocar);
+      return;
     }
-    impacto(forte);
+    buffersSom[chave] = fetch(`sons/${arq}`).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject()))
+      .then((b) => new Promise((ok, falha) => ac.decodeAudioData(b, ok, falha)))
+      .catch(() => null);
+    buffersSom[chave].then((buf) => { buffersSom[chave] = buf; tocar(buf); });
   }
 
   function tambores(duracao) {
@@ -4669,7 +4737,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const volume = h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(volumeMapa() * 100), class: 'mapa-volume', 'aria-label': 'Volume dos sons do mapa' });
     const iconeVol = h('span', { class: 'mapa-vol-icone', 'aria-hidden': 'true' }, volumeMapa() === 0 ? '🔇' : '🔊');
     volume.addEventListener('input', () => { guardar('culpado:volume', Number(volume.value) / 100); iconeVol.textContent = Number(volume.value) === 0 ? '🔇' : '🔊'; });
-    volume.addEventListener('change', () => somDaSkill('', false)); // amostra do volume escolhido
+    volume.addEventListener('change', () => somDaSkill(sonsIndice && sonsIndice.black_king_bar ? 'black_king_bar' : Object.keys(sonsIndice || {})[0] || '', false)); // amostra do volume escolhido
     controles.append(relogio, bPlay, bVel, bDe, h('label', { class: 'mapa-vol' }, iconeVol, volume));
     bPlay.addEventListener('click', () => { tocando = !tocando; bPlay.textContent = tocando ? 'Pausar' : 'Tocar'; if (tocando) { ultimo = performance.now(); requestAnimationFrame(quadro); } });
     bVel.addEventListener('click', () => { vel = vel === 1.5 ? 3 : vel === 3 ? 0.75 : 1.5; bVel.textContent = `${vel}×`; });
@@ -5210,6 +5278,81 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         : h('p', { class: 'vazio' }, `Nenhum selo nessa. ${v.plano && v.plano[0] ? `Pra ganhar um na próxima: ${v.plano[0].charAt(0).toLowerCase()}${v.plano[0].slice(1)}` : 'O próximo jogo é a chance.'}`));
   }
 
+  // jogadas que só os dados do replay segundo a segundo mostram: esquiva, combo, save e smoke que deu certo
+  const DESVIO = new Set(['manta', 'cyclone', 'wind_waker', 'black_king_bar', 'blink', 'overwhelming_blink', 'swift_blink', 'arcane_blink',
+    'force_staff', 'hurricane_pike', 'lotus_orb', 'puck_phase_shift', 'ember_spirit_sleight_of_fist', 'juggernaut_blade_fury',
+    'void_spirit_dissimilate', 'faceless_void_time_walk', 'antimage_blink', 'queenofpain_blink', 'storm_spirit_ball_lightning',
+    'morphling_waveform', 'weaver_shukuchi', 'slark_dark_pact', 'phantom_lancer_doppelwalk', 'naga_siren_mirror_image', 'riki_tricks_of_the_trade']);
+  const BLINKS = new Set(['blink', 'overwhelming_blink', 'swift_blink', 'arcane_blink']);
+  const SAVES = new Set(['glimmer_cape', 'force_staff', 'hurricane_pike', 'cyclone', 'wind_waker', 'lotus_orb', 'solar_crest', 'dazzle_shallow_grave',
+    'oracle_false_promise', 'oracle_fates_edict', 'abaddon_aphotic_shield', 'winter_wyvern_cold_embrace', 'vengefulspirit_nether_swap',
+    'pugna_decrepify', 'shadow_demon_disruption', 'omniknight_purification', 'omniknight_guardian_angel', 'treant_living_armor',
+    'chen_hand_of_god', 'io_tether', 'earth_spirit_geomagnetic_grip', 'tusk_snowball', 'snapfire_gobble_up', 'marci_companion_run']);
+  const brilhosMapaCache = new WeakMap();
+  function brilhosDoMapa(r, mapa) {
+    if (brilhosMapaCache.has(mapa)) return brilhosMapaCache.get(mapa);
+    const out = {};
+    const pos = posicoes(mapa, r);
+    const HAB = mapa.hab || [];
+    const usos = (mapa.usos || []).map(([t, k, hb, alvo]) => ({ t, quem: pos.idxDe[k], hab: HAB[hb], alvo: alvo >= 0 ? pos.idxDe[alvo] : null })).filter((x) => x.hab);
+    const dano = (mapa.dano || []).map(([t, a, b, val, hb]) => ({ t, quem: pos.idxDe[a], alvo: pos.idxDe[b], v: val, hab: hb >= 0 ? HAB[hb] : null }));
+    const temSkill = dano.some((d) => d.hab);
+    const nos = new Set(r.nos.map((p) => p.idx));
+    const nome = (i) => (r.nos.concat(r.eles).find((p) => p.idx === i) || { heroi: { nome: '?' } }).heroi.nome;
+    const morreu = (i, a, b) => (r.mortes ? r.mortes[i] : []).some((d) => d.t >= a && d.t <= b);
+    const add = (i, peso, titulo, texto, t) => (out[i] = out[i] || []).push({ peso, titulo, texto, t });
+    for (const u of usos) {
+      // esquiva: inimigo mirou a skill nele, ele usou Manta/Eul/Blink... logo em seguida e não levou o dano dela
+      if (temSkill && u.alvo != null && nos.has(u.alvo) && !nos.has(u.quem) && u.hab[2] !== 'i') {
+        const fuga = usos.find((x) => x.quem === u.alvo && DESVIO.has(x.hab[0]) && x.t >= u.t && x.t <= u.t + 0.8);
+        const levou = dano.some((d) => d.alvo === u.alvo && d.quem === u.quem && d.hab && d.hab[0] === u.hab[0] && d.t >= Math.floor(u.t) && d.t <= u.t + 3);
+        if (fuga && !levou) add(u.alvo, 6, 'Esquivou', `Desviou do ${u.hab[1]} do ${nome(u.quem)} com ${fuga.hab[1]} aos ${mmss(u.t)}. Reflexo de quem já tomou essa antes.`, u.t);
+      }
+      if (!nos.has(u.quem)) continue;
+      // combo: Blink e ultimate colados, pegando gente
+      if (BLINKS.has(u.hab[0])) {
+        const ult = usos.find((x) => x.quem === u.quem && x.hab[2] === 'u' && x.t > u.t && x.t <= u.t + 1.2);
+        if (ult) {
+          const pegou = new Set(dano.filter((d) => d.quem === u.quem && d.t >= Math.floor(ult.t) && d.t <= ult.t + 4 && (!temSkill || (d.hab && d.hab[0] === ult.hab[0]))).map((d) => d.alvo));
+          if (pegou.size >= 2) add(u.quem, 8, 'Blink + ult', `Blink e ${ult.hab[1]} no mesmo instante aos ${mmss(ult.t)}, pegando ${pegou.size} heróis. Iniciação de manual.`, ult.t);
+        }
+      }
+      // save: item/skill de salvar num aliado que estava apanhando, e ele sobreviveu
+      if (SAVES.has(u.hab[0]) && u.alvo != null && u.alvo !== u.quem && nos.has(u.alvo)) {
+        const apanhou = dano.filter((d) => d.alvo === u.alvo && d.t >= u.t - 3 && d.t <= u.t).reduce((a, d) => a + d.v, 0);
+        if (apanhou >= 300 && !morreu(u.alvo, u.t, u.t + 6)) add(u.quem, 7, 'Salvou o parceiro', `${u.hab[1]} no ${nome(u.alvo)} aos ${mmss(u.t)}, quando ele já tinha tomado ${fmtK(apanhou)} em 3 s. Ele saiu vivo.`, u.t);
+      }
+      // smoke que deu certo
+      if (u.hab[0] === 'smoke_of_deceit') {
+        const abates = r.eles.filter((p) => morreu(p.idx, u.t, u.t + 50)).length;
+        if (abates) add(u.quem, 5, 'Smoke que deu certo', `Smoke aos ${mmss(u.t)} e ${abates === 1 ? 'um abate' : `${abates} abates`} em menos de 1 min.`, u.t);
+      }
+    }
+    for (const k of Object.keys(out)) {
+      const vistos = new Set();
+      out[k] = out[k].sort((a, b) => b.peso - a.peso).filter((x) => (vistos.has(x.titulo) ? false : vistos.add(x.titulo))).slice(0, 3);
+    }
+    brilhosMapaCache.set(mapa, out);
+    return out;
+  }
+
+  function blocoBrilhos(v, r) {
+    const itens = (b) => h('li', {}, h('strong', {}, b.titulo), ` ${b.texto}`);
+    const ul = h('ul', { class: 'pontos brilhos' }, (v.brilhos || []).map(itens));
+    const bloco = h('div', { class: 'coach-col bom brilho' }, h('h4', {}, 'Jogou muito'), ul);
+    if (!(v.brilhos || []).length) bloco.hidden = true;
+    if (r.partida.parseado) {
+      carregarMapa(r.partida.id).then((mapa) => {
+        if (!mapa) return;
+        const extra = brilhosDoMapa(r, mapa)[v.jogador.idx] || [];
+        if (!extra.length) return;
+        ul.prepend(...extra.map(itens));
+        bloco.hidden = false;
+      }).catch(() => {});
+    }
+    return bloco;
+  }
+
   function dossie(v, i, r) {
     const p = v.jogador;
     return h('article', { class: 'cartao dossie', id: `dossie-${p.idx}`, 'aria-labelledby': `dossie-titulo-${p.idx}` },
@@ -5226,6 +5369,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       blocoSelos(v),
       leituraDaBuild(v),
       h('div', { class: 'coach' },
+        blocoBrilhos(v, r),
         v.custou.length ? h('div', { class: 'coach-col ruim' }, h('h4', {}, 'O que custou o jogo'), lista('pontos', v.custou)) : null,
         v.fezBem.length ? h('div', { class: 'coach-col bom' }, h('h4', {}, 'O que você fez bem'), lista('pontos', v.fezBem)) : null,
         v.plano.length ? h('div', { class: 'coach-col plano' }, h('h4', {}, 'Plano para o próximo jogo'), lista('pontos', v.plano, true)) : null),
