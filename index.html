@@ -910,8 +910,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .m-chao { fill: #13261a; }
 .m-rio { fill: none; stroke: #1f4d6b; stroke-width: 5; stroke-linecap: round; opacity: 0.9; }
 .m-rota { fill: none; stroke: #4a4433; stroke-width: 2.2; stroke-linecap: round; opacity: 0.8; }
-.m-base.radiant { fill: rgba(57,135,229,0.25); }
-.m-base.dire { fill: rgba(230,103,103,0.25); }
+.m-base.nos { fill: rgba(57,135,229,0.25); }
+.m-base.eles { fill: rgba(230,103,103,0.25); }
 .m-heroi .m-anel { stroke-width: 0.8; }
 .m-heroi.nos .m-anel { fill: #3987e5; stroke: #cfe2ff; }
 .m-heroi.eles .m-anel { fill: #e66767; stroke: #ffd7d7; }
@@ -3864,7 +3864,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       return b;
     });
     if (!pos) {
-      palco.append(h('p', { class: 'vazio' }, SO_EMBUTIDO ? 'O mapa animado só aparece no site.' : 'O mapa animado aparece quando o replay da partida for processado (até umas 3 h depois do jogo). Os lances já estão listados ao lado.'));
+      palco.append(h('p', { class: 'vazio' }, SO_EMBUTIDO ? 'O mapa animado só aparece no site.' : 'O replay desta partida ainda não foi processado: o robô do mapa roda a cada hora. Volta daqui a pouco; os lances já estão listados ao lado.'));
       tocarLance = () => document.getElementById('lances').scrollIntoView({ behavior: 'smooth' });
       return;
     }
@@ -3874,11 +3874,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const L = MAPA.max - MAPA.min;
     const u = (x) => ((x - MAPA.min) / L) * W;
     const v = (y) => W - ((y - MAPA.min) / L) * W;
+    const jogadorNos = estado.dados.match.players[r.nos[0].idx] || {};
+    const nosRadiant = jogadorNos.isRadiant ?? jogadorNos.player_slot < 128;
     // mapa estilizado: rio, rotas e bases
     cam.append(s('rect', { x: 0, y: 0, width: W, height: W, class: 'm-chao' }));
     cam.append(s('path', { d: `M${W * 0.04},${W * 0.1} C${W * 0.35},${W * 0.38} ${W * 0.62},${W * 0.6} ${W * 0.96},${W * 0.9}`, class: 'm-rio' }));
     for (const d of [`M${W * 0.13},${W * 0.84} L${W * 0.13},${W * 0.13} L${W * 0.84},${W * 0.13}`, `M${W * 0.16},${W * 0.87} L${W * 0.87},${W * 0.87} L${W * 0.87},${W * 0.16}`, `M${W * 0.16},${W * 0.84} L${W * 0.84},${W * 0.16}`]) cam.append(s('path', { d, class: 'm-rota' }));
-    cam.append(s('circle', { cx: W * 0.11, cy: W * 0.89, r: W * 0.08, class: 'm-base radiant' }), s('circle', { cx: W * 0.89, cy: W * 0.11, r: W * 0.08, class: 'm-base dire' }));
+    cam.append(s('circle', { cx: W * 0.11, cy: W * 0.89, r: W * 0.08, class: `m-base ${nosRadiant ? 'nos' : 'eles'}` }), s('circle', { cx: W * 0.89, cy: W * 0.11, r: W * 0.08, class: `m-base ${nosRadiant ? 'eles' : 'nos'}` }));
     const camadaMortes = s('g', {});
     const camadaHerois = s('g', {});
     cam.append(camadaMortes, camadaHerois);
