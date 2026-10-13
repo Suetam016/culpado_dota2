@@ -1045,6 +1045,15 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .m-torre.eles rect { fill: #e66767; stroke: #ffd7d7; }
 .m-torre.caiu rect { fill: none; stroke: #6b7684; stroke-dasharray: 0.4 0.3; opacity: 0.7; }
 .m-torre.anc rect { stroke-width: 0.5; }
+.lance.fixo { border-width: 2px; }
+.lance.fixo.potg { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, var(--surface)); }
+.lance.fixo.throw { border-color: #e66767; background: color-mix(in srgb, #e66767 10%, var(--surface)); }
+.selo-jogada { grid-column: 2; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.lance.potg .selo-jogada { color: var(--gold); }
+.lance.throw .selo-jogada { color: #ff9a9a; }
+.lances-sep { height: 1px; background: var(--line-strong, #2a3442); margin: 4px 0; }
+.lance.fixo .t { grid-row: 1 / span 3; }
+.lance.fixo strong, .lance.fixo small { grid-column: 2; }
 
 </style>
 <header class="topo">
@@ -3063,9 +3072,58 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
   // Os momentos que contam a partida: os selos com minuto (o lado bom), as mortes que mais custaram
   // e a pior luta do colapso (o lado ruim). Cada lance é uma janela curta para animar no mapa.
-  function lancesDaPartida(ctx, vereditos) {
+  // Chance de vitória de vocês por minuto: o modelo treinado se houver; senão uma estimativa pela vantagem de
+  // ouro e XP (a mesma vantagem vale menos quanto mais tarde). No último minuto vale o resultado.
+  function curvaDeChance(ctx, chance, venceu) {
+    const lead = ctx.lead || [];
+    const xp = ctx.leadXp || [];
+    const n = lead.length;
+    if (!n) return null;
+    const base = chance && chance.curva && chance.curva.length >= n - 1 ? chance.curva
+      : lead.map((g, m) => 1 / (1 + Math.exp(-((g + 0.5 * (xp[m] || 0)) / (1800 + 220 * m)))));
+    const c = base.slice(0, n);
+    c.push(venceu ? 1 : 0);
+    return c;
+  }
+
+  // Play of the Game e Throw of the Game: a luta que mais subiu e a que mais derrubou a chance de vitória de vocês
+  // (da chance antes da luta para a chance 1 min depois do fim, contando as torres e o Roshan que vieram na sequência).
+  function jogadasDecisivas(ctx, curva) {
+    if (!curva || !ctx.lutas || !ctx.lutas.length) return [];
+    const em = (t) => curva[Math.max(0, Math.min(curva.length - 1, t))];
+    const ult = curva.length - 1;
+    const swings = ctx.lutas.map((l) => {
+      const a = Math.floor(l.inicio / 60);
+      const b = Math.min(ult, Math.ceil(l.fim / 60) + 1);
+      const fimDoJogo = l.fim >= ctx.duracao - 90;
+      const depois = fimDoJogo ? em(ult) : em(b);
+      return { l, antes: em(a), depois, delta: depois - em(a) };
+    });
+    const out = [];
+    const nomeH = (i) => ctx.jog[i].heroi.nome;
+    const pp = (x) => `${Math.round(x * 100)}%`;
+    const melhor = [...swings].sort((x, y) => y.delta - x.delta)[0];
+    const pior = [...swings].sort((x, y) => x.delta - y.delta)[0];
+    if (melhor && melhor.delta >= 0.06) {
+      const { l } = melhor;
+      const heroi = [...ctx.nos].sort((x, y) => ((l.jogadores[y.idx] || {}).damage || 0) - ((l.jogadores[x.idx] || {}).damage || 0))[0];
+      out.push({ tipo: 'bom', fixo: 'potg', t: l.inicio, ini: l.inicio - 5, fim: l.fim + 5, titulo: `Play of the Game · ${l.mortesEles} x ${l.mortesNos}`,
+        legenda: `chance de vitória ${pp(melhor.antes)} → ${pp(melhor.depois)}; quem mais bateu: ${heroi.heroi.nome} (${heroi.nome})`,
+        foco: [heroi.idx, ...ctx.nos.filter((p) => p !== heroi && (l.jogadores[p.idx] || {}).damage).map((p) => p.idx)].slice(0, 5), peso: 100, swing: melhor.delta });
+    }
+    if (pior && pior.delta <= -0.06 && pior !== melhor) {
+      const { l } = pior;
+      const caidos = ctx.nos.filter((p) => (l.jogadores[p.idx] || {}).deaths);
+      out.push({ tipo: 'ruim', fixo: 'throw', t: l.inicio, ini: l.inicio - 5, fim: l.fim + 5, titulo: `Throw of the Game · ${l.mortesEles} x ${l.mortesNos}`,
+        legenda: `chance de vitória ${pp(pior.antes)} → ${pp(pior.depois)}${caidos.length ? `; caíram ${caidos.map((p) => p.heroi.nome).join(', ')}` : ''}`,
+        foco: (caidos.length ? caidos : ctx.nos).map((p) => p.idx), peso: 99, swing: pior.delta });
+    }
+    return out.map((x) => ({ ...x, legenda: x.legenda.replace(/undefined/g, '?') })).filter(() => nomeH);
+  }
+
+  function lancesDaPartida(ctx, vereditos, decisivas = []) {
     const { nos, jog } = ctx;
-    const lances = [];
+    const lances = [...decisivas];
     const nomeH = (i) => jog[i].heroi.nome;
     const TIPOS_SELO = { 'dono-da-luta': 1, cobrador: 1, troco: 1, turista: 1, 'voltou-do-alem': 1, aegis: 1, 'first-blood': 1 };
     for (const v of vereditos) {
@@ -3091,12 +3149,12 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     for (const d of mortes.sort((a, b) => (b.ouro || 0) - (a.ouro || 0)).slice(0, 2)) {
       lances.push({ tipo: 'ruim', t: d.t, ini: d.t - 12, fim: d.t + 4, titulo: `${d.p.heroi.nome} morreu`, legenda: `${d.assassino != null ? `para ${nomeH(d.assassino)}, ` : ''}${fmtK(d.ouro || 0)} de ouro pra eles`, foco: [d.p.idx], peso: 6 });
     }
-    // sem sobreposição: fica o de maior peso
+    // sem sobreposição: fica o de maior peso (Play e Throw of the Game sempre ficam)
     const escolhidos = [];
     for (const l of lances.sort((a, b) => b.peso - a.peso)) {
-      if (escolhidos.some((x) => l.ini < x.fim && x.ini < l.fim)) continue;
+      if (!l.fixo && escolhidos.some((x) => l.ini < x.fim && x.ini < l.fim)) continue;
       escolhidos.push(l);
-      if (escolhidos.length >= 8) break;
+      if (escolhidos.length >= 10) break;
     }
     return escolhidos.sort((a, b) => a.t - b.t);
   }
@@ -3384,7 +3442,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       p.stats.duracao = duracao;
     }
 
-    const ctx = { jog, nos, eles, mortes, lutas, eventos, lead, items, duracao, itensNos, itensEles };
+    const ctx = { jog, nos, eles, mortes, lutas, eventos, lead, leadXp, items, duracao, itensNos, itensEles };
     ctx.quedas = janelas(lead, -1, 3).map((w) => detalharMomento(w, 'queda', ctx)).sort((a, b) => a.delta - b.delta);
     ctx.viradas = janelas(lead, 1, 2).map((w) => detalharMomento(w, 'virada', ctx)).sort((a, b) => b.delta - a.delta);
     const primeiraPerdida = lutas.find((l) => l.resultado === 'perdeu' && l.inicio >= 15 * 60 && l.mortesNos >= 3);
@@ -3524,7 +3582,9 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     }
 
     selosDaPartida(ctx, match, vereditos, rotas, venceu);
-    const lances = parseado && ctx.mortes ? lancesDaPartida(ctx, vereditos) : [];
+    const chance = parseado ? chanceDeVitoria(dados.modeloVitoria, match, ctx) : null;
+    const decisivas = parseado && ctx.mortes ? jogadasDecisivas(ctx, curvaDeChance(ctx, chance, venceu)) : [];
+    const lances = parseado && ctx.mortes ? lancesDaPartida(ctx, vereditos, decisivas) : [];
 
     const itensQueMudamALuta = ctx.itensEles
       .filter((it) => NOTAS_ITEM_INIMIGO[it.key] && it.key !== 'blade_mail')
@@ -3552,7 +3612,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       vereditos, craques: craquesDaPartida(ctx, match), comparativo, rotas, inimigo, dadosDeItens, itensQueMudamALuta,
       planoDoTime: ctx.alocacao.plano, ameacasDoTime: ctx.alocacao.ameacas, debates: debatesDeItens(ctx),
       historia: parseado && ctx.mortes ? historiaDaPartida(ctx, rotas, venceu) : [],
-      chance: parseado ? chanceDeVitoria(dados.modeloVitoria, match, ctx) : null,
+      chance,
       lances,
     };
   }
@@ -3895,7 +3955,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
           h('p', {}, 'Por enquanto o tribunal só tem o placar e o farm. Quando o replay for analisado (de 1 a 10 min), a sentença sai completa e o site libera tudo. Deixe a aba aberta.')))
         : h('div', { class: 'topo-time' },
           seletorDeTime(r),
-          h('div', { class: 'figurinhas' }, r.vereditos.map((v, i) => figurinha(v, i, !vitoria && cs.includes(v), vitoria ? r.craques.find((c) => c.jogador === v.jogador) : null, vitoria && craquesDe(r).some((c) => c.jogador === v.jogador))))));
+          h('div', { class: 'figurinhas' }, (vitoria ? r.craques.map((c) => r.vereditos.find((v) => v.jogador === c.jogador)) : r.vereditos).map((v, i) => figurinha(v, i, !vitoria && cs.includes(v), vitoria ? r.craques.find((c) => c.jogador === v.jogador) : null, vitoria && craquesDe(r).some((c) => c.jogador === v.jogador))))));
   }
 
   // -------- revelação: rufar de tambores e o culpado
@@ -4156,12 +4216,17 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       const extra = lancesDoMapa(r, pos).filter((x) => !lances.some((l) => x.ini < l.fim && l.ini < x.fim));
       lances = [...lances, ...extra.sort((a, b) => b.peso - a.peso).slice(0, 4)].sort((a, b) => a.t - b.t);
     }
+    // Play e Throw of the Game fixos no topo; o resto em ordem de tempo
+    const ordemFixo = { potg: 0, throw: 1 };
+    lances = [...lances.filter((l) => l.fixo).sort((a, b) => ordemFixo[a.fixo] - ordemFixo[b.fixo]), ...lances.filter((l) => !l.fixo)];
     lista.textContent = '';
     const chips = lances.map((l, i) => {
-      const b = h('button', { type: 'button', class: `lance ${l.tipo}`, 'aria-pressed': 'false' },
-        h('span', { class: 't' }, mmss(l.t)), h('strong', {}, l.titulo), h('small', {}, l.legenda));
+      const b = h('button', { type: 'button', class: `lance ${l.tipo}${l.fixo ? ` fixo ${l.fixo}` : ''}`, 'aria-pressed': 'false' },
+        h('span', { class: 't' }, mmss(l.t)), l.fixo ? h('span', { class: 'selo-jogada' }, l.fixo === 'potg' ? '★ Play of the Game' : '✕ Throw of the Game') : null,
+        h('strong', {}, l.fixo ? l.titulo.replace(/^(Play|Throw) of the Game · /, 'Luta ') : l.titulo), h('small', {}, l.legenda));
       b.addEventListener('click', () => tocar(i));
       lista.append(b);
+      if (l.fixo && !(lances[i + 1] || {}).fixo) lista.append(h('div', { class: 'lances-sep', 'aria-hidden': 'true' }));
       return b;
     });
     if (!pos) {
@@ -4731,7 +4796,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       document.getElementById('lances').scrollIntoView({ behavior: 'smooth', block: 'start' });
       tocar(i >= 0 ? i : 0);
     };
-    const primeiro = lances.findIndex((l) => l.tipo === 'ruim');
+    const abre = lances.findIndex((l) => l.fixo === (r.partida.venceu ? 'potg' : 'throw'));
+    const primeiro = abre >= 0 ? abre : lances.findIndex((l) => l.tipo === 'ruim');
     tocar(primeiro >= 0 ? primeiro : 0);
   }
 
@@ -4979,13 +5045,16 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       linha('Pra próxima: ', v.plano[0], 'plano'));
     const fb = v.fichaBoa;
     const verso = fb ? h('div', { class: 'fig-face fig-verso', hidden: true },
-      h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, `Nº ${i + 1}`), h('span', { class: 'fig-lado' }, 'Lado bom')),
+      h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, `Nº ${i + 1}`), merito ? h('span', { class: 'fig-culpa merito' }, `${pct(merito.fatia)} do mérito`) : h('span', { class: 'fig-lado' }, 'Lado bom')),
       id.cloneNode(true),
       h('p', { class: 'fig-classe' }, fb.classe),
       h('div', { class: 'fig-mini' }, miniHexagono(fb, 'bom')),
+      merito && merito.brilhou.length
+        ? h('ul', { class: 'fig-selos-texto' }, merito.brilhou.slice(0, 2).map((c) => h('li', {}, h('strong', {}, medalha(), `${c.label} (+${c.pontos})`), h('span', {}, c.evidencia))))
+        : null,
       selos.length
-        ? h('ul', { class: 'fig-selos-texto' }, selos.slice(0, 2).map((x) => h('li', {}, h('strong', {}, medalha(), x.nome), h('span', {}, x.texto))))
-        : h('p', { class: 'fig-zoeira' }, fb.frase)) : null;
+        ? h('ul', { class: 'fig-selos-texto' }, selos.slice(0, merito ? 1 : 2).map((x) => h('li', {}, h('strong', {}, medalha(), x.nome), h('span', {}, x.texto))))
+        : merito ? null : h('p', { class: 'fig-zoeira' }, fb.frase)) : null;
     const card = h('article', { class: `cartao figurinha${eCulpado ? ' e-culpado' : ''}${eCraque ? ' e-craque' : ''}` }, frente, verso);
     if (verso) {
       const botao = h('button', { class: 'fig-virar', type: 'button', 'aria-pressed': 'false' }, 'Virar a figurinha: lado bom');
@@ -5004,6 +5073,14 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         setTimeout(() => card.classList.remove('girando'), 340);
       });
       card.append(botao);
+      // na vitória a figurinha começa pelo lado bom; o clique mostra o lado ruim
+      if (merito) {
+        frente.hidden = true;
+        verso.hidden = false;
+        card.classList.add('lado-bom');
+        botao.setAttribute('aria-pressed', 'true');
+        botao.textContent = 'Virar a figurinha: lado ruim';
+      }
     }
     card.append(h('button', { class: 'fig-ver', type: 'button', onclick: () => document.getElementById(`dossie-${p.idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 'Ver parecer completo'));
     return card;
