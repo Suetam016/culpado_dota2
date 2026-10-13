@@ -904,7 +904,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .lances { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; padding: 14px; }
 @media (max-width: 760px) { .lances { grid-template-columns: minmax(0, 1fr); } }
 .mapa-col { display: grid; gap: 8px; align-content: start; }
-.mapa-palco { aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #0d1a12; display: grid; place-items: center; }
+.mapa-palco { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #0d1a12; display: grid; place-items: center; }
 .mapa-palco .vazio { padding: 20px; text-align: center; color: var(--ink-2); }
 .mapa-svg { width: 100%; height: 100%; display: block; }
 .m-chao { fill: #13261a; }
@@ -983,6 +983,61 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .m-alvo.nos { stroke: #9cc4ff; }
 .m-alvo.eles { stroke: #ffb3b3; }
 @media (prefers-reduced-motion: reduce) { .m-explosao { animation: none; opacity: 0; } }
+
+/* mapa: ritmo dos momentos fortes */
+.m-letreiro { position: absolute; left: 0; right: 0; top: 6%; display: grid; justify-items: center; pointer-events: none; z-index: 2; }
+.m-let { display: flex; align-items: center; gap: 12px; max-width: 88%; padding: 10px 16px 10px 10px; border-radius: 14px;
+  background: rgba(10, 14, 20, 0.88); border: 2px solid #cfd8e3; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  animation: m-let-entra .35s cubic-bezier(.2,1.6,.4,1) both; transition: opacity .4s, transform .4s; }
+.m-let.sai { opacity: 0; transform: translateY(-8px) scale(.96); }
+.m-let.nos { border-color: #3987e5; }
+.m-let.eles { border-color: #e66767; }
+.m-let.ult { border-color: #e3b448; padding: 12px 22px 12px 12px; }
+.m-let div { display: grid; gap: 2px; min-width: 0; }
+.m-let small { color: #c9d3df; font-size: 13px; line-height: 1.3; }
+.m-let-tit { font-family: var(--font-display, var(--font-body)); font-size: 20px; letter-spacing: .02em; text-transform: uppercase; color: #fff; line-height: 1.1; }
+.m-let.ult .m-let-tit { font-size: clamp(22px, 5vw, 34px); color: #ffe39a; text-shadow: 0 0 18px rgba(227,180,72,.7); }
+.m-let.abate .m-let-tit { color: #ffd0d0; }
+.m-let-icone { flex: none; width: 48px; height: 48px; border-radius: 10px; overflow: hidden; display: grid; place-items: center;
+  background: #1b2430; border: 2px solid #cfd8e3; font-weight: 800; color: #fff; }
+.m-let-icone img { width: 100%; height: 100%; object-fit: cover; }
+.m-let-icone.u { width: clamp(56px, 13vw, 84px); height: clamp(56px, 13vw, 84px); border-color: #e3b448; box-shadow: 0 0 24px rgba(227,180,72,.6); }
+.m-let-icone.i { border-color: #8a96a8; }
+.m-let-duelo { display: flex; align-items: center; gap: 6px; flex: none; }
+.m-let-duelo b { color: #ff8080; font-size: 22px; }
+.m-let .retrato { width: 44px; height: 44px; }
+@keyframes m-let-entra { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+.mapa-palco.tremor .mapa-svg { animation: m-tremor .35s linear; }
+@keyframes m-tremor { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-4px,2px); } 40% { transform: translate(4px,-3px); } 60% { transform: translate(-3px,-2px); } 80% { transform: translate(2px,3px); } }
+.m-onda { fill: none; stroke: #e3b448; }
+.m-ult-fundo { fill: #10161f; stroke: #e3b448; stroke-width: 0.6; }
+.m-ult-txt { font-size: 4px; font-weight: 800; fill: #ffe39a; font-family: var(--font-body); }
+.m-rastro { stroke-linecap: round; }
+.m-rastro.nos { stroke: #9cc4ff; }
+.m-rastro.eles { stroke: #ffb3b3; }
+.m-flash { fill: rgba(255,255,255,.25); stroke: #fff; stroke-width: 0.4; }
+.m-dano { font-weight: 800; font-family: var(--font-body); paint-order: stroke; stroke: rgba(0,0,0,.7); stroke-width: 0.5px; }
+.m-dano.nos { fill: #ff8a8a; }
+.m-dano.eles { fill: #ffd27a; }
+.m-dano.forte { fill: #ff4d4d; }
+@media (prefers-reduced-motion: reduce) { .m-let { animation: none; } }
+
+/* vitória: craques */
+.topo-vitoria { display: grid; gap: 10px; justify-items: start; }
+.topo-vitoria > .cartao { width: 100%; }
+.veredito.vitoria { border-color: var(--gold); background: linear-gradient(160deg, color-mix(in srgb, var(--gold) 14%, var(--surface)), var(--surface) 60%); }
+.carimbo.craque { color: var(--gold); border-color: var(--gold); }
+.veredito .vice { margin: 10px 0 0; color: var(--ink-2); font-size: 14px; }
+.figurinha.e-craque { border-color: var(--gold); box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 40%, transparent); }
+.fig-culpa.merito { color: var(--gold); }
+.craques-lista li { display: grid; gap: 6px; }
+.craques-lista .craque-linha { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 10px; }
+.craques-lista li.e-craque .pos { color: var(--gold); }
+.craque-provas { margin: 0 0 4px 44px; padding: 0; list-style: none; display: grid; gap: 3px; font-size: 14px; color: var(--ink-2); }
+.craque-provas strong { color: var(--ink); }
+.revelacao.vitoria .rev-titulo { color: var(--gold); }
+.craque-provas li { display: block; padding: 0; border: 0; }
+.craque-provas li strong { display: inline; }
 
 </style>
 <header class="topo">
@@ -1682,6 +1737,144 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       case 'credito_abates': return `${fmtK(-ouro / CULPA.creditoAbates)} de ouro tirado do inimigo nos próprios abates`;
       default: return '';
     }
+  }
+
+  // ---------------------------------------------------------------- craques (quando vocês ganham)
+  // Espelho do índice de culpa: pontos de mérito na mesma escala (1 ponto = 100 de ouro de impacto).
+  // Só existe no painel (não tem par no Python).
+  const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15 };
+  const LABELS_BOM = {
+    rota: 'Ganhou a rota', abates: 'Abates', assist: 'Assistências', lutas: 'Decidiu as lutas ganhas', objetivos: 'Derrubou estruturas',
+    roshan: 'Pegou o Roshan', farm: 'Farm acima do herói', dano: 'Dano acima do herói', visao: 'Visão do mapa', controle: 'Controle (stuns)',
+    cura: 'Segurou o time vivo', vivo: 'Ficou vivo',
+  };
+  const ELOGIOS = {
+    rota: 'amassou a rota e deu o tom do jogo', abates: 'colecionou cabeça como se fosse figurinha da Copa', assist: 'esteve em todas, igual Wi-Fi de shopping',
+    lutas: 'chegou na luta e apagou a luz', objetivos: 'tratou torre como item de decoração', roshan: 'jantou o Roshan e ainda pediu sobremesa',
+    farm: 'farmou como se o mapa fosse dele', dano: 'bateu como se tivesse raiva pessoal', visao: 'iluminou o mapa mais que poste de LED',
+    controle: 'deixou o inimigo parado mais tempo que fila de banco', cura: 'virou o SUS do time', vivo: 'morrer não estava nos planos',
+  };
+  function craquesDaPartida(ctx, match) {
+    const { nos, eles, duracao } = ctx;
+    const minutos = duracao / 60;
+    const acc = Object.fromEntries(nos.map((p) => [p.idx, {}]));
+    const add = (i, k, ouro, info) => {
+      if (!(i in acc) || !(ouro > 0)) return;
+      const slot = acc[i][k] || (acc[i][k] = { ouro: 0, infos: [] });
+      slot.ouro += ouro;
+      if (info !== undefined) slot.infos.push(info);
+    };
+    const nosIdx = nos.map((p) => p.idx);
+    const elesIdx = eles.map((p) => p.idx);
+    const radiant = nos[0] ? nos[0].radiant : true;
+    const mortesDe = (i) => (ctx.mortes ? ctx.mortes[i] : []).map((d) => ({ ...d, ouro: d.ouro == null ? ouroEstimado(d.t) : d.ouro }));
+    // rota: o quanto passou do que o matchup prometia
+    for (const lane of [1, 2, 3]) {
+      const a = nos.filter((p) => laneDe(p.raw, radiant) === lane);
+      const b = eles.filter((p) => laneDe(p.raw, !radiant) === lane);
+      if (!a.length || !b.length) continue;
+      if ([...a, ...b].some((x) => serie(x.raw, 'networth_t', CULPA.rotaMin) == null || serie(x.raw, 'xp_t', CULPA.rotaMin) == null)) continue;
+      const med = (xs, key) => soma(xs, (x) => serie(x.raw, key, CULPA.rotaMin)) / xs.length;
+      const nwDiff = med(a, 'networth_t') - med(b, 'networth_t');
+      const diff = nwDiff + CULPA.xpPeso * (med(a, 'xp_t') - med(b, 'xp_t'));
+      const tipo = lane === 2 ? 'mid' : a[0].raw.lane_role === 1 ? 'safe' : 'off';
+      const { esperado } = expectativaDaRota(ctx.contexto || {}, a, b, tipo);
+      const sobra = diff - esperado - CULPA.rotaTolerancia;
+      if (sobra > 0) for (const p of a) add(p.idx, 'rota', MERITO.rotaMult * sobra, { tipo, nwDiff, rivais: b.map((x) => x.heroi.nome).join(' e '), esperado });
+    }
+    // abates e assistências
+    if (ctx.mortes) {
+      for (const j of elesIdx) for (const x of mortesDe(j)) if (x.assassino in acc) add(x.assassino, 'abates', MERITO.abates * x.ouro, x.t);
+    } else {
+      for (const p of nos) add(p.idx, 'abates', MERITO.abates * p.raw.kills * ouroEstimado(duracao / 2), null);
+    }
+    const ouroMedioDeles = ctx.mortes ? (soma(elesIdx, (j) => soma(mortesDe(j), (x) => x.ouro)) / Math.max(1, soma(elesIdx, (j) => mortesDe(j).length))) : ouroEstimado(duracao / 2);
+    for (const p of nos) if (p.raw.assists) add(p.idx, 'assist', MERITO.assist * p.raw.assists * ouroMedioDeles, p.raw.assists);
+    // lutas ganhas: o ouro que o inimigo perdeu, dividido pela fatia de dano de cada um
+    for (const tf of match.teamfights || []) {
+      if (!tf.players || tf.players.length < 10) continue;
+      const mortosEles = soma(elesIdx, (j) => tf.players[j].deaths || 0);
+      const mortosNos = soma(nosIdx, (i) => tf.players[i].deaths || 0);
+      if (mortosEles < 2 || mortosEles <= mortosNos) continue;
+      const danoTotal = soma(nosIdx, (i) => tf.players[i].damage || 0);
+      if (!danoTotal) continue;
+      const premio = mortosEles * ouroEstimado(tf.start || 0) * MERITO.lutaDano;
+      for (const i of nosIdx) {
+        const d = tf.players[i].damage || 0;
+        if (d) add(i, 'lutas', (premio * d) / danoTotal, { t: tf.start, fatia: d / danoTotal, placar: [mortosEles, mortosNos] });
+      }
+    }
+    // estruturas e Roshan
+    const quemFez = (o) => {
+      const j = o.player_slot != null ? nos.find((p) => p.slot === o.player_slot) : null;
+      return j || (o.unit ? nos.find((p) => p.heroi.npc === o.unit) : null);
+    };
+    const deles = radiant ? 'badguys' : 'goodguys';
+    for (const o of match.objectives || []) {
+      if (o.type === 'building_kill' && (o.key || '').includes(deles)) {
+        const k = Object.keys(CULPA.objetivos).find((x) => o.key.includes(x));
+        const autor = quemFez(o);
+        if (k && autor) add(autor.idx, 'objetivos', 0.4 * CULPA.objetivos[k], k.includes('rax') ? 'quartel' : 'torre'); // último golpe tem sorte: pesa menos
+      } else if (o.type === 'CHAT_MESSAGE_AEGIS') {
+        const autor = quemFez(o);
+        if (autor) add(autor.idx, 'roshan', MERITO.aegis, o.time);
+      }
+    }
+    for (const p of nos) if (p.raw.tower_damage) add(p.idx, 'objetivos', MERITO.torreDano * p.raw.tower_damage, undefined);
+    // farm e dano (cores), visão, stuns e cura
+    for (const p of nos) {
+      const s = p.stats;
+      if (p.posicao <= 3) {
+        let pc = s.bench.gold_per_min;
+        if (pc != null) add(p.idx, 'farm', Math.max(0, pc - 0.55) * 2 * minutos * 60 * ({ 1: 1, 2: 0.8, 3: 0.5 }[p.posicao] ?? 0.5), pc);
+        pc = s.bench.hero_damage_per_min;
+        if (pc != null) add(p.idx, 'dano', Math.max(0, pc - 0.55) * 2 * minutos * 25, pc);
+        const limite = Math.max(1, Math.floor(minutos / 15));
+        if (s.deaths <= limite && minutos >= 20) add(p.idx, 'vivo', minutos * 12 * (limite - s.deaths + 1) / (limite + 1), s.deaths);
+      } else if (s.obs != null && s.sen != null) {
+        const wards = s.obs + s.sen;
+        const esperado = Math.max(minutos * 0.35, 1);
+        if (wards > esperado) add(p.idx, 'visao', Math.min(1, wards / esperado - 1) * minutos * 30, { wards, esperado });
+      }
+      if (s.stuns) add(p.idx, 'controle', s.stuns * MERITO.stun, s.stuns);
+      if (p.raw.hero_healing) add(p.idx, 'cura', p.raw.hero_healing * MERITO.cura, p.raw.hero_healing);
+    }
+    const arred = (x) => Math.round(x * 10) / 10;
+    const evid = (k, c, p) => {
+      const n = c.infos.length;
+      switch (k) {
+        case 'rota': { const { tipo, nwDiff, rivais, esperado } = c.infos[0]; return `${{ mid: 'mid', safe: 'safe lane', off: 'offlane' }[tipo]} contra ${rivais}: ${nwDiff >= 0 ? `${fmtK(nwDiff)} na frente` : `só ${fmtK(-nwDiff)} atrás`} aos 10 min (média por herói); ${esperadoTxt(esperado)}`; }
+        case 'abates': return `${plural(p.raw.kills, 'abate', 'abates')}${ctx.mortes ? `, ${fmtK(c.ouro / MERITO.abates)} de ouro tirado deles` : ''}`;
+        case 'assist': return `${plural(c.infos[0], 'assistência', 'assistências')}`;
+        case 'lutas': {
+          const top = [...c.infos].sort((a, b) => b.fatia - a.fatia)[0];
+          return `presente em ${plural(n, 'luta ganha', 'lutas ganhas')}; na melhor, aos ${mmss(top.t)} (${top.placar[0]} x ${top.placar[1]}), fez ${pct(top.fatia)} do dano do time`;
+        }
+        case 'objetivos': {
+          const tor = c.infos.filter((x) => x === 'torre').length; const qua = c.infos.filter((x) => x === 'quartel').length;
+          const partes = [tor ? `deu o último golpe em ${plural(tor, 'torre', 'torres')}` : '', qua ? plural(qua, 'quartel', 'quartéis') : ''].filter(Boolean);
+          return `${partes.length ? `${partes.join(' e ')}; ` : ''}${fmtK(p.raw.tower_damage || 0)} de dano em estrutura`;
+        }
+        case 'roshan': return `pegou o Aegis ${plural(n, 'vez', 'vezes')}`;
+        case 'farm': return `GPM no percentil ${pct(c.infos[0])} de quem joga de ${p.heroi.nome}`;
+        case 'dano': return `dano em herói no percentil ${pct(c.infos[0])} de quem joga de ${p.heroi.nome}`;
+        case 'vivo': return `${plural(c.infos[0], 'morte', 'mortes')} em ${Math.round(minutos)} min`;
+        case 'visao': return `${plural(c.infos[0].wards, 'ward', 'wards')}, acima das ~${Math.round(c.infos[0].esperado)} esperadas para suporte`;
+        case 'controle': return `${Math.round(c.infos[0])} s de stun no inimigo`;
+        case 'cura': return `${fmtK(c.infos[0])} de vida curada nos aliados`;
+        default: return '';
+      }
+    };
+    const vs = nos.map((p) => {
+      const cs = Object.entries(acc[p.idx])
+        .filter(([, c]) => c.ouro >= CULPA.escala * 0.5)
+        .map(([key, c]) => ({ key, label: LABELS_BOM[key], pontos: arred(c.ouro / CULPA.escala), evidencia: evid(key, c, p), elogio: ELOGIOS[key] }))
+        .sort((a, b) => b.pontos - a.pontos);
+      return { jogador: p, score: arred(soma(cs, (c) => c.pontos)), fatia: 0, componentes: cs, brilhou: cs.slice(0, 3) };
+    });
+    const total = soma(vs, (v) => v.score) || 1;
+    vs.forEach((v) => { v.fatia = v.score / total; });
+    return vs.sort((a, b) => b.score - a.score);
   }
 
   function julgar(ctx, match) {
@@ -3349,7 +3542,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       nos, eles, lead, leadXp, lutas, eventos, mortes,
       itensNos, itensEles,
       quedas: ctx.quedas, viradas: ctx.viradas,
-      vereditos, comparativo, rotas, inimigo, dadosDeItens, itensQueMudamALuta,
+      vereditos, craques: craquesDaPartida(ctx, match), comparativo, rotas, inimigo, dadosDeItens, itensQueMudamALuta,
       planoDoTime: ctx.alocacao.plano, ameacasDoTime: ctx.alocacao.ameacas, debates: debatesDeItens(ctx),
       historia: parseado && ctx.mortes ? historiaDaPartida(ctx, rotas, venceu) : [],
       chance: parseado ? chanceDeVitoria(dados.modeloVitoria, match, ctx) : null,
@@ -3597,7 +3790,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const parcial = !r.partida.parseado;
     el.pagina.append(
       secaoTopo(r),
-      ...(parcial ? [] : [secaoLances(r), secaoJogo(r), secaoRotas(r), secaoItensDoTime(r), secaoTribunal(r), secaoTime(r)]),
+      ...(parcial ? [] : [secaoLances(r), secaoJogo(r), secaoCraques(r), secaoRotas(r), secaoItensDoTime(r), secaoTribunal(r), secaoTime(r)]),
       rodape(r),
     );
     requestAnimationFrame(() => desenhos.forEach((f) => f()));
@@ -3648,11 +3841,46 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
   // -------- topo: o veredito, o time e as figurinhas
 
+  function craquesDe(r) {
+    const vs = r.craques || [];
+    return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : vs.slice(0, 1);
+  }
+
+  function cartaoCraques(r) {
+    const cs = craquesDe(r);
+    const vice = (r.craques || []).filter((v) => !cs.includes(v)).slice(0, 2);
+    const craque = (v) => h('div', { class: 'reu craque' },
+      retrato(v.jogador.heroi, true),
+      h('div', { class: 'quem-e' },
+        h('p', { class: 'eyebrow' }, `${pct(v.fatia)} do mérito da vitória`),
+        h('h3', {}, v.jogador.nome),
+        h('p', { class: 'heroi' }, `${v.jogador.heroi.nome} · pos ${v.jogador.posicao} · ${v.jogador.raw.kills}/${v.jogador.raw.deaths}/${v.jogador.raw.assists}`),
+        v.brilhou[0] ? h('p', { class: 'frase' }, `${v.brilhou[0].elogio[0].toUpperCase()}${v.brilhou[0].elogio.slice(1)}: ${v.brilhou[0].evidencia}.`) : null));
+    return h('article', { class: `cartao veredito vitoria${cs.length > 1 ? ' dividido' : ''}` },
+      h('span', { class: 'carimbo craque', 'aria-hidden': 'true' }, cs.length > 1 ? 'Craques' : 'Craque'),
+      h('p', { class: 'eyebrow veredito-titulo' }, cs.length > 1 ? 'Craques da partida · mérito dividido' : 'Craque da partida'),
+      h('div', { class: 'reus' }, cs.map(craque)),
+      vice.length ? h('p', { class: 'vice' }, 'Também jogaram muito: ', vice.map((v, i) => h('span', {}, i ? ' e ' : '', h('strong', {}, v.jogador.nome), ` (${v.jogador.heroi.nome}, ${v.brilhou[0] ? v.brilhou[0].label.toLowerCase() : 'presença'})`))) : null);
+  }
+
   function secaoTopo(r) {
     const cs = culpados(r);
     const parcial = !r.partida.parseado;
+    const vitoria = r.partida.venceu && r.craques && r.craques.length;
+    let principal = cartaoVeredito(cs, r);
+    if (vitoria) {
+      const elo = cartaoVeredito(cs, r);
+      elo.hidden = true;
+      const botao = h('button', { class: 'botao secundario ver-elo', type: 'button', 'aria-expanded': 'false' }, 'Ver o elo fraco');
+      botao.addEventListener('click', () => {
+        elo.hidden = !elo.hidden;
+        botao.setAttribute('aria-expanded', String(!elo.hidden));
+        botao.textContent = elo.hidden ? 'Ver o elo fraco' : 'Esconder o elo fraco';
+      });
+      principal = h('div', { class: 'topo-vitoria' }, cartaoCraques(r), botao, elo);
+    }
     return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
-      cartaoVeredito(cs, r),
+      principal,
       parcial ? h('div', { class: 'cartao esperando' },
         h('span', { class: 'pulso', 'aria-hidden': 'true' }),
         h('div', {},
@@ -3660,13 +3888,34 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
           h('p', {}, 'Por enquanto o tribunal só tem o placar e o farm. Quando o replay for analisado (de 1 a 10 min), a sentença sai completa e o site libera tudo. Deixe a aba aberta.')))
         : h('div', { class: 'topo-time' },
           seletorDeTime(r),
-          h('div', { class: 'figurinhas' }, r.vereditos.map((v, i) => figurinha(v, i, cs.includes(v))))));
+          h('div', { class: 'figurinhas' }, r.vereditos.map((v, i) => figurinha(v, i, !vitoria && cs.includes(v), vitoria ? r.craques.find((c) => c.jogador === v.jogador) : null, vitoria && craquesDe(r).some((c) => c.jogador === v.jogador))))));
   }
 
   // -------- revelação: rufar de tambores e o culpado
 
   let audioCtx = null;
   const somLigado = () => ler('culpado:som') !== 'nao';
+
+  // "boom" curto para os momentos fortes do mapa (ult, explosão)
+  function impacto(forte) {
+    if (!somLigado()) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { return; }
+    const ac = audioCtx;
+    const t0 = ac.currentTime + 0.01;
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(forte ? 140 : 220, t0);
+    osc.frequency.exponentialRampToValueAtTime(forte ? 35 : 70, t0 + (forte ? 0.6 : 0.25));
+    g.gain.setValueAtTime(forte ? 0.7 : 0.35, t0);
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + (forte ? 0.8 : 0.3));
+    osc.connect(g).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + 0.85);
+  }
 
   function tambores(duracao) {
     if (!somLigado()) return () => {};
@@ -3732,12 +3981,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
   function revelar(r) {
     return new Promise((resolve) => {
-      const cs = culpados(r);
+      const vitoria = r.partida.venceu && r.craques && r.craques.length;
+      const cs = vitoria ? craquesDe(r) : culpados(r);
       const reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const suspeitos = r.vereditos.map((v) => v.jogador);
       const rosto = h('div', { class: 'rev-rosto' });
       const nome = h('p', { class: 'rev-nome' }, '');
-      const titulo = h('p', { class: 'rev-titulo' }, r.partida.parseado ? 'O tribunal está reunido' : 'Veredito preliminar');
+      const titulo = h('p', { class: 'rev-titulo' }, r.partida.venceu ? 'Vitória! Quem carregou?' : r.partida.parseado ? 'O tribunal está reunido' : 'Veredito preliminar');
       const pular = h('button', { class: 'rev-pular', type: 'button' }, 'Pular');
       const ov = h('div', { class: 'revelacao', role: 'dialog', 'aria-label': 'Revelação do culpado' }, titulo, rosto, nome, pular);
       document.body.append(ov);
@@ -3764,8 +4014,9 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         }
         bater();
         mostrar(cs[0].jogador, true);
-        titulo.textContent = r.partida.venceu ? 'Elo mais fraco' : cs.length > 1 ? 'Culpados!' : 'Culpado!';
+        titulo.textContent = vitoria ? (cs.length > 1 ? 'Craques da partida!' : 'Craque da partida!') : cs.length > 1 ? 'Culpados!' : 'Culpado!';
         ov.classList.add('bateu');
+        ov.classList.toggle('vitoria', Boolean(vitoria));
         if (cs.length > 1) rosto.append(retrato(cs[1].jogador.heroi, true));
         setTimeout(terminar, reduz ? 600 : 1900);
       };
@@ -3952,6 +4203,203 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       camadaSkills.append(g);
       return { g, linha, caixaIcone, lado };
     };
+    const DANO = (mapa.dano || []).map(([tt, a, b, val, hb]) => ({ t: tt, quem: pos.idxDe[a], alvo: pos.idxDe[b], v: val, hab: hb >= 0 ? HAB[hb] : null }));
+    // skills que viram "momento" quando acertam (fora as ultimates, que sempre viram)
+    const IMPACTO = new Set(['mirana_arrow', 'pudge_meat_hook', 'earth_spirit_boulder_smash', 'earth_spirit_rolling_boulder',
+      'earth_spirit_geomagnetic_grip', 'windrunner_powershot', 'windrunner_shackleshot', 'lion_impale', 'nyx_assassin_impale',
+      'lina_light_strike_array', 'invoker_sun_strike', 'invoker_chaos_meteor', 'kunkka_torrent', 'kunkka_ghostship',
+      'sniper_assassinate', 'ancient_apparition_ice_blast', 'magnataur_skewer', 'spirit_breaker_charge_of_darkness',
+      'tusk_snowball', 'tusk_walrus_punch', 'phoenix_icarus_dive', 'batrider_flaming_lasso', 'vengefulspirit_magic_missile',
+      'sven_storm_bolt', 'skywrath_mage_mystic_flare', 'legion_commander_overwhelming_odds', 'slardar_slithereen_crush',
+      'tiny_toss', 'tiny_avalanche', 'rattletrap_hookshot', 'elder_titan_echo_stomp', 'centaur_hoof_stomp',
+      'earthshaker_fissure', 'earthshaker_echo_slam', 'sand_king_burrowstrike', 'ember_spirit_sleight_of_fist',
+      'dark_willow_bramble_maze', 'venomancer_venomous_gale', 'bane_nightmare', 'shadow_shaman_shackles',
+      'queenofpain_sonic_wave', 'death_prophet_carrion_swarm', 'leshrac_split_earth', 'puck_dream_coil', 'zuus_lightning_bolt',
+      'storm_spirit_ball_lightning', 'morphling_adaptive_strike_agi', 'chaos_knight_chaos_bolt', 'snapfire_mortimer_kisses',
+      'hoodwink_sharpshooter', 'marci_grapple', 'primal_beast_onslaught', 'primal_beast_pulverize', 'muerta_dead_shot']);
+    const nomeDe = (i) => (todos.find((x) => x.idx === i) || { heroi: { nome: '?' } }).heroi.nome;
+    const heroiDe = (i) => (todos.find((x) => x.idx === i) || {}).heroi;
+    const batidas = (l) => {
+      const bs = [];
+      // ultimate: só o primeiro uso de uma série (Fire Remnant, Ball Lightning... se usam várias vezes seguidas)
+      const ultima = {};
+      for (const uso of USOS) {
+        if (uso.hab[2] !== 'u' || uso.t < l.ini || uso.t > l.fim) continue;
+        const k = `${uso.quem}:${uso.hab[0]}`;
+        const antes = ultima[k];
+        ultima[k] = uso.t;
+        if (antes != null && uso.t - antes < 10) continue;
+        bs.push({ t: uso.t, tipo: 'ult', uso });
+      }
+      const visto = new Set();
+      for (const d of DANO) {
+        if (!d.hab || d.hab[2] === 'u' || d.t < l.ini - 1 || d.t > l.fim) continue;
+        if (!IMPACTO.has(d.hab[0]) && d.v < 450) continue;
+        let cast = null;
+        for (let i = USOS.length - 1; i >= 0; i--) {
+          const x = USOS[i];
+          if (x.t > d.t + 0.99) continue;
+          if (x.t < d.t - 4) break;
+          if (x.quem === d.quem && x.hab[0] === d.hab[0]) { cast = x; break; }
+        }
+        if (!cast) continue;
+        const k = `${d.quem}:${d.hab[0]}:${cast.t}`;
+        const ja = bs.find((b) => b.chave === k);
+        if (ja) { ja.v += d.v; if (!ja.alvos.includes(d.alvo)) ja.alvos.push(d.alvo); continue; }
+        visto.add(k);
+        const tHit = Math.max(cast.t + 0.25, d.t + 0.5);
+        if (tHit < l.ini || tHit > l.fim) continue;
+        bs.push({ t: tHit, tipo: 'acerto', chave: k, cast, quem: d.quem, alvos: [d.alvo], hab: d.hab, v: d.v });
+      }
+      for (const p of todos) {
+        for (const d of r.mortes ? r.mortes[p.idx] : []) {
+          if (d.t < l.ini || d.t > l.fim) continue;
+          // explosão: quanto o maior agressor tirou dele nos 3 s antes da morte
+          const por = {};
+          let total = 0;
+          for (const x of DANO) if (x.alvo === p.idx && x.t >= d.t - 3 && x.t <= d.t) { por[x.quem] = (por[x.quem] || 0) + x.v; total += x.v; }
+          const [topo, vTopo] = Object.entries(por).sort((a, b) => b[1] - a[1])[0] || [null, 0];
+          bs.push({ t: d.t, tipo: 'abate', vitima: p.idx, assassino: d.assassino, ouro: d.ouro, explosao: vTopo >= 700 ? { quem: Number(topo), v: vTopo } : null, total });
+        }
+      }
+      // quem chegou e acabou com a luta: mais dano na janela
+      const soma = {};
+      for (const x of DANO) if (x.t >= l.ini && x.t <= l.fim) soma[x.quem] = (soma[x.quem] || 0) + x.v;
+      const [mvp, vMvp] = Object.entries(soma).sort((a, b) => b[1] - a[1])[0] || [null, 0];
+      if (vMvp >= 1200) bs.push({ t: l.fim - 0.6, tipo: 'resumo', quem: Number(mvp), v: vMvp });
+      return bs.sort((a, b) => a.t - b.t).map((b) => ({ ...b, feito: false }));
+    };
+    const HOLD = { ult: 900, acerto: 450, abate: 600, resumo: 1400 };
+    const LENTO = { ult: 0.22, acerto: 0.4, abate: 0.35, resumo: 1 };
+    const reduzMov = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let batidasAtual = [];
+    let congelaAte = 0;
+    const ritmo = (tt) => {
+      let f = 1;
+      for (const b of batidasAtual) if (tt >= b.t - 1.2 && tt <= b.t + 1.6) f = Math.min(f, LENTO[b.tipo]);
+      return f;
+    };
+    // letreiro grande por cima do mapa
+    const letreiro = h('div', { class: 'm-letreiro', 'aria-live': 'polite' });
+    palco.append(letreiro);
+    const iconeGrande = (hb) => {
+      const box = h('span', { class: `m-let-icone ${hb[2]}` });
+      if (MOSTRAR_IMAGENS) {
+        const img = h('img', { src: iconeHab(hb), alt: '' });
+        img.addEventListener('error', () => { box.textContent = hb[1].slice(0, 2); });
+        box.append(img);
+      } else box.textContent = hb[1].slice(0, 2);
+      return box;
+    };
+    const anunciar = (b) => {
+      let conteudo;
+      if (b.tipo === 'ult') {
+        conteudo = [iconeGrande(b.uso.hab), h('div', {}, h('strong', { class: 'm-let-tit' }, b.uso.hab[1]), h('small', {}, nomeDe(b.uso.quem)))];
+      } else if (b.tipo === 'acerto') {
+        conteudo = [iconeGrande(b.hab), h('div', {}, h('strong', { class: 'm-let-tit' }, b.alvos.length > 1 ? `Pegou ${b.alvos.length}!` : 'Acertou!'),
+          h('small', {}, `${b.hab[1]} de ${nomeDe(b.quem)} em ${b.alvos.map(nomeDe).join(', ')} · ${fmtK(b.v)} de dano`))];
+      } else if (b.tipo === 'abate') {
+        const ex = b.explosao;
+        conteudo = [h('span', { class: 'm-let-duelo' }, b.assassino != null && heroiDe(b.assassino) ? retrato(heroiDe(b.assassino)) : null, h('b', {}, '✕'), retrato(heroiDe(b.vitima))),
+          h('div', {}, h('strong', { class: 'm-let-tit' }, ex ? 'Explodiu!' : 'Abate'),
+            h('small', {}, ex ? `${nomeDe(ex.quem)} tirou ${fmtK(ex.v)} do ${nomeDe(b.vitima)} em 3 s` : `${b.assassino != null ? `${nomeDe(b.assassino)} pegou ` : ''}${nomeDe(b.vitima)}${b.ouro ? ` · ${fmtK(b.ouro)} de ouro` : ''}`))];
+      } else {
+        conteudo = [retrato(heroiDe(b.quem)), h('div', {}, h('strong', { class: 'm-let-tit' }, 'Quem mais bateu'), h('small', {}, `${nomeDe(b.quem)} · ${fmtK(b.v)} de dano no lance`))];
+      }
+      const lado = b.tipo === 'abate' ? (nosSet.has(b.vitima) ? 'eles' : 'nos') : nosSet.has(b.tipo === 'ult' ? b.uso.quem : b.quem) ? 'nos' : 'eles';
+      letreiro.textContent = '';
+      const cartao = h('div', { class: `m-let ${b.tipo} ${lado}` }, ...conteudo);
+      letreiro.append(cartao);
+      setTimeout(() => cartao.classList.add('sai'), HOLD[b.tipo] + 900);
+      setTimeout(() => cartao.remove(), HOLD[b.tipo] + 1300);
+      const forte = b.tipo === 'ult' || (b.tipo === 'abate' && b.explosao);
+      if (forte || b.tipo === 'acerto') impacto(forte);
+      if (forte && !reduzMov) { palco.classList.remove('tremor'); void palco.offsetWidth; palco.classList.add('tremor'); }
+    };
+    // efeitos dentro do mapa: onda da ult, projétil do acerto, números de dano
+    const camadaFx = s('g', { class: 'm-fx' });
+    cam.append(camadaFx);
+    const fxVivos = new Map();
+    const fx = (chave, criar) => { let e = fxVivos.get(chave); if (!e) { e = criar(); camadaFx.append(e.g); fxVivos.set(chave, e); } e.vivo = true; return e; };
+    const desenharFx = (ps, escala) => {
+      const z = Math.max(0.35, escala);
+      for (const e of fxVivos.values()) e.vivo = false;
+      for (const b of batidasAtual) {
+        if (b.tipo === 'ult' && t >= b.t && t <= b.t + 2.2) {
+          const q = ps[b.uso.quem];
+          if (!q) continue;
+          const e = fx(`u${b.t}`, () => {
+            const g = s('g', {});
+            const onda = s('circle', { class: 'm-onda' });
+            const L = 11;
+            const ic = s('g', {}, s('rect', { x: -L / 2, y: -L / 2, width: L, height: L, rx: 1.2, class: 'm-ult-fundo' }));
+            if (MOSTRAR_IMAGENS) ic.append(s('image', { href: iconeHab(b.uso.hab), x: -L / 2 + 0.5, y: -L / 2 + 0.5, width: L - 1, height: L - 1 }));
+            else ic.append(s('text', { 'text-anchor': 'middle', y: 1.2, class: 'm-ult-txt' }, b.uso.hab[1].slice(0, 2)));
+            g.append(onda, ic);
+            return { g, onda, ic };
+          });
+          const k = (t - b.t) / 2.2;
+          e.onda.setAttribute('cx', u(q[0])); e.onda.setAttribute('cy', v(q[1]));
+          e.onda.setAttribute('r', (3 + k * 16) * z);
+          e.onda.setAttribute('stroke-width', 1.2 * z * (1 - k));
+          e.onda.setAttribute('opacity', (1 - k).toFixed(2));
+          const cresce = Math.min(1, k * 8);
+          e.ic.setAttribute('transform', `translate(${u(q[0])},${v(q[1]) - 7 * z}) scale(${(z * (0.5 + 0.5 * cresce)).toFixed(3)})`);
+          e.ic.setAttribute('opacity', k < 0.75 ? 1 : ((1 - k) / 0.25).toFixed(2));
+        }
+        if (b.tipo === 'acerto' && t >= b.cast.t && t <= b.t + 0.9) {
+          // o projétil sai de onde o herói estava ao usar e chega no alvo na hora do dano
+          const de = pos(b.cast.t)[b.quem];
+          const para = ps[b.alvos[0]] || pos(b.t)[b.alvos[0]];
+          if (!de || !para) continue;
+          const e = fx(`a${b.chave}`, () => {
+            const g = s('g', {});
+            const rastro = s('line', { class: `m-rastro ${nosSet.has(b.quem) ? 'nos' : 'eles'}` });
+            const L = 5;
+            const cab = s('g', {}, s('rect', { x: -L / 2, y: -L / 2, width: L, height: L, rx: 0.8, class: 'm-pop-fundo' }));
+            if (MOSTRAR_IMAGENS) cab.append(s('image', { href: iconeHab(b.hab), x: -L / 2 + 0.3, y: -L / 2 + 0.3, width: L - 0.6, height: L - 0.6 }));
+            const flash = s('circle', { class: 'm-flash' });
+            g.append(rastro, cab, flash);
+            return { g, rastro, cab, flash };
+          });
+          const dur = Math.max(0.3, b.t - b.cast.t);
+          const k = Math.min(1, (t - b.cast.t) / dur);
+          const hx = u(de[0]) + (u(para[0]) - u(de[0])) * k;
+          const hy = v(de[1]) + (v(para[1]) - v(de[1])) * k;
+          [['x1', u(de[0])], ['y1', v(de[1])], ['x2', hx], ['y2', hy], ['stroke-width', 0.9 * z]].forEach(([a, val]) => e.rastro.setAttribute(a, val));
+          e.rastro.setAttribute('opacity', k < 1 ? 0.9 : Math.max(0, 1 - (t - b.t) / 0.9).toFixed(2));
+          e.cab.setAttribute('transform', `translate(${hx},${hy}) scale(${z.toFixed(3)})`);
+          e.cab.setAttribute('opacity', k < 1 ? 1 : 0);
+          const pos2 = Math.max(0, (t - b.t) / 0.9);
+          e.flash.setAttribute('cx', u(para[0])); e.flash.setAttribute('cy', v(para[1]));
+          e.flash.setAttribute('r', k < 1 ? 0 : (2 + pos2 * 6) * z);
+          e.flash.setAttribute('opacity', k < 1 ? 0 : (1 - pos2).toFixed(2));
+        }
+      }
+      // números de dano subindo em cima de quem apanhou (soma por segundo)
+      const porSeg = {};
+      for (const x of DANO) {
+        if (x.t > t || x.t < t - 1.4 || x.t < atual.ini) continue;
+        const k = `${x.alvo}:${x.t}`;
+        porSeg[k] = (porSeg[k] || 0) + x.v;
+      }
+      for (const [k, val] of Object.entries(porSeg)) {
+        if (val < 120) continue;
+        const [alvo, seg] = k.split(':').map(Number);
+        const q = ps[alvo];
+        if (!q) continue;
+        const e = fx(`d${k}`, () => {
+          const g = s('text', { 'text-anchor': 'middle', class: `m-dano ${nosSet.has(alvo) ? 'nos' : 'eles'}${val >= 500 ? ' forte' : ''}` }, `-${val}`);
+          return { g };
+        });
+        const idade = (t - seg) / 1.4;
+        e.g.setAttribute('x', u(q[0]) + 3 * z);
+        e.g.setAttribute('y', v(q[1]) - (3 + idade * 4) * z);
+        e.g.setAttribute('font-size', (val >= 500 ? 3.4 : 2.4) * z);
+        e.g.setAttribute('opacity', Math.max(0, 1 - idade).toFixed(2));
+      }
+      for (const [k, e] of fxVivos) if (!e.vivo) { e.g.remove(); fxVivos.delete(k); }
+    };
     const desenharSkills = (ps, escala) => {
       const z = Math.max(0.35, escala);
       const agora = new Set();
@@ -3983,16 +4431,16 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     let atual = null;
     let t = 0;
     let tocando = false;
-    let vel = 2;
+    let vel = 1.5;
     let ultimo = 0;
     let caixa = [0, 0, W, W];
     const relogio = h('span', { class: 'mapa-relogio' }, '');
     const bPlay = h('button', { type: 'button', class: 'mapa-botao' }, 'Pausar');
-    const bVel = h('button', { type: 'button', class: 'mapa-botao' }, '2×');
+    const bVel = h('button', { type: 'button', class: 'mapa-botao' }, '1.5×');
     const bDe = h('button', { type: 'button', class: 'mapa-botao' }, 'Ver de novo');
     controles.append(relogio, bPlay, bVel, bDe);
     bPlay.addEventListener('click', () => { tocando = !tocando; bPlay.textContent = tocando ? 'Pausar' : 'Tocar'; if (tocando) { ultimo = performance.now(); requestAnimationFrame(quadro); } });
-    bVel.addEventListener('click', () => { vel = vel === 1 ? 2 : vel === 2 ? 4 : 1; bVel.textContent = `${vel}×`; });
+    bVel.addEventListener('click', () => { vel = vel === 1.5 ? 3 : vel === 3 ? 0.75 : 1.5; bVel.textContent = `${vel}×`; });
     bDe.addEventListener('click', () => tocar(lances.indexOf(atual)));
     const enquadrar = (l) => {
       // onde a ação aconteceu: quem usou skill e quem morreu na janela do lance
@@ -4056,8 +4504,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         if (a && b) camadaMortes.append(s('line', { x1: u(a[0]), y1: v(a[1]), x2: u(b[0]), y2: v(b[1]), class: 'm-ligacao', 'stroke-width': 0.6 * Math.max(0.35, escala) }));
       }
       desenharSkills(ps, escala);
+      desenharFx(ps, escala);
       const evs = [];
-      const nomeDe = (i) => todos.find((x) => x.idx === i).heroi.nome;
       for (const uso of USOS) {
         if (uso.hab[2] === 'h' || uso.t < atual.ini || uso.t > t) continue;
         evs.push([uso.t, `${mmss(uso.t)} · ${nomeDe(uso.quem)} usou ${uso.hab[1]}${uso.alvo != null && uso.alvo !== uso.quem ? ` em ${nomeDe(uso.alvo)}` : ''}`]);
@@ -4078,8 +4526,18 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       if (!tocando) return;
       const dt = Math.min(0.2, (agora - ultimo) / 1000);
       ultimo = agora;
-      t += dt * vel;
-      if (t >= atual.fim) { t = atual.fim; tocando = false; bPlay.textContent = 'Tocar'; }
+      if (agora >= congelaAte) {
+        t += dt * vel * ritmo(t);
+        for (const b of batidasAtual) {
+          if (b.feito || t < b.t) continue;
+          b.feito = true;
+          t = Math.max(t, b.t);
+          congelaAte = agora + HOLD[b.tipo];
+          anunciar(b);
+          break;
+        }
+      }
+      if (t >= atual.fim && agora >= congelaAte) { t = atual.fim; tocando = false; bPlay.textContent = 'Tocar'; }
       desenhar();
       if (tocando) requestAnimationFrame(quadro);
     };
@@ -4091,6 +4549,9 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       const esc = W / caixa[2];
       cam.setAttribute('transform', `scale(${esc}) translate(${-caixa[0]},${-caixa[1]})`);
       t = atual.ini;
+      batidasAtual = batidas(atual);
+      congelaAte = 0;
+      letreiro.textContent = '';
       tocando = true;
       bPlay.textContent = 'Pausar';
       ultimo = performance.now();
@@ -4289,6 +4750,29 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
   // -------- tribunal
 
+  function secaoCraques(r) {
+    const vs = r.craques || [];
+    if (!r.partida.venceu || !vs.length) return null;
+    const cs = craquesDe(r);
+    // um elogio diferente para cada um: pega o maior componente cujo elogio ainda não foi usado
+    const usados = new Set();
+    const elogio = (v) => {
+      const c = v.brilhou.find((x) => !usados.has(x.key)) || v.brilhou[0];
+      if (!c) return 'fez o simples e fez bem';
+      usados.add(c.key);
+      return c.elogio;
+    };
+    return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-craques' },
+      cabecalho('O que deu certo', 'Quem carregou a vitória e por quê. Mesma régua do tribunal, só que contando o que cada um somou.', 'titulo-craques'),
+      h('ol', { class: 'cartao ranking-texto craques-lista', 'aria-label': 'Ranking de mérito' }, vs.map((v, i) => h('li', { class: cs.includes(v) ? 'e-craque' : null },
+        h('div', { class: 'craque-linha' },
+          h('span', { class: 'pos' }, `${i + 1}º`),
+          retrato(v.jogador.heroi),
+          h('span', { class: 'quem' }, h('strong', {}, v.jogador.nome), h('span', {}, `${v.jogador.heroi.nome} · ${elogio(v)}`)),
+          h('span', { class: 'fatia' }, pct(v.fatia), h('small', {}, 'do mérito'))),
+        v.brilhou.length ? h('ul', { class: 'craque-provas' }, v.brilhou.map((c) => h('li', {}, h('strong', {}, `${c.label} (+${c.pontos})`), ` ${c.evidencia}`))) : null))));
+  }
+
   function secaoTribunal(r) {
     const vs = r.vereditos;
     return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-tribunal' },
@@ -4310,19 +4794,19 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : [vs[0]];
   }
 
-  function figurinha(v, i, eCulpado) {
+  function figurinha(v, i, eCulpado, merito, eCraque) {
     const p = v.jogador;
     const linha = (rotulo, texto, classe) => (texto ? h('p', { class: `fig-linha ${classe}` }, h('strong', {}, rotulo), texto) : null);
     const id = h('div', { class: 'fig-id' }, retrato(p.heroi), h('div', {}, h('h3', {}, p.nome), h('p', {}, `${p.heroi.nome} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`)));
     const selos = v.selos || [];
     const frente = h('div', { class: 'fig-face fig-frente' },
-      h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, `Nº ${i + 1}`), h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
+      h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, `Nº ${i + 1}`), merito ? h('span', { class: 'fig-culpa merito' }, `${pct(merito.fatia)} do mérito`) : h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
       id,
       h('p', { class: 'fig-classe' }, v.ficha.classe),
       h('div', { class: 'fig-mini' }, miniHexagono(v.ficha)),
       h('p', { class: 'fig-zoeira' }, v.ficha.zoeira),
       selos.length ? h('p', { class: 'fig-selos' }, selos.slice(0, 3).map((x) => h('span', { class: 'selo-chip' }, medalha(), x.nome))) : null,
-      linha('Ajudou: ', v.fezBem[0], 'bom'),
+      merito && merito.brilhou[0] ? linha('Brilhou: ', `${merito.brilhou[0].label}: ${merito.brilhou[0].evidencia}`, 'bom') : linha('Ajudou: ', v.fezBem[0], 'bom'),
       linha('Atrapalhou: ', v.custou[0], 'ruim'),
       linha('Pra próxima: ', v.plano[0], 'plano'));
     const fb = v.fichaBoa;
@@ -4334,7 +4818,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       selos.length
         ? h('ul', { class: 'fig-selos-texto' }, selos.slice(0, 2).map((x) => h('li', {}, h('strong', {}, medalha(), x.nome), h('span', {}, x.texto))))
         : h('p', { class: 'fig-zoeira' }, fb.frase)) : null;
-    const card = h('article', { class: `cartao figurinha${eCulpado ? ' e-culpado' : ''}` }, frente, verso);
+    const card = h('article', { class: `cartao figurinha${eCulpado ? ' e-culpado' : ''}${eCraque ? ' e-craque' : ''}` }, frente, verso);
     if (verso) {
       const botao = h('button', { class: 'fig-virar', type: 'button', 'aria-pressed': 'false' }, 'Virar a figurinha: lado bom');
       botao.addEventListener('click', () => {
