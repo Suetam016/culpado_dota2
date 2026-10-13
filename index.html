@@ -1125,6 +1125,16 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .m-play-grande[hidden] { display: none; }
 .mapa-col.mini .m-play-grande { width: 60px; height: 60px; font-size: 24px; }
 
+/* balança quebrada: superação na rota */
+.cartao.lane.quebrou { border-color: var(--gold); box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 50%, transparent), 0 12px 36px color-mix(in srgb, var(--gold) 18%, transparent); }
+.b-racha { fill: none; stroke: var(--gold); stroke-width: 2; stroke-linejoin: round; }
+.b-lasca { fill: var(--gold); opacity: .8; }
+.b-carimbo { display: grid; gap: 4px; margin: 4px 0 10px; padding: 10px 12px; border: 2px solid var(--gold); border-radius: 10px; transform: rotate(-1.5deg);
+  background: color-mix(in srgb, var(--gold) 10%, transparent); }
+.b-carimbo strong { font-family: var(--font-display, var(--font-body)); text-transform: uppercase; letter-spacing: .03em; color: var(--gold); font-size: clamp(18px, 3.4vw, 24px); line-height: 1.05; }
+.b-carimbo small { color: var(--ink-2); }
+.cartao.lane.quebrou .balanca-svg g:last-of-type { transition: transform .6s; }
+
 </style>
 <header class="topo">
   <div class="topo-inner">
@@ -5348,7 +5358,9 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     const NOME = { mid: 'Mid', safe: 'Safe lane', off: 'Offlane' };
     const diff = l.diffComXp ?? l.diffMedia;
     const esp = l.expectativa ? l.expectativa.esperado : 0;
-    const ang = (d) => Math.max(-16, Math.min(16, (d / 2000) * 16)); // vocês à esquerda: pesa = desce
+    // superação: passou muito do que o matchup prometia e saiu na frente -> a balança quebra para o lado de vocês
+    const quebrou = Boolean(l.expectativa) && diff - esp >= 1200 && diff >= 800;
+    const ang = (d) => (quebrou && d === diff ? 26 : Math.max(-16, Math.min(16, (d / 2000) * 16))); // vocês à esquerda: pesa = desce
     const W = 300; const H = 150; const cx = W / 2; const cy = 70; const meio = 112;
     const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'balanca-svg', role: 'img', 'aria-label': `${NOME[l.tipo]}: diferença de ${fmtK(diff)} por herói aos 10 min; o matchup prometia ${fmtK(esp)}` });
     svg.append(s('path', { d: `M${cx - 18},${H - 8} L${cx},${cy + 4} L${cx + 18},${H - 8} Z`, class: 'b-base' }));
@@ -5373,6 +5385,11 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
     real.append(prato(-1, l.nos, 'nos'), prato(1, l.eles, 'eles'));
     svg.append(real);
     svg.append(s('circle', { cx, cy, r: 4, class: 'b-pino' }));
+    if (quebrou) {
+      // rachadura no pé da balança e lascas voando
+      svg.append(s('path', { d: `M${cx - 3},${cy + 12} l5,9 l-6,8 l7,10 l-4,9 l6,12`, class: 'b-racha' }));
+      for (const [dx, dy, r0] of [[-30, 108, 2.5], [-42, 120, 1.8], [24, 112, 2], [36, 126, 1.5]]) svg.append(s('circle', { cx: cx + dx, cy: dy, r: r0, class: 'b-lasca' }));
+    }
     const quem = (time) => time.map((p) => p.heroi.nome).join(' e ');
     const lado = (d) => (Math.abs(d) < 150 ? 'Empate' : `${quem(d > 0 ? l.nos : l.eles)} +${fmtK(Math.abs(Math.round(d / 10) * 10))}`);
     const sobra = diff - esp;
@@ -5388,10 +5405,16 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
       if (d.diff < -300) frase = `${quem} saiu ${fmtK(-d.diff)} atrás de ${d.rival.heroi.nome} no duelo direto.`;
       else if (d.diff > 300) frase = `${quem} saiu ${fmtK(d.diff)} na frente de ${d.rival.heroi.nome} no duelo direto.`;
     }
-    return h('article', { class: `cartao lane ${l.resultado}` },
+    const VERBO = { mid: 'espancou a mid', safe: 'amassou a safe lane', off: 'destruiu a offlane' };
+    const heroiQuebra = quebrou ? ((l.destaque && l.destaque.diff > 0 && l.destaque.jogador) || l.coreNos || l.nos[0]) : null;
+    const carimbo = quebrou ? h('div', { class: 'b-carimbo' },
+      h('strong', {}, `${heroiQuebra.heroi.nome} ${VERBO[l.tipo] || 'quebrou a rota'}`),
+      h('small', {}, `${esp < -150 ? `No papel ${l.eles.map((p) => p.heroi.nome).join(' e ')} ${l.eles.length > 1 ? 'eram favoritos' : 'era favorito'}` : 'No papel era rota equilibrada'}; saiu ${fmtK(Math.round(diff / 10) * 10)} na frente por herói. Quebrou a balança.`)) : null;
+    return h('article', { class: `cartao lane ${l.resultado}${quebrou ? ' quebrou' : ''}` },
       h('div', { class: 'lane-cab' }, h('p', { class: 'eyebrow' }, NOME[l.tipo] || 'Rota'), h('span', { class: `selo ${l.resultado}` }, { ganhou: 'Ganharam', perdeu: 'Perderam', empate: 'Empate' }[l.resultado])),
       h('p', { class: 'b-nomes' }, h('span', { class: 'nos' }, l.nos.map((p) => p.heroi.nome).join(' + ')), h('span', { class: 'vs' }, 'x'), h('span', { class: 'eles' }, l.eles.map((p) => p.heroi.nome).join(' + '))),
       svg,
+      carimbo,
       h('div', { class: 'b-veredito' },
         h('p', {}, h('span', { class: 'b-rot' }, 'Aos 10 min'), h('strong', {}, lado(diff)), h('small', {}, 'por herói')),
         l.expectativa ? h('p', {}, h('span', { class: 'b-rot' }, 'Esperado pelo matchup'), h('strong', {}, lado(esp)), h('small', {}, comparacao)) : null),
