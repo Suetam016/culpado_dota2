@@ -962,7 +962,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .b-veredito { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .b-veredito p { display: grid; gap: 2px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); text-align: center; }
 .b-rot { font-family: var(--font-mono); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-.b-veredito strong { font-size: var(--t-md); color: var(--ink); text-transform: capitalize; }
+.b-veredito strong { font-size: var(--t-md); color: var(--ink); line-height: 1.25; }
 .b-veredito small { font-size: var(--t-xs); color: var(--ink-2); }
 .b-sigla { font-size: 8px; }
 .lanes .cartao.lane { align-content: start; }
@@ -4117,7 +4117,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     real.append(prato(-1, l.nos, 'nos'), prato(1, l.eles, 'eles'));
     svg.append(real);
     svg.append(s('circle', { cx, cy, r: 4, class: 'b-pino' }));
-    const lado = (d) => (Math.abs(d) < 150 ? 'empate' : `${d > 0 ? 'vocês' : 'eles'} +${fmtK(Math.abs(Math.round(d / 10) * 10))}`);
+    const quem = (time) => time.map((p) => p.heroi.nome).join(' e ');
+    const lado = (d) => (Math.abs(d) < 150 ? 'Empate' : `${quem(d > 0 ? l.nos : l.eles)} +${fmtK(Math.abs(Math.round(d / 10) * 10))}`);
     const sobra = diff - esp;
     const comparacao = !l.expectativa ? '' : sobra < -400 ? 'pior do que o matchup pedia' : sobra > 400 ? 'melhor do que o matchup prometia' : 'dentro do esperado pro matchup';
     const lh = (p) => (p && p.raw.lh_t ? p.raw.lh_t[Math.min(10, p.raw.lh_t.length - 1)] : null);
