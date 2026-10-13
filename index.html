@@ -4295,6 +4295,14 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         if (!naTela(pos(uso.t)[uso.quem]) || !ultForte(uso)) continue;
         bs.push({ t: uso.t, tipo: 'ult', uso });
       }
+      // spell roubada do Rubick, quando importa
+      for (const uso of USOS) {
+        if (uso.t < l.ini || uso.t > l.fim || uso.hab[2] === 'i' || uso.hab[0].startsWith('rubick_')) continue;
+        if ((heroiDe(uso.quem) || {}).npc !== 'npc_dota_hero_rubick' || !naTela(pos(uso.t)[uso.quem])) continue;
+        const ef = efeitoDoUso(uso);
+        if (uso.hab[2] === 'u' || ef.v >= 300 || ef.alvos >= 2 || ultForte(uso)) bs.push({ t: uso.t, tipo: 'roubo', uso });
+      }
+      const morreuLogo = (alvo, t0) => (r.mortes ? r.mortes[alvo] : []).some((d) => d.t >= t0 && d.t <= t0 + 5);
       const visto = new Set();
       for (const d of DANO) {
         if (!d.hab || d.hab[2] === 'u' || d.t < l.ini - 1 || d.t > l.fim) continue;
@@ -4314,6 +4322,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         const tHit = Math.max(cast.t + 0.25, d.t + 0.5);
         if (tHit < l.ini || tHit > l.fim) continue;
         if (!naTela(pos(tHit)[d.alvo]) && !naTela(pos(cast.t)[d.quem])) continue;
+        if (d.v < 120 && !morreuLogo(d.alvo, d.t)) continue; // acertou de raspão e não deu em nada
         bs.push({ t: tHit, tipo: 'acerto', chave: k, cast, quem: d.quem, alvos: [d.alvo], hab: d.hab, v: d.v });
       }
       for (const p of todos) {
@@ -4325,7 +4334,11 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
           let total = 0;
           for (const x of DANO) if (x.alvo === p.idx && x.t >= d.t - 3 && x.t <= d.t) { por[x.quem] = (por[x.quem] || 0) + x.v; total += x.v; }
           const [topo, vTopo] = Object.entries(por).sort((a, b) => b[1] - a[1])[0] || [null, 0];
-          bs.push({ t: d.t, tipo: 'abate', vitima: p.idx, assassino: d.assassino, ouro: d.ouro, explosao: vTopo >= 700 ? { quem: Number(topo), v: vTopo } : null, total });
+          // pickoff limpo: ninguém do time dele por perto
+          const ps = pos(d.t - 1);
+          const aliados = todos.filter((q) => q.idx !== p.idx && nosSet.has(q.idx) === nosSet.has(p.idx) && ps[q.idx] && !morto(r, q.idx, d.t - 1));
+          const perto = Math.min(Infinity, ...aliados.map((q) => dist(ps[q.idx], ps[p.idx] || ps[q.idx])));
+          bs.push({ t: d.t, tipo: 'abate', vitima: p.idx, assassino: d.assassino, ouro: d.ouro, explosao: vTopo >= 700 ? { quem: Number(topo), v: vTopo } : null, total, pickoff: ps[p.idx] && perto >= 28 });
         }
       }
       // quem chegou e acabou com a luta: mais dano na janela
@@ -4336,8 +4349,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       return bs.sort((a, b) => a.t - b.t).map((b) => ({ ...b, feito: false }));
     };
     carregarSons();
-    const HOLD = { ult: 900, acerto: 450, abate: 600, resumo: 1400 };
-    const LENTO = { ult: 0.22, acerto: 0.4, abate: 0.35, resumo: 1 };
+    const HOLD = { ult: 900, roubo: 800, acerto: 500, abate: 600, resumo: 1400 };
+    const LENTO = { ult: 0.22, roubo: 0.3, acerto: 0.35, abate: 0.35, resumo: 1 };
     const reduzMov = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let batidasAtual = [];
     let congelaAte = 0;
@@ -4362,24 +4375,26 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       let conteudo;
       if (b.tipo === 'ult') {
         conteudo = [iconeGrande(b.uso.hab), h('div', {}, h('strong', { class: 'm-let-tit' }, b.uso.hab[1]), h('small', {}, nomeDe(b.uso.quem)))];
+      } else if (b.tipo === 'roubo') {
+        conteudo = [iconeGrande(b.uso.hab), h('div', {}, h('strong', { class: 'm-let-tit' }, 'Roubou!'), h('small', {}, `${nomeDe(b.uso.quem)} usou ${b.uso.hab[1]} roubado`))];
       } else if (b.tipo === 'acerto') {
         conteudo = [iconeGrande(b.hab), h('div', {}, h('strong', { class: 'm-let-tit' }, b.alvos.length > 1 ? `Pegou ${b.alvos.length}!` : 'Acertou!'),
           h('small', {}, `${b.hab[1]} de ${nomeDe(b.quem)} em ${b.alvos.map(nomeDe).join(', ')} · ${fmtK(b.v)} de dano`))];
       } else if (b.tipo === 'abate') {
         const ex = b.explosao;
         conteudo = [h('span', { class: 'm-let-duelo' }, b.assassino != null && heroiDe(b.assassino) ? retrato(heroiDe(b.assassino)) : null, h('b', {}, '✕'), retrato(heroiDe(b.vitima))),
-          h('div', {}, h('strong', { class: 'm-let-tit' }, ex ? 'Explodiu!' : 'Abate'),
+          h('div', {}, h('strong', { class: 'm-let-tit' }, ex ? 'Explodiu!' : b.pickoff ? 'Pickoff limpo' : 'Abate'),
             h('small', {}, ex ? `${nomeDe(ex.quem)} tirou ${fmtK(ex.v)} do ${nomeDe(b.vitima)} em 3 s` : `${b.assassino != null ? `${nomeDe(b.assassino)} pegou ` : ''}${nomeDe(b.vitima)}${b.ouro ? ` · ${fmtK(b.ouro)} de ouro` : ''}`))];
       } else {
         conteudo = [retrato(heroiDe(b.quem)), h('div', {}, h('strong', { class: 'm-let-tit' }, 'Quem mais bateu'), h('small', {}, `${nomeDe(b.quem)} · ${fmtK(b.v)} de dano no lance`))];
       }
-      const lado = b.tipo === 'abate' ? (nosSet.has(b.vitima) ? 'eles' : 'nos') : nosSet.has(b.tipo === 'ult' ? b.uso.quem : b.quem) ? 'nos' : 'eles';
+      const lado = b.tipo === 'abate' ? (nosSet.has(b.vitima) ? 'eles' : 'nos') : nosSet.has(b.uso ? b.uso.quem : b.quem) ? 'nos' : 'eles';
       letreiro.textContent = '';
       const cartao = h('div', { class: `m-let ${b.tipo} ${lado}` }, ...conteudo);
       letreiro.append(cartao);
       setTimeout(() => cartao.classList.add('sai'), HOLD[b.tipo] + 900);
       setTimeout(() => cartao.remove(), HOLD[b.tipo] + 1300);
-      const forte = b.tipo === 'ult' || (b.tipo === 'abate' && b.explosao);
+      const forte = b.tipo === 'ult' || b.tipo === 'roubo' || (b.tipo === 'abate' && b.explosao);
       if (b.tipo === 'abate' && b.explosao) impacto(true);
       if (forte && !reduzMov) { palco.classList.remove('tremor'); void palco.offsetWidth; palco.classList.add('tremor'); }
     };
@@ -4392,7 +4407,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       const z = Math.max(0.35, escala);
       for (const e of fxVivos.values()) e.vivo = false;
       for (const b of batidasAtual) {
-        if (b.tipo === 'ult' && t >= b.t && t <= b.t + 2.2) {
+        if ((b.tipo === 'ult' || b.tipo === 'roubo') && t >= b.t && t <= b.t + 2.2) {
           const q = ps[b.uso.quem];
           if (!q) continue;
           const e = fx(`u${b.t}`, () => {
