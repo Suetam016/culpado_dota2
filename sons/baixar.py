@@ -21,6 +21,7 @@ from pathlib import Path
 UA = "culpado-dota2-sons/1.0 (site de fã sem fins comerciais; github.com/Suetam016/culpado_dota2)"
 WIKIS = ["https://dota2.fandom.com/api.php", "https://liquipedia.net/dota2/api.php"]
 PAUSA = 2.1
+MAX_POR_RODADA = 220  # ~15 min por rodada; o resto fica para a próxima
 MAX_BYTES = 800_000
 IMPACTO = {
     "mirana_arrow", "pudge_meat_hook", "earth_spirit_boulder_smash", "earth_spirit_rolling_boulder",
@@ -76,12 +77,14 @@ def main() -> int:
     querer = {}
     for m in sorted((raiz.parent / "mapas").glob("*.json")):
         for chave, nome, tipo in json.loads(m.read_text()).get("hab") or []:
-            if tipo == "u" or chave in IMPACTO or (tipo == "i" and chave in ITENS):
-                querer[chave] = nome
-    faltam = {k: n for k, n in querer.items() if k not in indice and tentados.get(k, 0) < 2}
+            if tipo in ("u", "h") or (tipo == "i" and chave in ITENS):
+                # ultimates e skills de impacto primeiro; o resto das skills depois
+                querer[chave] = (0 if tipo == "u" or chave in IMPACTO else 1, nome)
+    faltam = {k: n for k, (_, n) in sorted(querer.items(), key=lambda kv: kv[1][0]) if k not in indice and tentados.get(k, 0) < 2}
+    faltam = dict(list(faltam.items())[:MAX_POR_RODADA])
     print(f"{len(querer)} skills com som desejado; {len(indice)} já baixadas; {len(faltam)} para procurar")
     novos = 0
-    for chave, nome in sorted(faltam.items()):
+    for chave, nome in faltam.items():
         achado = None
         for wiki in WIKIS:
             try:

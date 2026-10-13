@@ -4,7 +4,7 @@ name: Sons das skills
 # Roda quando chegam mapas novos (1x por dia basta) ou na hora com um push em sons/baixar.py.
 on:
   schedule:
-    - cron: "37 7 * * *"
+    - cron: "37 */6 * * *"
   push:
     paths: ["sons/baixar.py", ".github/workflows/sons.yml", "sons/pedido"]
 
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   sons:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
