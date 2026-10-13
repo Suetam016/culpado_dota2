@@ -729,7 +729,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .mini-wrap svg { display: block; max-width: 100%; height: auto; }
 .mini-attrs { display: grid; gap: 4px; font-size: var(--t-xs); }
 .mini-attrs li { display: flex; justify-content: space-between; gap: 8px; color: var(--ink-2); }
-.mini-attrs b { font-family: var(--font-mono); color: var(--ink); }
+.mini-attrs b { font-family: var(--font-mono); color: var(--ink); flex: none; }
+.mini-attrs li span { min-width: 0; overflow-wrap: anywhere; }
 .fig-zoeira { font-style: italic; color: var(--ink); font-size: var(--t-sm); line-height: 1.45; }
 .fig-linha { font-size: var(--t-sm); line-height: 1.45; color: var(--ink-2); }
 .fig-linha strong { color: var(--ink); }
@@ -846,6 +847,32 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .mortes-caras .t { font-family: var(--font-mono); color: var(--muted); }
 .mortes-caras .custo { font-family: var(--font-mono); font-weight: 700; color: var(--ink); }
 .nota-modelo { font-size: var(--t-xs); color: var(--muted); max-width: 80ch; }
+
+/* selos e lado bom */
+.medalha { flex: none; vertical-align: -2px; }
+.fig-selos { display: flex; flex-wrap: wrap; gap: 6px; }
+.selo-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--gold); background: var(--gold-wash); color: var(--ink); font-size: var(--t-xs); font-weight: 600; }
+.fig-selos-texto { display: grid; gap: 8px; font-size: var(--t-sm); line-height: 1.45; }
+.fig-selos-texto strong { display: flex; align-items: center; gap: 5px; color: var(--ink); }
+.fig-selos-texto span { color: var(--ink-2); }
+.fig-face { display: grid; gap: 10px; align-content: start; }
+.fig-lado { color: var(--nos); font-weight: 600; }
+.figurinha.lado-bom { border-color: var(--nos); box-shadow: 0 0 0 1px var(--nos-wash), var(--shadow); }
+.figurinha.lado-bom .fig-classe { color: var(--nos); }
+.figurinha.girando { animation: virar 0.34s ease-in-out; }
+@keyframes virar { 0% { transform: perspective(800px) rotateY(0); } 50% { transform: perspective(800px) rotateY(90deg); } 100% { transform: perspective(800px) rotateY(0); } }
+.fig-virar, .ficha-virar { justify-self: start; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); font-size: var(--t-xs); font-weight: 600; cursor: pointer; }
+.fig-virar[aria-pressed="true"], .ficha-virar[aria-pressed="true"] { border-color: var(--nos); color: var(--nos); }
+.ficha-vira { display: grid; gap: 8px; justify-items: center; }
+.ficha-bom .classe { color: var(--nos); }
+.selos { padding: 14px 18px; border-radius: 8px; background: var(--surface-2); border-left: 3px solid var(--gold); display: grid; gap: 10px; }
+.selos h4 { font-size: var(--t-sm); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.selos ul { display: grid; gap: 12px; }
+.selos li { display: grid; gap: 3px; }
+.selo-nome { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--ink); }
+.selos li p { color: var(--ink-2); line-height: 1.5; font-size: var(--t-sm); max-width: 80ch; }
+.selos li small { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .figurinha.girando { animation: none; } }
 
 </style>
 <header class="topo">
@@ -2248,7 +2275,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
           const quando = n.quando != null ? Math.max(n.quando, minimo) : minimo || null;
           const sug = {
             ...info, contra: n.contra, prioridade: n.peso + 1, quando, porque: 'time', papel: resp.por,
-            curto: `${resp.por}, contra ${n.contra}`,
+            curto: n.tipo === 'cura' ? resp.por : `${resp.por}, contra ${n.contra}`,
             motivo: `${n.porque}. ${resp.por.charAt(0).toUpperCase() + resp.por.slice(1)}.${n.nota ? ` ${n.nota}` : ''}`,
           };
           porJogador.get(p.idx).push(sug);
@@ -2451,7 +2478,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       paragrafos.push(`${abre} (${est.motivos.join(', ')})${est.quem ? `, e o dano que te matava era ${tipoTxt}, principalmente de ${est.quem}` : ''}. Nessa situação a build muda: primeiro sobreviver, depois farmar.${it.ganancia ? ` ${it.ganancia.nome} é o item mais comum de ${p.heroi.nome} no meio do jogo, mas é item de quem está na frente: atrás e morrendo, só aumenta o alvo nas suas costas.` : ''}`);
     }
     if (sg.length) {
-      const motivo = (x) => (x.sobrevivencia ? `${x.papel}${x.saiu != null ? `; o seu saiu lá pelos ${minutos(x.saiu)}, depois do estrago` : ''}${x.popular && x.saiu == null ? ` (é a escolha defensiva mais comum de quem joga de ${p.heroi.nome})` : ''}${x.jogos ? `; ${x.jogos}` : ''}` : x.papel ? `${x.papel}${x.contra ? `, contra ${x.contra}` : ''}` : x.atrasado ? 'é o item central do herói e precisa sair mais cedo' : x.prioridade === 1 ? `é o que quase todo ${p.heroi.nome} faz no meio do jogo` : x.contra ? `responde a ${x.contra}` : 'fecha o buraco da build');
+      const motivo = (x) => (x.sobrevivencia ? `${x.papel}${x.saiu != null ? `; o seu saiu lá pelos ${minutos(x.saiu)}, depois do estrago` : ''}${x.popular && x.saiu == null ? ` (é a escolha defensiva mais comum de quem joga de ${p.heroi.nome})` : ''}${x.jogos ? `; ${x.jogos}` : ''}` : x.papel ? `${x.papel}${x.contra && !/cura/.test(x.papel) ? `, contra ${x.contra}` : ''}` : x.atrasado ? 'é o item central do herói e precisa sair mais cedo' : x.prioridade === 1 ? `é o que quase todo ${p.heroi.nome} faz no meio do jogo` : x.contra ? `responde a ${x.contra}` : 'fecha o buraco da build');
       const ordem = sg.map((x) => `${x.nome}${x.quando != null ? ` até uns ${minutos(x.quando)}` : ''}`);
       const base = botas ? `depois de ${botas.nome}, ` : '';
       const porques = sg.length === 2 && sg.every((x) => x.atrasado && !x.sobrevivencia)
@@ -2529,6 +2556,196 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       curva, mortes, porJogador,
       modelo: { versao: modelo.versao, treinadoEm: modelo.treinado_em, partidas: (modelo.partidas_treino || 0) + (modelo.partidas_teste || 0), metricas: modelo.metricas },
     };
+  }
+
+  // ---------------------------------------------------------------- selos e a ficha do lado bom
+
+  // Cada selo nasce de um lance real (minuto, contra quem, em que situação) e só aparece se passar
+  // do critério. O texto é zoeiro, estilo narrador, mas o fato por trás é sempre do replay.
+  // Variações por selo, para dois jogadores com o mesmo selo não lerem a mesma piada.
+  const variar = (ctx, chave, opcoes) => {
+    ctx.selosUsados = ctx.selosUsados || {};
+    const k = ctx.selosUsados[chave] || 0;
+    ctx.selosUsados[chave] = k + 1;
+    return opcoes[k % opcoes.length];
+  };
+
+  function selosDaPartida(ctx, match, vereditos, rotas, venceu) {
+    const { nos, eles, jog } = ctx;
+    const minutos = ctx.duracao / 60;
+    const mortesDe = (i) => (ctx.mortes ? ctx.mortes[i] : []);
+    const laneDeJ = (p) => laneDe(p.raw, p.radiant);
+    const totalMortesNos = soma(nos, (p) => p.raw.deaths);
+    const abatesTime = soma(nos, (p) => p.raw.kills) || 1;
+    const danoTime = soma(nos, (p) => p.raw.hero_damage) || 1;
+    // quem disparou do lado deles: 5+ abates em vocês até os 20 min
+    const disparou = new Set(eles.filter((e) => soma(nos, (p) => mortesDe(p.idx).filter((d) => d.assassino === e.idx && d.t < 1200).length) >= CULPA.snowballAbates).map((e) => e.idx));
+    // lutas pelo placar de mortes: venceu = morreram mais deles
+    const lutas = ctx.lutas.map((l) => ({ ...l, ganha: l.mortesEles > l.mortesNos && l.mortesEles + l.mortesNos >= 3 }));
+    const maxDe = (f) => Math.max(...nos.map(f));
+
+    // por inimigo que disparou, o maior caçador leva o selo; os outros com recompensa grande viram cobradores
+    const cacador = {};
+    for (const j of disparou) {
+      const porNos = nos.map((p) => ({ p, ks: mortesDe(j).filter((d) => d.assassino === p.idx) })).filter((x) => x.ks.length).sort((a, b) => b.ks.length - a.ks.length || soma(b.ks, (d) => d.ouro) - soma(a.ks, (d) => d.ouro));
+      if (porNos[0] && (porNos[0].ks.length >= 2 || porNos[0].ks.some((d) => (d.ouro || 0) >= 1000))) cacador[j] = porNos[0].p;
+    }
+
+    for (const v of vereditos) {
+      const p = v.jogador;
+      const r = p.raw;
+      const s = p.stats;
+      const selos = [];
+      const add = (id, nome, peso, texto, t = null) => selos.push({ id, nome, peso, texto, t });
+      const meusAbates = eles.flatMap((e) => mortesDe(e.idx).filter((d) => d.assassino === p.idx).map((d) => ({ ...d, vitima: e })));
+      const dano = r.hero_damage || 0;
+
+      // caçou quem disparou
+      for (const [j, quem] of Object.entries(cacador)) {
+        if (quem !== p) continue;
+        const e = jog[j];
+        const ks = meusAbates.filter((d) => d.vitima === e);
+        const maior = [...ks].sort((a, b) => (b.ouro || 0) - (a.ouro || 0))[0];
+        const rodo = soma(nos, (q) => mortesDe(q.idx).filter((d) => d.assassino === e.idx && d.t < 1200).length);
+        const vezes = ks.length === 1 ? `conta cobrada aos ${mmss(maior.t)}, ${fmtK(maior.ouro)} de ouro numa morte só` : `${ks.length} das ${e.raw.deaths} mortes dele foram nas mãos dele${(maior.ouro || 0) >= 1000 ? `, uma valendo ${fmtK(maior.ouro)} de ouro aos ${mmss(maior.t)}` : ''}`;
+        add(`cacador-${j}`, `Caçador de ${e.heroi.nome}`, 10 + ks.length, variar(ctx, 'cacador', [
+          `O ${e.heroi.nome} fez ${rodo} abates em vocês até os 20 min e tava achando que era o dono do jogo, até cruzar com ${p.heroi.nome}: ${vezes}. Chama o IBAMA que tem caçador solto no mapa!`,
+          `${e.heroi.nome} entrou no jogo achando que era o protagonista (${rodo} abates em vocês até os 20 min). ${p.heroi.nome} discordou: ${vezes}. Roteiro reescrito.`,
+        ]), maior ? maior.t : null);
+      }
+      // recompensa grande em quem não é o caçado principal
+      const shutdown = meusAbates.filter((d) => (d.ouro || 0) >= 1000 && !(cacador[d.vitima.idx] === p)).sort((a, b) => b.ouro - a.ouro)[0];
+      if (shutdown) {
+        add('cobrador', 'Cobrador de Recompensa', 7, variar(ctx, 'cobrador', [
+          `Aos ${mmss(shutdown.t)}, ${shutdown.vitima.heroi.nome} estava com a cabeça a prêmio e ${p.heroi.nome} foi buscar: ${fmtK(shutdown.ouro)} de ouro de recompensa. O Boba Fett de Dota.`,
+          `${fmtK(shutdown.ouro)} de ouro numa morte só: aos ${mmss(shutdown.t)}, ${p.heroi.nome} cobrou a fatura do ${shutdown.vitima.heroi.nome}. Serasa ficou com inveja.`,
+        ]), shutdown.t);
+      }
+
+      // a melhor luta ganha
+      let melhor = null;
+      for (const l of lutas.filter((x) => x.ganha)) {
+        const x = l.jogadores[p.idx] || {};
+        const total = soma(nos, (q) => (l.jogadores[q.idx] || {}).damage) || 1;
+        const share = (x.damage || 0) / total;
+        const mata = soma(Object.values(x.killed || {}));
+        if ((share >= 0.45 && (x.damage || 0) >= 800) || (mata >= 2 && share >= 0.3)) {
+          const nota = share + mata * 0.1;
+          if (!melhor || nota > melhor.nota) melhor = { l, share, mata, nota };
+        }
+      }
+      if (melhor) {
+        add('dono-da-luta', 'Dono da Luta', 9, variar(ctx, 'luta', [
+          `Luta das ${mmss(melhor.l.inicio)}: ${melhor.l.mortesEles} x ${melhor.l.mortesNos} pra vocês, e ${pct(melhor.share)} do dano saiu das mãos dele${melhor.mata ? ` (${melhor.mata} ${melhor.mata === 1 ? 'abate' : 'abates'})` : ''}. O resto do time pagou ingresso pra assistir.`,
+          `Aos ${mmss(melhor.l.inicio)} o time ganhou a luta ${melhor.l.mortesEles} x ${melhor.l.mortesNos}, mas vamos ser sinceros: foi ${p.heroi.nome} com ${pct(melhor.share)} do dano${melhor.mata ? ` e ${melhor.mata} ${melhor.mata === 1 ? 'abate' : 'abates'}` : ''}. Os outros quatro só seguraram a bolsa.`,
+        ]), melhor.l.inicio);
+      }
+
+      // rota contra o matchup
+      const rota = rotas.find((l) => l.nos.includes(p));
+      if (rota && rota.expectativa && rota.diffComXp != null) {
+        const esp = rota.expectativa.esperado;
+        const sobra = rota.diffComXp - esp;
+        if (sobra >= CULPA.rotaTolerancia && rota.diffComXp > 0) {
+          add('rasgou-o-papel', 'Rasgou o Papel', 8, `No papel, a rota contra ${rota.eles.map((x) => x.heroi.nome).join(' e ')} era ${rota.expectativa.lado}. ${p.heroi.nome} rasgou o papel: aos 10 min estava ${fmtK(rota.diffMedia)} na frente (média por herói), bem acima do que o matchup prometia.`, 600);
+        } else if (esp <= -300 && sobra >= -100) {
+          add('segurou-o-rojao', 'Segurou o Rojão', 7, `A rota contra ${rota.eles.map((x) => x.heroi.nome).join(' e ')} era desfavorável e o esperado era sair uns ${fmtK(-Math.round(esp / 10) * 10)} atrás. ${p.heroi.nome} segurou o rojão e terminou a rota dentro do esperado. Às vezes empatar no inferno é vitória.`, 600);
+        }
+        // deu o troco no rival da rota perdida
+        if (rota.resultado === 'perdeu') {
+          const troco = meusAbates.find((d) => d.t < 600 && rota.eles.includes(d.vitima));
+          if (troco) add('troco', 'Troco na Mesma Moeda', 4, `A rota tava pesada, mas aos ${mmss(troco.t)} ${p.heroi.nome} pegou o ${troco.vitima.heroi.nome} e lembrou a ele quem é que manda. Pelo menos por uns 30 segundos.`, troco.t);
+        }
+      }
+
+      // rotação que deu certo (ele saiu da rota e matou antes dos 12 min)
+      const veioAte = (vit, t) => nos.some((x) => laneDeJ(x) === laneDeJ(p) && mortesDe(x.idx).some((d) => d.assassino === vit.idx && Math.abs(d.t - t) <= 60));
+      const rotacao = meusAbates.find((d) => d.t >= 90 && d.t < 720 && laneDeJ(p) != null && laneDeJ(d.vitima) != null && laneDeJ(d.vitima) !== laneDeJ(p) && !veioAte(d.vitima, d.t));
+      if (rotacao) add('turista', 'Turista Assassino', 4, `Aos ${mmss(rotacao.t)} saiu da própria rota e foi buscar o ${rotacao.vitima.heroi.nome} em casa. Uber Black de rotação, entrega garantida.`, rotacao.t);
+
+      // ficou vivo
+      if (minutos >= 25 && r.deaths <= Math.max(3, Math.round(totalMortesNos * 0.08))) {
+        add('imortal', 'Imortal', venceu ? 6 : 8, r.deaths === 0
+          ? `Zero mortes em ${Math.round(minutos)} minutos. Não é jogador, é miragem.`
+          : `Só ${r.deaths} ${r.deaths === 1 ? 'morte' : 'mortes'} em ${Math.round(minutos)} min${venceu ? '' : `, num jogo em que o time morreu ${totalMortesNos} vezes`}. Enquanto o resto fazia turismo na fonte, ele seguia vivo. Pacto com o capeta confirmado.`);
+      }
+
+      // presença, dano, farm, controle
+      if (s.tfp != null && s.tfp >= 0.75 && abatesTime >= 10) add('onipresente', 'Onipresente', 5, `Esteve em ${pct(s.tfp)} dos abates do time. Ou tem clone, ou tem TP de ouro.`);
+      const shareDano = dano / danoTime;
+      if (dano === maxDe((q) => q.raw.hero_damage || 0) && (shareDano >= 0.3 || (s.bench.hero_damage_per_min || 0) >= 0.85)) {
+        add('mao-pesada', 'Mão Pesada', 5, `${fmtK(dano)} de dano em heróis, ${pct(shareDano)} do time${(s.bench.hero_damage_per_min || 0) >= 0.8 ? `, mais que ${pct(s.bench.hero_damage_per_min)} de quem joga de ${p.heroi.nome}` : ''}. Cada hit dele vinha com nota fiscal.`);
+      }
+      if (p.posicao <= 3 && (s.bench.gold_per_min || 0) >= 0.8) add('agro', 'Agro É Pop', 4, `Farm acima de ${pct(s.bench.gold_per_min)} de quem joga de ${p.heroi.nome} (${s.gpm} GPM). O agro é tech, o agro é pop, o agro é ${p.heroi.nome}.`);
+      if ((r.stuns || 0) >= 40 && (r.stuns || 0) === maxDe((q) => q.raw.stuns || 0)) add('rei-do-stun', 'Rei do Stun', 3, `Deixou os inimigos ${Math.round(r.stuns)} segundos parados. Mais travados que PC de lan house em dia de atualização.`);
+
+      // trabalho invisível
+      const dewards = (r.observer_kills || 0) + (r.sentry_kills || 0);
+      if (dewards >= 4) add('faxineiro', 'Faxineiro de Ward', 5, `Arrancou ${dewards} wards deles. O time adversário passou o jogo no escuro tateando a parede.`);
+      const wards = (r.obs_placed || 0) + (r.sen_placed || 0);
+      if (p.posicao >= 4 && wards >= Math.max(8, minutos * 0.35)) add('google-maps', 'Google Maps do Time', 4, `${wards} wards em ${Math.round(minutos)} min: se tinha alguém no mapa, ele sabia antes.`);
+      if ((r.hero_healing || 0) >= 3000) add('sus', 'SUS do Dota', 4, `Curou ${fmtK(r.hero_healing)} de vida dos aliados. Plano de saúde sem carência e sem coparticipação.`);
+      if ((r.camps_stacked || 0) >= 5) add('stack', 'Engenheiro de Stack', 3, `${r.camps_stacked} camps stackados. Investimento de longo prazo, tipo Tesouro Direto.`);
+
+      // estruturas, Aegis, first blood
+      if ((r.tower_damage || 0) >= 3000 && (r.tower_damage || 0) === maxDe((q) => q.raw.tower_damage || 0)) add('demolidor', 'Demolidor', 3, `${fmtK(r.tower_damage)} de dano em torre. Engenheiro civil ao contrário.`);
+      for (const o of match.objectives || []) {
+        if (o.type === 'CHAT_MESSAGE_AEGIS' && o.player_slot === p.slot) add('aegis', 'Dono do Aegis', 5, `Pegou o Aegis aos ${mmss(o.time)}. Vida extra no bolso e o inimigo pensando duas vezes.`, o.time);
+        if (o.type === 'CHAT_MESSAGE_FIRSTBLOOD' && o.player_slot === p.slot) add('first-blood', 'Abriu o Placar', 3, `First blood aos ${mmss(o.time)}. O primeiro a gente nunca esquece.`, o.time);
+      }
+
+      // buyback que voltou para resolver
+      for (const b of r.buyback_log || []) {
+        const t = Number(b.time) || 0;
+        const luta = lutas.find((l) => l.inicio >= t - 10 && l.inicio <= t + 90 && l.ganha);
+        const abate = meusAbates.find((d) => d.t >= t && d.t <= t + 90);
+        if (luta || abate) {
+          add('voltou-do-alem', 'Voltou do Além', 6, `Comprou de volta aos ${mmss(t)} e ${luta ? `o time ganhou a luta seguinte ${luta.mortesEles} x ${luta.mortesNos}` : `pegou o ${abate.vitima.heroi.nome} em seguida`}. Morreu, pagou o boleto e voltou pra resolver.`, t);
+          break;
+        }
+      }
+
+      // item certo
+      const timing = v.itens.timings.find((x) => x.veredito === 'bom' && x.faixas[x.faixaJogador]);
+      const acerto = (v.itens.acertosContra || [])[0]
+        || (timing ? `${timing.nome} aos ${mmss(timing.t)}, no horário de quem vence ${pct(timing.faixas[timing.faixaJogador].wr)} com ${p.heroi.nome}` : null);
+      if (acerto) add('item-na-mosca', 'Item na Mosca', 3, `${acerto.replace(/\.$/, '')}. Leu o jogo antes de todo mundo.`, timing ? timing.t : null);
+
+      selos.sort((a, b) => b.peso - a.peso);
+      v.selos = selos;
+      v.fichaBoa = fichaBoa(v, ctx, { dewards, wards, shareDano });
+    }
+  }
+
+  // Ficha de RPG do lado bom (0-100), espelho da ficha de atributos negativos.
+  function fichaBoa(v, ctx, x) {
+    const p = v.jogador;
+    const s = p.stats;
+    const minutos = ctx.duracao / 60;
+    const tfp = s.tfp != null ? s.tfp : fatia(s.kills + s.assists, soma(ctx.nos, (q) => q.stats.kills)) || 0;
+    const ouroTirado = (q) => soma(ctx.eles.flatMap((e) => (ctx.mortes ? ctx.mortes[e.idx] : []).filter((d) => d.assassino === q.idx)), (d) => d.ouro || 300);
+    const totalTirado = soma(ctx.nos, ouroTirado) || 1;
+    const mortesTime = soma(ctx.nos, (q) => q.stats.deaths) || 1;
+    const atributos = [
+      { nome: 'Mão Pesada', valor: Math.max(s.bench.hero_damage_per_min || 0, clamp(x.shareDano / 0.4)), explica: `${fmtK(s.heroDamage)} de dano em heróis (${pct(x.shareDano)} do time)` },
+      { nome: 'Agro', valor: (s.bench.gold_per_min || 0) * (p.funcao === 'core' ? 1 : 0.8), explica: `${s.gpm} GPM` },
+      { nome: 'Onipresente', valor: clamp((tfp - 0.3) / 0.55), explica: `esteve em ${pct(tfp)} dos abates do time` },
+      { nome: 'Imortal', valor: s.bench.deaths_per_min != null ? s.bench.deaths_per_min : clamp(1 - fatia(s.deaths, mortesTime) / 0.4), explica: `${s.deaths} mortes` },
+      { nome: 'Caçador', valor: clamp(fatia(ouroTirado(p), totalTirado) / 0.4), explica: `${s.kills} abates` },
+      { nome: 'Olho de Águia', valor: clamp((x.wards + 2 * x.dewards) / (p.funcao === 'suporte' ? Math.max(minutos * 0.7, 1) : 16)), explica: `${x.wards} wards colocadas, ${x.dewards} deles arrancadas` },
+    ].map((a) => ({ ...a, valor: Math.round(clamp(a.valor) * 100) }));
+    const top = [...atributos].sort((a, b) => b.valor - a.valor)[0];
+    const classe = top.valor >= 40 ? `${top.nome} nível ${top.valor}` : 'Herói em treinamento';
+    const FRASE = {
+      'Mão Pesada': `Bate igual boleto vencido: ${fmtK(s.heroDamage)} de dano em heróis.`,
+      Agro: `${s.gpm} de GPM: enquanto uns lutavam, ele construía patrimônio.`,
+      Onipresente: `Em ${pct(tfp)} dos abates do time. Onde tinha confusão, tinha ele.`,
+      Imortal: `${s.deaths} ${s.deaths === 1 ? 'morte' : 'mortes'} no jogo: o carrasco deles não sabia nem o endereço.`,
+      Caçador: `${s.kills} abates: o terror dos heróis de HP baixo.`,
+      'Olho de Águia': `${x.wards} wards e ${x.dewards} arrancadas: o mapa não tinha segredo pra ele.`,
+    };
+    const frase = top.valor >= 40 ? FRASE[top.nome] : 'Esse jogo não rendeu destaque. O próximo é a chance de encher a ficha.';
+    return { atributos, classe, frase, principal: top.nome };
   }
 
   // ---------------------------------------------------------------- a história da partida
@@ -2952,6 +3169,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         eficiencia: a.map((j) => j.raw.lane_efficiency_pct).filter((x) => x != null),
       });
     }
+
+    selosDaPartida(ctx, match, vereditos, rotas, venceu);
 
     const itensQueMudamALuta = ctx.itensEles
       .filter((it) => NOTAS_ITEM_INIMIGO[it.key] && it.key !== 'blade_mail')
@@ -3818,21 +4037,61 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   function figurinha(v, i, eCulpado) {
     const p = v.jogador;
     const linha = (rotulo, texto, classe) => (texto ? h('p', { class: `fig-linha ${classe}` }, h('strong', {}, rotulo), texto) : null);
-    return h('article', { class: `cartao figurinha${eCulpado ? ' e-culpado' : ''}` },
-      h('div', { class: 'fig-topo' },
-        h('span', { class: 'fig-num' }, `Nº ${i + 1}`),
-        h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
-      h('div', { class: 'fig-id' }, retrato(p.heroi), h('div', {}, h('h3', {}, p.nome), h('p', {}, `${p.heroi.nome} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`))),
+    const id = h('div', { class: 'fig-id' }, retrato(p.heroi), h('div', {}, h('h3', {}, p.nome), h('p', {}, `${p.heroi.nome} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`)));
+    const selos = v.selos || [];
+    const frente = h('div', { class: 'fig-face fig-frente' },
+      h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, `Nº ${i + 1}`), h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
+      id,
       h('p', { class: 'fig-classe' }, v.ficha.classe),
       h('div', { class: 'fig-mini' }, miniHexagono(v.ficha)),
       h('p', { class: 'fig-zoeira' }, v.ficha.zoeira),
+      selos.length ? h('p', { class: 'fig-selos' }, selos.slice(0, 3).map((x) => h('span', { class: 'selo-chip' }, medalha(), x.nome))) : null,
       linha('Ajudou: ', v.fezBem[0], 'bom'),
       linha('Atrapalhou: ', v.custou[0], 'ruim'),
-      linha('Pra próxima: ', v.plano[0], 'plano'),
-      h('button', { class: 'fig-ver', type: 'button', onclick: () => document.getElementById(`dossie-${p.idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 'Ver parecer completo'));
+      linha('Pra próxima: ', v.plano[0], 'plano'));
+    const fb = v.fichaBoa;
+    const verso = fb ? h('div', { class: 'fig-face fig-verso', hidden: true },
+      h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, `Nº ${i + 1}`), h('span', { class: 'fig-lado' }, 'Lado bom')),
+      id.cloneNode(true),
+      h('p', { class: 'fig-classe' }, fb.classe),
+      h('div', { class: 'fig-mini' }, miniHexagono(fb, 'bom')),
+      selos.length
+        ? h('ul', { class: 'fig-selos-texto' }, selos.slice(0, 2).map((x) => h('li', {}, h('strong', {}, medalha(), x.nome), h('span', {}, x.texto))))
+        : h('p', { class: 'fig-zoeira' }, fb.frase)) : null;
+    const card = h('article', { class: `cartao figurinha${eCulpado ? ' e-culpado' : ''}` }, frente, verso);
+    if (verso) {
+      const botao = h('button', { class: 'fig-virar', type: 'button', 'aria-pressed': 'false' }, 'Virar a figurinha: lado bom');
+      botao.addEventListener('click', () => {
+        const paraBom = botao.getAttribute('aria-pressed') !== 'true';
+        const trocar = () => {
+          frente.hidden = paraBom;
+          verso.hidden = !paraBom;
+          card.classList.toggle('lado-bom', paraBom);
+          botao.setAttribute('aria-pressed', String(paraBom));
+          botao.textContent = paraBom ? 'Virar a figurinha: lado ruim' : 'Virar a figurinha: lado bom';
+        };
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { trocar(); return; }
+        card.classList.add('girando');
+        setTimeout(trocar, 160);
+        setTimeout(() => card.classList.remove('girando'), 340);
+      });
+      card.append(botao);
+    }
+    card.append(h('button', { class: 'fig-ver', type: 'button', onclick: () => document.getElementById(`dossie-${p.idx}`).scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 'Ver parecer completo'));
+    return card;
   }
 
-  function miniHexagono(f) {
+  // medalhinha dos selos
+  function medalha() {
+    return s('svg', { class: 'medalha', width: 14, height: 14, viewBox: '0 0 14 14', 'aria-hidden': 'true' },
+      s('path', { d: 'M4 0h2.2l1 4.2L8 0h2l-1.6 5.4', fill: 'var(--eles)', opacity: 0.8 }),
+      s('circle', { cx: 7, cy: 9, r: 4.4, fill: 'var(--gold)' }),
+      s('circle', { cx: 7, cy: 9, r: 2.4, fill: 'none', stroke: 'var(--surface)', 'stroke-width': 1 }));
+  }
+
+  function miniHexagono(f, lado = 'ruim') {
+    const cor = lado === 'bom' ? 'var(--nos)' : 'var(--eles)';
+    const lavado = lado === 'bom' ? 'var(--nos-wash)' : 'var(--eles-wash)';
     const W = 92;
     const R = 38;
     const c = W / 2;
@@ -3841,7 +4100,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const svg = s('svg', { width: W, height: W, viewBox: `0 0 ${W} ${W}`, 'aria-hidden': 'true' });
     svg.append(s('polygon', { points: f.atributos.map((_, i) => pt(i, R).join(',')).join(' '), fill: 'none', stroke: 'var(--line-strong)', 'stroke-width': 1 }));
     svg.append(s('polygon', { points: f.atributos.map((_, i) => pt(i, R / 2).join(',')).join(' '), fill: 'none', stroke: 'var(--line)', 'stroke-width': 1 }));
-    svg.append(s('polygon', { points: f.atributos.map((a, i) => pt(i, R * Math.max(0.05, a.valor / 100)).join(',')).join(' '), fill: 'var(--eles-wash)', stroke: 'var(--eles)', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+    svg.append(s('polygon', { points: f.atributos.map((a, i) => pt(i, R * Math.max(0.05, a.valor / 100)).join(',')).join(' '), fill: lavado, stroke: cor, 'stroke-width': 2, 'stroke-linejoin': 'round' }));
     return h('div', { class: 'mini-wrap' }, svg,
       h('ul', { class: 'mini-attrs' }, [...f.atributos].sort((a, b) => b.valor - a.valor).slice(0, 3).map((a) => h('li', { title: a.explica }, h('span', {}, a.nome), h('b', {}, a.valor)))));
   }
@@ -3869,8 +4128,10 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   }
 
   // Hexágono de atributos negativos, estilo ficha de RPG
-  function fichaRPG(v) {
-    const f = v.ficha;
+  function fichaRPG(v, lado = 'ruim') {
+    const f = lado === 'bom' ? v.fichaBoa : v.ficha;
+    const cor = lado === 'bom' ? 'var(--nos)' : 'var(--eles)';
+    const lavado = lado === 'bom' ? 'var(--nos-wash)' : 'var(--eles-wash)';
     const n = f.atributos.length;
     const W = 380;
     const H = 230;
@@ -3887,8 +4148,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     }
     f.atributos.forEach((_, i) => { const [x, y] = ponto(i, R); svg.append(s('line', { x1: cx, y1: cy, x2: x, y2: y, stroke: 'var(--line)', 'stroke-width': 1 })); });
     const pts = f.atributos.map((a, i) => ponto(i, R * Math.max(0.04, a.valor / 100)));
-    svg.append(s('polygon', { points: pts.map((p) => p.join(',')).join(' '), fill: 'var(--eles-wash)', stroke: 'var(--eles)', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
-    pts.forEach(([x, y]) => svg.append(s('circle', { cx: x, cy: y, r: 3.5, fill: 'var(--eles)', stroke: 'var(--surface)', 'stroke-width': 1.5 })));
+    svg.append(s('polygon', { points: pts.map((p) => p.join(',')).join(' '), fill: lavado, stroke: cor, 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+    pts.forEach(([x, y]) => svg.append(s('circle', { cx: x, cy: y, r: 3.5, fill: cor, stroke: 'var(--surface)', 'stroke-width': 1.5 })));
     f.atributos.forEach((a, i) => {
       const [x, y] = ponto(i, R + 22);
       const anchor = Math.abs(x - cx) < 8 ? 'middle' : x > cx ? 'start' : 'end';
@@ -3897,8 +4158,8 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       t.append(s('title', {}, a.explica));
       svg.append(t);
     });
-    return h('div', { class: 'ficha' },
-      h('p', { class: 'eyebrow' }, 'Ficha de personagem'),
+    return h('div', { class: `ficha ficha-${lado}` },
+      h('p', { class: 'eyebrow' }, lado === 'bom' ? 'Ficha de personagem · lado bom' : 'Ficha de personagem · lado ruim'),
       h('p', { class: 'classe' }, f.classe),
       h('div', { class: 'ficha-svg' }, svg),
       h('ul', { class: 'sr-only' }, f.atributos.map((a) => h('li', {}, `${a.nome}: ${a.valor} (${a.explica})`))));
@@ -3915,6 +4176,35 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return h('div', { class: 'leitura-build' }, h('h4', {}, 'Leitura da build'), ps.map((x) => h('p', {}, x)));
   }
 
+  function fichaQueVira(v) {
+    const ruim = fichaRPG(v);
+    if (!v.fichaBoa) return ruim;
+    const bom = fichaRPG(v, 'bom');
+    bom.hidden = true;
+    const botao = h('button', { class: 'ficha-virar', type: 'button', 'aria-pressed': 'false' }, 'Virar a ficha: lado bom');
+    botao.addEventListener('click', () => {
+      const paraBom = botao.getAttribute('aria-pressed') !== 'true';
+      ruim.hidden = paraBom;
+      bom.hidden = !paraBom;
+      botao.setAttribute('aria-pressed', String(paraBom));
+      botao.textContent = paraBom ? 'Virar a ficha: lado ruim' : 'Virar a ficha: lado bom';
+    });
+    return h('div', { class: 'ficha-vira' }, ruim, bom, botao);
+  }
+
+  function blocoSelos(v) {
+    const selos = v.selos || [];
+    if (!v.fichaBoa) return null;
+    return h('div', { class: 'selos' },
+      h('h4', {}, selos.length ? `Selos da partida (${selos.length})` : 'Selos da partida'),
+      selos.length
+        ? h('ul', {}, selos.map((x) => h('li', {},
+          h('span', { class: 'selo-nome' }, medalha(), x.nome),
+          h('p', {}, x.texto),
+          x.t != null ? h('small', {}, `No replay: ${mmss(Math.max(0, x.t - 10))}`) : null)))
+        : h('p', { class: 'vazio' }, `Nenhum selo nessa. ${v.plano && v.plano[0] ? `Pra ganhar um na próxima: ${v.plano[0].charAt(0).toLowerCase()}${v.plano[0].slice(1)}` : 'O próximo jogo é a chance.'}`));
+  }
+
   function dossie(v, i, r) {
     const p = v.jogador;
     return h('article', { class: 'cartao dossie', id: `dossie-${p.idx}`, 'aria-labelledby': `dossie-titulo-${p.idx}` },
@@ -3926,8 +4216,9 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
           h('p', { class: 'sub' }, `${p.heroi.nome} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists} · ${p.raw.gold_per_min} GPM`)),
         h('div', { class: 'nota' }, h('span', { class: 'nota-valor' }, pct(v.fatia)), h('span', { class: 'nota-rotulo' }, 'da culpa'))),
       h('div', { class: 'ficha-e-parecer' },
-        fichaRPG(v),
+        fichaQueVira(v),
         v.diagnostico ? h('p', { class: 'parecer' }, v.diagnostico) : null),
+      blocoSelos(v),
       leituraDaBuild(v),
       h('div', { class: 'coach' },
         v.custou.length ? h('div', { class: 'coach-col ruim' }, h('h4', {}, 'O que custou o jogo'), lista('pontos', v.custou)) : null,
