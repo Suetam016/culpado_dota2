@@ -4,6 +4,7 @@ name: Worker do coach (deploy)
 # Precisa dos segredos do repositório CLOUDFLARE_API_TOKEN (modelo "Edit Cloudflare Workers")
 # e CLOUDFLARE_ACCOUNT_ID. Roda quando o worker muda, ou na hora com um push em worker/deploy-agora.
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths: ["worker/coach.js", "worker/wrangler.toml", "worker/deploy-agora", ".github/workflows/worker.yml"]
