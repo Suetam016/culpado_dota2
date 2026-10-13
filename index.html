@@ -1055,6 +1055,33 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .lance.fixo .t { grid-row: 1 / span 3; }
 .lance.fixo strong, .lance.fixo small { grid-column: 2; }
 
+/* parecer na vitória: ficha do bem e highlight */
+.dossie.vitoria { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); }
+.nota.merito .nota-valor { color: var(--gold); }
+.ficha-bem-vira { display: grid; gap: 10px; justify-items: start; }
+.ficha-bem-vira > div { width: 100%; }
+.ficha-bem { display: grid; gap: 14px; padding: 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line));
+  background: linear-gradient(150deg, color-mix(in srgb, var(--gold) 9%, var(--surface-2)), var(--surface-2) 55%); }
+.ficha-bem-topo { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.ficha-bem-topo .classe { margin: 2px 0 4px; font-family: var(--font-display, var(--font-body)); font-size: clamp(22px, 4vw, 30px); color: var(--nos); text-transform: uppercase; line-height: 1.05; }
+.ficha-bem-merito { margin: 0; color: var(--ink-2); }
+.ficha-bem-merito strong { color: var(--gold); font-size: 1.25em; }
+.ficha-bem-provas { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ficha-bem-provas li { display: grid; grid-template-columns: 3.2em 1fr; gap: 10px; align-items: start; }
+.ficha-bem-provas .pts { font-family: var(--font-mono); font-weight: 700; color: var(--gold); text-align: right; padding-top: 1px; }
+.ficha-bem-provas li div { display: grid; gap: 2px; }
+.ficha-bem-provas li span:not(.pts) { color: var(--ink-2); font-size: 14px; }
+.ficha-bem-frase { margin: 0; font-style: italic; color: var(--ink); }
+.highlight { margin-top: 18px; display: grid; gap: 8px; }
+.highlight h4 { margin: 0; }
+.highlight-tit { margin: 0; color: var(--ink-2); }
+.highlight-tit strong { color: var(--gold); }
+.mapa-col.mini { max-width: 460px; width: 100%; }
+.mapa-col.mini .m-let-tit { font-size: 16px; }
+.mapa-col.mini .m-let.ult .m-let-tit { font-size: 22px; }
+.coach-col.brilho h4 { color: var(--gold); }
+.mapa-col.mini .mapa-tit { display: none; }
+
 </style>
 <header class="topo">
   <div class="topo-inner">
@@ -2929,6 +2956,32 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return out.sort((a, b) => b.peso - a.peso).slice(0, 4);
   }
 
+  // O momento de cada um para o mini replay do parecer: a melhor jogada com minuto.
+  function highlightDoJogador(v, ctx, decisivas) {
+    const p = v.jogador;
+    const cands = [];
+    const add = (peso, t, titulo, legenda, janela) => {
+      if (t == null || !Number.isFinite(t)) return;
+      const [ini, fim] = janela || [t - 9, t + 6];
+      cands.push({ peso, t, ini, fim, titulo, legenda, foco: [p.idx], tipo: 'bom' });
+    };
+    for (const b of v.brilhos || []) if (b.t != null) {
+      const luta = b.titulo === 'Sua melhor luta' ? (ctx.lutas || []).find((l) => l.inicio === b.t) : null;
+      add(b.peso + 3, b.t, b.titulo, b.texto, luta ? [luta.inicio - 4, luta.fim + 4] : null);
+    }
+    for (const sl of v.selos || []) if (sl.t != null) {
+      const luta = sl.id === 'dono-da-luta' ? (ctx.lutas || []).find((l) => l.inicio === sl.t) : null;
+      add((sl.peso || 3) + 2, sl.t, sl.nome, sl.texto, luta ? [luta.inicio - 4, luta.fim + 4] : [sl.t - 12, sl.t + 5]);
+    }
+    const potg = decisivas.find((d) => d.fixo === 'potg');
+    if (potg && potg.foco[0] === p.idx) add(12, potg.t, 'Play of the Game', potg.legenda, [potg.ini, potg.fim]);
+    // reserva: o abate que mais ouro tirou deles
+    const meus = ctx.mortes ? ctx.eles.flatMap((e) => ctx.mortes[e.idx].filter((d) => d.assassino === p.idx).map((d) => ({ ...d, e }))) : [];
+    const melhorAbate = meus.sort((a, b) => (b.ouro || 0) - (a.ouro || 0))[0];
+    if (melhorAbate) add(1, melhorAbate.t, `Abate no ${melhorAbate.e.heroi.nome}`, `Aos ${mmss(melhorAbate.t)}${melhorAbate.ouro ? `, valendo ${fmtK(melhorAbate.ouro)} de ouro` : ''}.`, [melhorAbate.t - 10, melhorAbate.t + 4]);
+    return cands.sort((a, b) => b.peso - a.peso)[0] || null;
+  }
+
   // ---------------------------------------------------------------- selos e a ficha do lado bom
 
   // Cada selo nasce de um lance real (minuto, contra quem, em que situação) e só aparece se passar
@@ -3637,6 +3690,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const chance = parseado ? chanceDeVitoria(dados.modeloVitoria, match, ctx) : null;
     const decisivas = parseado && ctx.mortes ? jogadasDecisivas(ctx, curvaDeChance(ctx, chance, venceu)) : [];
     const lances = parseado && ctx.mortes ? lancesDaPartida(ctx, vereditos, decisivas) : [];
+    for (const v of vereditos) v.highlight = parseado && ctx.mortes ? highlightDoJogador(v, ctx, decisivas) : null;
 
     const itensQueMudamALuta = ctx.itensEles
       .filter((it) => NOTAS_ITEM_INIMIGO[it.key] && it.key !== 'blade_mail')
@@ -4275,20 +4329,26 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   }
 
   let tocarLance = () => {};
+  let contadorMapas = 0;
 
-  function montarLances(r, mapa, palco, legenda, lista, controles) {
+  // opts.unico: toca só esse lance (mini replay do parecer); opts.mini: sem lista, sem som até apertar play,
+  // começa quando aparece na tela
+  function montarLances(r, mapa, palco, legenda, lista, controles, opts = {}) {
     palco.textContent = '';
-    let lances = [...r.lances];
+    const mini = Boolean(opts.mini);
+    let somPermitido = !mini;
+    const recorteId = `m-recorte-${++contadorMapas}`;
+    let lances = opts.unico ? [opts.unico] : [...r.lances];
     const pos = mapa ? posicoes(mapa, r) : null;
-    if (pos) {
+    if (pos && !opts.unico) {
       const extra = lancesDoMapa(r, pos).filter((x) => !lances.some((l) => x.ini < l.fim && l.ini < x.fim));
       lances = [...lances, ...extra.sort((a, b) => b.peso - a.peso).slice(0, 4)].sort((a, b) => a.t - b.t);
     }
     // Play e Throw of the Game fixos no topo; o resto em ordem de tempo
     const ordemFixo = { potg: 0, throw: 1 };
     lances = [...lances.filter((l) => l.fixo).sort((a, b) => ordemFixo[a.fixo] - ordemFixo[b.fixo]), ...lances.filter((l) => !l.fixo)];
-    lista.textContent = '';
-    const chips = lances.map((l, i) => {
+    if (lista) lista.textContent = '';
+    const chips = !lista ? [] : lances.map((l, i) => {
       const b = h('button', { type: 'button', class: `lance ${l.tipo}${l.fixo ? ` fixo ${l.fixo}` : ''}`, 'aria-pressed': 'false' },
         h('span', { class: 't' }, mmss(l.t)), l.fixo ? h('span', { class: 'selo-jogada' }, l.fixo === 'potg' ? '★ Play of the Game' : '✕ Throw of the Game') : null,
         h('strong', {}, l.fixo ? l.titulo.replace(/^(Play|Throw) of the Game · /, 'Luta ') : l.titulo), h('small', {}, l.legenda));
@@ -4299,7 +4359,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     });
     if (!pos) {
       palco.append(h('p', { class: 'vazio' }, SO_EMBUTIDO ? 'O mapa animado só aparece no site.' : 'O replay desta partida ainda não foi processado: o robô do mapa roda a cada hora. Volta daqui a pouco; os lances já estão listados ao lado.'));
-      tocarLance = () => document.getElementById('lances').scrollIntoView({ behavior: 'smooth' });
+      if (!mini) tocarLance = () => document.getElementById('lances').scrollIntoView({ behavior: 'smooth' });
       return;
     }
     const W = 100;
@@ -4372,7 +4432,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const todos = [...r.nos, ...r.eles];
     const tokens = {};
     const R = 2.6;
-    svg.prepend(s('defs', {}, s('clipPath', { id: 'm-recorte' }, s('circle', { r: R - 0.3 }))));
+    svg.prepend(s('defs', {}, s('clipPath', { id: recorteId }, s('circle', { r: R - 0.3 }))));
     for (const p of todos) {
       const g = s('g', { class: `m-heroi ${nosSet.has(p.idx) ? 'nos' : 'eles'}` });
       g.append(s('circle', { r: R, class: 'm-anel' }));
@@ -4380,7 +4440,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       g.append(sigla);
       if (MOSTRAR_IMAGENS && p.heroi.img) {
         // retrato do herói recortado em círculo; a sigla fica de reserva se a imagem não carregar
-        const img = s('image', { href: CDN + p.heroi.img.replace(/\?$/, ''), x: -R * 1.78, y: -R, width: R * 3.56, height: R * 2, 'clip-path': 'url(#m-recorte)', preserveAspectRatio: 'xMidYMid slice' });
+        const img = s('image', { href: CDN + p.heroi.img.replace(/\?$/, ''), x: -R * 1.78, y: -R, width: R * 3.56, height: R * 2, 'clip-path': `url(#${recorteId})`, preserveAspectRatio: 'xMidYMid slice' });
         img.addEventListener('load', () => { sigla.style.display = 'none'; });
         img.addEventListener('error', () => img.remove());
         g.append(img);
@@ -4591,7 +4651,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       setTimeout(() => cartao.classList.add('sai'), HOLD[b.tipo] + 900);
       setTimeout(() => cartao.remove(), HOLD[b.tipo] + 1300);
       const forte = b.tipo === 'ult' || b.tipo === 'roubo' || (b.tipo === 'abate' && b.explosao);
-      if (b.tipo === 'abate' && b.explosao) impacto(true);
+      if (somPermitido && b.tipo === 'abate' && b.explosao) impacto(true);
       if (forte && !reduzMov) { palco.classList.remove('tremor'); void palco.offsetWidth; palco.classList.add('tremor'); }
     };
     // efeitos dentro do mapa: onda da ult, projétil do acerto, números de dano
@@ -4718,7 +4778,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         const agoraMs = performance.now();
         const melhor = candidatosSom.sort((a, b) => b.prio - a.prio)[0];
         if (agoraMs - ultimoSom > 450 || melhor.forte) {
-          somDaSkill(melhor.chave, melhor.forte);
+          if (somPermitido) somDaSkill(melhor.chave, melhor.forte);
           ultimoSom = agoraMs;
           candidatosSom.length = 0;
         } else if (agoraMs - ultimoSom > 900) candidatosSom.length = 0;
@@ -4738,10 +4798,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const iconeVol = h('span', { class: 'mapa-vol-icone', 'aria-hidden': 'true' }, volumeMapa() === 0 ? '🔇' : '🔊');
     volume.addEventListener('input', () => { guardar('culpado:volume', Number(volume.value) / 100); iconeVol.textContent = Number(volume.value) === 0 ? '🔇' : '🔊'; });
     volume.addEventListener('change', () => somDaSkill(sonsIndice && sonsIndice.black_king_bar ? 'black_king_bar' : Object.keys(sonsIndice || {})[0] || '', false)); // amostra do volume escolhido
-    controles.append(relogio, bPlay, bVel, bDe, h('label', { class: 'mapa-vol' }, iconeVol, volume));
-    bPlay.addEventListener('click', () => { tocando = !tocando; bPlay.textContent = tocando ? 'Pausar' : 'Tocar'; if (tocando) { ultimo = performance.now(); requestAnimationFrame(quadro); } });
+    controles.append(...[relogio, bPlay, bVel, bDe, mini ? null : h('label', { class: 'mapa-vol' }, iconeVol, volume)].filter(Boolean));
+    bPlay.addEventListener('click', () => {
+      somPermitido = true;
+      if (!tocando && t >= atual.fim) { tocar(lances.indexOf(atual)); return; }
+      tocando = !tocando; bPlay.textContent = tocando ? 'Pausar' : 'Tocar'; if (tocando) { ultimo = performance.now(); requestAnimationFrame(quadro); } });
     bVel.addEventListener('click', () => { vel = vel === 1.5 ? 3 : vel === 3 ? 0.75 : 1.5; bVel.textContent = `${vel}×`; });
-    bDe.addEventListener('click', () => tocar(lances.indexOf(atual)));
+    bDe.addEventListener('click', () => { somPermitido = true; tocar(lances.indexOf(atual)); });
     const enquadrar = (l) => {
       // onde a ação aconteceu: quem usou skill e quem morreu na janela do lance
       const acao = [];
@@ -4859,6 +4922,23 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       desenhar();
       requestAnimationFrame(quadro);
     };
+    if (mini) {
+      // parado no primeiro quadro; começa sozinho (sem som) quando aparece na tela
+      atual = lances[0];
+      caixa = enquadrar(atual);
+      cam.setAttribute('transform', `scale(${W / caixa[2]}) translate(${-caixa[0]},${-caixa[1]})`);
+      t = atual.ini;
+      batidasAtual = batidas(atual);
+      bPlay.textContent = 'Tocar';
+      desenhar();
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((es) => {
+          if (es.some((e) => e.isIntersecting)) { obs.disconnect(); tocar(0); }
+        }, { threshold: 0.6 });
+        obs.observe(palco);
+      }
+      return;
+    }
     tocarLance = (tAlvo) => {
       const i = lances.findIndex((l) => tAlvo >= l.ini && tAlvo <= l.fim);
       document.getElementById('lances').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -5076,6 +5156,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
   }
 
   function secaoTribunal(r) {
+    const vitoria = r.partida.venceu && r.craques && r.craques.length;
+    if (vitoria) {
+      const vs = r.craques.map((c) => r.vereditos.find((v) => v.jogador === c.jogador));
+      return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-tribunal' },
+        cabecalho('O parecer de cada um', 'O que cada um somou na vitória, a jogada que merece replay e o que dá para limpar para a próxima.', 'titulo-tribunal'),
+        h('div', { class: 'dossies' }, vs.map((v, i) => dossie(v, i, r))));
+    }
     const vs = r.vereditos;
     return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-tribunal' },
       cabecalho('O tribunal', 'O parecer do coach para cada um: o que custou o jogo, o que deu certo e o plano para a próxima.', 'titulo-tribunal'),
@@ -5353,30 +5440,98 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     return bloco;
   }
 
+  const capital = (x) => (x ? x.charAt(0).toUpperCase() + x.slice(1) : x);
+
+  // Ficha resumida do lado bom (vitória): mérito, o que somou e a frase; o lado ruim fica a um clique
+  function fichaDoBem(v, merito) {
+    const fb = v.fichaBoa;
+    const ruim = h('div', { class: 'ficha-e-parecer' }, fichaRPG(v), v.diagnostico ? h('p', { class: 'parecer' }, v.diagnostico) : null);
+    ruim.hidden = true;
+    const bom = h('div', { class: 'ficha-bem' },
+      h('div', { class: 'ficha-bem-topo' },
+        fb ? miniHexagono(fb, 'bom') : null,
+        h('div', {},
+          h('p', { class: 'eyebrow' }, 'Ficha do lado bom'),
+          h('p', { class: 'classe' }, fb ? fb.classe : 'Peça da vitória'),
+          h('p', { class: 'ficha-bem-merito' }, h('strong', {}, pct(merito.fatia)), ' do mérito da vitória'))),
+      merito.brilhou.length
+        ? h('ul', { class: 'ficha-bem-provas' }, merito.brilhou.map((c) => h('li', {},
+          h('span', { class: 'pts' }, `+${Math.round(c.pontos)}`),
+          h('div', {}, h('strong', {}, c.label), h('span', {}, c.evidencia)))))
+        : h('p', { class: 'vazio' }, 'Fez o simples e fez bem: sem erro grande e sem querer aparecer.'),
+      merito.brilhou[0] ? h('p', { class: 'ficha-bem-frase' }, `${capital(merito.brilhou[0].elogio)}.`) : null);
+    const botao = h('button', { class: 'ficha-virar', type: 'button', 'aria-pressed': 'false' }, 'Ver o lado ruim');
+    botao.addEventListener('click', () => {
+      const paraRuim = ruim.hidden;
+      ruim.hidden = !paraRuim;
+      bom.hidden = paraRuim;
+      botao.setAttribute('aria-pressed', String(paraRuim));
+      botao.textContent = paraRuim ? 'Voltar ao lado bom' : 'Ver o lado ruim';
+    });
+    return h('div', { class: 'ficha-bem-vira' }, bom, ruim, botao);
+  }
+
+  // Mini replay do melhor momento do jogador, no fim do parecer
+  function blocoHighlight(v, r) {
+    if (!r.partida.parseado) return null;
+    const palco = h('div', { class: 'mapa-palco' }, h('p', { class: 'vazio' }, 'Carregando o lance…'));
+    const controles = h('div', { class: 'mapa-controles' });
+    const legenda = h('div', { class: 'mapa-legenda', 'aria-live': 'polite' });
+    const titulo = h('p', { class: 'highlight-tit' });
+    const bloco = h('div', { class: 'highlight' },
+      h('h4', {}, 'Seu highlight'), titulo,
+      h('div', { class: 'mapa-col mini' }, palco, controles, legenda));
+    carregarMapa(r.partida.id).then((mapa) => {
+      let lance = v.highlight;
+      if (mapa) {
+        // jogada vista no mapa (Blink + ult, esquiva, save) ganha do resto quando existe
+        const doMapa = (brilhosDoMapa(r, mapa)[v.jogador.idx] || []).filter((b) => b.t != null)[0];
+        if (doMapa && (!lance || doMapa.peso + 3 >= lance.peso)) {
+          lance = { peso: doMapa.peso + 3, t: doMapa.t, ini: doMapa.t - 8, fim: doMapa.t + 5, titulo: doMapa.titulo, legenda: doMapa.texto, foco: [v.jogador.idx], tipo: 'bom' };
+        }
+      }
+      if (!lance) { bloco.hidden = true; return; }
+      titulo.textContent = '';
+      titulo.append(h('strong', {}, lance.titulo), ` · ${mmss(lance.t)} · ${lance.legenda}`);
+      if (!mapa) {
+        palco.textContent = '';
+        palco.append(h('p', { class: 'vazio' }, SO_EMBUTIDO ? 'O replay animado só aparece no site.' : 'O replay animado aparece quando o robô do mapa processar esta partida (uns minutos depois do jogo).'));
+        return;
+      }
+      montarLances(r, mapa, palco, legenda, null, controles, { unico: lance, mini: true });
+    }).catch(() => { bloco.hidden = true; });
+    return bloco;
+  }
+
   function dossie(v, i, r) {
     const p = v.jogador;
-    return h('article', { class: 'cartao dossie', id: `dossie-${p.idx}`, 'aria-labelledby': `dossie-titulo-${p.idx}` },
+    const vitoria = r.partida.venceu && r.craques && r.craques.length;
+    const merito = vitoria ? r.craques.find((c) => c.jogador === p) : null;
+    return h('article', { class: `cartao dossie${merito ? ' vitoria' : ''}`, id: `dossie-${p.idx}`, 'aria-labelledby': `dossie-titulo-${p.idx}` },
       h('header', { class: 'dossie-topo' },
         retrato(p.heroi, true),
         h('div', {},
           h('p', { class: 'eyebrow' }, `${i + 1}º · pos ${p.posicao} · ${p.funcao}`),
           h('h3', { id: `dossie-titulo-${p.idx}` }, p.nome),
           h('p', { class: 'sub' }, `${p.heroi.nome} · ${p.raw.kills}/${p.raw.deaths}/${p.raw.assists} · ${p.raw.gold_per_min} GPM`)),
-        h('div', { class: 'nota' }, h('span', { class: 'nota-valor' }, pct(v.fatia)), h('span', { class: 'nota-rotulo' }, 'da culpa'))),
-      h('div', { class: 'ficha-e-parecer' },
+        merito
+          ? h('div', { class: 'nota merito' }, h('span', { class: 'nota-valor' }, pct(merito.fatia)), h('span', { class: 'nota-rotulo' }, 'do mérito'))
+          : h('div', { class: 'nota' }, h('span', { class: 'nota-valor' }, pct(v.fatia)), h('span', { class: 'nota-rotulo' }, 'da culpa'))),
+      merito ? fichaDoBem(v, merito) : h('div', { class: 'ficha-e-parecer' },
         fichaQueVira(v),
         v.diagnostico ? h('p', { class: 'parecer' }, v.diagnostico) : null),
       blocoSelos(v),
       leituraDaBuild(v),
       h('div', { class: 'coach' },
         blocoBrilhos(v, r),
-        v.custou.length ? h('div', { class: 'coach-col ruim' }, h('h4', {}, 'O que custou o jogo'), lista('pontos', v.custou)) : null,
+        !merito && v.custou.length ? h('div', { class: 'coach-col ruim' }, h('h4', {}, 'O que custou o jogo'), lista('pontos', v.custou)) : null,
         v.fezBem.length ? h('div', { class: 'coach-col bom' }, h('h4', {}, 'O que você fez bem'), lista('pontos', v.fezBem)) : null,
-        v.plano.length ? h('div', { class: 'coach-col plano' }, h('h4', {}, 'Plano para o próximo jogo'), lista('pontos', v.plano, true)) : null),
-      detalhesDoJogador(v, r));
+        v.plano.length ? h('div', { class: 'coach-col plano' }, h('h4', {}, merito ? 'Para ficar ainda melhor' : 'Plano para o próximo jogo'), lista('pontos', v.plano, true)) : null),
+      detalhesDoJogador(v, r, merito),
+      blocoHighlight(v, r));
   }
 
-  function detalhesDoJogador(v, r) {
+  function detalhesDoJogador(v, r, merito) {
     const it = v.itens;
     const porItem = new Map(it.timings.map((t) => [`${t.item}@${t.t}`, t]));
     const ordem = it.compras.map((c) => {
@@ -5391,10 +5546,17 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const culpa = v.componentes.filter((c) => Math.abs(c.pontos) >= 1).map((c) => h('li', { class: c.pontos < 0 ? 'credito' : null },
       h('span', { class: 'pts' }, fmtPts(c.pontos)),
       h('span', {}, h('strong', {}, c.label), ` — ${c.evidencia}.`)));
+    const doMerito = merito ? merito.componentes.map((c) => h('li', { class: 'credito' },
+      h('span', { class: 'pts' }, `+${Math.round(c.pontos)}`),
+      h('span', {}, h('strong', {}, c.label), ` — ${c.evidencia}.`))) : [];
     return h('details', { class: 'detalhes' },
-      h('summary', {}, 'Ver detalhes: de onde veio a culpa, contra quem você jogou e a ordem de compra'),
+      h('summary', {}, merito ? 'Ver detalhes: de onde veio o mérito, o que dá para limpar, contra quem você jogou e a ordem de compra' : 'Ver detalhes: de onde veio a culpa, contra quem você jogou e a ordem de compra'),
       h('div', { class: 'detalhes-grid' },
-        culpa.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, `De onde vieram os ${Math.round(v.score)} pontos de culpa`),
+        doMerito.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, `De onde vieram os ${Math.round(merito.score)} pontos de mérito`),
+          h('ul', { class: 'conta-culpa' }, doMerito),
+          h('p', { class: 'nota-culpa' }, 'Cada ponto é 100 de ouro de impacto a favor do time. O mérito da vitória é a soma de cada um dividida pelo total do time.')) : null,
+        merito && v.custou.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, 'O que dá para limpar (mesmo ganhando)'), lista('pontos', v.custou)) : null,
+        culpa.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, merito ? `Pontos de culpa, para registro: ${Math.round(v.score)}` : `De onde vieram os ${Math.round(v.score)} pontos de culpa`),
           h('ul', { class: 'conta-culpa' }, culpa),
           h('p', { class: 'nota-culpa' }, 'Cada ponto é 100 de ouro que o jogador custou ao time (ou devolveu, no caso dos créditos). A culpa da partida é a soma de cada um dividida pelo total do time.')) : null,
         ameacas.length ? h('div', {}, h('h4', {}, 'Contra quem você jogou'), lista('pontos', ameacas)) : null,
