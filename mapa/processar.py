@@ -33,14 +33,21 @@ def post(caminho: str):
 
 
 def baixar(url: str, destino: Path) -> None:
-    dec = bz2.BZ2Decompressor()
     req = urllib.request.Request(url, headers={"User-Agent": "culpado-dota2-mapa"})
     with urllib.request.urlopen(req, timeout=300) as r, open(destino, "wb") as out:
-        while True:
-            bloco = r.read(1 << 20)
-            if not bloco:
-                break
-            out.write(dec.decompress(bloco))
+        primeiro = r.read(1 << 20)
+        print(f"  replay {url} -> HTTP {r.status} {r.headers.get('Content-Type')} {r.headers.get('Content-Length')} inicio={primeiro[:12]!r}")
+        if primeiro[:3] == b"BZh":
+            dec = bz2.BZ2Decompressor()
+            out.write(dec.decompress(primeiro))
+            while bloco := r.read(1 << 20):
+                out.write(dec.decompress(bloco))
+        elif primeiro[:6] == b"PBDEMS":
+            out.write(primeiro)
+            while bloco := r.read(1 << 20):
+                out.write(bloco)
+        else:
+            raise RuntimeError(f"replay em formato inesperado: {primeiro[:40]!r}")
 
 
 def parsear(dem: Path, parser: str):
