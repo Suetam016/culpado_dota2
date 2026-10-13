@@ -132,7 +132,9 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
             if ev.get("hero_id"):
                 heroi_do_slot[int(ev["slot"])] = int(ev["hero_id"])
         elif tipo == "DOTA_COMBATLOG_DAMAGE" and ev.get("targethero") and not ev.get("targetillusion") and ev.get("value"):
-            dano_brut[(int(float(ev.get("time") or 0)), ev.get("attackername"), ev.get("targetname"))] += int(ev["value"])
+            inf = ev.get("inflictor")
+            inf = inf if isinstance(inf, str) and inf not in ("dota_unknown", "") else ""
+            dano_brut[(int(float(ev.get("time") or 0)), ev.get("attackername"), ev.get("targetname"), inf)] += int(ev["value"])
         elif tipo in ("DOTA_COMBATLOG_ABILITY", "DOTA_COMBATLOG_ITEM") and ev.get("inflictor"):
             if exemplo_hab is None:
                 exemplo_hab = ev
@@ -160,22 +162,35 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
     todos_x = [v for a in xs for v in a if v is not None]
     todos_y = [v for a in ys for v in a if v is not None]
     hab, usos = habilidades(casts, ordem, heroi_do_slot)
-    dano = danos(dano_brut, ordem, heroi_do_slot) if hab is not None else []
+    dano = danos(dano_brut, ordem, heroi_do_slot, hab) if hab is not None else []
     print(f"  {len(dano)} registros de dano herói->herói")
     print(f"  {len(usos)} usos de skill/item de {len(casts)} no combat log")
     return {"v": VERSAO if hab is not None else 1, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
             "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos, "dano": dano}
 
 
-def danos(brut, ordem, heroi_do_slot):
-    """[[segundo, atacante, alvo, dano]] com atacante/alvo = índice em slots; ilusões contam para o dono."""
+def danos(brut, ordem, heroi_do_slot, hab):
+    """[[segundo, atacante, alvo, dano, hab]] com atacante/alvo = índice em slots e hab = índice em hab (-1 =
+    ataque normal). Ilusões contam para o dono. Skills que só aparecem no dano entram em hab."""
     c = constantes()
     k_do_npc = {c["npc"].get(heroi_do_slot.get(s)): k for k, s in enumerate(ordem) if heroi_do_slot.get(s)}
+    idx = {h[0]: i for i, h in enumerate(hab)}
     out = []
-    for (t, a, b), v in brut.items():
+    for (t, a, b, inf), v in brut.items():
         ka, kb = k_do_npc.get(a), k_do_npc.get(b)
-        if ka is not None and kb is not None and ka != kb and v >= 10:
-            out.append([t, ka, kb, v])
+        if ka is None or kb is None or ka == kb or v < 10:
+            continue
+        hi = -1
+        if inf:
+            chave = inf.removeprefix("item_")
+            if chave not in idx:
+                info = (c["itens"] if inf.startswith("item_") else c["hab"]).get(chave)
+                info = info if isinstance(info, dict) else {}
+                if isinstance(info.get("dname"), str):
+                    idx[chave] = len(hab)
+                    hab.append([chave, info["dname"], "i" if inf.startswith("item_") else "u" if chave in c["ults"] else "h"])
+            hi = idx.get(chave, -1)
+        out.append([t, ka, kb, v, hi])
     out.sort()
     return out
 
