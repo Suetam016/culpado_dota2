@@ -49,16 +49,21 @@ _CONST: dict = {}
 def constantes() -> dict:
     """Heróis, habilidades e itens do OpenDota (uma vez por rodada): nome bonito e qual é a ultimate."""
     if not _CONST:
-        herois = get("/constants/heroes")
-        _CONST["npc"] = {int(h["id"]): h["name"] for h in herois.values()}
-        _CONST["hab"] = get("/constants/abilities")
-        _CONST["itens"] = get("/constants/items")
-        ults = set()
-        for hab in get("/constants/hero_abilities").values():
+        def pega(caminho):
+            for tentativa in range(3):
+                try:
+                    return get(caminho)
+                except Exception:  # noqa: BLE001
+                    if tentativa == 2:
+                        raise
+                    time.sleep(5 * (tentativa + 1))
+        novo = {"npc": {int(h["id"]): h["name"] for h in pega("/constants/heroes").values()},
+                "hab": pega("/constants/abilities"), "itens": pega("/constants/items"), "ults": set()}
+        for hab in pega("/constants/hero_abilities").values():
             lista = [a for a in hab.get("abilities") or [] if a and a != "generic_hidden"]
             if lista:
-                ults.add(lista[-1])
-        _CONST["ults"] = ults
+                novo["ults"].add(lista[-1])
+        _CONST.update(novo)  # só guarda quando veio tudo
     return _CONST
 
 
@@ -151,8 +156,8 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
     todos_y = [v for a in ys for v in a if v is not None]
     hab, usos = habilidades(casts, ordem, heroi_do_slot)
     print(f"  {len(usos)} usos de skill/item de {len(casts)} no combat log")
-    return {"v": VERSAO, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
-            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab, "usos": usos}
+    return {"v": VERSAO if hab is not None else 1, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
+            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos}
 
 
 def habilidades(casts, ordem, heroi_do_slot):
@@ -161,8 +166,8 @@ def habilidades(casts, ordem, heroi_do_slot):
     try:
         c = constantes()
     except Exception as e:  # noqa: BLE001
-        print(f"  sem constantes do OpenDota ({e}): mapa sem skills")
-        return [], []
+        print(f"  sem constantes do OpenDota ({e!r}): mapa sem skills por enquanto")
+        return None, []
     k_do_npc = {c["npc"].get(heroi_do_slot.get(s)): k for k, s in enumerate(ordem) if heroi_do_slot.get(s)}
     hab, idx, usos = [], {}, []
     for t, quem, chave, alvo, item in casts:
