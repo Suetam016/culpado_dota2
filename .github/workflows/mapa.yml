@@ -1,11 +1,11 @@
 name: Mapa (posições dos heróis)
 
 # Baixa o replay das partidas de vocês, roda o parser do OpenDota e guarda a posição de cada herói
-# segundo a segundo em mapas/<id>.json (o "lance animado" do site). A cada 3 h, ou na hora com um
+# segundo a segundo em mapas/<id>.json (o "lance animado" do site). A cada hora, ou na hora com um
 # push em mapa/pedidos/<id>.
 on:
   schedule:
-    - cron: "23 */3 * * *"
+    - cron: "23 * * * *"
   push:
     paths: ["mapa/pedidos/**", ".github/workflows/mapa.yml", "mapa/processar.py"]
 

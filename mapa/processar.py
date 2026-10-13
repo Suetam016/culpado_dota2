@@ -119,12 +119,12 @@ def main() -> int:
     ap.add_argument("--pedidos", default="mapa/pedidos")
     ap.add_argument("--saida", default="mapas")
     ap.add_argument("--parser", default="http://localhost:5600")
-    ap.add_argument("--maximo", type=int, default=6)
+    ap.add_argument("--maximo", type=int, default=15)
     a = ap.parse_args()
     saida = Path(a.saida)
     saida.mkdir(parents=True, exist_ok=True)
     feitos = {int(p.stem) for p in saida.glob("*.json") if p.stem.isdigit()}
-    fila = []
+    fila, recentes = [], []
     pedidos = Path(a.pedidos)
     for f in sorted(pedidos.glob("*")) if pedidos.exists() else []:
         if f.stem.isdigit():
@@ -133,10 +133,11 @@ def main() -> int:
         for conta in json.loads(Path(a.amigos).read_text()):
             try:
                 for j in get(f"/players/{conta}/matches?limit=6&date=5&significant=0"):
-                    fila.append(int(j["match_id"]))
+                    recentes.append(int(j["match_id"]))
             except Exception as e:  # noqa: BLE001
                 print(f"  conta {conta}: {e}")
             time.sleep(1.2)
+    fila += sorted(recentes, reverse=True)  # pedidos primeiro, depois as partidas mais novas
     fila = [i for i in dict.fromkeys(fila) if i not in feitos]
     print(f"Fila: {fila}")
     tmp = Path("/tmp/replays")
