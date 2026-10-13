@@ -1,0 +1,8 @@
+# Configuração do Worker do coach (usada pelo robô .github/workflows/worker.yml)
+name = "culpado-coach"
+main = "coach.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[ai]
+binding = "AI"
