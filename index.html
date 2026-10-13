@@ -1038,6 +1038,13 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .revelacao.vitoria .rev-titulo { color: var(--gold); }
 .craque-provas li { display: block; padding: 0; border: 0; }
 .craque-provas li strong { display: inline; }
+.mapa-vol { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; font-size: 14px; }
+.mapa-volume { width: 96px; accent-color: var(--gold); }
+.m-torre rect { stroke-width: 0.35; }
+.m-torre.nos rect { fill: #3987e5; stroke: #cfe2ff; }
+.m-torre.eles rect { fill: #e66767; stroke: #ffd7d7; }
+.m-torre.caiu rect { fill: none; stroke: #6b7684; stroke-dasharray: 0.4 0.3; opacity: 0.7; }
+.m-torre.anc rect { stroke-width: 0.5; }
 
 </style>
 <header class="topo">
@@ -3895,22 +3902,25 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 
   let audioCtx = null;
   const somLigado = () => ler('culpado:som') !== 'nao';
+  // volume dos sons do mapa (0 a 1), ajustável no controle ao lado do mapinha
+  const volumeMapa = () => { const v = Number(ler('culpado:volume')); return Number.isFinite(v) && ler('culpado:volume') != null ? Math.max(0, Math.min(1, v)) : 0.3; };
 
   // "boom" curto para os momentos fortes do mapa (ult, explosão)
   function impacto(forte) {
-    if (!somLigado()) return;
+    if (!somLigado() || volumeMapa() === 0) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
     } catch (e) { return; }
     const ac = audioCtx;
+    const vol = volumeMapa();
     const t0 = ac.currentTime + 0.01;
     const osc = ac.createOscillator();
     const g = ac.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(forte ? 140 : 220, t0);
     osc.frequency.exponentialRampToValueAtTime(forte ? 35 : 70, t0 + (forte ? 0.6 : 0.25));
-    g.gain.setValueAtTime(forte ? 0.7 : 0.35, t0);
+    g.gain.setValueAtTime((forte ? 0.7 : 0.35) * vol, t0);
     g.gain.exponentialRampToValueAtTime(0.001, t0 + (forte ? 0.8 : 0.3));
     osc.connect(g).connect(ac.destination);
     osc.start(t0);
@@ -3925,12 +3935,12 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     fetch('sons/indice.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).then((j) => { sonsIndice = j || {}; }).catch(() => {});
   };
   function somDaSkill(chave, forte) {
-    if (!somLigado()) return;
+    if (!somLigado() || volumeMapa() === 0) return;
     const arq = sonsIndice && sonsIndice[chave];
     if (arq) {
       try {
         const a = new Audio(`sons/${arq}`);
-        a.volume = forte ? 0.8 : 0.55;
+        a.volume = volumeMapa() * (forte ? 1 : 0.7);
         a.play().catch(() => impacto(forte));
         return;
       } catch (e) { /* cai no boom */ }
@@ -4172,6 +4182,54 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     cam.append(s('path', { d: `M${W * 0.04},${W * 0.1} C${W * 0.35},${W * 0.38} ${W * 0.62},${W * 0.6} ${W * 0.96},${W * 0.9}`, class: 'm-rio' }));
     for (const d of [`M${W * 0.13},${W * 0.84} L${W * 0.13},${W * 0.13} L${W * 0.84},${W * 0.13}`, `M${W * 0.16},${W * 0.87} L${W * 0.87},${W * 0.87} L${W * 0.87},${W * 0.16}`, `M${W * 0.16},${W * 0.84} L${W * 0.84},${W * 0.16}`]) cam.append(s('path', { d, class: 'm-rota' }));
     cam.append(s('circle', { cx: W * 0.11, cy: W * 0.89, r: W * 0.08, class: `m-base ${nosRadiant ? 'nos' : 'eles'}` }), s('circle', { cx: W * 0.89, cy: W * 0.11, r: W * 0.08, class: `m-base ${nosRadiant ? 'eles' : 'nos'}` }));
+    // estruturas: posição aproximada (unidades do mundo) e a hora em que caíram na partida
+    const ESTRUTURAS = [
+      ['goodguys_tower1_top', -6240, 1850], ['goodguys_tower2_top', -6150, -870], ['goodguys_tower3_top', -6600, -3550],
+      ['goodguys_tower1_mid', -1540, -1410], ['goodguys_tower2_mid', -3540, -2790], ['goodguys_tower3_mid', -4640, -4140],
+      ['goodguys_tower1_bot', 4920, -6080], ['goodguys_tower2_bot', -560, -6170], ['goodguys_tower3_bot', -3950, -6110],
+      ['goodguys_tower4', -5710, -4860], ['goodguys_tower4', -5390, -5190],
+      ['goodguys_melee_rax_top', -6380, -3850], ['goodguys_range_rax_top', -6850, -3850], ['goodguys_melee_rax_mid', -4500, -4500],
+      ['goodguys_range_rax_mid', -4900, -4100], ['goodguys_melee_rax_bot', -4250, -6050], ['goodguys_range_rax_bot', -4250, -6500],
+      ['goodguys_fort', -5920, -5350],
+      ['badguys_tower1_top', -4670, 6020], ['badguys_tower2_top', 0, 6020], ['badguys_tower3_top', 3550, 5780],
+      ['badguys_tower1_mid', 520, 650], ['badguys_tower2_mid', 2500, 2110], ['badguys_tower3_mid', 4270, 3760],
+      ['badguys_tower1_bot', 6270, -1650], ['badguys_tower2_bot', 6400, 380], ['badguys_tower3_bot', 6340, 3030],
+      ['badguys_tower4', 4940, 4780], ['badguys_tower4', 5280, 4430],
+      ['badguys_melee_rax_top', 3900, 5800], ['badguys_range_rax_top', 3900, 6250], ['badguys_melee_rax_mid', 4300, 4100],
+      ['badguys_range_rax_mid', 4650, 3750], ['badguys_melee_rax_bot', 6350, 3400], ['badguys_range_rax_bot', 6800, 3400],
+      ['badguys_fort', 5530, 5000],
+    ];
+    const cel = (w) => w / 128 + 128; // mundo -> célula do replay
+    const caiu = {};
+    for (const o of estado.dados.match.objectives || []) {
+      if (o.type !== 'building_kill' || !o.key) continue;
+      const k = o.key.replace('npc_dota_', '');
+      (caiu[k] = caiu[k] || []).push(Number(o.time) || 0);
+    }
+    Object.values(caiu).forEach((xs) => xs.sort((a, b) => a - b));
+    const camadaTorres = s('g', { class: 'm-torres' });
+    const torres = ESTRUTURAS.map(([k, wx, wy]) => {
+      const radiantK = k.startsWith('goodguys');
+      const lado = radiantK === nosRadiant ? 'nos' : 'eles';
+      const x = u(cel(wx)); const y = v(cel(wy));
+      const tipo = k.includes('fort') ? 'anc' : k.includes('rax') ? 'rax' : 'torre';
+      const L = tipo === 'anc' ? 3.6 : tipo === 'rax' ? 1.6 : 1.9;
+      const g = s('g', { class: `m-torre ${tipo} ${lado}`, transform: `translate(${x.toFixed(2)},${y.toFixed(2)})` },
+        tipo === 'torre' ? s('rect', { x: -L / 2, y: -L / 2, width: L, height: L, rx: 0.3, transform: 'rotate(45)' })
+          : s('rect', { x: -L / 2, y: -L / 2, width: L, height: L, rx: tipo === 'anc' ? 0.8 : 0.3 }));
+      camadaTorres.append(g);
+      return { k, g };
+    });
+    // a fila de quem caiu: a 1ª torre4 que cair apaga a 1ª da lista, e assim por diante
+    const desenharTorres = (tt) => {
+      const usados = {};
+      for (const tr of torres) {
+        const i = usados[tr.k] = (usados[tr.k] ?? -1) + 1;
+        const quando = (caiu[tr.k] || [])[i];
+        tr.g.classList.toggle('caiu', quando != null && tt >= quando);
+      }
+    };
+    cam.append(camadaTorres);
     const camadaMortes = s('g', {});
     const camadaHerois = s('g', {});
     cam.append(camadaMortes, camadaHerois);
@@ -4235,7 +4293,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       'tusk_snowball', 'tusk_walrus_punch', 'phoenix_icarus_dive', 'batrider_flaming_lasso', 'vengefulspirit_magic_missile',
       'sven_storm_bolt', 'skywrath_mage_mystic_flare', 'legion_commander_overwhelming_odds', 'slardar_slithereen_crush',
       'tiny_toss', 'tiny_avalanche', 'rattletrap_hookshot', 'elder_titan_echo_stomp', 'centaur_hoof_stomp',
-      'earthshaker_fissure', 'earthshaker_echo_slam', 'sand_king_burrowstrike', 'ember_spirit_sleight_of_fist',
+      'earthshaker_fissure', 'earthshaker_echo_slam', 'sand_king_burrowstrike',
       'dark_willow_bramble_maze', 'venomancer_venomous_gale', 'bane_nightmare', 'shadow_shaman_shackles',
       'queenofpain_sonic_wave', 'death_prophet_carrion_swarm', 'leshrac_split_earth', 'puck_dream_coil', 'zuus_lightning_bolt',
       'storm_spirit_ball_lightning', 'morphling_adaptive_strike_agi', 'chaos_knight_chaos_bolt', 'snapfire_mortimer_kisses',
@@ -4267,9 +4325,14 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
       'bane_fiends_grip', 'legion_commander_duel', 'doom_bringer_doom', 'zuus_thundergods_wrath', 'medusa_stone_gaze',
       'dark_willow_terrorize', 'sandking_epicenter', 'beastmaster_primal_roar', 'pudge_dismember', 'shadow_demon_demonic_purge',
       'silencer_global_silence', 'obsidian_destroyer_sanity_eclipse', 'death_prophet_exorcism', 'naga_siren_song_of_the_siren']);
+    // ults de deslocamento: são usadas toda hora para reposicionar; só contam com muito dano
+    const ULT_MOBILIDADE = new Set(['ember_spirit_fire_remnant', 'ember_spirit_activate_fire_remnant', 'storm_spirit_ball_lightning',
+      'void_spirit_astral_step', 'mirana_invis', 'weaver_time_lapse', 'morphling_replicate', 'puck_phase_shift', 'slark_shadow_dance',
+      'phantom_lancer_juxtapose', 'nyx_assassin_vendetta', 'clinkz_burning_army', 'riki_tricks_of_the_trade', 'spectre_haunt', 'spectre_haunt_single']);
     const ultForte = (uso) => {
       if (ULT_SEMPRE.has(uso.hab[0])) return true;
       const ef = efeitoDoUso(uso);
+      if (ULT_MOBILIDADE.has(uso.hab[0])) return temSkillNoDano && ef.v >= 1000;
       // sem a skill de cada dano (mapas antigos) o dano do herói engana: aí só vale se levou a abate
       if (temSkillNoDano && (ef.v >= 600 || (ef.alvos >= 2 && ef.v >= 300))) return true;
       // levou a abate: alguém que ele machucou morreu logo depois
@@ -4538,7 +4601,11 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
     const bPlay = h('button', { type: 'button', class: 'mapa-botao' }, 'Pausar');
     const bVel = h('button', { type: 'button', class: 'mapa-botao' }, '1.5×');
     const bDe = h('button', { type: 'button', class: 'mapa-botao' }, 'Ver de novo');
-    controles.append(relogio, bPlay, bVel, bDe);
+    const volume = h('input', { type: 'range', min: 0, max: 100, step: 5, value: Math.round(volumeMapa() * 100), class: 'mapa-volume', 'aria-label': 'Volume dos sons do mapa' });
+    const iconeVol = h('span', { class: 'mapa-vol-icone', 'aria-hidden': 'true' }, volumeMapa() === 0 ? '🔇' : '🔊');
+    volume.addEventListener('input', () => { guardar('culpado:volume', Number(volume.value) / 100); iconeVol.textContent = Number(volume.value) === 0 ? '🔇' : '🔊'; });
+    volume.addEventListener('change', () => somDaSkill('', false)); // amostra do volume escolhido
+    controles.append(relogio, bPlay, bVel, bDe, h('label', { class: 'mapa-vol' }, iconeVol, volume));
     bPlay.addEventListener('click', () => { tocando = !tocando; bPlay.textContent = tocando ? 'Pausar' : 'Tocar'; if (tocando) { ultimo = performance.now(); requestAnimationFrame(quadro); } });
     bVel.addEventListener('click', () => { vel = vel === 1.5 ? 3 : vel === 3 ? 0.75 : 1.5; bVel.textContent = `${vel}×`; });
     bDe.addEventListener('click', () => tocar(lances.indexOf(atual)));
@@ -4603,6 +4670,7 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
         const [a, b] = atual.ligar.map((i) => ps[i]);
         if (a && b) camadaMortes.append(s('line', { x1: u(a[0]), y1: v(a[1]), x2: u(b[0]), y2: v(b[1]), class: 'm-ligacao', 'stroke-width': 0.6 * Math.max(0.35, escala) }));
       }
+      desenharTorres(t);
       desenharSkills(ps, escala);
       desenharFx(ps, escala);
       const evs = [];
