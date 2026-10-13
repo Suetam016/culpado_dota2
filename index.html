@@ -1150,10 +1150,10 @@ details.detalhes summary { cursor: pointer; color: var(--ink-2); font-size: var(
 .chat-entrada { flex: 1; resize: vertical; min-height: 44px; max-height: 160px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); font: inherit; }
 .chat-aviso { margin: 0; color: #ff9a9a; font-size: 14px; }
 .chat-aviso:empty { display: none; }
-.chat-config { font-size: 14px; color: var(--ink-2); }
-.chat-config p { margin: 0 0 8px; }
-.chat-chave-linha { display: flex; gap: 8px; flex-wrap: wrap; }
-.chat-chave { flex: 1; min-width: 200px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); }
+.chat-estado { margin: 0; color: var(--ink-2); font-size: 14px; }
+.chat-estado:empty { display: none; }
+.chat-estado:focus { outline: none; }
+.chat-nota { margin: 0; color: var(--ink-2); font-size: 12.5px; line-height: 1.4; }
 .link { background: none; border: 0; padding: 0; color: var(--gold); text-decoration: underline; cursor: pointer; font: inherit; }
 @media (prefers-reduced-motion: reduce) { .chat-msg.pensando p { animation: none; } }
 
@@ -1850,7 +1850,12 @@ details.detalhes summary:hover { border-color: var(--line-strong); color: var(--
 .chat-sugestao:hover { color: var(--ink); box-shadow: var(--glow-ouro); }
 .chat-msg { border-radius: var(--radius-sm); }
 .chat-msg.eu { background: color-mix(in srgb, var(--nos) 18%, var(--surface-2)); border: 1px solid var(--nos); }
-.chat-msg.coach.pergaminho { --parch-ink-2: #3f2f1e; padding: 14px 18px 10px; display: grid; gap: 6px; max-width: 90%; }
+.chat-msg.coach.pergaminho {
+  --parch-ink-2: #3f2f1e; padding: 14px 18px 10px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; max-width: 90%;
+  /* o fundo de pergaminho precisa vencer o .chat-msg.coach (fundo escuro) para o texto escuro ter contraste */
+  background: radial-gradient(130% 100% at 50% 0%, transparent 55%, rgba(120, 80, 30, 0.35)), var(--tex-ruido), linear-gradient(180deg, var(--parch), var(--parch-2));
+  color: var(--parch-ink); border: 0;
+}
 .chat-msg.coach.pergaminho p { color: var(--parch-ink); }
 .chat-assina { justify-self: end; font: 700 0.8rem/1 var(--font-display); letter-spacing: 0.06em; color: var(--parch-ink-2); }
 .chat-msg.pensando .chat-assina { display: none; }
@@ -1867,11 +1872,41 @@ details.detalhes summary:hover { border-color: var(--line-strong); color: var(--
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .chat-entrada { box-shadow: inset 0 2px 5px rgba(60, 40, 15, 0.25); } }
 :root[data-theme="light"] .chat-entrada { box-shadow: inset 0 2px 5px rgba(60, 40, 15, 0.25); }
 .chat-enviar { flex: none; }
-.chat-chave-det summary { cursor: pointer; font: 600 0.78rem/1.3 var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); padding: 4px 0; }
-.chat-chave-det summary:hover { color: var(--gold-2); }
-.chat-chave-det[open] summary { margin-bottom: 8px; }
-.chat-chave { border-radius: var(--radius-sm); background: var(--bg-2); }
+/* resposta do coach: markdown simples montado com DOM */
+.chat-msg { overflow-wrap: anywhere; min-width: 0; }
+.chat-msg.coach { white-space: normal; }
+.chat-texto { display: grid; gap: 6px; min-width: 0; }
+.chat-texto p, .chat-texto ul, .chat-texto ol { margin: 0; }
+.chat-texto ul, .chat-texto ol { padding-left: 1.3em; display: grid; gap: 3px; }
+.chat-texto ul { list-style: disc; }
+.chat-texto ol { list-style: decimal; }
+.chat-msg.coach.pergaminho li { color: var(--parch-ink); }
+.chat-msg.coach.pergaminho li::marker { color: var(--parch-ink-2); }
+.chat-msg.coach.pergaminho strong { color: var(--parch-ink); font-weight: 800; }
+.chat-texto code { font: 0.9em/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; background: rgba(90, 60, 20, 0.14); padding: 0 4px; border-radius: 3px; }
+.chat-texto .chat-tit { font-family: var(--font-display); letter-spacing: 0.02em; }
+.chat-sugestao[aria-disabled="true"], .chat-enviar[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 .chat-aviso { color: var(--bad-ink); }
+/* alvos de toque de 44px */
+.chat-sugestao { min-height: 44px; padding: 10px 14px; text-align: left; }
+.chat-enviar { min-height: 44px; min-width: 88px; }
+/* o "pensando" fica com as runas ao lado do texto (mesma especificidade do pergaminho) */
+.chat-msg.coach.pergaminho.pensando { display: flex; align-items: center; gap: 10px; }
+/* assinatura curta; o modelo vai numa letra pequena e normal */
+.chat-assina { display: inline-flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 2px 8px; line-height: 1.2; }
+.chat-modelo { font: 400 0.78rem/1.2 var(--font-body); letter-spacing: 0; text-transform: none; color: var(--parch-ink-2); }
+.chat-texto .chat-cortada { font-style: italic; color: var(--parch-ink-2); }
+/* o estado recebe foco só para o leitor de tela: sem caixa dourada em volta de um texto */
+.chat-estado:focus, .chat-estado:focus-visible { outline: none; box-shadow: none; }
+/* artifact: o cartão vira uma linha só */
+.chat-fora .chat-cartao { padding-bottom: 0; }
+.chat-fora .oraculo-cab { border-bottom: 0; }
+@media (max-width: 560px) {
+  /* runas numa linha só, com rolagem dentro do cartão (a página não rola para o lado) */
+  .chat-sugestoes { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; margin: 0 -18px; padding: 2px 18px; scroll-padding: 0 18px; }
+  .chat-sugestoes::-webkit-scrollbar { display: none; }
+  .chat-sugestao { flex: none; white-space: nowrap; }
+}
 
 /* ---------- celular: topo compacto que não gruda */
 .sr-mobile { display: inline; }
@@ -5082,11 +5117,11 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     desenhos.length = 0;
     el.pagina.textContent = '';
     const parcial = !r.partida.parseado;
-    el.pagina.append(
+    el.pagina.append(...[
       secaoTopo(r),
       ...(parcial ? [] : [secaoChat(r), secaoLances(r), secaoJogo(r), secaoCraques(r), secaoRotas(r), secaoItensDoTime(r), secaoTribunal(r), secaoTime(r)]),
       rodape(r),
-    );
+    ].filter(Boolean)); // seção que não se aplica devolve null (ex.: chat com o coach desligado)
     requestAnimationFrame(() => desenhos.forEach((f) => f()));
     if (observador) observador.disconnect();
     if ('ResizeObserver' in window) {
@@ -5967,16 +6002,26 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
   }
 
 
-  // -------- chat com o coach (Claude, pela API da Anthropic)
-  // O SDK oficial vai empacotado no site (vendor/) e só carrega quando alguém usa o chat. A chave nunca fica
-  // no site: ou passa pelo proxy (Cloudflare Worker com a chave guardada lá; EMBUTIDO.chatProxy), ou a pessoa
-  // usa a própria chave, que fica só no navegador dela.
-  const CHAT = { modelo: 'claude-opus-5-5', proxy: EMBUTIDO.chatProxy || '', sdk: 'vendor/anthropic-sdk-0.129.0.mjs' };
-  let sdkPromessa = null;
-  const carregarSdk = () => (sdkPromessa = sdkPromessa || import(new URL(CHAT.sdk, document.baseURI).href).then((m) => m.default));
+  // -------- chat com o coach (modelo de IA gratuito, por um Cloudflare Worker do dono do site)
+  // Ninguém precisa de chave: o site manda os dados da partida e a conversa para o Worker (worker/coach.js no
+  // repositório do site), que responde em streaming com um modelo grátis (Workers AI ou Gemini). O endereço
+  // do Worker vem do config.json do site ({"coach": "https://..."}), que o dono edita no GitHub sem rebuild;
+  // EMBUTIDO.chatProxy (build.py, CULPADO_CHAT_PROXY) é a reserva.
+  try { localStorage.removeItem('culpado:chave-anthropic'); } catch (e) { /* chave do chat antigo: não é mais usada */ }
+  const validarUrlCoach = (u) => {
+    const t = String(u || '').trim().replace(/\/+$/, '').replace(/\/chat$/, '');
+    return /^https:\/\/[^\s/]+\.[^\s/]+(\/\S*)?$/.test(t) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/\S*)?$/.test(t) ? t : '';
+  };
+  let coachPromessa = null;
+  let coachUrlPronta; // undefined = config.json ainda carregando; '' = coach desligado
+  const urlDoCoach = () => (coachPromessa = coachPromessa || (SO_EMBUTIDO
+    ? Promise.resolve('')
+    : fetch('config.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}))
+      .then((j) => validarUrlCoach(j && j.coach) || validarUrlCoach(EMBUTIDO.chatProxy)))
+    .then((u) => (coachUrlPronta = u)));
   const conversas = {};
 
-  function contextoDoChat(r) {
+  function contextoDoChat(r, quemPergunta) {
     const curto = (xs, n) => (xs || []).slice(0, n);
     const jogadorTxt = (v) => {
       const p = v.jogador;
@@ -5996,9 +6041,11 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
         selos: curto(v.selos, 4).map((x) => `${x.nome}: ${x.texto}`),
       };
     };
-    const ctx = {
-      partida: { id: r.partida.id, resultado: r.partida.venceu ? 'vitória' : 'derrota', duracao: mmss(r.partida.duracao),
+    // objeto (não texto): o Worker valida, enxuga se precisar e monta o prompt
+    return {
+      partida: { id: String(r.partida.id), resultado: r.partida.venceu ? 'vitória' : 'derrota', duracao: mmss(r.partida.duracao),
         placar: `${r.partida.placarNos} x ${r.partida.placarEles}`, lado: r.partida.ladoRadiant ? 'Radiant' : 'Dire', resumo: r.partida.resumo },
+      quem_pergunta: quemPergunta || null, // o herói de quem pergunta, quando dá para saber (runa "Que build o X…")
       time_de_voces: r.vereditos.map(jogadorTxt),
       time_deles: r.eles.map((p) => ({ heroi: p.heroi.nome, posicao: p.posicao, kda: `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`, gpm: p.raw.gold_per_min,
         itens: (r.itensEles || []).filter((it) => it.jogador === p).map((it) => `${it.nome} (${mmss(it.t)})`) })),
@@ -6007,15 +6054,120 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       lances: (r.lances || []).map((l) => `${mmss(l.t)} ${l.titulo}: ${l.legenda}`),
       itens_deles_que_mudaram_a_luta: (r.itensQueMudamALuta || []).map((x) => x.texto),
     };
-    return JSON.stringify(ctx);
   }
 
-  const SISTEMA_CHAT = `Você é o coach do site "Quem é o culpado? Dota 2", conversando com um grupo de amigos brasileiros sobre uma partida que eles jogaram.
-Responda em português do Brasil, como um amigo que entende muito de Dota: direto, específico, com uma zoeira leve quando couber (nunca humilhando ninguém).
-Baseie-se nos dados da partida abaixo, que vêm do replay (OpenDota). Cite minutos, heróis e números dos dados quando ajudarem; não invente números que não estão lá. Se a pergunta pedir algo que os dados não mostram, diga isso e responda com o que dá para afirmar.
-Para build: considere o contexto do jogo (quem estava matando o jogador, que dano ele tomava, itens do time deles, se estava ganhando ou perdendo) e dê itens concretos, na ordem, com o minuto aproximado.
-"Culpa" e "mérito" são pontuações do site (1 ponto = 100 de ouro de impacto); explique-as se perguntarem.
-Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando for passo a passo.`;
+  const MSG_COACH = {
+    desligado: 'O oráculo ainda está dormindo: o dono do site não ligou ele.',
+    embutido: 'O oráculo só atende no site: suetam016.github.io/culpado_dota2',
+    cota: 'O oráculo viu replay demais hoje e foi descansar. Volta às 21h (Brasília).',
+    limite: 'Calma, o oráculo também cansa: muitas perguntas dessa internet na última hora. Tenta de novo daqui a pouco.',
+    ocupado: 'O oráculo está lotado agora. Tenta de novo em um minuto.',
+    tempo: 'O oráculo travou pensando. Manda de novo.',
+    interrompido: 'A resposta caiu no meio. Manda de novo.',
+    recusa: 'Essa eu não consigo responder. Pergunta de outro jeito, focando na partida.',
+    grande: 'A conversa ficou longa demais. Recarregue a página para começar outra.',
+    rede: 'Não deu para chamar o oráculo. Confere a internet e tenta de novo.',
+    rota: 'O endereço do oráculo no config.json não é de um coach. Avise o dono do site.',
+    origem: 'O oráculo não aceitou pedidos deste endereço. Avise o dono do site.',
+    invalido: 'O oráculo não entendeu o pedido. Recarregue a página e tente de novo.',
+  };
+  const erroCoach = (code, extra) => Object.assign(new Error(code), { code }, extra || {});
+
+  // POST <coach>/chat e leitura do SSE: {t} pedaços, {p} "ainda vivo" (troca de modelo), {fim, modelo, cortada}
+  // no final, {erro} se der problema
+  async function* perguntarAoCoach(url, corpo, sinal) {
+    let res;
+    try {
+      res = await fetch(`${url}/chat`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(corpo), signal: sinal });
+    } catch (e) { throw erroCoach(sinal && sinal.aborted ? 'tempo' : 'rede'); }
+    const tipo = res.headers.get('content-type') || '';
+    if (!res.ok || !/event-stream/.test(tipo)) {
+      const j = await res.json().catch(() => ({}));
+      // 503 sem JSON do Worker (ex.: a Cloudflare estourou CPU/memória) é passageiro: "lotado", não "desligado"
+      const porStatus = { 403: 'origem', 404: 'rota', 405: 'rota', 501: 'rota', 413: 'grande', 429: 'limite' }[res.status] || (res.ok ? 'rota' : 'ocupado');
+      throw erroCoach(MSG_COACH[j.erro] ? j.erro : porStatus, { minutos: j.minutos, msg: j.msg, doWorker: Boolean(j.erro) });
+    }
+    const leitor = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    try {
+      for (;;) {
+        let parte;
+        try { parte = await leitor.read(); } catch (e) { throw erroCoach(sinal && sinal.aborted ? 'tempo' : 'interrompido'); }
+        if (parte.done) break;
+        buf += dec.decode(parte.value, { stream: true });
+        let i;
+        while ((i = buf.indexOf('\n\n')) >= 0) {
+          const bloco = buf.slice(0, i);
+          buf = buf.slice(i + 2);
+          for (const linha of bloco.split('\n')) {
+            if (!linha.startsWith('data:')) continue;
+            let ev;
+            try { ev = JSON.parse(linha.slice(5)); } catch (e) { continue; }
+            if (ev.erro) throw erroCoach(MSG_COACH[ev.erro] ? ev.erro : 'ocupado', { msg: ev.msg, doWorker: true });
+            if (ev.fim) { yield { fim: true, modelo: ev.modelo || '', cortada: Boolean(ev.cortada) }; return; }
+            if (typeof ev.t === 'string') yield { t: ev.t };
+            else if (ev.p) yield { p: 1 };
+          }
+        }
+      }
+    } finally { try { leitor.cancel(); } catch (e) { /* nada */ } }
+    throw erroCoach('interrompido'); // o stream acabou sem o "fim"
+  }
+
+  // markdown simples (negrito, itálico, código, listas, títulos) montado com DOM: nada de innerHTML,
+  // links ficam como texto
+  function inlineRico(linha) {
+    const out = [];
+    const re = /\*\*([^*\n]+)\*\*|(?<![\w_])__([^_\n]+?)__(?![\w_])|`([^`\n]+)`|(?<![\w*])\*([^*\s][^*\n]*?)\*(?![\w*])|(?<![\w_])_([^_\s][^_\n]*?)_(?![\w_])/g;
+    let i = 0;
+    let m;
+    while ((m = re.exec(linha))) {
+      if (m.index > i) out.push(linha.slice(i, m.index));
+      if (m[1] != null || m[2] != null) out.push(h('strong', {}, m[1] != null ? m[1] : m[2]));
+      else if (m[3] != null) out.push(h('code', {}, m[3]));
+      else out.push(h('em', {}, m[4] != null ? m[4] : m[5]));
+      i = m.index + m[0].length;
+    }
+    if (i < linha.length) out.push(linha.slice(i));
+    return out;
+  }
+  function textoRico(txt) {
+    const frag = document.createDocumentFragment();
+    let par = null;
+    let lista = null;
+    for (const bruta of String(txt).replace(/\r/g, '').split('\n')) {
+      let l = bruta.trim();
+      if (!l || /^([-*_])\1{2,}$/.test(l)) { par = null; lista = null; continue; }
+      if (/^\|.*\|$/.test(l)) { // linha de tabela: separador some, células viram um item de lista
+        if (/^\|[\s:|-]+\|$/.test(l)) continue;
+        l = `- ${l.slice(1, -1).split('|').map((c) => c.trim()).filter(Boolean).join(' · ')}`;
+      }
+      const item = l.match(/^[-*•+]\s+(.*)$/);
+      const num = !item && l.match(/^(\d{1,2})[.)]\s+(.*)$/);
+      const tit = l.match(/^#{1,4}\s+(.*)$/);
+      if (item || num) {
+        const tipo = item ? 'ul' : 'ol';
+        if (!lista || lista.tagName.toLowerCase() !== tipo) {
+          lista = h(tipo, num && num[1] !== '1' ? { start: num[1] } : {});
+          frag.append(lista);
+        }
+        lista.append(h('li', {}, inlineRico(item ? item[1] : num[2])));
+        par = null;
+      } else if (tit) {
+        frag.append(h('p', { class: 'chat-tit' }, h('strong', {}, tit[1].replace(/\*\*/g, ''))));
+        par = null; lista = null;
+      } else if (lista && /^\s{2,}/.test(bruta) && lista.lastChild) {
+        lista.lastChild.append(' ', ...inlineRico(l)); // continuação do item
+      } else {
+        if (!par) { par = h('p'); frag.append(par); } else par.append(h('br'));
+        par.append(...inlineRico(l));
+        lista = null;
+      }
+    }
+    return frag;
+  }
+  const semPensamento = (t) => t.replace(/<think>[\s\S]*?(<\/think>\s*|$)/g, '');
 
   // olho arcano do oráculo (cabeçalho do chat)
   function olhoArcano() {
@@ -6026,131 +6178,159 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
       s('circle', { cx: 25, cy: 15, r: 1.6, class: 'olho-brilho' }));
   }
 
+  // texto da resposta sem markdown, para o leitor de tela anunciar uma vez só
+  const textoPuro = (t) => String(t).replace(/\*\*|__|`/g, '').replace(/^\s*(#{1,4}|[-*•+]|\d{1,2}[.)])\s+/gm, '').replace(/\s*\n+\s*/g, ' ').trim();
+
   function secaoChat(r) {
+    const cab = (sub) => h('div', { class: 'oraculo-cab' }, olhoArcano(),
+      h('div', {}, h('p', { class: 'oraculo-tit' }, 'O oráculo do Ancient'), h('p', { class: 'oraculo-sub' }, sub)));
+    // no artifact o chat não roda: uma linha só, apontando para o site (sem campo nem runas)
+    if (SO_EMBUTIDO) {
+      return h('section', { class: 'bloco chat chat-fora', 'aria-label': 'Pergunte ao oráculo' },
+        h('div', { class: 'cartao chat-cartao' }, cab(MSG_COACH.embutido)));
+    }
+    // o dono ainda não ligou o coach (config.json vazio): nada de chat quebrado no topo da partida
+    if (coachUrlPronta === '') return null;
     const id = String(r.partida.id);
     const conv = conversas[id] = conversas[id] || { historico: [] };
-    const lista = h('div', { class: 'chat-msgs', 'aria-live': 'polite' });
-    const entrada = h('textarea', { class: 'chat-entrada', rows: 1, placeholder: 'Pergunte sobre a partida: build, quem errou, o que fazer contra um herói…', 'aria-label': 'Pergunta para o coach' });
+    // a lista NÃO é aria-live (o streaming relê a resposta a cada quadro): quem anuncia é o `anuncio`, uma vez
+    const lista = h('div', { class: 'chat-msgs' });
+    const anuncio = h('p', { class: 'sr-only', 'aria-live': 'polite' });
+    const entrada = h('textarea', { class: 'chat-entrada', rows: 1, maxlength: 1000, placeholder: 'Pergunte ao oráculo…', 'aria-label': 'Pergunta para o oráculo' });
     const enviar = h('button', { class: 'botao chat-enviar', type: 'button' }, 'Enviar');
-    const aviso = h('p', { class: 'chat-aviso' });
-    const config = h('div', { class: 'chat-config' });
-    // a chave da API fica recolhida para não poluir; abre sozinha quando precisa
-    const resumoChave = h('summary', {}, 'Usar minha chave da API');
-    const detChave = h('details', { class: 'chat-chave-det' }, resumoChave, config);
-    const chaveSalva = () => { try { return localStorage.getItem('culpado:chave-anthropic') || ''; } catch (e) { return ''; } };
-    const disponivel = () => Boolean(CHAT.proxy || chaveSalva());
-    const pintarConfig = () => {
-      config.textContent = '';
-      detChave.hidden = false;
-      if (SO_EMBUTIDO) { resumoChave.textContent = 'Onde o chat funciona'; config.append(h('p', {}, 'O chat funciona no site: suetam016.github.io/culpado_dota2')); return; }
-      if (CHAT.proxy) { detChave.hidden = true; return; }
-      if (chaveSalva()) {
-        config.append(h('p', {}, 'Usando a sua chave da API (guardada só neste navegador). ',
-          h('button', { type: 'button', class: 'link', onclick: () => { try { localStorage.removeItem('culpado:chave-anthropic'); } catch (e) { /* nada */ } pintarConfig(); } }, 'Esquecer a chave')));
-        return;
-      }
-      const campo = h('input', { type: 'password', placeholder: 'sk-ant-...', class: 'chat-chave', 'aria-label': 'Chave da API da Anthropic', autocomplete: 'off' });
-      const salvar = h('button', { type: 'button', class: 'botao secundario' }, 'Usar esta chave');
-      salvar.addEventListener('click', () => {
-        const k = campo.value.trim();
-        if (!/^sk-ant-/.test(k)) { campo.setCustomValidity('A chave começa com sk-ant-'); campo.reportValidity(); return; }
-        try { localStorage.setItem('culpado:chave-anthropic', k); } catch (e) { /* nada */ }
-        pintarConfig();
-      });
-      config.append(h('p', {}, 'O coach é o Claude, um modelo de linguagem. Enquanto o dono do site não liga o chat para todo mundo, dá para usar a sua própria chave da API da Anthropic (fica só neste navegador; ',
-        h('a', { href: 'https://console.anthropic.com/settings/keys', target: '_blank', rel: 'noopener' }, 'pegar uma chave'), ').'),
-        h('div', { class: 'chat-chave-linha' }, campo, salvar));
+    const aviso = h('p', { class: 'chat-aviso', role: 'alert' });
+    const estadoTxt = h('p', { class: 'chat-estado', role: 'status', tabindex: '-1' });
+    const nota = h('p', { class: 'chat-nota' }, 'É uma IA grátis e às vezes erra número: confira no painel. Não escreva nada pessoal, porque a empresa da IA (Google ou Cloudflare) pode ler as perguntas.');
+    const sugestoesBox = h('div', { class: 'chat-sugestoes' });
+    const linhaEntrada = h('div', { class: 'chat-linha' }, entrada, enviar);
+    let coachUrl = coachUrlPronta === undefined ? null : coachUrlPronta; // null = ainda carregando o config.json
+    let fora = null; // 'desligado' (o Worker disse) ou 'cota' (acabou a do dia): até recarregar a página
+    let msgFora = '';
+    let ocupado = false;
+    const sugestoesBotoes = [];
+    const pintarEstado = () => {
+      estadoTxt.textContent = fora ? msgFora || MSG_COACH[fora] : '';
+      linhaEntrada.hidden = sugestoesBox.hidden = nota.hidden = Boolean(fora);
+      entrada.disabled = Boolean(fora);
+      for (const b of [enviar, ...sugestoesBotoes]) b.setAttribute('aria-disabled', String(Boolean(fora) || ocupado));
     };
-    const bolha = (quem, texto) => {
+    const assinatura = (modelo) => [
+      '— o oráculo',
+      modelo ? h('small', { class: 'chat-modelo' }, `IA grátis · ${modelo.replace(/\s+via\s+.*$/, '')}`) : null,
+    ];
+    const bolha = (quem, texto, modelo) => {
       const doCoach = /coach/.test(quem);
+      const corpoMsg = doCoach ? h('div', { class: 'chat-texto' }, /pensando/.test(quem) ? h('p', {}, texto) : textoRico(texto)) : h('p', {}, texto);
+      const assina = doCoach ? h('span', { class: 'chat-assina', title: modelo ? `Respondido por ${modelo}` : null }, assinatura(modelo)) : null;
       const b = h('div', { class: `chat-msg ${quem}${doCoach ? ' pergaminho' : ''}` },
         /pensando/.test(quem) ? h('span', { class: 'runas', 'aria-hidden': 'true' }, h('i', {}, '◆'), h('i', {}, '◆'), h('i', {}, '◆')) : null,
-        h('p', {}, texto),
-        doCoach ? h('span', { class: 'chat-assina' }, '— o coach') : null);
+        corpoMsg, assina);
       lista.append(b);
       lista.scrollTop = lista.scrollHeight;
-      return b;
+      return { b, corpoMsg, assina };
     };
-    const textoDe = (content) => (content || []).filter((c) => c.type === 'text').map((c) => c.text).join('');
-    for (const m of conv.historico) bolha(m.role === 'user' ? 'eu' : 'coach', typeof m.content === 'string' ? m.content : textoDe(m.content));
-    let ocupado = false;
-    const perguntar = async (texto) => {
-      texto = (texto || '').trim();
-      if (!texto || ocupado) return;
-      if (!disponivel()) { pintarConfig(); detChave.open = true; config.querySelector('input') && config.querySelector('input').focus(); return; }
+    for (const m of conv.historico) bolha(m.papel === 'eu' ? 'eu' : 'coach', m.texto, m.modelo);
+    // resposta longa: começa a leitura pelo topo dela; curta: mostra tudo até o fim
+    const rolarPara = (b) => {
+      const topo = b.getBoundingClientRect().top - lista.getBoundingClientRect().top;
+      lista.scrollTop = b.offsetHeight > lista.clientHeight ? lista.scrollTop + topo : lista.scrollHeight;
+    };
+    const perguntar = async (texto, { daEntrada = false, heroi = null } = {}) => {
+      texto = (texto || '').trim().slice(0, 1000);
+      if (!texto || ocupado || fora) return;
+      if (coachUrl == null) coachUrl = await urlDoCoach();
+      if (!coachUrl || ocupado) return;
+      if (daEntrada) entrada.value = '';
       ocupado = true;
-      enviar.disabled = true;
+      pintarEstado();
       aviso.textContent = '';
-      bolha('eu', texto);
-      conv.historico.push({ role: 'user', content: texto });
-      const resposta = bolha('coach pensando', 'Pensando…');
-      const alvo = resposta.querySelector('p');
+      const mensagens = [...conv.historico.slice(-12).map((m) => ({ papel: m.papel, texto: m.texto })), { papel: 'eu', texto }];
+      const minha = bolha('eu', texto);
+      const resposta = bolha('coach pensando', 'O oráculo está lendo o replay…');
+      anuncio.textContent = 'O oráculo está pensando…';
+      lista.setAttribute('aria-busy', 'true');
+      const ctrl = new AbortController();
+      let vigia = 0;
+      const vigiar = (ms) => { clearTimeout(vigia); vigia = setTimeout(() => ctrl.abort(), ms); };
+      const total = setTimeout(() => ctrl.abort(), 90000);
+      let escrito = '';
+      let quadro = 0;
+      const desenhar = () => { quadro = 0; resposta.corpoMsg.replaceChildren(textoRico(semPensamento(escrito))); lista.scrollTop = lista.scrollHeight; };
       try {
-        const Anthropic = await carregarSdk();
-        const client = new Anthropic({ apiKey: CHAT.proxy ? 'via-proxy' : chaveSalva(), baseURL: CHAT.proxy || undefined, dangerouslyAllowBrowser: true, maxRetries: 1 });
-        const stream = client.beta.messages.stream({
-          model: CHAT.modelo,
-          max_tokens: 8000,
-          betas: ['server-side-fallback-2026-07-01'],
-          fallbacks: 'default',
-          output_config: { effort: 'low' },
-          cache_control: { type: 'ephemeral' },
-          system: `${SISTEMA_CHAT}\n\nDados da partida (JSON):\n${contextoDoChat(r)}`,
-          messages: conv.historico,
-        });
-        let escrito = '';
-        for await (const ev of stream) {
-          if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta') {
-            if (!escrito) { resposta.classList.remove('pensando'); alvo.textContent = ''; }
-            escrito += ev.delta.text;
-            alvo.textContent = escrito;
-            lista.scrollTop = lista.scrollHeight;
+        vigiar(40000); // o Worker tem 24 s para achar um modelo que responda (Gemini e reserva da Cloudflare)
+        for await (const ev of perguntarAoCoach(coachUrl, { partida: id, contexto: contextoDoChat(r, heroi), mensagens }, ctrl.signal)) {
+          vigiar(25000);
+          if (ev.t) {
+            if (!escrito) resposta.b.classList.remove('pensando');
+            escrito += ev.t;
+            if (!quadro) quadro = requestAnimationFrame(desenhar);
+          } else if (ev.fim) {
+            cancelAnimationFrame(quadro);
+            desenhar();
+            const final = semPensamento(escrito).trim();
+            if (!final) throw erroCoach('interrompido');
+            if (ev.cortada) resposta.corpoMsg.append(h('p', { class: 'chat-cortada' }, '…(resposta cortada; peça para continuar)'));
+            resposta.assina.replaceChildren(...assinatura(ev.modelo).filter(Boolean));
+            if (ev.modelo) resposta.assina.title = `Respondido por ${ev.modelo}`;
+            rolarPara(resposta.b);
+            conv.historico.push({ papel: 'eu', texto }, { papel: 'coach', texto: final, modelo: ev.modelo });
+            anuncio.textContent = `Resposta do oráculo: ${textoPuro(final)}${ev.cortada ? ' (resposta cortada)' : ''}`;
           }
         }
-        const final = await stream.finalMessage();
-        if (final.stop_reason === 'refusal') {
-          conv.historico.pop();
-          resposta.classList.remove('pensando');
-          alvo.textContent = 'Essa eu não consigo responder. Tenta perguntar de outro jeito, focando na partida.';
-        } else {
-          conv.historico.push({ role: 'assistant', content: final.content });
-          if (!escrito) { resposta.classList.remove('pensando'); alvo.textContent = textoDe(final.content) || '(sem resposta)'; }
-        }
       } catch (e) {
-        conv.historico.pop();
-        resposta.remove();
-        const Anthropic = await carregarSdk().catch(() => null);
-        let msg = 'Não deu para falar com o coach agora. Tenta de novo em um minuto.';
-        if (Anthropic && e instanceof Anthropic.AuthenticationError) msg = 'A chave da API foi recusada. Confira se copiou inteira (começa com sk-ant-).';
-        else if (Anthropic && e instanceof Anthropic.PermissionDeniedError) msg = 'Essa chave não tem permissão para usar o modelo. Confira a conta no console da Anthropic.';
-        else if (Anthropic && e instanceof Anthropic.RateLimitError) msg = 'Muita gente perguntando ao mesmo tempo (limite da API). Espera um pouco e tenta de novo.';
-        else if (Anthropic && e instanceof Anthropic.APIConnectionError) msg = 'Sem conexão com a API. Confira a internet e tente de novo.';
-        else if (Anthropic && e instanceof Anthropic.APIError) msg = `A API respondeu com erro ${e.status}. Tenta de novo em um minuto.`;
-        aviso.textContent = msg;
+        cancelAnimationFrame(quadro);
+        const code = e && MSG_COACH[e.code] ? e.code : 'rede';
+        let msg = (e && e.msg) || MSG_COACH[code];
+        if (code === 'limite' && e.minutos && !e.msg) msg = `Calma, o oráculo também cansa: muitas perguntas dessa internet na última hora. Tenta de novo em ${e.minutos} min.`;
+        minha.b.remove();
+        resposta.b.remove();
+        anuncio.textContent = '';
+        if (!entrada.value.trim()) entrada.value = texto;
+        // desliga o chat (até recarregar) só quando o Worker disse que está desligado, o endereço não é de
+        // um coach, ou a cota do dia acabou; o resto é passageiro e fica no aviso
+        const desliga = code === 'cota' || code === 'rota' || (code === 'desligado' && e.doWorker);
+        if (desliga) {
+          fora = code === 'cota' ? 'cota' : 'desligado';
+          msgFora = msg;
+          if (fora === 'desligado') coachUrl = '';
+          aviso.textContent = '';
+        } else aviso.textContent = msg;
       } finally {
+        clearTimeout(vigia);
+        clearTimeout(total);
+        lista.removeAttribute('aria-busy');
         ocupado = false;
-        enviar.disabled = false;
+        const focoNoForm = linhaEntrada.contains(document.activeElement) || sugestoesBox.contains(document.activeElement);
+        pintarEstado();
+        if (fora && focoNoForm) estadoTxt.focus(); // o botão clicado sumiu: o foco vai para o aviso do estado
       }
     };
-    enviar.addEventListener('click', () => { const t = entrada.value; entrada.value = ''; perguntar(t); });
-    entrada.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); enviar.click(); } });
+    enviar.addEventListener('click', () => perguntar(entrada.value, { daEntrada: true }));
+    entrada.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); enviar.click(); } });
     const eu = (r.vereditos.find((v) => v.jogador.conta && AMIGOS[v.jogador.conta]) || r.vereditos[0]).jogador;
     const sugestoes = [
-      r.partida.venceu ? 'Quem carregou essa vitória, de verdade?' : 'Por que perdemos essa?',
-      `Que build o ${eu.heroi.nome} devia ter feito nesse jogo?`,
-      `Como jogar contra ${r.eles.slice().sort((a, b) => b.raw.kills - a.raw.kills)[0].heroi.nome}?`,
-      'O que cada um precisa treinar?',
+      [r.partida.venceu ? 'Quem carregou essa vitória, de verdade?' : 'Por que perdemos essa?'],
+      [`Que build o ${eu.heroi.nome} devia ter feito nesse jogo?`, eu.heroi.nome],
+      [`Como jogar contra ${r.eles.slice().sort((a, b) => b.raw.kills - a.raw.kills)[0].heroi.nome}?`],
+      ['O que cada um precisa treinar?'],
     ];
-    pintarConfig();
-    return h('section', { class: 'bloco chat', 'aria-labelledby': 'titulo-chat' },
-      cabecalho('Pergunte ao coach', 'Tire dúvidas sobre esta partida: build, decisões, o que fazer contra cada herói. O coach responde com os dados do replay.', 'titulo-chat'),
+    for (const [x, heroi] of sugestoes) sugestoesBotoes.push(h('button', { type: 'button', class: 'chat-sugestao', onclick: () => perguntar(x, { heroi }) }, x));
+    sugestoesBox.append(...sugestoesBotoes);
+    pintarEstado();
+    const sec = h('section', { class: 'bloco chat', 'aria-labelledby': 'titulo-chat' },
+      cabecalho('Pergunte ao oráculo', 'Tire dúvidas sobre esta partida: build, decisões, o que fazer contra cada herói. O oráculo responde com os dados do replay.', 'titulo-chat'),
       h('div', { class: 'cartao chat-cartao' },
-        h('div', { class: 'oraculo-cab' }, olhoArcano(),
-          h('div', {}, h('p', { class: 'oraculo-tit' }, 'O oráculo do coach'), h('p', { class: 'oraculo-sub' }, 'O oráculo leu o replay inteiro. Escolha uma runa ou escreva a sua pergunta.'))),
+        cab('O oráculo leu o replay inteiro. Escolha uma runa ou escreva a sua pergunta.'),
         lista,
-        h('div', { class: 'chat-sugestoes' }, sugestoes.map((x) => h('button', { type: 'button', class: 'chat-sugestao', onclick: () => perguntar(x) }, x))),
-        h('div', { class: 'chat-linha' }, entrada, enviar),
-        aviso, detChave));
+        sugestoesBox,
+        linhaEntrada,
+        estadoTxt, aviso, nota, anuncio));
+    // config.json ainda carregando (raro: ele começa junto com a página): a seção aparece quando chegar
+    if (coachUrl == null) {
+      sec.hidden = true;
+      urlDoCoach().then((u) => { coachUrl = u; if (u) sec.hidden = false; else sec.remove(); });
+    }
+    return sec;
   }
 
   // -------- lances no mapa
@@ -8464,6 +8644,7 @@ Seja curto: até uns 150 palavras, a menos que peçam detalhe. Use listas quando
   }
 
   function iniciar() {
+    urlDoCoach(); // lê o config.json do coach em paralelo com a partida
     const [, doHash, ladoHash] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];
     const ultimo = ler('culpado:ultimo');
     const exemploId = EMBUTIDO.exemplo;
