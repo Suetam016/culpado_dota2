@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import bz2
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -113,6 +114,9 @@ def processar(match_id: int, parser: str, tmp: Path) -> dict:
             "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)]}
 
 
+MAX_FALHAS = 6
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--amigos")
@@ -120,6 +124,8 @@ def main() -> int:
     ap.add_argument("--saida", default="mapas")
     ap.add_argument("--parser", default="http://localhost:5600")
     ap.add_argument("--maximo", type=int, default=15)
+    ap.add_argument("--so-fila", action="store_true", help="só diz se tem partida nova (checagem rápida do workflow)")
+    ap.add_argument("--falhas", default="mapa/falhas.json")
     a = ap.parse_args()
     saida = Path(a.saida)
     saida.mkdir(parents=True, exist_ok=True)
@@ -138,8 +144,17 @@ def main() -> int:
                 print(f"  conta {conta}: {e}")
             time.sleep(1.2)
     fila += sorted(recentes, reverse=True)  # pedidos primeiro, depois as partidas mais novas
-    fila = [i for i in dict.fromkeys(fila) if i not in feitos]
+    falhas_arq = Path(a.falhas)
+    falhas = json.loads(falhas_arq.read_text()) if falhas_arq.exists() else {}
+    # partida que falhou muitas vezes (sem replay na Valve, por exemplo) sai da fila: o robô roda a cada 10 min
+    fila = [i for i in dict.fromkeys(fila) if i not in feitos and falhas.get(str(i), 0) < MAX_FALHAS]
     print(f"Fila: {fila}")
+    if a.so_fila:
+        saida_gh = os.environ.get("GITHUB_OUTPUT")
+        if saida_gh:
+            with open(saida_gh, "a") as fh:
+                fh.write(f"fila={len(fila)}\n")
+        return 0
     tmp = Path("/tmp/replays")
     tmp.mkdir(exist_ok=True)
     feitos_agora = 0
@@ -152,10 +167,12 @@ def main() -> int:
             print(f"OK {mid}")
         except Exception as e:  # noqa: BLE001
             print(f"FALHOU {mid}: {e}")
+            falhas[str(mid)] = falhas.get(str(mid), 0) + 1
             try:  # pede a análise ao OpenDota para a próxima rodada ter replay_url
                 post(f"/request/{mid}")
             except Exception:  # noqa: BLE001
                 pass
+    falhas_arq.write_text(json.dumps(falhas, indent=0, sort_keys=True) + "\n")
     print(f"{feitos_agora} mapas novos")
     return 0
 

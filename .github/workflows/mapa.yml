@@ -1,11 +1,12 @@
 name: Mapa (posições dos heróis)
 
 # Baixa o replay das partidas de vocês, roda o parser do OpenDota e guarda a posição de cada herói
-# segundo a segundo em mapas/<id>.json (o "lance animado" do site). A cada hora, ou na hora com um
+# segundo a segundo em mapas/<id>.json (o "lance animado" do site). A cada 10 min (sai em segundos se
+# não tem partida nova), ou na hora com um
 # push em mapa/pedidos/<id>.
 on:
   schedule:
-    - cron: "23 * * * *"
+    - cron: "*/10 * * * *"
   push:
     paths: ["mapa/pedidos/**", ".github/workflows/mapa.yml", "mapa/processar.py"]
 
@@ -22,11 +23,19 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tem partida nova?
+        id: fila
+        run: python mapa/processar.py --amigos amigos.json --so-fila
       - uses: actions/setup-java@v4
+        if: steps.fila.outputs.fila != '0'
         with:
           distribution: temurin
           java-version: "21"
       - name: Parser de replays do OpenDota
+        if: steps.fila.outputs.fila != '0'
         run: |
           git clone --depth 1 https://github.com/odota/parser.git parser
           cd parser && mvn -q -DskipTests package
@@ -35,15 +44,13 @@ jobs:
           nohup java -Xmx5g -jar "$JAR" 5600 > ../parser.log 2>&1 &
           for i in $(seq 1 60); do nc -z localhost 5600 && break; sleep 2; done
           nc -z localhost 5600 && echo "parser no ar" || { cat ../parser.log; exit 1; }
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - name: Processar partidas
+        if: steps.fila.outputs.fila != '0'
         run: |
           pip install -q zstandard
           python mapa/processar.py --amigos amigos.json | tee -a "$GITHUB_STEP_SUMMARY" mapa/ultimo-log.txt
       - name: Salvar
-        if: always()
+        if: always() && steps.fila.outputs.fila != '0'
         run: |
           mkdir -p mapas
           tail -50 parser.log > mapa/parser-log.txt 2>/dev/null || true
