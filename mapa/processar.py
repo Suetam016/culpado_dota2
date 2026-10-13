@@ -60,7 +60,9 @@ def constantes() -> dict:
         novo = {"npc": {int(h["id"]): h["name"] for h in pega("/constants/heroes").values()},
                 "hab": pega("/constants/abilities"), "itens": pega("/constants/items"), "ults": set()}
         for hab in pega("/constants/hero_abilities").values():
-            lista = [a for a in hab.get("abilities") or [] if a and a != "generic_hidden"]
+            brutas = hab.get("abilities") or [] if isinstance(hab, dict) else []
+            planas = [x for a in brutas for x in (a if isinstance(a, list) else [a])]  # às vezes vem lista dentro de lista
+            lista = [a for a in planas if isinstance(a, str) and a and a != "generic_hidden"]
             if lista:
                 novo["ults"].add(lista[-1])
         _CONST.update(novo)  # só guarda quando veio tudo
@@ -166,7 +168,9 @@ def habilidades(casts, ordem, heroi_do_slot):
     try:
         c = constantes()
     except Exception as e:  # noqa: BLE001
+        import traceback
         print(f"  sem constantes do OpenDota ({e!r}): mapa sem skills por enquanto")
+        print("  " + traceback.format_exc().strip().replace("\n", "\n  ")[-800:])
         return None, []
     k_do_npc = {c["npc"].get(heroi_do_slot.get(s)): k for k, s in enumerate(ordem) if heroi_do_slot.get(s)}
     hab, idx, usos = [], {}, []
@@ -178,11 +182,13 @@ def habilidades(casts, ordem, heroi_do_slot):
             nome_item = chave.removeprefix("item_")
             if nome_item not in ITENS_DE_LUTA:
                 continue
-            info = c["itens"].get(nome_item) or {}
+            info = c["itens"].get(nome_item)
+            info = info if isinstance(info, dict) else {}
             nome, tipo, chave = info.get("dname") or nome_item.replace("_", " ").title(), "i", nome_item
         else:
-            info = c["hab"].get(chave) or {}
-            if not info.get("dname") or chave.startswith(("special_bonus", "ability_", "plus_")):
+            info = c["hab"].get(chave) if isinstance(chave, str) else None
+            info = info if isinstance(info, dict) else {}
+            if not isinstance(info.get("dname"), str) or chave.startswith(("special_bonus", "ability_", "plus_")):
                 continue
             nome, tipo = info["dname"], "u" if chave in c["ults"] else "h"
         if chave not in idx:
