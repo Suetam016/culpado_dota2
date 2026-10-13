@@ -9,6 +9,7 @@ quais sons existem. Os sons são da Valve; uso de fã, sem fins comerciais.
 """
 from __future__ import annotations
 
+import gzip
 import json
 import re
 import sys
@@ -20,7 +21,7 @@ from pathlib import Path
 UA = "culpado-dota2-sons/1.0 (site de fã sem fins comerciais; github.com/Suetam016/culpado_dota2)"
 WIKIS = ["https://dota2.fandom.com/api.php", "https://liquipedia.net/dota2/api.php"]
 PAUSA = 2.1
-MAX_BYTES = 450_000
+MAX_BYTES = 800_000
 IMPACTO = {
     "mirana_arrow", "pudge_meat_hook", "earth_spirit_boulder_smash", "earth_spirit_rolling_boulder",
     "earth_spirit_geomagnetic_grip", "windrunner_powershot", "windrunner_shackleshot", "lion_impale", "nyx_assassin_impale",
@@ -41,9 +42,11 @@ ORDEM = [r"^{n}\.(mp3|ogg|wav)$", r"^{n}[_ ]cast", r"^{n}[_ ](start|launch|impac
 
 
 def get(url: str):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Encoding": "identity"})
+    # a Liquipedia exige gzip nas chamadas da API
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Encoding": "gzip"})
     with urllib.request.urlopen(req, timeout=60) as r:
-        return r.read()
+        corpo = r.read()
+        return gzip.decompress(corpo) if r.headers.get("Content-Encoding") == "gzip" else corpo
 
 
 def candidatos(wiki: str, nome: str) -> list[dict]:
