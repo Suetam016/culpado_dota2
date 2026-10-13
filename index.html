@@ -2183,6 +2183,77 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
   .fig-ver-txt strong { font-size: 0.82rem; letter-spacing: 0.03em; }
 }
 
+/* ---------- "Gerar o mapa agora": a caixa no lugar do mapa enquanto ele não existe (o palco é sempre escuro) */
+.mapa-palco.pedindo { aspect-ratio: auto; min-height: min(calc(100cqi - 12px), 460px); cursor: default; place-items: center; }
+.mapa-palco.pedindo::before, .mapa-palco.pedindo::after { z-index: 1; }
+.mapa-pedido {
+  position: relative; z-index: 2; display: grid; justify-items: center; gap: 10px;
+  width: min(100%, 420px); padding: 22px 16px; text-align: center; color: #e6dac4; outline: 0;
+}
+.mapa-palco.pedindo { background:
+  radial-gradient(circle at 50% 38%, rgba(232, 176, 74, 0.10), transparent 55%),
+  radial-gradient(circle at 18% 82%, rgba(79, 157, 255, 0.07), transparent 40%),
+  radial-gradient(circle at 82% 18%, rgba(229, 83, 61, 0.07), transparent 40%),
+  linear-gradient(135deg, transparent 47%, rgba(168, 116, 58, 0.10) 49.5%, rgba(168, 116, 58, 0.10) 50.5%, transparent 53%),
+  #0e0f0b; }
+.mp-selo {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: #f6d27a;
+  background: radial-gradient(circle at 35% 30%, #3a2c1c, #17120d 70%);
+  box-shadow: 0 0 0 1px #6b4a14, 0 0 0 4px #17120d, 0 0 0 5px rgba(168, 116, 58, 0.6), 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+.mp-selo .ic-traco { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+.mp-selo .ic-cheio { fill: currentColor; }
+.mp-tit { margin: 4px 0 0; font: 700 1rem/1.3 var(--font-display); letter-spacing: 0.04em; color: #f1e6d0; text-wrap: balance; }
+.mp-sub { margin: 0; font-size: 0.9rem; line-height: 1.4; color: #c7b9a3; max-width: 34ch; }
+.mp-gerar, .mp-denovo { display: inline-flex; align-items: center; justify-content: center; gap: 10px; max-width: 100%; }
+.mp-gerar { margin-top: 6px; height: auto; min-height: 48px; font-size: 0.95rem; }
+/* enquanto o mapa não existe, a legenda vazia embaixo do palco não ocupa espaço */
+.mapa-col:has(> .mapa-palco.pedindo) > .mapa-legenda:empty { min-height: 0; }
+.mp-gerar .ic { flex: none; }
+.mp-denovo { height: auto; min-height: 44px; padding: 0 18px; }
+.mp-denovo .ic-traco { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.mapa-palco.pedindo .botao.secundario { color: #efe6d6; border-color: #6b5236; background: rgba(26, 22, 18, 0.85); }
+.mp-passos { display: grid; gap: 8px; width: 100%; justify-items: center; }
+.mp-etapas { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; text-align: left; width: min(100%, 300px); }
+.mp-etapa { position: relative; display: flex; align-items: center; gap: 10px; min-height: 30px; font-size: 0.92rem; color: #8f8270; }
+/* fio de bronze ligando as marcas */
+.mp-etapa:not(:last-child)::after { content: ""; position: absolute; left: 8px; top: 23px; height: 14px; width: 2px; background: #3a2f24; }
+.mp-etapa.feita:not(:last-child)::after { background: #a8743a; }
+.mp-marca { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #5a4732; background: #15110d; display: grid; place-items: center; }
+.mp-etapa.feita { color: #c7b9a3; }
+.mp-etapa.feita .mp-marca { border-color: #e8b04a; background: linear-gradient(180deg, #f6d27a, #b8862b); }
+.mp-etapa.feita .mp-marca::before { content: ""; width: 7px; height: 4px; border: solid #1b1206; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg); }
+.mp-etapa.atual { color: #f6d27a; font-weight: 700; }
+.mp-etapa.atual .mp-marca { border-color: #e8b04a; box-shadow: 0 0 0 3px rgba(232, 176, 74, 0.22); animation: mp-pulso 1.6s ease-in-out infinite; }
+.mp-etapa.atual .mp-marca::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #e8b04a; }
+.mp-etapa.espera { color: #f2b84b; font-weight: 700; }
+.mp-etapa.espera .mp-marca { border-style: dashed; border-color: #f2b84b; animation: mp-gira 3s linear infinite; }
+.mp-etapa.erro { color: #ff8f7a; font-weight: 700; }
+.mp-etapa.erro .mp-marca { border-color: #e5533d; background: #3a1410; }
+.mp-etapa.erro .mp-marca::before { content: "!"; font: 800 11px/1 var(--font-body); color: #ff8f7a; }
+.mp-relogio { font: 600 0.82rem/1 var(--font-body); font-variant-numeric: tabular-nums; color: #a8987f; min-height: 1em; }
+.mp-msg { margin: 0; max-width: 36ch; font-size: 0.9rem; line-height: 1.4; color: #c7b9a3; }
+.mp-msg:empty, .mp-relogio:empty { display: none; }
+.mp-msg.aviso { color: #f2d49a; }
+.mp-msg.erro { color: #ffb3a5; }
+.mp-msg.ok { color: #9be3a5; font-weight: 700; }
+@keyframes mp-pulso { 0%, 100% { box-shadow: 0 0 0 3px rgba(232, 176, 74, 0.22); } 50% { box-shadow: 0 0 0 6px rgba(232, 176, 74, 0.08); } }
+@keyframes mp-gira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .mp-etapa.atual .mp-marca, .mp-etapa.espera .mp-marca { animation: none; } }
+/* o mapa entrando no lugar da caixa */
+.mapa-palco.chegou > .mapa-svg { animation: mp-entra 0.6s ease-out; }
+@keyframes mp-entra { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .mapa-palco.chegou > .mapa-svg { animation: none; } }
+@media (max-width: 420px) { .mapa-pedido { padding: 18px 10px; gap: 8px; } .mp-tit { font-size: 0.95rem; } }
+/* foco: anel por fora do botão (o anel por dentro some no dourado); a caixa recebe o foco enquanto o pedido anda */
+.mapa-pedido .mp-gerar:focus-visible, .mapa-pedido .mp-denovo:focus-visible { outline: 2px solid #f6d27a; outline-offset: 3px; }
+.mapa-pedido:focus-visible { outline: 1px dashed rgba(246, 210, 122, 0.55); outline-offset: -6px; border-radius: 6px; }
+.mapa-pedido .mp-denovo:disabled { opacity: 0.7; cursor: not-allowed; }
+/* mini replay do parecer sem mapa: link para o botão em "Lances da partida" (o palco é sempre escuro) */
+.hl-sem-mapa .link-lances { display: inline; padding: 0; border: 0; background: none; font: inherit; font-weight: 700; color: #f6d27a; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.hl-sem-mapa .link-lances:hover { color: #ffe3a0; }
+.hl-sem-mapa .link-lances:focus-visible { outline: 2px solid #f6d27a; outline-offset: 2px; border-radius: 2px; }
+
 </style>
 <svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false">
   <defs>
@@ -6349,6 +6420,427 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     return mapasCache[id];
   }
 
+  // -------- "Gerar o mapa agora": pede o mapa ao robô pelo mesmo Worker do coach (POST /mapa, GET /mapa/<id>)
+  // O Worker cria mapa/pedidos/<id> no repositório do site; o push acorda o robô (mapa.yml), que publica
+  // mapas/<id>.json em ~1 min; o GitHub Pages leva mais ~1 min para servir (se demorar, o mapa vem pelo Worker,
+  // GET /mapa/<id>/arquivo). Tudo aparece sem recarregar a página.
+  const TEMPOS_MAPA = {
+    consulta: 8000, // GET /mapa/<id> enquanto o robô trabalha
+    consultaOculta: 30000, // com a aba em segundo plano (poupa a cota da API do GitHub do Worker)
+    site: 6000, // busca mapas/<id>.json no próprio site até o GitHub Pages servir
+    viaWorker: 90000, // o Pages não serviu em 90 s: busca o arquivo pelo Worker
+    opendota: [3 * 60000, 6 * 60000, 10 * 60000], // novas tentativas quando o OpenDota ainda não liberou o replay
+    opendotaMax: 35 * 60000, // (o robô já espera até 5 min por tentativa; cada tentativa = 2 commits no site)
+    demora: 8 * 60000, // robô sem resposta: mensagem honesta e "Tentar de novo"
+    devagar: 30000, // depois da demora, continua olhando, mais devagar
+    guarda: 45 * 60000, // o acompanhamento sobrevive a um recarregar por este tempo
+  };
+  const ouvintesMapa = {};
+  const quandoChegarMapa = (id, fn) => { (ouvintesMapa[id] = ouvintesMapa[id] || []).push(fn); };
+  const chavePedidoMapa = (id) => `culpado:mapa-pedido:${id}`;
+  const lerPedidoMapa = (id) => { try { return JSON.parse(sessionStorage.getItem(chavePedidoMapa(id)) || 'null'); } catch (e) { return null; } };
+  const guardarPedidoMapa = (id, v) => {
+    try { if (v) sessionStorage.setItem(chavePedidoMapa(id), JSON.stringify(v)); else sessionStorage.removeItem(chavePedidoMapa(id)); } catch (e) { /* sem sessionStorage: só não retoma */ }
+  };
+  const relogioTxt = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+
+  // O que a caixa do pedido está fazendo, para os mini replays dos pareceres escolherem o texto:
+  // 'botao' (dá para pedir), 'gerando', 'parado' (erro, sem Worker, partida de fora)
+  const situacaoMapa = {};
+  const ouvintesSituacao = {};
+  const definirSituacaoMapa = (id, v) => {
+    if (situacaoMapa[id] === v) return;
+    situacaoMapa[id] = v;
+    for (const fn of ouvintesSituacao[id] || []) { try { fn(v); } catch (e) { console.error(e); } }
+  };
+  const aoMudarSituacaoMapa = (id, fn) => { (ouvintesSituacao[id] = ouvintesSituacao[id] || []).push(fn); if (id in situacaoMapa) fn(situacaoMapa[id]); };
+
+  // Mexe na página (mapa entrando no lugar do aviso, mini replays, lances a mais) sem a leitura pular: o que
+  // estava no topo da tela continua no mesmo lugar. A âncora de rolagem do navegador fica desligada durante a troca
+  // (o Safari não tem; no Chrome ela poderia escolher outra âncora e somar com esta correção).
+  function semPularRolagem(fn) {
+    const mudam = '.mapa-palco, .lances-lista, .highlight, .brilho, .cinema-acoes, .mapa-controles, .mapa-legenda';
+    let ancora = null; let topo0 = 0;
+    const fixo = (e) => { for (let x = e; x && x !== document.body; x = x.parentElement) { const p = getComputedStyle(x).position; if (p === 'fixed' || p === 'sticky') return true; } return false; };
+    for (const y of [16, 90, 180, 300]) {
+      let e = document.elementFromPoint(window.innerWidth / 2, Math.min(y, window.innerHeight - 1));
+      if (!e || e === document.body || e === document.documentElement || fixo(e)) continue;
+      e = e.closest(mudam) || e; // dentro de algo que vai mudar: segura o topo da caixa, que fica
+      ancora = e; topo0 = e.getBoundingClientRect().top;
+      break;
+    }
+    const raiz = document.documentElement;
+    const antes = raiz.style.overflowAnchor;
+    raiz.style.overflowAnchor = 'none';
+    try { fn(); } finally {
+      if (ancora && ancora.isConnected) {
+        const d = ancora.getBoundingClientRect().top - topo0;
+        if (Math.abs(d) > 0.5) window.scrollBy(0, d);
+      }
+      requestAnimationFrame(() => { raiz.style.overflowAnchor = antes; });
+    }
+  }
+
+  function mapaChegou(id, mapa) {
+    mapasCache[id] = mapa; // some com o "não tem mapa" guardado
+    const fns = ouvintesMapa[id] || [];
+    delete ouvintesMapa[id];
+    semPularRolagem(() => { for (const fn of fns) { try { fn(mapa); } catch (e) { console.error(e); } } });
+  }
+
+  // A caixa no lugar do mapa: texto honesto, botão, etapas com o tempo e as mensagens de espera/erro.
+  function painelPedirMapa(id) {
+    const TIT_SEM_MAPA = 'O mapa animado desta partida ainda não foi gerado.';
+    const titulo = h('p', { class: 'mp-tit' }, TIT_SEM_MAPA);
+    const sub = h('p', { class: 'mp-sub', hidden: true }, 'Leva uns 2 min e aparece aqui sozinho. Qualquer um da resenha pode apertar.');
+    const bGerar = h('button', { type: 'button', class: 'botao mp-gerar', hidden: true }, iconeSvg('play', 16), h('span', {}, 'Gerar o mapa agora'));
+    const NOMES_ETAPAS = ['Pedido enviado', 'Robô assistindo o replay (~1 min)', 'Publicando no site (~1 min)', 'Pronto!'];
+    const ETAPA_OPENDOTA = 'Esperando o OpenDota liberar o replay';
+    const etapas = NOMES_ETAPAS.map((txt) => h('li', { class: 'mp-etapa' },
+      h('span', { class: 'mp-marca', 'aria-hidden': 'true' }), h('span', { class: 'mp-etapa-txt' }, txt), h('span', { class: 'sr-only mp-etapa-sr' })));
+    const nomeEtapa = (i, txt) => { etapas[i].querySelector('.mp-etapa-txt').textContent = txt; };
+    const relogio = h('span', { class: 'mp-relogio', 'aria-hidden': 'true' });
+    const passos = h('div', { class: 'mp-passos', hidden: true }, h('ol', { class: 'mp-etapas', 'aria-label': 'Andamento do pedido' }, etapas), relogio);
+    const msg = h('p', { class: 'mp-msg', role: 'status', 'aria-live': 'polite' });
+    const rotuloDeNovo = h('span', {}, 'Tentar de novo');
+    const bDeNovo = h('button', { type: 'button', class: 'botao secundario mp-denovo', hidden: true }, iconeSvg('denovo', 16), rotuloDeNovo);
+    const caixa = h('div', { class: 'mapa-pedido', tabindex: '-1' },
+      h('span', { class: 'mp-selo', 'aria-hidden': 'true' }, iconeSvg('olho', 22)), titulo, sub, bGerar, passos, msg, bDeNovo);
+
+    let url = null;
+    let p = lerPedidoMapa(id); // {inicio, tentativa, pedidoEm, fase, proxima, novas, msg, etapaErro, semBotao, liberaEm}
+    let timer = null; let tique = null; let tiqueBotao = null;
+    let pendente = null; // consulta agendada que pode vir antes quando a aba volta a ficar visível
+    let errosSeguidos = 0;
+    let avisou = 0; // mensagens "ainda trabalhando" já mostradas nesta tentativa (cada uma uma vez só)
+    let anuncio = null; // região viva que fica na página depois que o mapa entra no lugar da caixa
+    const agora = () => Date.now();
+    const vivo = () => caixa.isConnected;
+    const salvar = () => guardarPedidoMapa(id, p);
+    const esperar = (fn, ms, { acelera = false } = {}) => {
+      clearTimeout(timer);
+      pendente = acelera ? fn : null;
+      timer = setTimeout(() => { pendente = null; if (vivo()) fn(); else parar(); }, ms);
+    };
+    const parar = () => { clearTimeout(timer); clearInterval(tique); clearInterval(tiqueBotao); pendente = null; };
+    const dizer = (t, tipo) => { msg.textContent = t || ''; msg.className = `mp-msg${tipo ? ` ${tipo}` : ''}`; };
+    const intervaloConsulta = (ms) => (document.hidden ? Math.max(ms, TEMPOS_MAPA.consultaOculta) : ms);
+    const aoVoltarAba = () => {
+      if (!vivo()) { document.removeEventListener('visibilitychange', aoVoltarAba); return; }
+      if (!document.hidden && pendente) { const fn = pendente; esperar(fn, 0); }
+    };
+    document.addEventListener('visibilitychange', aoVoltarAba);
+
+    // etapa atual: 0..3 (as anteriores ficam feitas); 4 = todas feitas
+    function marcar(atual) {
+      passos.hidden = false; bGerar.hidden = true; sub.hidden = true; bDeNovo.hidden = true;
+      bDeNovo.disabled = false; rotuloDeNovo.textContent = 'Tentar de novo'; clearInterval(tiqueBotao);
+      titulo.textContent = 'Gerando o mapa desta partida…';
+      nomeEtapa(0, atual === 0 ? 'Enviando o pedido' : NOMES_ETAPAS[0]);
+      nomeEtapa(1, NOMES_ETAPAS[1]);
+      etapas.forEach((li, i) => {
+        const estado = i < atual ? 'feita' : i === atual ? 'atual' : 'pendente';
+        li.className = `mp-etapa ${estado}`;
+        if (estado === 'atual') li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
+        li.querySelector('.mp-etapa-sr').textContent = estado === 'feita' ? ' (feito)' : estado === 'atual' ? ' (agora)' : '';
+      });
+      definirSituacaoMapa(id, 'gerando');
+    }
+    function relogioDe(desde) {
+      clearInterval(tique);
+      const pinta = () => { if (!vivo()) return parar(); relogio.textContent = `Tempo: ${relogioTxt(agora() - desde)}`; };
+      pinta();
+      tique = setInterval(pinta, 1000);
+    }
+    function mostrarBotao(aviso) {
+      parar();
+      passos.hidden = true; bDeNovo.hidden = true;
+      titulo.textContent = TIT_SEM_MAPA;
+      sub.hidden = false; bGerar.hidden = false; bGerar.disabled = false;
+      dizer(aviso || '');
+      definirSituacaoMapa(id, 'botao');
+    }
+    function desligado(texto) {
+      parar();
+      passos.hidden = true; bGerar.hidden = true; bDeNovo.hidden = true; sub.hidden = true;
+      // sem Worker: texto honesto e curto (sem promessa de "a cada hora")
+      titulo.textContent = texto || 'O replay animado desta partida ainda não foi gerado.';
+      dizer('');
+      guardarPedidoMapa(id, null);
+      definirSituacaoMapa(id, 'parado');
+    }
+    // etapa 0 = o pedido nem chegou ao robô: sem a lista de etapas (não parece "enviou e quebrou")
+    // semBotao: tentar de novo não resolve (partida que o OpenDota não conhece, chave vencida, partida de fora)
+    // minutos: limite por hora; o botão fica desligado com a contagem até poder pedir de novo
+    function falhou(texto, { etapa = 1, semBotao = false, minutos = 0, liberaEm = 0 } = {}) {
+      parar();
+      bDeNovo.disabled = false; rotuloDeNovo.textContent = 'Tentar de novo';
+      if (etapa === 0) {
+        passos.hidden = true; bGerar.hidden = true; sub.hidden = true;
+        titulo.textContent = 'O pedido não foi enviado';
+      } else {
+        marcar(etapa);
+        if (p && p.fase === 'opendota') nomeEtapa(1, ETAPA_OPENDOTA);
+        etapas[etapa].className = 'mp-etapa erro';
+        etapas[etapa].removeAttribute('aria-current');
+        etapas[etapa].querySelector('.mp-etapa-sr').textContent = ' (parou aqui)';
+        titulo.textContent = 'O mapa ainda não saiu';
+        relogio.textContent = '';
+      }
+      dizer(texto, 'erro');
+      bDeNovo.hidden = semBotao;
+      const ate = liberaEm || (minutos ? agora() + minutos * 60000 : 0);
+      if (ate > agora() && !semBotao) {
+        bDeNovo.disabled = true;
+        const pinta = () => {
+          if (!vivo()) return parar();
+          const falta = ate - agora();
+          if (falta <= 0) { clearInterval(tiqueBotao); bDeNovo.disabled = false; rotuloDeNovo.textContent = 'Tentar de novo'; return; }
+          rotuloDeNovo.textContent = `Tentar de novo em ${Math.ceil(falta / 60000)} min`;
+        };
+        pinta();
+        tiqueBotao = setInterval(pinta, 15000);
+      }
+      p = { ...(p || {}), fase: 'erro', msg: texto, etapaErro: etapa, semBotao, liberaEm: ate }; salvar();
+      definirSituacaoMapa(id, semBotao ? 'parado' : 'erro');
+    }
+
+    async function api(caminho, corpo) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 15000);
+      try {
+        const r = await fetch(`${url}${caminho}`, corpo ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(corpo), signal: ctrl.signal } : { cache: 'no-store', signal: ctrl.signal });
+        let j = null;
+        try { j = await r.json(); } catch (e) { /* resposta que não é JSON (Worker antigo, erro da Cloudflare) */ }
+        return { status: r.status, j: j || {} };
+      } catch (e) { return { status: 0, j: {} }; } finally { clearTimeout(t); }
+    }
+
+    // tinhaFoco é lido antes de qualquer mudança: o botão apertado some em marcar() e o foco cairia no <body>
+    async function pedir({ automatico = false, manterInicio = false, tinhaFoco = caixa.contains(document.activeElement) } = {}) {
+      if (!vivo()) return;
+      parar();
+      bGerar.disabled = true;
+      const t0 = agora();
+      const antes = p || {};
+      const continua = (automatico || manterInicio) && antes.inicio;
+      p = { inicio: continua ? antes.inicio : t0, tentativa: t0, fase: 'enviando', novas: continua ? antes.novas || 0 : 0 };
+      avisou = 0;
+      marcar(0);
+      relogioDe(t0);
+      dizer(automatico ? 'Tentando de novo…' : 'Enviando o pedido…');
+      if (!automatico && tinhaFoco) caixa.focus({ preventScroll: true });
+      const { status, j } = await api('/mapa', { id: String(id) });
+      if (!vivo()) return;
+      if (status === 200 && j.estado === 'pronto') return publicar();
+      if (status === 200 && (j.estado === 'pedido' || j.estado === 'na-fila')) {
+        p.pedidoEm = j.pedidoEm || null;
+        if (j.estado === 'na-fila' && j.pedidoEm) p.tentativa = Math.min(t0, Date.parse(j.pedidoEm) || t0);
+        return acompanhar(j.estado === 'na-fila' ? 'Alguém já tinha pedido este mapa: acompanhando o robô.' : 'Pedido enviado. O robô começa em instantes.');
+      }
+      if (status === 503) return desligado();
+      if (status === 429) {
+        const min = Math.max(1, Math.min(60, Number(j.minutos) || 5));
+        return falhou(j.msg || `Muitos pedidos de mapa nesta hora. Tente de novo em ${min} min.`, { etapa: 0, minutos: min });
+      }
+      if (status === 404 && j.erro === 'partida') return falhou('O OpenDota não conhece esta partida, então o robô não tem de onde tirar o replay.', { etapa: 0, semBotao: true });
+      if (j.erro === 'token') return falhou('A chave do robô do mapa venceu. Avise o dono do site.', { etapa: 0, semBotao: true });
+      return falhou('Não deu para falar com o robô do mapa agora. Tente de novo em um minuto.', { etapa: 0 });
+    }
+
+    function acompanhar(aviso) {
+      p.fase = 'acompanhando'; salvar();
+      marcar(1);
+      relogioDe(p.tentativa);
+      if (aviso) dizer(aviso);
+      errosSeguidos = 0;
+      esperar(consultar, Math.min(TEMPOS_MAPA.consulta, 4000), { acelera: true });
+    }
+
+    async function consultar() {
+      const passou = agora() - p.tentativa;
+      const { status, j } = await api(`/mapa/${id}`);
+      if (!vivo()) return;
+      const demorou = passou > TEMPOS_MAPA.demora;
+      if (status !== 200) {
+        if (status === 503) return desligado();
+        if (++errosSeguidos >= 6) return falhou('Perdi o contato com o robô do mapa. Tente de novo em um minuto.');
+        return esperar(consultar, intervaloConsulta(TEMPOS_MAPA.consulta), { acelera: true });
+      }
+      errosSeguidos = 0;
+      if (j.pronto) return publicar();
+      const f = j.falhas;
+      // o robô já tentou depois deste pedido (o arquivo do pedido sumiu e a falha é mais nova que ele)
+      const desde = Date.parse(p.pedidoEm || '') || p.tentativa;
+      const tentouDepois = !j.naFila && f && f.quando && Date.parse(f.quando) >= desde - 60000;
+      if (tentouDepois && f.motivo === 'sem amigos') return falhou('O mapa animado só é gerado para partidas de vocês.', { semBotao: true });
+      if (tentouDepois && /replay_url/.test(f.motivo || '')) return esperarOpenDota();
+      if (tentouDepois) return falhou('O robô engasgou com o replay desta partida. Às vezes a Valve demora a liberar: tenta de novo daqui a pouco.');
+      if (demorou && p.fase !== 'demorou') {
+        p.fase = 'demorou'; salvar();
+        dizer('O robô está demorando mais que o normal (pode ter fila no GitHub). Se ele terminar, o mapa aparece aqui sozinho; se quiser, peça de novo.', 'aviso');
+        bDeNovo.hidden = false;
+      } else if (!demorou && avisou < 1 && passou > 20000) {
+        avisou = 1; // uma vez só (cada troca de texto é lida pelo leitor de tela)
+        dizer('O robô está assistindo o replay. Costuma levar 1 min; pode continuar lendo os pareceres, o mapa aparece aqui sozinho.');
+      } else if (!demorou && avisou < 2 && passou > 150000) {
+        avisou = 2;
+        dizer('Ainda no robô. Se a partida acabou agora, ele espera o OpenDota liberar o replay (até uns 5 min).');
+      }
+      if (agora() - p.inicio > TEMPOS_MAPA.guarda) return falhou('O robô não respondeu. Tente de novo mais tarde.');
+      return esperar(consultar, intervaloConsulta(demorou ? TEMPOS_MAPA.devagar : TEMPOS_MAPA.consulta), { acelera: true });
+    }
+
+    function esperarOpenDota() {
+      const novas = (p && p.novas) || 0;
+      const pausa = TEMPOS_MAPA.opendota[novas];
+      const proxima = p.proxima && p.proxima > agora() ? p.proxima : agora() + (pausa || 0);
+      if (pausa == null || proxima - p.inicio > TEMPOS_MAPA.opendotaMax) {
+        p.fase = 'opendota';
+        return falhou('O OpenDota ainda não liberou o replay desta partida (às vezes leva uns 10-30 min depois do jogo). Tenta de novo daqui a pouco.');
+      }
+      parar();
+      p.fase = 'opendota';
+      p.proxima = proxima;
+      salvar();
+      marcar(1);
+      nomeEtapa(1, ETAPA_OPENDOTA);
+      etapas[1].className = 'mp-etapa espera';
+      etapas[1].querySelector('.mp-etapa-sr').textContent = ' (agora)';
+      titulo.textContent = 'O OpenDota ainda não liberou o replay';
+      dizer('O OpenDota ainda não liberou o replay desta partida (às vezes leva uns 10-30 min depois do jogo). Eu tento de novo sozinho; pode deixar a aba aberta.', 'aviso');
+      bDeNovo.hidden = false;
+      clearInterval(tique);
+      const pinta = () => { if (!vivo()) return parar(); relogio.textContent = `Nova tentativa em ${relogioTxt(p.proxima - agora())}`; };
+      pinta();
+      tique = setInterval(pinta, 1000);
+      esperar(() => { p.proxima = null; p.novas = novas + 1; pedir({ automatico: true }); }, Math.max(0, p.proxima - agora()));
+    }
+
+    function publicar() {
+      p = { ...(p || { inicio: agora(), tentativa: agora() }), fase: 'publicando', publicandoDesde: (p && p.publicandoDesde) || agora() };
+      salvar();
+      marcar(2);
+      relogioDe(p.tentativa);
+      dizer('O robô terminou. Esperando o site publicar o mapa (pode levar mais 1 ou 2 minutos)…');
+      buscarNoSite();
+    }
+
+    const mapaValido = (m) => m && Array.isArray(m.slots) && Array.isArray(m.x) && Array.isArray(m.y);
+    async function baixar(endereco, opcoes) {
+      try {
+        const r = await fetch(endereco, opcoes);
+        if (!r.ok) return null;
+        const m = await r.json();
+        return mapaValido(m) ? m : null;
+      } catch (e) { return null; }
+    }
+
+    async function buscarNoSite() {
+      const passou = agora() - (p.publicandoDesde || agora());
+      // o GitHub Pages ainda não serviu em 90 s (fila de publicações): o mesmo arquivo direto do repositório, pelo Worker
+      let mapa = await baixar(`mapas/${id}.json?t=${agora()}`, { cache: 'no-store' });
+      if (!mapa && url && passou > TEMPOS_MAPA.viaWorker) mapa = await baixar(`${url}/mapa/${id}/arquivo`, {});
+      if (!vivo()) return;
+      if (mapa) {
+        parar();
+        marcar(4);
+        relogio.textContent = `Tempo: ${relogioTxt(agora() - p.tentativa)}`;
+        dizer('Pronto! Aperta o play e vê quem foi o culpado.', 'ok');
+        if (anuncio) anuncio.textContent = 'Mapa pronto: aperte o play ou toque num lance.';
+        guardarPedidoMapa(id, null);
+        const palco = caixa.closest('.mapa-palco');
+        setTimeout(() => {
+          const focoAqui = caixa.contains(document.activeElement); // contains inclui a própria caixa
+          mapaChegou(id, mapa);
+          if (focoAqui && palco && palco.isConnected) {
+            if (!palco.hasAttribute('tabindex')) palco.setAttribute('tabindex', '-1');
+            if (!palco.hasAttribute('aria-label')) palco.setAttribute('aria-label', 'Mapa da partida');
+            palco.focus({ preventScroll: true });
+          }
+        }, reduzMovimento() ? 400 : 1500);
+        return;
+      }
+      if (passou > 6 * 60000 && p.fase !== 'demorou-site') {
+        p.fase = 'demorou-site'; salvar();
+        dizer('O mapa ficou pronto, mas o site ainda não atualizou. Continuo olhando; se preferir, recarregue a página daqui a pouco.', 'aviso');
+      }
+      if (agora() - p.inicio > TEMPOS_MAPA.guarda + 10 * 60000) return falhou('O mapa ficou pronto, mas o site não atualizou. Recarregue a página mais tarde.', { etapa: 2 });
+      esperar(buscarNoSite, intervaloConsulta(passou > 6 * 60000 ? TEMPOS_MAPA.devagar : TEMPOS_MAPA.site), { acelera: true });
+    }
+
+    bGerar.addEventListener('click', () => pedir());
+    // na espera do OpenDota, o "Tentar de novo" manual não reinicia o prazo nem a contagem das tentativas
+    bDeNovo.addEventListener('click', () => {
+      const tinhaFoco = caixa.contains(document.activeElement);
+      const manter = Boolean(p && p.fase === 'opendota');
+      if (!manter) p = null;
+      pedir({ manterInicio: manter, tinhaFoco });
+    });
+
+    urlDoCoach().then(async (u) => {
+      url = u;
+      // região viva fora da caixa: o "pronto" ainda é lido quando a caixa sai da página
+      const palco = caixa.closest('.mapa-palco');
+      if (palco && palco.parentElement) {
+        anuncio = palco.parentElement.querySelector(':scope > .mp-anuncio');
+        if (!anuncio) { anuncio = h('p', { class: 'sr-only mp-anuncio', role: 'status' }); palco.after(anuncio); }
+      }
+      if (!url) return desligado();
+      // recarregou no meio: retoma de onde parou
+      if (p && p.inicio && agora() - p.inicio < TEMPOS_MAPA.guarda) {
+        if (p.fase === 'publicando' || p.fase === 'demorou-site') return publicar();
+        if (p.fase === 'opendota') return esperarOpenDota();
+        if (p.fase === 'erro') { falhou(p.msg || 'O mapa ainda não saiu.', { etapa: p.etapaErro ?? 1, semBotao: Boolean(p.semBotao), liberaEm: p.liberaEm || 0 }); return; }
+        if (p.fase === 'acompanhando' || p.fase === 'demorou' || p.fase === 'enviando') {
+          if (p.fase === 'enviando') p.fase = 'acompanhando';
+          marcar(1); relogioDe(p.tentativa); errosSeguidos = 0;
+          dizer('Acompanhando o pedido de mapa desta partida…');
+          return esperar(consultar, 300, { acelera: true });
+        }
+      }
+      p = null;
+      // alguém já pediu? o mapa já saiu e o site ainda não serve? o Worker tem o pedido ligado?
+      const { status, j } = await api(`/mapa/${id}`);
+      if (!vivo()) return;
+      if (status === 200 && j.pronto) { p = { inicio: agora(), tentativa: agora() }; return publicar(); }
+      if (status === 200 && j.naFila) {
+        const t = Date.parse(j.pedidoEm || '') || agora();
+        p = { inicio: t, tentativa: t, pedidoEm: j.pedidoEm || null };
+        return acompanhar('Alguém já pediu este mapa: acompanhando o robô.');
+      }
+      if (status === 200 && j.falhas && j.falhas.motivo === 'sem amigos') return desligado('O mapa animado só é gerado para partidas de vocês.');
+      if (status === 200 || status === 502 || status === 429) return mostrarBotao();
+      return desligado(); // 503 (sem GITHUB_TOKEN), Worker antigo sem /mapa, fora do ar
+    });
+    return caixa;
+  }
+
+  // Texto do mini replay do parecer enquanto a partida não tem mapa: diz onde pedir quando dá para pedir
+  function irParaPedidoMapa() {
+    const sec = document.getElementById('lances');
+    if (!sec) return;
+    sec.scrollIntoView({ behavior: reduzMovimento() ? 'auto' : 'smooth', block: 'start' });
+    const alvo = sec.querySelector('.mp-gerar:not([hidden])') || sec.querySelector('.mp-denovo:not([hidden])') || sec.querySelector('.mapa-pedido');
+    if (alvo) alvo.focus({ preventScroll: true });
+  }
+  function avisoLanceSemMapa(id) {
+    const el = h('p', { class: 'vazio hl-sem-mapa' });
+    if (SO_EMBUTIDO) { el.textContent = 'O mapa animado só aparece no site.'; return el; }
+    const pinta = (sit) => {
+      el.textContent = '';
+      if (sit === 'gerando') el.append('O mapa da partida está sendo gerado: o replay deste lance aparece aqui sozinho.');
+      else if ((sit === 'botao' || sit === 'erro') && document.getElementById('lances')) {
+        const b = h('button', { type: 'button', class: 'link-lances' }, 'Lances da partida');
+        b.addEventListener('click', irParaPedidoMapa);
+        el.append('O replay deste lance aparece aqui quando o mapa da partida sair: dá pra pedir em ', b, '.');
+      } else el.append('O replay deste lance ainda não foi gerado.');
+    };
+    if (!(id in situacaoMapa)) pinta();
+    aoMudarSituacaoMapa(id, pinta);
+    return el;
+  }
+
   // posição de cada jogador (índice da partida) no instante t, interpolada entre segundos
   function posicoes(mapa, r) {
     const players = estado.dados.match.players;
@@ -6425,10 +6917,17 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       h('div', { class: 'cinema-acoes' }, bCinema, dica),
       cartao);
     palco.append(h('p', { class: 'vazio' }, 'Carregando o mapa…'));
-    carregarMapa(r.partida.id).then((mapa) => {
+    const acoes = sec.querySelector('.cinema-acoes');
+    const montar = (mapa) => {
       const player = montarLances(r, mapa, palco, legenda, lista, controles);
-      if (!player || !player.roteiro().length) { bCinema.closest('.cinema-acoes').remove(); return; }
-      modoCinema(player, { botao: bCinema, barra, cartao });
+      acoes.hidden = !player || !player.roteiro().length;
+      if (!acoes.hidden) modoCinema(player, { botao: bCinema, barra, cartao });
+      return player;
+    };
+    carregarMapa(r.partida.id).then((mapa) => {
+      if (mapa) guardarPedidoMapa(r.partida.id, null);
+      // sem mapa: monta a lista e a caixa do pedido; o mapa entra no mesmo lugar quando o robô terminar
+      if (!montar(mapa) && !mapa && !SO_EMBUTIDO) quandoChegarMapa(r.partida.id, (m) => { if (sec.isConnected) montar(m); });
     });
     return sec;
   }
@@ -6878,6 +7377,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
           const caixaPalco = palco.getBoundingClientRect();
           if (caixaPalco.top < 0 || caixaPalco.bottom > window.innerHeight) palco.scrollIntoView({ block: 'start', behavior: reduzMovimento() ? 'auto' : 'smooth' });
         }
+        if (!pos) return; // sem mapa ainda: o lance fica só listado
         if (ganchos.manual) ganchos.manual();
         tocar(i);
       });
@@ -6886,10 +7386,14 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       return b;
     });
     if (!pos) {
-      palco.append(h('p', { class: 'vazio' }, SO_EMBUTIDO ? 'O mapa animado só aparece no site.' : 'O replay desta partida ainda não foi processado: o robô do mapa roda a cada hora. Volta daqui a pouco; os lances já estão listados ao lado.'));
+      // sem mapa: no site, a caixa "Gerar o mapa agora" (o mapa entra aqui sozinho quando sair)
+      palco.classList.toggle('pedindo', !SO_EMBUTIDO);
+      palco.append(SO_EMBUTIDO ? h('p', { class: 'vazio' }, 'O mapa animado só aparece no site.') : painelPedirMapa(r.partida.id));
       if (!mini) tocarLance = () => document.getElementById('lances').scrollIntoView({ behavior: 'smooth' });
       return;
     }
+    if (palco.classList.contains('pedindo')) palco.classList.add('chegou'); // o mapa entrou no lugar do pedido
+    palco.classList.remove('pedindo');
     const W = 100;
     const svg = s('svg', { viewBox: `0 0 ${W} ${W}`, class: 'mapa-svg', role: 'img', 'aria-label': 'Mapa da partida com a posição dos heróis' });
     const cam = s('g', {});
@@ -8390,12 +8894,15 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
     const bloco = h('div', { class: 'coach-col bom brilho' }, h('h4', {}, h('span', { class: 'coach-ic', 'aria-hidden': 'true' }, '★'), 'Jogou muito'), ul);
     if (!(v.brilhos || []).length) bloco.hidden = true;
     if (r.partida.parseado) {
-      carregarMapa(r.partida.id).then((mapa) => {
-        if (!mapa) return;
+      const comMapa = (mapa) => {
         const extra = brilhosDoMapa(r, mapa)[v.jogador.idx] || [];
         if (!extra.length) return;
         ul.prepend(...extra.map(itens));
         bloco.hidden = false;
+      };
+      carregarMapa(r.partida.id).then((mapa) => {
+        if (mapa) comMapa(mapa);
+        else if (!SO_EMBUTIDO) quandoChegarMapa(r.partida.id, (m) => { if (bloco.isConnected) comMapa(m); });
       }).catch(() => {});
     }
     return bloco;
@@ -8477,7 +8984,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       h('div', { class: 'highlight-grade' },
         h('div', { class: 'mapa-col mini' }, palco, controles),
         h('div', { class: 'highlight-texto' }, titulo, legenda)));
-    carregarMapa(r.partida.id).then((mapa) => {
+    const montar = (mapa) => {
       let lance = v.highlight;
       if (mapa) {
         // jogada vista no mapa (Blink + ult, esquiva, save) ganha do resto quando existe
@@ -8486,15 +8993,21 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
           lance = { peso: doMapa.peso + 3, t: doMapa.t, ini: doMapa.t - 8, fim: doMapa.t + 5, titulo: doMapa.titulo, legenda: doMapa.texto, foco: [v.jogador.idx], tipo: 'bom' };
         }
       }
-      if (!lance) { bloco.hidden = true; return; }
+      bloco.hidden = !lance;
+      if (!lance) return;
       titulo.textContent = '';
       titulo.append(h('strong', {}, lance.titulo), ` · ${mmss(lance.t)} · ${lance.legenda}`);
       if (!mapa) {
         palco.textContent = '';
-        palco.append(h('p', { class: 'vazio' }, SO_EMBUTIDO ? 'O replay animado só aparece no site.' : 'O replay animado aparece quando o robô do mapa processar esta partida (uns minutos depois do jogo).'));
+        palco.append(avisoLanceSemMapa(r.partida.id));
         return;
       }
+      legenda.textContent = '';
       montarLances(r, mapa, palco, legenda, null, controles, { unico: lance, mini: true });
+    };
+    carregarMapa(r.partida.id).then((mapa) => {
+      montar(mapa);
+      if (!mapa && !SO_EMBUTIDO) quandoChegarMapa(r.partida.id, (m) => { if (bloco.isConnected) { try { montar(m); } catch (e) { bloco.hidden = true; } } });
     }).catch(() => { bloco.hidden = true; });
     return bloco;
   }

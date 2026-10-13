@@ -589,3 +589,458 @@ test('mensagem de cota da Cloudflare diz se volta hoje ou amanhã', () => {
   assert.match(_interno.msgCotaCF(new Date('2026-10-14T01:30:00Z')), /Volta amanhã às 21h/); // 22h30 em Brasília
   assert.match(_interno.msgCotaCF(new Date('2026-10-13T23:59:00Z')), /Volta hoje às 21h/); // 20h59
 });
+
+// ------------------------------------------------------------------ mapa animado (POST /mapa, GET /mapa/<id>)
+// GitHub falso: guarda os arquivos do repositório em memória e anota cada chamada.
+function githubFalso({ arquivos = {}, status = {}, opendota = 200, putStatus = null } = {}) {
+  const repo = { arquivos: { ...arquivos }, chamadas: [], opendota: [] };
+  globalThis.fetch = async (url, init = {}) => {
+    const u = String(url);
+    const metodo = init.method || 'GET';
+    if (u.startsWith('https://api.opendota.com/')) { repo.opendota.push(u); return new Response('{}', { status: opendota }); }
+    const m = u.match(/^https:\/\/api\.github\.com\/repos\/([^/]+\/[^/]+)\/contents\/(.+)$/);
+    if (!m) throw new Error(`fetch inesperado: ${u}`);
+    const caminho = m[2];
+    repo.chamadas.push({ metodo, caminho, repo: m[1], auth: init.headers.Authorization, ua: init.headers['User-Agent'], corpo: init.body ? JSON.parse(init.body) : null });
+    const forcado = status[`${metodo} ${caminho}`] ?? status[metodo] ?? status['*'];
+    if (forcado) return new Response(JSON.stringify({ message: forcado === 403 ? 'Resource not accessible by personal access token' : 'erro' }), { status: forcado });
+    const arq = repo.arquivos[caminho];
+    if (metodo === 'PUT') {
+      if (putStatus) return new Response('{"message":"x"}', { status: putStatus });
+      const corpo = JSON.parse(init.body);
+      if (arq && !corpo.sha) return new Response('{"message":"Invalid request.\\n\\n\\"sha\\" wasn\'t supplied."}', { status: 422 });
+      if (arq && corpo.sha !== arq.sha) return new Response('{"message":"conflict"}', { status: 409 });
+      repo.arquivos[caminho] = { content: Buffer.from(corpo.content, 'base64').toString(), sha: `sha${repo.chamadas.length}` };
+      return new Response(JSON.stringify({ content: { path: caminho } }), { status: arq ? 200 : 201 });
+    }
+    if (!arq) {
+      // pasta: lista os arquivos dentro dela (a API de contents devolve um array)
+      const dentro = Object.keys(repo.arquivos).filter((k) => k.startsWith(`${caminho}/`));
+      if (dentro.length && metodo === 'GET') return new Response(JSON.stringify(dentro.map((k) => ({ name: k.slice(caminho.length + 1), path: k, type: 'file' }))), { status: 200 });
+      return new Response(metodo === 'HEAD' ? null : '{"message":"Not Found"}', { status: 404 });
+    }
+    if (metodo === 'HEAD') return new Response(null, { status: 200, headers: { 'github-authentication-token-expiration': '2027-01-10 00:00:00 UTC' } });
+    if (/raw/.test(init.headers.Accept)) return new Response(arq.content, { status: 200 });
+    if (arq.grande) return new Response(JSON.stringify({ path: caminho, sha: arq.sha, encoding: 'none', content: '', size: 2_000_000 }), { status: 200 });
+    return new Response(JSON.stringify({ path: caminho, sha: arq.sha, encoding: 'base64', content: Buffer.from(arq.content).toString('base64') }), { status: 200 });
+  };
+  return repo;
+}
+const ENV_MAPA = { GITHUB_TOKEN: 'github_pat_teste' };
+const pedirMapa = (id, opts = {}) => worker.fetch(pedido({ id }, { caminho: '/mapa', ...opts }), opts.env || ENV_MAPA);
+const consultar = (id, opts = {}) => worker.fetch(pedido(null, { caminho: `/mapa/${id}`, metodo: 'GET', ...opts }), opts.env || ENV_MAPA);
+const ID = '9042493356';
+const agoraIso = (deltaMs = 0) => new Date(Date.now() + deltaMs).toISOString().replace(/\.\d+Z$/, 'Z');
+
+beforeEach(() => { _interno.limparCacheMapa(); });
+
+test('mapa: POST cria mapa/pedidos/<id> com a mensagem certa e o token só vai para o GitHub', async () => {
+  const repo = githubFalso();
+  const r = await pedirMapa(ID);
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('Access-Control-Allow-Origin'), SITE);
+  const j = await r.json();
+  assert.equal(j.estado, 'pedido');
+  assert.match(j.pedidoEm, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/);
+  const put = repo.chamadas.find((c) => c.metodo === 'PUT');
+  assert.equal(put.caminho, `mapa/pedidos/${ID}`);
+  assert.equal(put.repo, 'Suetam016/culpado_dota2');
+  assert.equal(put.corpo.message, `Pedido de mapa: ${ID}`);
+  assert.equal(put.corpo.sha, undefined);
+  assert.match(repo.arquivos[`mapa/pedidos/${ID}`].content, new RegExp(j.pedidoEm));
+  assert.ok(repo.chamadas.every((c) => c.auth === 'Bearer github_pat_teste' && c.ua));
+  assert.equal(repo.opendota.length, 1, 'confere no OpenDota que a partida existe');
+  assert.ok(!JSON.stringify(j).includes('github_pat'), 'o token não volta para o site');
+  // só estes caminhos são tocados
+  assert.ok(repo.chamadas.every((c) => [`mapas/${ID}.json`, `mapa/pedidos/${ID}`, 'mapa/pedidos', 'mapa/falhas.json'].includes(c.caminho)));
+  assert.ok(repo.chamadas.filter((c) => c.metodo !== 'GET' && c.metodo !== 'HEAD').every((c) => c.caminho.startsWith('mapa/pedidos/')), 'só escreve em mapa/pedidos/');
+});
+
+test('mapa: POST de mapa que já existe responde pronto sem criar nada nem gastar o limite', async () => {
+  const repo = githubFalso({ arquivos: { [`mapas/${ID}.json`]: { content: '{"v":4}', sha: 'a' } } });
+  for (let i = 0; i < 10; i++) {
+    const r = await pedirMapa(ID, { ip: '7.7.7.7' });
+    assert.deepEqual(await r.json(), { estado: 'pronto' });
+  }
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+  assert.equal(repo.opendota.length, 0);
+});
+
+test('mapa: pedido recente de outra pessoa = na-fila (sem novo commit); pedido parado é refeito com o sha', async () => {
+  const quando = agoraIso(-60_000);
+  let repo = githubFalso({ arquivos: { [`mapa/pedidos/${ID}`]: { content: `pedido pelo site em ${quando}\n`, sha: 's1' } } });
+  let r = await pedirMapa(ID);
+  assert.deepEqual(await r.json(), { estado: 'na-fila', pedidoEm: quando });
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+  // parado há mais de 6 min (o robô travou): reescreve, o que gera push novo
+  repo = githubFalso({ arquivos: { [`mapa/pedidos/${ID}`]: { content: `pedido pelo site em ${agoraIso(-_interno.PEDIDO_PARADO_MS - 5000)}\n`, sha: 's1' } } });
+  r = await pedirMapa(ID);
+  assert.equal((await r.json()).estado, 'pedido');
+  const put = repo.chamadas.find((c) => c.metodo === 'PUT');
+  assert.equal(put.corpo.sha, 's1');
+  assert.equal(repo.opendota.length, 0, 'pedido que já existia não precisa conferir de novo');
+});
+
+test('mapa: 422/409 no PUT: se o pedido existe vira na-fila sem gastar o limite; se não existe, cria sem sha', async () => {
+  // outra pessoa criou o arquivo entre a leitura e a escrita
+  let repo = githubFalso();
+  let f = globalThis.fetch;
+  let n = 0;
+  globalThis.fetch = async (u, init = {}) => {
+    if (init.method === 'PUT' && n++ === 0) {
+      repo.arquivos[`mapa/pedidos/${ID}`] = { content: `pedido pelo site em ${agoraIso(-2000)}\n`, sha: 'outro' };
+      return new Response('{"message":"sha wasn\'t supplied"}', { status: 422 });
+    }
+    return f(u, init);
+  };
+  const env = { ...ENV_MAPA, MAPA_POR_HORA: '1' };
+  let j = await (await pedirMapa(ID, { ip: '8.8.8.8', env })).json();
+  assert.equal(j.estado, 'na-fila');
+  assert.equal(n, 1, 'não escreve de novo por cima do pedido do outro');
+  githubFalso();
+  j = await (await pedirMapa('9042493357', { ip: '8.8.8.8', env })).json();
+  assert.equal(j.estado, 'pedido', 'o 422 devolveu a vaga');
+  // pedido parado que o robô apagou entre a leitura e o PUT com sha: 422/409; cria de novo sem sha
+  _interno.limparCacheMapa();
+  repo = githubFalso({ arquivos: { [`mapa/pedidos/${ID}`]: { content: `pedido pelo site em ${agoraIso(-_interno.PEDIDO_PARADO_MS - 5000)}\n`, sha: 's1' } } });
+  f = globalThis.fetch;
+  globalThis.fetch = async (u, init = {}) => {
+    if (init.method === 'PUT' && JSON.parse(init.body).sha) { delete repo.arquivos[`mapa/pedidos/${ID}`]; return new Response('{"message":"sha does not match"}', { status: 409 }); }
+    return f(u, init);
+  };
+  j = await (await pedirMapa(ID, { ip: '8.8.8.9' })).json();
+  assert.equal(j.estado, 'pedido');
+  const puts = repo.chamadas.filter((c) => c.metodo === 'PUT');
+  assert.equal(puts.length, 1, 'o segundo PUT (sem sha) criou o arquivo');
+  assert.equal(puts[0].corpo.sha, undefined);
+  assert.ok(repo.arquivos[`mapa/pedidos/${ID}`]);
+  // e se o segundo PUT também falha: 502 github
+  githubFalso({ putStatus: 422 });
+  const r = await pedirMapa('9042493358', { ip: '8.8.8.10' });
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).erro, 'github');
+});
+
+test('mapa: ID inválido = 400 sem chamar o GitHub', async () => {
+  const repo = githubFalso();
+  for (const id of ['123', '12345678', '1234567890123', '90424933a6', '../../x', '', null, 9e20]) {
+    const r = await pedirMapa(id);
+    assert.equal(r.status, 400, String(id));
+    assert.equal((await r.json()).erro, 'invalido');
+  }
+  let r = await worker.fetch(pedido('{não é json', { caminho: '/mapa' }), ENV_MAPA);
+  assert.equal(r.status, 400);
+  r = await worker.fetch(pedido({ id: ID, lixo: 'x'.repeat(5000) }, { caminho: '/mapa' }), ENV_MAPA);
+  assert.equal(r.status, 413);
+  for (const id of ['abc', '123', '..%2F..%2Fsegredo', '90424933561234']) {
+    r = await consultar(id);
+    assert.equal(r.status, 400, id);
+  }
+  assert.equal(repo.chamadas.length, 0);
+});
+
+test('mapa: limite por conexão conta partidas diferentes; insistir na mesma não gasta vaga', async () => {
+  githubFalso();
+  const env = { ...ENV_MAPA, MAPA_POR_HORA: '2' };
+  const repo = githubFalso();
+  assert.equal((await (await pedirMapa('904249330001', { ip: '5.5.5.5', env })).json()).estado, 'pedido');
+  // a mesma partida de novo (o site tentando outra vez enquanto o OpenDota analisa), com o pedido já processado
+  delete repo.arquivos['mapa/pedidos/904249330001'];
+  assert.equal((await (await pedirMapa('904249330001', { ip: '5.5.5.5', env })).json()).estado, 'pedido');
+  assert.equal((await (await pedirMapa('904249330002', { ip: '5.5.5.5', env })).json()).estado, 'pedido');
+  const r = await pedirMapa('904249330003', { ip: '5.5.5.5', env });
+  assert.equal(r.status, 429);
+  const j = await r.json();
+  assert.equal(j.erro, 'limite');
+  assert.ok(j.minutos >= 1 && j.minutos <= 60);
+  assert.match(j.msg, /Muitos pedidos de mapa/);
+  assert.ok(Number(r.headers.get('Retry-After')) > 0);
+  // outra conexão segue livre
+  assert.equal((await (await pedirMapa('904249330003', { ip: '5.5.5.6', env })).json()).estado, 'pedido');
+});
+
+test('mapa: teto geral por hora segura muitos IPs', async () => {
+  githubFalso();
+  const env = { ...ENV_MAPA, MAPA_GLOBAL_POR_HORA: '3' };
+  const st = [];
+  for (let i = 0; i < 5; i++) st.push((await pedirMapa(`90424933${10 + i}`, { ip: novoIp(), env })).status);
+  assert.deepEqual(st, [200, 200, 200, 429, 429]);
+});
+
+test('mapa: sem GITHUB_TOKEN /mapa responde 503 desligado e /saude diz mapa:false', async () => {
+  const repo = githubFalso();
+  let r = await pedirMapa(ID, { env: envAI(() => cfOpenAI(['x'])) });
+  assert.equal(r.status, 503);
+  assert.equal((await r.json()).erro, 'desligado');
+  r = await consultar(ID, { env: {} });
+  assert.equal(r.status, 503);
+  r = await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/saude', origem: null }), envAI(() => cfOpenAI(['x'])));
+  const j = await r.json();
+  assert.equal(j.ok, true, 'o chat continua ligado');
+  assert.equal(j.mapa, false);
+  assert.match(j.mapaMsg, /GITHUB_TOKEN/);
+  assert.equal(repo.chamadas.length, 0);
+  // com o token: /saude confere o acesso e mostra a validade
+  githubFalso({ arquivos: { 'mapa/falhas.json': { content: '{}', sha: 'f' } } });
+  r = await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/saude', origem: null }), { ...envAI(() => null), ...ENV_MAPA });
+  const j2 = await r.json();
+  assert.equal(j2.mapa, true);
+  assert.equal(j2.mapaRepo, 'Suetam016/culpado_dota2');
+  assert.match(j2.mapaTokenVence, /2027/);
+  _interno.limparCacheMapa();
+  githubFalso({ status: { HEAD: 401 } });
+  r = await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/saude', origem: null }), ENV_MAPA);
+  const j3 = await r.json();
+  assert.equal(j3.mapa, false);
+  assert.match(j3.mapaMsg, /recusou o GITHUB_TOKEN/);
+});
+
+test('mapa: erro do GitHub = 502 (e token recusado tem mensagem própria), sem gastar o limite', async () => {
+  githubFalso({ status: { '*': 500 } });
+  let r = await pedirMapa(ID);
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).erro, 'github');
+  githubFalso({ putStatus: 500 });
+  r = await pedirMapa(ID, { ip: '9.9.9.9', env: { ...ENV_MAPA, MAPA_POR_HORA: '1' } });
+  assert.equal(r.status, 502);
+  githubFalso({ status: { PUT: 403 } });
+  r = await pedirMapa(ID, { ip: '9.9.9.9', env: { ...ENV_MAPA, MAPA_POR_HORA: '1' } });
+  assert.equal(r.status, 502);
+  const j = await r.json();
+  assert.equal(j.erro, 'token');
+  assert.match(j.msg, /Avise o dono/);
+  githubFalso();
+  r = await pedirMapa(ID, { ip: '9.9.9.9', env: { ...ENV_MAPA, MAPA_POR_HORA: '1' } });
+  assert.equal((await r.json()).estado, 'pedido', 'as falhas não gastaram a vaga');
+  // GitHub que não responde: 502 em vez de pendurar
+  globalThis.fetch = (u) => (String(u).includes('api.github.com') ? new Promise(() => {}) : fetchOriginal(u));
+  r = await consultar('904249331111');
+  assert.equal(r.status, 502);
+});
+
+test('mapa: 409 no PUT (sha mudou) tenta de novo uma vez', async () => {
+  const repo = githubFalso();
+  let n = 0;
+  const f = globalThis.fetch;
+  globalThis.fetch = async (u, init = {}) => (init.method === 'PUT' && n++ === 0 ? new Response('{}', { status: 409 }) : f(u, init));
+  const r = await pedirMapa(ID);
+  assert.equal((await r.json()).estado, 'pedido');
+  assert.equal(n, 2);
+  assert.ok(repo.arquivos[`mapa/pedidos/${ID}`]);
+});
+
+test('mapa: partida que o OpenDota não conhece (404) não vira pedido; OpenDota fora do ar não impede', async () => {
+  let repo = githubFalso({ opendota: 404 });
+  let r = await pedirMapa(ID);
+  assert.equal(r.status, 404);
+  assert.equal((await r.json()).erro, 'partida');
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+  repo = githubFalso({ opendota: 502 });
+  r = await pedirMapa(ID);
+  assert.equal((await r.json()).estado, 'pedido');
+  repo = githubFalso({ opendota: 404 });
+  r = await pedirMapa(ID, { env: { ...ENV_MAPA, MAPA_CONFERIR_OPENDOTA: '0' } });
+  assert.equal((await r.json()).estado, 'pedido');
+  assert.equal(repo.opendota.length, 0);
+});
+
+test('mapa: GET /mapa/<id> diz pronto, na fila e as falhas (formato novo e antigo)', async () => {
+  const quando = agoraIso(-30_000);
+  githubFalso({ arquivos: {
+    [`mapa/pedidos/${ID}`]: { content: `pedido pelo site em ${quando}\n`, sha: 's' },
+    'mapa/falhas.json': { content: JSON.stringify({ [ID]: { n: 2, motivo: 'sem replay_url', quando: '2026-10-13T12:00:00Z' }, 9041286665: 3 }), sha: 'f' },
+  } });
+  let r = await consultar(ID);
+  assert.equal(r.status, 200);
+  let j = await r.json();
+  assert.equal(j.pronto, false);
+  assert.equal(j.naFila, true);
+  assert.equal(j.pedidoEm, quando);
+  assert.deepEqual(j.falhas, { n: 2, motivo: 'sem replay_url', quando: '2026-10-13T12:00:00Z' });
+  assert.ok(j.agora);
+  j = await (await consultar('9041286665')).json();
+  assert.deepEqual([j.pronto, j.naFila, j.falhas], [false, false, { n: 3, motivo: null, quando: null }]);
+  j = await (await consultar('9041286666')).json();
+  assert.deepEqual([j.pronto, j.naFila, j.falhas], [false, false, null]);
+  // mapa pronto
+  _interno.limparCacheMapa();
+  githubFalso({ arquivos: { [`mapas/${ID}.json`]: { content: '{}', sha: 'm' } } });
+  j = await (await consultar(ID)).json();
+  assert.deepEqual([j.pronto, j.naFila, j.falhas], [true, false, null]);
+});
+
+test('mapa: consultas seguidas da mesma partida usam o cache (poupa a cota da API do GitHub)', async () => {
+  const repo = githubFalso();
+  for (let i = 0; i < 5; i++) await consultar(ID);
+  assert.equal(repo.chamadas.length, 3, '3 leituras na primeira consulta, nenhuma nas seguintes');
+  // um pedido novo limpa o cache da partida
+  await pedirMapa(ID);
+  const j = await (await consultar(ID)).json();
+  assert.equal(j.naFila, true);
+});
+
+test('mapa: origem estranha = 403, método errado = 404, e o chat continua funcionando junto', async () => {
+  githubFalso();
+  let r = await pedirMapa(ID, { origem: 'https://malvado.com' });
+  assert.equal(r.status, 403);
+  r = await consultar(ID, { origem: null });
+  assert.equal(r.status, 403);
+  r = await worker.fetch(pedido(null, { caminho: '/mapa', metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 404);
+  r = await worker.fetch(pedido({ id: ID }, { caminho: `/mapa/${ID}` }), ENV_MAPA);
+  assert.equal(r.status, 404);
+  r = await worker.fetch(pedido(null, { caminho: '/mapa', metodo: 'OPTIONS' }), ENV_MAPA);
+  assert.equal(r.status, 204);
+  assert.match(r.headers.get('Access-Control-Allow-Methods'), /POST/);
+  // chat no mesmo Worker com o token configurado
+  const ai = envAI(() => cfOpenAI(['Oi ', 'time']));
+  r = await worker.fetch(pedido(corpoOk(), { ip: novoIp() }), { ...ai, ...ENV_MAPA });
+  assert.equal(textoDe(await eventos(r)), 'Oi time');
+});
+
+test('mapa: GITHUB_REPO troca o repositório; valor estranho cai no padrão', async () => {
+  let repo = githubFalso();
+  await pedirMapa(ID, { env: { ...ENV_MAPA, GITHUB_REPO: 'outro/site' } });
+  assert.ok(repo.chamadas.every((c) => c.repo === 'outro/site'));
+  _interno.limparCacheMapa();
+  repo = githubFalso();
+  await consultar('904249339999', { env: { ...ENV_MAPA, GITHUB_REPO: '../../x' } });
+  assert.ok(repo.chamadas.every((c) => c.repo === 'Suetam016/culpado_dota2'));
+});
+
+test('mapa: pedir a mesma partida de novo também gasta: no máximo MAPA_ARQUIVOS_POR_IP arquivos por conexão', async () => {
+  const repo = githubFalso();
+  const env = { ...ENV_MAPA, MAPA_ARQUIVOS_POR_IP: '4', MAPA_GLOBAL_POR_HORA: '100' };
+  const st = [];
+  for (let i = 0; i < 6; i++) {
+    const id = `90424933${20 + (i % 2)}`;
+    st.push((await pedirMapa(id, { ip: '6.6.6.6', env })).status);
+    delete repo.arquivos[`mapa/pedidos/${id}`]; // o robô atendeu (sem replay) e apagou o pedido
+  }
+  assert.deepEqual(st, [200, 200, 200, 200, 429, 429]);
+  assert.equal(repo.chamadas.filter((c) => c.metodo === 'PUT').length, 4);
+  assert.equal((await pedirMapa('904249330020', { ip: '6.6.6.7', env })).status, 200, 'outra conexão segue livre');
+});
+
+test('mapa: fila cheia no repositório (vale para todas as instâncias) = 429 sem criar pedido', async () => {
+  const arquivos = {};
+  for (let i = 0; i < 8; i++) arquivos[`mapa/pedidos/90424934${10 + i}`] = { content: `pedido pelo site em ${agoraIso(-1000)}\n`, sha: `p${i}` };
+  const repo = githubFalso({ arquivos });
+  const r = await pedirMapa(ID, { ip: '4.4.4.4', env: { ...ENV_MAPA, MAPA_POR_HORA: '1' } });
+  assert.equal(r.status, 429);
+  const j = await r.json();
+  assert.equal(j.erro, 'limite');
+  assert.match(j.msg, /fila cheia/);
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+  assert.ok(repo.chamadas.some((c) => c.metodo === 'GET' && c.caminho === 'mapa/pedidos'));
+  // a fila andou: a mesma conexão consegue (a recusa devolveu a vaga)
+  delete repo.arquivos['mapa/pedidos/9042493410'];
+  assert.equal((await (await pedirMapa(ID, { ip: '4.4.4.4', env: { ...ENV_MAPA, MAPA_POR_HORA: '1' } })).json()).estado, 'pedido');
+});
+
+test('mapa: consultas contam partidas diferentes por conexão; repetir a mesma continua barato', async () => {
+  const repo = githubFalso();
+  for (let i = 0; i < 20; i++) assert.equal((await consultar(`9042493${String(i).padStart(3, '0')}`, { ip: '3.3.3.3' })).status, 200);
+  const chamadas = repo.chamadas.length;
+  let r = await consultar('9042493999', { ip: '3.3.3.3' });
+  assert.equal(r.status, 429);
+  assert.equal(repo.chamadas.length, chamadas, 'recusa sem chamar o GitHub');
+  for (let i = 0; i < 5; i++) assert.equal((await consultar('9042493000', { ip: '3.3.3.3' })).status, 200, 'a mesma de antes segue');
+  r = await consultar('9042493999', { ip: '3.3.3.4' });
+  assert.equal(r.status, 200, 'outra conexão segue livre');
+});
+
+test('mapa: orçamento de chamadas ao GitHub por instância: passou, 429 sem chamar', async () => {
+  const repo = githubFalso();
+  const env = { ...ENV_MAPA, MAPA_GITHUB_POR_HORA: '6' };
+  assert.equal((await consultar('904249350001', { ip: novoIp(), env })).status, 200); // 3 chamadas
+  assert.equal((await consultar('904249350002', { ip: novoIp(), env })).status, 200); // mais 3
+  let r = await consultar('904249350003', { ip: novoIp(), env });
+  assert.equal(r.status, 429);
+  assert.equal((await r.json()).erro, 'limite');
+  r = await pedirMapa('904249350004', { ip: novoIp(), env });
+  assert.equal(r.status, 429);
+  assert.equal(repo.chamadas.length, 6);
+});
+
+test('mapa: /saude guarda o resultado por 60 s e exige ler mapa/falhas.json (404 = sem acesso)', async () => {
+  let repo = githubFalso({ arquivos: { 'mapa/falhas.json': { content: '{}', sha: 'f' } } });
+  for (let i = 0; i < 20; i++) await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/saude', origem: null }), ENV_MAPA);
+  assert.equal(repo.chamadas.length, 1);
+  _interno.limparCacheMapa();
+  repo = githubFalso(); // token sem acesso ao repositório (ou GITHUB_REPO errado): o GitHub responde 404
+  const j = await (await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/saude', origem: null }), ENV_MAPA)).json();
+  assert.equal(j.mapa, false);
+  assert.match(j.mapaMsg, /não enxerga mapa\/falhas\.json/);
+});
+
+test('mapa: 403 por limite da API do GitHub não vira "chave venceu"', async () => {
+  githubFalso();
+  const f = globalThis.fetch;
+  globalThis.fetch = async (u, init = {}) => (String(u).includes('api.github.com')
+    ? new Response(null, { status: 403, headers: { 'x-ratelimit-remaining': '0' } }) : f(u, init));
+  let r = await pedirMapa(ID);
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).erro, 'github');
+  globalThis.fetch = async (u, init = {}) => (String(u).includes('api.github.com')
+    ? new Response(null, { status: 403, headers: { 'retry-after': '60' } }) : f(u, init));
+  r = await pedirMapa(ID, { ip: novoIp() });
+  assert.equal((await r.json()).erro, 'github');
+  globalThis.fetch = async (u, init = {}) => (String(u).includes('api.github.com') ? new Response(null, { status: 401 }) : f(u, init));
+  r = await pedirMapa(ID, { ip: novoIp() });
+  assert.equal((await r.json()).erro, 'token');
+});
+
+test('mapa: pedido sem data (criado à mão) conta como recente: na-fila, sem reescrever', async () => {
+  const repo = githubFalso({ arquivos: { [`mapa/pedidos/${ID}`]: { content: '', sha: 's1' } } });
+  for (let i = 0; i < 5; i++) assert.equal((await (await pedirMapa(ID, { ip: novoIp() })).json()).estado, 'na-fila');
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+});
+
+test('mapa: muitas conexões diferentes não zeram os limites (o Map apaga só horas passadas)', async () => {
+  githubFalso();
+  const env = { ...ENV_MAPA, MAPA_POR_HORA: '1' };
+  assert.equal((await pedirMapa('904249360001', { ip: '2.2.2.2', env })).status, 200);
+  assert.equal((await pedirMapa('904249360002', { ip: '2.2.2.2', env })).status, 429);
+  // 5001 consultas de /64 diferentes: vão para outro Map e não tocam nos limites do POST nem do chat
+  for (let i = 0; i < _interno.MAX_CHAVES + 1; i++) await consultar(ID, { ip: `2001:db8:${(i >> 16).toString(16)}:${(i & 0xffff).toString(16)}::1` });
+  assert.equal((await pedirMapa('904249360002', { ip: '2.2.2.2', env })).status, 429, 'continua barrado');
+  assert.ok(_interno.consultas.size <= _interno.MAX_CHAVES);
+  // Map de contadores cheio só com a hora atual: recusa conexão nova em vez de limpar
+  const hora = Math.floor(Date.now() / 3_600_000);
+  for (let i = 0; _interno.contagem.size < _interno.MAX_CHAVES; i++) _interno.contagem.set(`velha${i}:${hora - 1}`, 1);
+  assert.equal((await pedirMapa('904249360003', { ip: '2.2.2.3', env })).status, 200, 'chaves de horas passadas saem');
+  for (let i = 0; _interno.contagem.size < _interno.MAX_CHAVES; i++) _interno.contagem.set(`cheia${i}:${hora}`, 1);
+  assert.equal((await pedirMapa('904249360004', { ip: '2.2.2.4', env })).status, 429, 'cheio na hora atual: recusa a conexão nova');
+  assert.equal((await pedirMapa('904249360002', { ip: '2.2.2.2', env })).status, 429, 'e o barrado continua barrado');
+  assert.ok(_interno.contagem.has(`mapa:*:${hora}`), 'a chave global da hora atual nunca é apagada');
+});
+
+test('mapa: GET /mapa/<id>/arquivo devolve o mapas/<id>.json direto do repositório', async () => {
+  const conteudo = JSON.stringify({ v: 4, id: Number(ID), slots: [0], x: [[1]], y: [[1]] });
+  const repo = githubFalso({ arquivos: { [`mapas/${ID}.json`]: { content: conteudo, sha: 'm' } } });
+  let r = await worker.fetch(pedido(null, { caminho: `/mapa/${ID}/arquivo`, metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('Access-Control-Allow-Origin'), SITE);
+  assert.equal(await r.text(), conteudo);
+  assert.ok(repo.chamadas.every((c) => c.caminho === `mapas/${ID}.json`));
+  r = await worker.fetch(pedido(null, { caminho: '/mapa/904249370001/arquivo', metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 404);
+  assert.equal((await r.json()).erro, 'nao-pronto');
+  r = await worker.fetch(pedido(null, { caminho: '/mapa/abc/arquivo', metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 400);
+  r = await worker.fetch(pedido(null, { caminho: `/mapa/${ID}/outra`, metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 404);
+});
+
+test('mapa: falhas.json grande demais (a API manda sem conteúdo) vai para o log e não quebra', async () => {
+  githubFalso({ arquivos: { 'mapa/falhas.json': { content: '', sha: 'f', grande: true } } });
+  const log = console.log;
+  const linhas = [];
+  console.log = (...a) => linhas.push(a.join(' '));
+  try {
+    const j = await (await consultar(ID)).json();
+    assert.equal(j.falhas, null);
+  } finally { console.log = log; }
+  assert.ok(linhas.some((l) => /falhas\.json grande demais/.test(l)));
+});

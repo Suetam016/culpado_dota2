@@ -3,7 +3,7 @@ name: Mapa (posições dos heróis)
 # Baixa o replay das partidas de vocês, roda o parser do OpenDota e guarda a posição de cada herói
 # segundo a segundo em mapas/<id>.json (o "lance animado" do site). A cada 10 min (sai em segundos se
 # não tem partida nova), ou na hora com um
-# push em mapa/pedidos/<id>.
+# push em mapa/pedidos/<id> (o Worker do coach cria esse arquivo quando alguém aperta "Gerar o mapa agora").
 on:
   schedule:
     - cron: "*/10 * * * *"
@@ -22,7 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # sempre a ponta da main (num push o checkout pegaria o commit do evento: a rodada que esperou na fila
+      # da concurrency refaria os pedidos que a anterior já atendeu e regravaria falhas.json de uma base velha)
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -59,11 +63,37 @@ jobs:
           nohup java -Xmx5g -jar parser-jar/parser.jar 5600 > parser.log 2>&1 &
           for i in $(seq 1 60); do nc -z localhost 5600 && break; sleep 2; done
           nc -z localhost 5600 && echo "parser no ar" || { cat parser.log; exit 1; }
+      - name: Dependências
+        if: steps.fila.outputs.fila != '0'
+        run: pip install -q zstandard
+      # pedidos do botão "Gerar o mapa agora" primeiro, publicados na hora (quem pediu está esperando na página)
+      - name: Processar os pedidos do site
+        if: steps.fila.outputs.pedidos != '0' && steps.fila.outputs.pedidos != ''
+        run: python mapa/processar.py --amigos amigos.json --so-pedidos | tee -a "$GITHUB_STEP_SUMMARY" mapa/ultimo-log.txt
+      - name: Publicar os pedidos
+        if: always() && steps.fila.outputs.pedidos != '0' && steps.fila.outputs.pedidos != ''
+        run: |
+          mkdir -p mapas
+          tail -50 parser.log > mapa/parser-log.txt 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mapas mapa
+          git diff --cached --quiet && exit 0
+          git commit -m "Mapa: posições dos heróis"
+          # conflito modify/delete (o Worker reescreveu um pedido que esta rodada já atendeu): o -X theirs não resolve;
+          # o pedido atendido sai mesmo assim (se o mapa saiu, o próximo pedido vira "pronto")
+          for i in 1 2 3; do
+            if ! git pull --rebase -X theirs origin main; then
+              git diff --name-only --diff-filter=U -- mapa/pedidos | xargs -r git rm -q --
+              GIT_EDITOR=true git rebase --continue || { git rebase --abort; sleep 5; continue; }
+            fi
+            git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
       - name: Processar partidas
         if: steps.fila.outputs.fila != '0'
-        run: |
-          pip install -q zstandard
-          python mapa/processar.py --amigos amigos.json | tee -a "$GITHUB_STEP_SUMMARY" mapa/ultimo-log.txt
+        run: python mapa/processar.py --amigos amigos.json | tee -a "$GITHUB_STEP_SUMMARY" mapa/ultimo-log.txt
       - name: Salvar
         if: always() && steps.fila.outputs.fila != '0'
         run: |
@@ -74,4 +104,14 @@ jobs:
           git add mapas mapa
           git diff --cached --quiet && exit 0
           git commit -m "Mapa: posições dos heróis"
-          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
+          # conflito modify/delete (o Worker reescreveu um pedido que esta rodada já atendeu): o -X theirs não resolve;
+          # o pedido atendido sai mesmo assim (se o mapa saiu, o próximo pedido vira "pronto")
+          for i in 1 2 3; do
+            if ! git pull --rebase -X theirs origin main; then
+              git diff --name-only --diff-filter=U -- mapa/pedidos | xargs -r git rm -q --
+              GIT_EDITOR=true git rebase --continue || { git rebase --abort; sleep 5; continue; }
+            fi
+            git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

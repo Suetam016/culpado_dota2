@@ -17,6 +17,10 @@
 //   POR_HORA         perguntas por hora por conexão (IP; IPv6 conta o /64 inteiro); padrão 40
 //   GLOBAL_POR_HORA  teto de perguntas por hora somando todo mundo (por instância do Worker); padrão 60
 //   ORIGENS          origens extras permitidas, separadas por vírgula (ex.: http://localhost:8765 para testes)
+//   GITHUB_TOKEN     segredo: token fine-grained do GitHub (Contents: read/write só no repositório do site)
+//                    -> liga o botão "Gerar o mapa agora" (POST /mapa); sem ele, /mapa responde 503
+//   GITHUB_REPO      padrão Suetam016/culpado_dota2;  MAPA_POR_HORA (6 partidas), MAPA_ARQUIVOS_POR_IP (12),
+//                    MAPA_GLOBAL_POR_HORA (15), MAPA_GITHUB_POR_HORA (1500 chamadas à API do GitHub)
 //   LIMITE           binding opcional de Rate Limiting (só pelo wrangler). Ele só aceita períodos de 10 ou 60 s,
 //                    então serve de freio por minuto (ex.: limit 5, period 60), não substitui o POR_HORA.
 //
@@ -25,7 +29,8 @@
 // O pior caso de abuso é a cota grátis do dia acabar; sem plano pago, nunca gera conta.
 //
 // Protocolo com o site:
-//   GET  /saude  -> {ok, provedor, modelo, ...}  (o dono abre no navegador para conferir)
+//   GET  /saude  -> {ok, provedor, modelo, ..., mapa}  (o dono abre no navegador para conferir)
+//   POST /mapa e GET /mapa/<id>: pedido do mapa animado (seção "mapa animado" mais abaixo)
 //   POST /chat   {partida:"123", contexto:{...}, mensagens:[{papel:"eu"|"coach", texto}]}
 //     erro antes do stream: JSON {erro, msg, minutos?} com status 400/403/413/429/503
 //     sucesso: text/event-stream com linhas  data: {"t":"pedaço"}  ...  data: {"fim":true,"modelo":"...","cortada"?:true}
@@ -198,11 +203,12 @@ async function contarPedido(req, env) {
   const agora = Date.now();
   const hora = Math.floor(agora / 3_600_000);
   const minutos = Math.max(1, Math.ceil(((hora + 1) * 3_600_000 - agora) / 60_000));
-  if (contagem.size > 5000) contagem.clear();
   const tetoIp = Number(env.POR_HORA) > 0 ? Number(env.POR_HORA) : POR_HORA;
   const tetoGlobal = Number(env.GLOBAL_POR_HORA) > 0 ? Number(env.GLOBAL_POR_HORA) : GLOBAL_POR_HORA;
   const chaveIp = `${ip}:${hora}`;
   const chaveGlobal = `*:${hora}`;
+  // Map cheio: apaga só as horas passadas; se a hora atual sozinha encheu, recusa conexão nova (nunca zera os limites)
+  if (!abrirEspaco(contagem, hora, 2) && !contagem.has(chaveIp)) return { minutos, chaves: [] };
   const nIp = (contagem.get(chaveIp) || 0) + 1;
   const nGlobal = (contagem.get(chaveGlobal) || 0) + 1;
   if (nIp > tetoIp || nGlobal > tetoGlobal) return { minutos, chaves: [] };
@@ -662,6 +668,337 @@ function responder(env, corpo, origem, aoFalharAntes = () => {}) {
   });
 }
 
+// ------------------------------------------------------------------ mapa animado (pedido pelo site)
+//
+// O "lance animado" do site sai do robô do repositório (workflow mapa.yml), que roda num push em mapa/pedidos/.
+// Com o segredo GITHUB_TOKEN (fine-grained, Contents: read/write SÓ no repositório do site), o Worker cria esse
+// arquivo quando alguém aperta "Gerar o mapa agora". O token nunca sai daqui: o Worker só ESCREVE em
+// mapa/pedidos/<id> e só LÊ mapas/<id>.json, mapa/pedidos/<id>, a lista de mapa/pedidos e mapa/falhas.json.
+//   POST /mapa {id}         -> {estado:'pronto'|'na-fila'|'pedido', pedidoEm?}
+//                              erros {erro, msg}: 400 invalido, 403 origem, 404 partida, 429 limite (+minutos),
+//                              502 github|token, 503 desligado
+//   GET /mapa/<id>          -> {pronto, naFila, pedidoEm, falhas:{n, motivo, quando}|null, agora}
+//   GET /mapa/<id>/arquivo  -> o próprio mapas/<id>.json (para o site não esperar o GitHub Pages publicar)
+// Variáveis: GITHUB_TOKEN (segredo), GITHUB_REPO (padrão Suetam016/culpado_dota2), MAPA_POR_HORA (partidas
+// diferentes por conexão, padrão 6), MAPA_ARQUIVOS_POR_IP (pedidos criados por conexão, padrão 12),
+// MAPA_GLOBAL_POR_HORA (pedidos criados por instância, padrão 15), MAPA_GITHUB_POR_HORA (chamadas à API do GitHub
+// por instância, padrão 1500), MAPA_CONFERIR_OPENDOTA ("0" desliga a conferência).
+// Por instância = aproximado (a Cloudflare roda várias). O teto que vale para todas é a fila no próprio GitHub:
+// com MAPA_FILA_MAX pedidos pendentes em mapa/pedidos, ninguém cria pedido novo até o robô andar.
+
+const REPO_PADRAO = 'Suetam016/culpado_dota2';
+const MAPA_POR_HORA = 6; // partidas diferentes por conexão
+const MAPA_ARQUIVOS_POR_IP = 12; // pedidos criados por conexão (pedir de novo a mesma partida também gasta)
+const MAPA_GLOBAL_POR_HORA = 15; // pedidos criados por hora, somando todo mundo (cada um = 1 rodada do robô)
+const MAPA_POR_PARTIDA = 10; // pedidos da mesma partida por hora (o site tenta de novo enquanto o OpenDota analisa)
+const MAPA_FILA_MAX = 8; // pedidos pendentes no repositório (vale para todas as instâncias do Worker)
+const MAPA_CONSULTAS_POR_HORA = 900; // GET /mapa/<id> por conexão (o site consulta a cada ~8 s)
+const MAPA_IDS_CONSULTA_POR_HORA = 20; // partidas diferentes consultadas por conexão (repetir a mesma usa o cache)
+const GITHUB_POR_HORA = 1500; // chamadas à API do GitHub por instância (a cota do token é 5000/h da conta inteira)
+const MAX_CHAVES = 5000; // tamanho máximo de cada Map de contadores
+const PEDIDO_PARADO_MS = 8 * 60_000; // pedido mais velho que isto e ainda na fila: o robô travou; o Worker refaz o pedido
+const CACHE_ESTADO_MS = 5_000; // várias pessoas olhando a mesma partida dividem a mesma consulta ao GitHub
+const CACHE_NADA_MS = 30_000; // partida que ninguém pediu (sem mapa, sem pedido, sem falha)
+const CACHE_FALHAS_MS = 10_000;
+const CACHE_SAUDE_MS = 60_000;
+const ID_MAPA = /^\d{9,12}$/;
+const cacheMapa = new Map(); // id -> {ate, dados}
+const consultas = new Map(); // contadores do GET /mapa/<id>, separados dos do chat e do POST
+let cacheFalhas = { ate: 0, dados: null };
+let cacheSaude = { ate: 0, dados: null };
+let orcamentoGithub = { hora: -1, n: 0 };
+
+const MSG_MAPA = {
+  desligado: 'O pedido de mapa ainda não foi ligado pelo dono do site.',
+  invalido: 'ID de partida inválido.',
+  partida: 'O OpenDota não conhece essa partida.',
+  github: 'O robô do mapa não respondeu agora. Tente de novo em um minuto.',
+  token: 'A chave do robô do mapa venceu ou foi recusada. Avise o dono do site.',
+  fila: 'O robô está com fila cheia, tente em alguns minutos.',
+  ocupado: 'O robô do mapa está muito requisitado nesta hora. Tente de novo mais tarde.',
+  naoPronto: 'O mapa desta partida ainda não saiu.',
+};
+const msgLimiteMapa = (minutos) => `Muitos pedidos de mapa nesta hora. Tente de novo em ${minutos} min.`;
+
+const tokenGithub = (env) => String(env.GITHUB_TOKEN || '').trim();
+const repoGithub = (env) => (/^[\w.-]+\/[\w.-]+$/.test(String(env.GITHUB_REPO || '').trim()) ? String(env.GITHUB_REPO).trim() : REPO_PADRAO);
+const teto = (v, padrao) => (Number(v) > 0 ? Number(v) : padrao);
+const horaAtual = () => Math.floor(Date.now() / 3_600_000);
+const minutosAteVirar = () => Math.max(1, Math.ceil(((horaAtual() + 1) * 3_600_000 - Date.now()) / 60_000));
+
+// Abre espaço num Map de contadores sem zerar limite nenhum: apaga só as chaves de horas passadas (toda chave
+// termina em :<hora>). Se ainda assim estiver cheio, devolve false e quem chamou recusa o pedido NOVO.
+function abrirEspaco(mapa, hora, novas = 1, max = MAX_CHAVES) {
+  if (mapa.size + novas <= max) return true;
+  const fim = `:${hora}`;
+  for (const k of mapa.keys()) if (!k.endsWith(fim)) mapa.delete(k);
+  return mapa.size + novas <= max;
+}
+
+// Só estes caminhos: a lista fechada é a garantia de que o Worker não lê nem escreve outra coisa no repositório.
+const caminhoMapa = {
+  mapa: (id) => `mapas/${id}.json`,
+  pedido: (id) => `mapa/pedidos/${id}`,
+  fila: () => 'mapa/pedidos',
+  falhas: () => 'mapa/falhas.json',
+};
+
+async function github(env, metodo, caminho, corpo, accept = 'application/vnd.github+json') {
+  // orçamento por instância: a cota de 5000/h é da conta do dono (dividida com o gh e os outros tokens dele)
+  const hora = horaAtual();
+  if (orcamentoGithub.hora !== hora) orcamentoGithub = { hora, n: 0 };
+  if (orcamentoGithub.n >= teto(env.MAPA_GITHUB_POR_HORA, GITHUB_POR_HORA)) throw erroDe('orcamento');
+  orcamentoGithub.n++;
+  const res = await comTempo(fetch(`https://api.github.com/repos/${repoGithub(env)}/contents/${caminho}`, {
+    method: metodo,
+    headers: {
+      Authorization: `Bearer ${tokenGithub(env)}`,
+      Accept: accept,
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'culpado-dota2-coach', // a API do GitHub recusa pedido sem User-Agent
+      ...(corpo ? { 'content-type': 'application/json' } : {}),
+    },
+    body: corpo ? JSON.stringify(corpo) : undefined,
+  }), 8000, 'github');
+  if (res.status === 401 || res.status === 403) {
+    const txt = metodo === 'HEAD' ? '' : await res.text().catch(() => '');
+    // 403 por limite da API (primário ou secundário) não é problema do token: o HEAD não tem corpo, então
+    // vale olhar os cabeçalhos antes de mandar o dono atrás de uma chave vencida que não venceu
+    const limiteApi = res.headers.get('x-ratelimit-remaining') === '0' || res.headers.has('retry-after') || /rate limit/i.test(txt);
+    console.log('github recusou', metodo, caminho, res.status, limiteApi ? '(limite da API)' : '(token)', txt.slice(0, 200));
+    throw erroDe(res.status === 403 && limiteApi ? 'github' : 'token', `${res.status} ${txt.slice(0, 120)}`);
+  }
+  return res;
+}
+
+const base64 = (txt) => btoa(String.fromCharCode(...new TextEncoder().encode(txt)));
+const deBase64 = (b) => new TextDecoder().decode(Uint8Array.from(atob(String(b || '').replace(/\s/g, '')), (c) => c.charCodeAt(0)));
+const descartar = (r) => { try { r.body?.cancel?.().catch?.(() => {}); } catch { /* nada */ } };
+
+async function existeMapa(env, id) {
+  const r = await github(env, 'HEAD', caminhoMapa.mapa(id));
+  if (r.status === 200) return true;
+  if (r.status === 404) return false;
+  throw erroDe('github', `HEAD mapa ${r.status}`);
+}
+
+// {sha, quando} do pedido, ou null se não existe
+async function lerPedido(env, id) {
+  const r = await github(env, 'GET', caminhoMapa.pedido(id));
+  if (r.status === 404) { descartar(r); return null; }
+  if (r.status !== 200) throw erroDe('github', `GET pedido ${r.status}`);
+  const j = await r.json().catch(() => ({}));
+  let quando = null;
+  try { quando = (deBase64(j.content).match(/\d{4}-\d\d-\d\dT[\d:.]+Z/) || [])[0] || null; } catch { /* conteúdo estranho */ }
+  return { sha: j.sha || null, quando };
+}
+
+// quantos pedidos esperam o robô (lista a pasta mapa/pedidos; a pasta some quando fica vazia)
+async function tamanhoDaFila(env) {
+  const r = await github(env, 'GET', caminhoMapa.fila());
+  if (r.status === 404) { descartar(r); return 0; }
+  if (r.status !== 200) throw erroDe('github', `GET fila ${r.status}`);
+  const j = await r.json().catch(() => []);
+  return Array.isArray(j) ? j.filter((f) => f && f.type !== 'dir' && ID_MAPA.test(String(f.name))).length : 0;
+}
+
+// falhas.json do robô: {"<id>": {"n", "motivo", "quando"}} ou, no formato antigo, {"<id>": n}
+async function lerFalhas(env) {
+  if (cacheFalhas.ate > Date.now()) return cacheFalhas.dados;
+  const r = await github(env, 'GET', caminhoMapa.falhas());
+  let dados = {};
+  if (r.status === 200) {
+    const j = await r.json().catch(() => ({}));
+    // acima de 1 MB a API de contents devolve o arquivo sem conteúdo (o robô limpa as entradas velhas)
+    if (j.encoding === 'none' || !j.content) console.log('mapa: falhas.json grande demais ou vazio', j.size);
+    else { try { dados = JSON.parse(deBase64(j.content)) || {}; } catch { dados = {}; } }
+  } else if (r.status !== 404) throw erroDe('github', `GET falhas ${r.status}`);
+  else descartar(r);
+  cacheFalhas = { ate: Date.now() + CACHE_FALHAS_MS, dados };
+  return dados;
+}
+
+function falhaDe(falhas, id) {
+  const v = falhas && falhas[id];
+  if (v == null) return null;
+  if (typeof v === 'number') return v > 0 ? { n: v, motivo: null, quando: null } : null;
+  if (typeof v !== 'object') return null;
+  const n = Number(v.n) || 0;
+  return n > 0 ? { n, motivo: typeof v.motivo === 'string' ? v.motivo.slice(0, 200) : null, quando: typeof v.quando === 'string' ? v.quando.slice(0, 40) : null } : null;
+}
+
+async function estadoMapa(env, id) {
+  const c = cacheMapa.get(id);
+  if (c && c.ate > Date.now()) return c.dados;
+  const [pronto, pedido, falhas] = await Promise.all([existeMapa(env, id), lerPedido(env, id), lerFalhas(env)]);
+  const dados = { pronto, naFila: !pronto && Boolean(pedido), pedidoEm: pedido ? pedido.quando : null, falhas: pronto ? null : falhaDe(falhas, id) };
+  if (cacheMapa.size > 500) for (const [k, v] of cacheMapa) if (v.ate <= Date.now()) cacheMapa.delete(k);
+  if (cacheMapa.size > 500) cacheMapa.clear(); // só cache: limpar não abre brecha em limite nenhum
+  // mapa pronto não deixa de existir; partida que ninguém pediu também segura mais (o POST limpa o cache dela)
+  const nada = !pronto && !pedido && !dados.falhas;
+  cacheMapa.set(id, { ate: Date.now() + (pronto ? 10 * 60_000 : nada ? CACHE_NADA_MS : CACHE_ESTADO_MS), dados });
+  return dados;
+}
+
+// Limites do pedido: por conexão, partidas diferentes E arquivos criados; no total e por partida, cada arquivo.
+function contarMapa(req, env, id) {
+  const ip = chaveDoIp(req.headers.get('CF-Connecting-IP'));
+  const hora = horaAtual();
+  const minutos = minutosAteVirar();
+  const kIpId = `mapa:${ip}:${id}:${hora}`;
+  const kIp = `mapa:${ip}:${hora}`;
+  const kArq = `mapa:arq:${ip}:${hora}`;
+  const kGlobal = `mapa:*:${hora}`;
+  const kId = `mapa:id:${id}:${hora}`;
+  const recusa = { minutos, devolver: () => {} };
+  if (!abrirEspaco(contagem, hora, 5) && !contagem.has(kIpId)) return recusa;
+  const novoNoIp = !contagem.has(kIpId);
+  const nIp = (contagem.get(kIp) || 0) + (novoNoIp ? 1 : 0);
+  const nArq = (contagem.get(kArq) || 0) + 1;
+  const nGlobal = (contagem.get(kGlobal) || 0) + 1;
+  const nId = (contagem.get(kId) || 0) + 1;
+  if (nIp > teto(env.MAPA_POR_HORA, MAPA_POR_HORA) || nArq > teto(env.MAPA_ARQUIVOS_POR_IP, MAPA_ARQUIVOS_POR_IP)
+    || nGlobal > teto(env.MAPA_GLOBAL_POR_HORA, MAPA_GLOBAL_POR_HORA) || nId > MAPA_POR_PARTIDA) return recusa;
+  const antes = contagem.get(kIp);
+  contagem.set(kIpId, 1); contagem.set(kIp, nIp); contagem.set(kArq, nArq); contagem.set(kGlobal, nGlobal); contagem.set(kId, nId);
+  return {
+    minutos: 0,
+    // o pedido não virou arquivo novo (já estava na fila, erro do GitHub): não gasta o limite
+    devolver: () => {
+      if (novoNoIp) { contagem.delete(kIpId); if (antes) contagem.set(kIp, antes); else contagem.delete(kIp); }
+      for (const k of [kArq, kGlobal, kId]) { const n = contagem.get(k) || 0; if (n > 1) contagem.set(k, n - 1); else contagem.delete(k); }
+    },
+  };
+}
+
+// Consultas: por conexão, o total e as partidas diferentes (cada partida nova custa 2-3 chamadas ao GitHub;
+// repetir a mesma usa o cache de 5 s). Map próprio: encher este não mexe nos limites do chat nem do POST.
+function contarConsulta(req, env, id) {
+  const ip = chaveDoIp(req.headers.get('CF-Connecting-IP'));
+  const hora = horaAtual();
+  const k = `${ip}:${hora}`;
+  const kIds = `${ip}:ids:${hora}`;
+  const kId = `${ip}:${id}:${hora}`;
+  const novoId = !consultas.has(kId);
+  if (!abrirEspaco(consultas, hora, 3) && (novoId || !consultas.has(k))) return false;
+  const n = (consultas.get(k) || 0) + 1;
+  const nIds = (consultas.get(kIds) || 0) + (novoId ? 1 : 0);
+  if (n > MAPA_CONSULTAS_POR_HORA || nIds > MAPA_IDS_CONSULTA_POR_HORA) return false;
+  consultas.set(k, n); consultas.set(kIds, nIds); consultas.set(kId, 1);
+  return true;
+}
+
+// Conferência opcional no OpenDota: só um 404 claro recusa o pedido (fora do ar, lento ou 429 = segue).
+// O corpo não é lido (partida analisada passa de 1 MB; o plano grátis tem 10 ms de CPU por pedido).
+async function partidaExiste(env, id) {
+  if (String(env.MAPA_CONFERIR_OPENDOTA ?? '1') === '0') return true;
+  try {
+    const r = await comTempo(fetch(`https://api.opendota.com/api/matches/${id}`, { headers: { 'User-Agent': 'culpado-dota2-coach' } }), 5000);
+    descartar(r);
+    return r.status !== 404;
+  } catch { return true; }
+}
+
+const conteudoPedido = (quando) => base64(`pedido pelo site em ${quando}\n`);
+const respostaOrcamento = (resp) => resp(429, { erro: 'limite', msg: MSG_MAPA.ocupado, minutos: minutosAteVirar() }, { 'Retry-After': String(minutosAteVirar() * 60) });
+
+async function pedirMapa(req, env, origem) {
+  const resp = (status, dados, extra) => json(status, dados, origem, env, extra);
+  const erro = (status, erroCod, extra = {}, headers = {}) => resp(status, { erro: erroCod, msg: MSG_MAPA[erroCod] || MSG.invalido, ...extra }, headers);
+  const texto = await lerCorpo(req, 2_000);
+  if (texto == null) return erro(413, 'invalido');
+  let corpo;
+  try { corpo = JSON.parse(texto); } catch { return erro(400, 'invalido'); }
+  const id = String((corpo && corpo.id) ?? '');
+  if (!ID_MAPA.test(id)) return erro(400, 'invalido');
+  let devolver = () => {};
+  try {
+    if (await existeMapa(env, id)) return resp(200, { estado: 'pronto' });
+    const pedido = await lerPedido(env, id);
+    // parado = tem data e passou do prazo; sem data (criado à mão pelo dono) conta como recente
+    const desde = pedido && pedido.quando ? Date.parse(pedido.quando) : NaN;
+    const parado = Boolean(pedido) && Number.isFinite(desde) && Date.now() - desde > PEDIDO_PARADO_MS;
+    if (pedido && !parado) return resp(200, { estado: 'na-fila', pedidoEm: pedido.quando });
+    const conta = contarMapa(req, env, id);
+    devolver = conta.devolver;
+    if (conta.minutos) return resp(429, { erro: 'limite', msg: msgLimiteMapa(conta.minutos), minutos: conta.minutos }, { 'Retry-After': String(conta.minutos * 60) });
+    if (!pedido) {
+      // teto de verdade, para todas as instâncias: a fila durável no próprio repositório
+      if (await tamanhoDaFila(env) >= MAPA_FILA_MAX) { devolver(); return resp(429, { erro: 'limite', msg: MSG_MAPA.fila, minutos: 5 }, { 'Retry-After': '300' }); }
+      if (!(await partidaExiste(env, id))) return erro(404, 'partida'); // conta no limite: ID inventado também gasta
+    }
+    const quando = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    const novo = { message: `Pedido de mapa: ${id}`, content: conteudoPedido(quando) };
+    // pedido parado: reescreve o arquivo (com o sha), o que gera um push novo e acorda o robô
+    let r = await github(env, 'PUT', caminhoMapa.pedido(id), pedido && pedido.sha ? { ...novo, sha: pedido.sha } : novo);
+    cacheMapa.delete(id);
+    if (r.status === 200 || r.status === 201) return resp(200, { estado: 'pedido', pedidoEm: quando });
+    if (r.status === 422 || r.status === 409) {
+      // 422: arquivo criado por outra pessoa no mesmo instante, ou o sha era de um pedido que o robô já apagou;
+      // 409: sha velho. Olha de novo: se o pedido existe, é dele; se não, cria sem sha (uma vez).
+      descartar(r);
+      const atual = await lerPedido(env, id);
+      if (atual) { devolver(); return resp(200, { estado: 'na-fila', pedidoEm: atual.quando || quando }); }
+      r = await github(env, 'PUT', caminhoMapa.pedido(id), novo);
+      if (r.status === 200 || r.status === 201) return resp(200, { estado: 'pedido', pedidoEm: quando });
+    }
+    const txt = await r.text().catch(() => '');
+    console.log('github PUT pedido', id, r.status, txt.slice(0, 200));
+    devolver();
+    return erro(502, 'github');
+  } catch (e) {
+    devolver();
+    console.log('mapa: falhou', id, e && e.codigo, String(e && e.message).slice(0, 200));
+    if (e && e.codigo === 'orcamento') return respostaOrcamento(resp);
+    return erro(502, e && e.codigo === 'token' ? 'token' : 'github');
+  }
+}
+
+async function consultarMapa(req, env, origem, id, arquivo = false) {
+  const resp = (status, dados, extra) => json(status, dados, origem, env, extra);
+  if (!ID_MAPA.test(id)) return resp(400, { erro: 'invalido', msg: MSG_MAPA.invalido });
+  if (!contarConsulta(req, env, id)) return resp(429, { erro: 'limite', msg: msgLimiteMapa(minutosAteVirar()), minutos: minutosAteVirar() });
+  try {
+    if (arquivo) {
+      // o mapa direto do repositório (o GitHub Pages pode levar minutos para publicar); o corpo passa sem ser lido
+      const r = await github(env, 'GET', caminhoMapa.mapa(id), null, 'application/vnd.github.raw+json');
+      if (r.status === 404) { descartar(r); return resp(404, { erro: 'nao-pronto', msg: MSG_MAPA.naoPronto }); }
+      if (r.status !== 200) { descartar(r); throw erroDe('github', `GET arquivo ${r.status}`); }
+      return new Response(r.body, { status: 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300', ...cors(origem, env) } });
+    }
+    const dados = await estadoMapa(env, id);
+    return resp(200, { ...dados, agora: new Date().toISOString() });
+  } catch (e) {
+    console.log('mapa: consulta falhou', id, e && e.codigo, String(e && e.message).slice(0, 200));
+    if (e && e.codigo === 'orcamento') return respostaOrcamento(resp);
+    const cod = e && e.codigo === 'token' ? 'token' : 'github';
+    return resp(502, { erro: cod, msg: MSG_MAPA[cod] });
+  }
+}
+
+// /saude: o token enxerga o repositório? mapa/falhas.json sempre existe (o robô grava em toda rodada), então
+// 404 aqui = GITHUB_REPO errado ou token sem acesso (o GitHub responde 404 em vez de 403 para esconder o repo).
+// A escrita só se confirma no primeiro pedido (o GitHub não diz as permissões do token sem tentar).
+async function saudeMapa(env) {
+  if (!tokenGithub(env)) return { mapa: false, mapaMsg: 'Pedido de mapa desligado: falta o segredo GITHUB_TOKEN (veja o LEIA-ME).' };
+  if (cacheSaude.ate > Date.now()) return cacheSaude.dados;
+  let dados;
+  try {
+    const r = await github(env, 'HEAD', caminhoMapa.falhas());
+    const vence = r.headers.get('github-authentication-token-expiration');
+    if (r.status === 200) dados = { mapa: true, mapaRepo: repoGithub(env), ...(vence ? { mapaTokenVence: vence } : {}), mapaMsg: 'Pedido de mapa ligado (a permissão de escrita se confirma no primeiro pedido).' };
+    else if (r.status === 404) dados = { mapa: false, mapaRepo: repoGithub(env), mapaMsg: 'O token não enxerga mapa/falhas.json: confira GITHUB_REPO e se o token tem acesso ao culpado_dota2.' };
+    else dados = { mapa: false, mapaRepo: repoGithub(env), mapaMsg: `O GitHub respondeu ${r.status}: confira GITHUB_REPO e o acesso do token ao repositório.` };
+  } catch (e) {
+    const msg = e && e.codigo === 'token' ? 'O GitHub recusou o GITHUB_TOKEN (vencido, apagado ou sem acesso a este repositório).'
+      : e && e.codigo === 'orcamento' ? 'O Worker gastou o orçamento de chamadas ao GitHub desta hora; volta sozinho na hora seguinte.'
+        : 'Não deu para falar com o GitHub agora.';
+    dados = { mapa: false, mapaRepo: repoGithub(env), mapaMsg: msg };
+  }
+  cacheSaude = { ate: Date.now() + CACHE_SAUDE_MS, dados };
+  return dados;
+}
+
 // ------------------------------------------------------------------ entrada
 
 export default {
@@ -678,7 +1015,17 @@ export default {
         ok: Boolean(p.provedor), provedor: p.provedor, modelo: p.modelo, reserva: p.reserva,
         msg: p.provedor ? 'Coach ligado. Agora cole este endereço no config.json do site.' : MSG.desligadoDono,
         ...(pausado ? { aviso: 'O Gemini está pausado por uns minutos (cota do dia ou chave recusada; veja os Logs). Enquanto isso responde a Cloudflare.' } : {}),
+        ...(await saudeMapa(env)),
       }, origem, env);
+    }
+
+    // mapa animado: POST /mapa {id}, GET /mapa/<id> e GET /mapa/<id>/arquivo
+    const rotaMapa = caminho.match(/^\/mapa(?:\/([^/]*)(\/arquivo)?)?$/);
+    if (rotaMapa) {
+      if (!(req.method === 'POST' && rotaMapa[1] === undefined) && !(req.method === 'GET' && rotaMapa[1] !== undefined)) return recusar(404, 'rota', origem, env);
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: MSG_MAPA.desligado }, origem, env);
+      return req.method === 'POST' ? pedirMapa(req, env, origem) : consultarMapa(req, env, origem, rotaMapa[1], Boolean(rotaMapa[2]));
     }
     if (req.method !== 'POST' || caminho !== '/chat') return recusar(404, 'rota', origem, env);
     if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
@@ -705,4 +1052,9 @@ export default {
 export const _interno = {
   enxugarContexto, cortarHistorico, montarConversa, eventosSse, classificarErroCF, limparContexto, chaveDoIp, msgCotaCF,
   SISTEMA, LIMITES, MODELO_PADRAO, contagem, geminiPausa, entradaMinima,
+  cacheMapa, consultas, PEDIDO_PARADO_MS, MAX_CHAVES,
+  limparCacheMapa: () => {
+    cacheMapa.clear(); consultas.clear();
+    cacheFalhas = { ate: 0, dados: null }; cacheSaude = { ate: 0, dados: null }; orcamentoGithub = { hora: -1, n: 0 };
+  },
 };
