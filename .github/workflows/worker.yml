@@ -2,7 +2,8 @@ name: Worker do coach (deploy)
 
 # Publica worker/coach.js na Cloudflare e preenche o config.json com o endereço.
 # Precisa dos segredos do repositório CLOUDFLARE_API_TOKEN (modelo "Edit Cloudflare Workers")
-# e CLOUDFLARE_ACCOUNT_ID. Roda quando o worker muda, ou na hora com um push em worker/deploy-agora.
+# e CLOUDFLARE_ACCOUNT_ID. Opcional: MAPA_GITHUB_TOKEN (token do GitHub do botão "Gerar o mapa agora"),
+# que este robô grava no Worker como o segredo GITHUB_TOKEN. Roda quando o worker muda, ou na hora com um push em worker/deploy-agora.
 on:
   workflow_dispatch:
   push:
@@ -23,6 +24,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      MAPA_GITHUB_TOKEN: ${{ secrets.MAPA_GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Tem os segredos?
@@ -47,6 +49,10 @@ jobs:
           [ -n "$URL" ] || { echo "não achei a URL do Worker no log"; exit 1; }
           echo "URL=$URL" >> "$GITHUB_ENV"
           echo "Worker no ar: $URL" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Token do botão do mapa
+        if: steps.seg.outputs.ok == '1' && env.MAPA_GITHUB_TOKEN != ''
+        working-directory: worker
+        run: printf '%s' "$MAPA_GITHUB_TOKEN" | npx --yes wrangler@4.150.0 secret put GITHUB_TOKEN
       - name: Testar e ligar no site
         if: steps.seg.outputs.ok == '1'
         run: |
