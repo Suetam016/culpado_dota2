@@ -1,0 +1,81 @@
+name: Base de rotas (fase de rota por posição)
+
+# Gera rotas/base.json: para cada duelo de rota (mesma rota, papel contra papel: core x core, suporte x suporte), a
+# diferença média de ouro e XP aos 10 min por herói e posição, em partidas públicas analisadas do OpenDota. O painel
+# usa isso como o "esperado da rota" (no lugar do win rate de partida). Todo dia (se o agendamento do GitHub rodar
+# neste repositório), na mão (Actions > Run workflow) ou com push em rotas/pedido (qualquer conteúdo) ou no robô.
+# Cada rodada só soma partidas novas (rotas/acumulado.json guarda até onde já coletou). Se a coleta falhar ou vier
+# pequena, a base anterior fica como está.
+on:
+  schedule:
+    - cron: "17 6 * * *"   # todo dia, 03:17 em Brasília
+  workflow_dispatch:
+    inputs:
+      fonte:
+        description: "auto (explorer se tiver partida pública, senão amostra), amostra ou explorer"
+        default: auto
+        type: choice
+        options: [auto, amostra, explorer]
+      dias:
+        description: "dias de partidas (só o explorer)"
+        default: "14"
+  push:
+    branches: [main]
+    paths: ["rotas/pedido", "rotas/gerar.py", ".github/workflows/rotas.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rotas
+  cancel-in-progress: false
+
+jobs:
+  rotas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Testes do robô (sem rede)
+        run: python rotas/teste_gerar.py
+      # 2 consultas pequenas: se as colunas (lane_role, is_roaming, gold_t...) existem, se gold_t[11] é o minuto 10
+      # e quantas partidas das últimas 24 h são de liga x públicas. Não para o workflow.
+      - name: Conferir o explorer do OpenDota
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python rotas/gerar.py --verificar 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Gerar a base
+        id: gerar
+        timeout-minutes: 45
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+          FONTE: ${{ inputs.fonte || 'auto' }}
+          DIAS: ${{ inputs.dias || '14' }}
+        run: |
+          set -o pipefail
+          python rotas/gerar.py --fonte "$FONTE" --dias "$DIAS" --prazo-min 40 2>&1 | tee rotas/ultimo-log.txt
+      - name: Resumo
+        if: always()
+        run: |
+          echo '### Base de rotas' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -40 rotas/ultimo-log.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          ls -la rotas >> "$GITHUB_STEP_SUMMARY"
+      # salva a base nova (ou só o log, se a coleta falhou: a base boa anterior continua no repositório)
+      - name: Salvar
+        if: always()
+        run: |
+          rm -f rotas/*.tmp
+          rm -rf rotas/__pycache__
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rotas
+          git diff --cached --quiet && exit 0
+          git commit -m "Rotas: base de fase de rota por posição"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1

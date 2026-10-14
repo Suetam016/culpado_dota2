@@ -104,7 +104,7 @@ const SISTEMA = `Você é o oráculo do "Tribunal do Ancient", o coach do site "
 Como ler os dados:
 - Tempos estão em minuto:segundo de jogo ("12:30").
 - culpa_pct: quanto da culpa da partida foi de cada um (soma 100 no time). merito_pct: o mesmo para o mérito. 1 ponto = 100 de ouro de impacto.
-- patrimonio_10min_media: diferença média de patrimônio por herói aos 10 min na rota; positivo = vocês na frente.
+- patrimonio_10min_media: diferença aos 10 min na rota (ouro ganho + metade da XP), duelo contra duelo: core contra core, suporte contra suporte, cada herói na posição em que jogou (o duelo dos cores pesa o dobro; quem roamou ou ficou sem par fica fora); positivo = vocês na frente. matchup: o que a base de rotas (ou uma rota típica dessas posições) esperava aos 10 min (não é taxa de vitória da partida).
 - quem_pergunta: o herói de quem está perguntando, quando o site sabe (null = não sabe).
 - Nomes de heróis e itens ficam em inglês, como no jogo.
 Regras:
