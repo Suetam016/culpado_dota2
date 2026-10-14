@@ -690,3 +690,12 @@ FALHOU 9044035283: HTTP Error 404: Not Found
 0 mapas novos
 Fila: []
 0 mapas novos
+Fila: [9044035283]
+  replay http://replay201.valve.net/570/9044035283_1012501503.dem.bz2 -> HTTP 200 application/octet-stream 24784945 inicio=b'(\xb5/\xfd\x00`\xac\xfa\x0e\xee\x13^'
+  9044035283: 96918 eventos; tipos [('actions', 39367), ('DOTA_COMBATLOG_DAMAGE', 18515), ('interval', 14500), ('DOTA_COMBATLOG_MODIFIER_ADD', 6371), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 6319), ('DOTA_COMBATLOG_HEAL', 3832), ('DOTA_COMBATLOG_XP', 2255), ('DOTA_COMBATLOG_DEATH', 1892)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Broodmother", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 61, "variant": 0, "facet_hero_id": 61, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0,
+  exemplo de habilidade: {"time": -61, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_axe", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_quelling_blade"}
+  1558 registros de dano herói->herói
+  701 usos de skill/item de 1266 no combat log
+OK 9044035283
+1 mapas novos
