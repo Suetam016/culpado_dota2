@@ -114,7 +114,6 @@ const THROW_LEAD = 2000; // vantagem de ouro para uma morte contar como "jogando
 const LATE = 30 * 60;
 const JANELA = 5; // minutos de cada janela de "momento decisivo"
 const MIN_JOGOS = 30; // amostra mínima para citar taxa de vitória por horário de item
-const DIF_TIMING = 0.07; // diferença de taxa de vitória para chamar um horário de bom ou atrasado
 
 const CONSUMIVEIS = new Set([
 'tpscroll', 'ward_observer', 'ward_sentry', 'ward_dispenser', 'smoke_of_deceit', 'dust', 'clarity',
@@ -342,6 +341,40 @@ return { pares, semPar: [...a, ...b].filter((p) => !comPar.has(p)) };
 
 
 
+
+
+function harassDaRota(ctx, a, b) {
+if (!ctx.mapa) return null;
+const idxDe = ctx.mapa.slots.map((slot) => { const j = ctx.jog.find((p) => p.slot === slot); return j ? j.idx : null; });
+const ia = new Set(a.map((p) => p.idx));
+const ib = new Set(b.map((p) => p.idx));
+const dano = Object.fromEntries([...a, ...b].map((p) => [p.idx, 0]));
+for (const [t, x, y, v] of ctx.mapa.dano) {
+if (!(t <= CULPA.rotaMin * 60)) continue;
+const q = idxDe[x];
+const al = idxDe[y];
+if (q == null || al == null) continue;
+if ((ia.has(q) && ib.has(al)) || (ib.has(q) && ia.has(al))) dano[q] += Number(v) || 0;
+}
+return dano;
+}
+
+function harassTxt(h, p, rivais, perdeu) {
+if (!h || !rivais.length) return null;
+const meu = Math.round(h[p.idx] || 0);
+const top = [...rivais].sort((x, y) => (h[y.idx] || 0) - (h[x.idx] || 0))[0];
+const dele = Math.round(h[top.idx] || 0);
+const quem = top.rota && !top.rota.core ? `o suporte deles (${top.heroi.nome})` : `o ${top.heroi.nome}`;
+const melee = rivais.filter((x) => x.heroi.ataque === 'Melee').length;
+const rangedVsMelee = p.heroi.ataque === 'Ranged' && melee === rivais.length;
+const contra = rivais.length > 1 ? (melee === rivais.length ? 'dois melee' : 'eles') : `${rivais[0].heroi.ataque === 'Melee' ? 'um melee' : 'um ranged'}`;
+if (perdeu && dele >= 400 && dele >= 2 * meu) {
+return `${rangedVsMelee ? `o ${p.heroi.nome} era ranged contra ${contra} e deu só` : `o ${p.heroi.nome} deu só`} ${fmtK(meu)} de dano neles até os 10 min; ${quem} deu ${fmtK(dele)}`;
+}
+if (!perdeu && meu >= 400 && meu >= 2 * dele) return `ganhou a troca: ${fmtK(meu)} de dano neles até os 10 min, contra ${fmtK(dele)} de ${quem}`;
+return null;
+}
+
 function avaliarRotas(ctx) {
 if (ctx.rotasAval) return ctx.rotasAval;
 const { nos, eles } = ctx;
@@ -372,7 +405,7 @@ const fora = (time) => time.filter((p) => p.rota && p.rota.lane == null && p.rot
 out.push({ lane, tipo: tipoDaLane(lane, a[0].radiant), a, b, ouroDiff: media((d) => d.ouroDiff), xpDiff: media((d) => d.xpDiff), diff: media((d) => d.real),
 expectativa: expectativaDaRota(duelos, esperado), esperado, duelos, semPar,
 coreA: a.find((p) => p.rota.principal) || null, coreB: b.find((p) => p.rota.principal) || null,
-roamNos: fora(nos), roamEles: fora(eles) });
+roamNos: fora(nos), roamEles: fora(eles), harass: harassDaRota(ctx, a, b) });
 }
 ctx.rotasAval = out;
 return out;
@@ -382,7 +415,12 @@ function fatiasDaRota(av, perdeu, cedo) {
 const w = {};
 for (const dl of av.duelos) {
 const s = perdeu ? Math.max(0, -dl.saldo) : Math.max(0, dl.saldo);
-w[dl.jogador.idx] = ROTA.papel[dl.papel] * (1 + 0.2 * (cedo ? cedo[dl.jogador.idx] || 0 : 0)) * (0.3 + s / 1000);
+
+const h = av.harass;
+const meu = h ? h[dl.jogador.idx] || 0 : 0;
+const deles = h ? Math.max(0, ...av.b.map((x) => h[x.idx] || 0)) : 0;
+const troca = h && deles >= 400 && deles >= 2 * meu ? (perdeu ? 1.15 : 0.9) : 1;
+w[dl.jogador.idx] = troca * ROTA.papel[dl.papel] * (1 + 0.2 * (cedo ? cedo[dl.jogador.idx] || 0 : 0)) * (0.3 + s / 1000);
 }
 const sw = soma(Object.values(w)) || 1;
 return Object.fromEntries(Object.entries(w).map(([k, v]) => [k, v / sw]));
@@ -686,62 +724,6 @@ posse.push({ key: e.key, de: e.t, ate: fim ? fim.t : Infinity });
 return posse;
 }
 
-function linhasTiming(timings, heroId, key) {
-const rows = ((timings && (timings[heroId] || timings[String(heroId)])) || [])
-.filter((r) => r.item === key)
-.map((r) => ({ ate: Number(r.time), jogos: Number(r.games) || 0, vitorias: Number(r.wins) || 0 }))
-.filter((r) => r.ate > 0)
-.sort((a, b) => a.ate - b.ate);
-return rows.map((r) => ({ ...r, wr: r.jogos ? r.vitorias / r.jogos : null }));
-}
-
-function horarioTipico(timings, heroId, key) {
-const rows = linhasTiming(timings, heroId, key);
-if (!rows.length || agregado(rows).jogos < MIN_JOGOS) return null;
-return [...rows].sort((a, b) => b.jogos - a.jogos)[0].ate;
-}
-
-function agregado(rows) {
-const jogos = soma(rows, (r) => r.jogos);
-const vitorias = soma(rows, (r) => r.vitorias);
-return { jogos, vitorias, wr: jogos ? vitorias / jogos : null };
-}
-
-function analisarTiming(jogador, compra, timings) {
-const rows = linhasTiming(timings, jogador.heroi.id, compra.key);
-if (!rows.length || agregado(rows).jogos < MIN_JOGOS) return null;
-const idx = rows.findIndex((r) => compra.t <= r.ate);
-const ultimo = rows[rows.length - 1];
-const heroi = jogador.heroi.nome;
-let veredito = 'neutro';
-let texto;
-if (idx === -1) {
-const todos = agregado(rows);
-veredito = 'atrasado';
-texto = `${compra.nome} aos ${mmss(compra.t)}. Quem joga de ${heroi} e fecha até ${mmss(ultimo.ate)} vence ${pct(todos.wr)} (${fmtInt(todos.jogos)} partidas); depois disso não há registro.`;
-} else {
-const minha = rows[idx];
-const antes = agregado(rows.slice(0, idx));
-const depois = agregado(rows.slice(idx + 1));
-const faixa = idx === 0 ? `até ${mmss(minha.ate)}` : `entre ${mmss(rows[idx - 1].ate)} e ${mmss(minha.ate)}`;
-const partes = [`${compra.nome} aos ${mmss(compra.t)}.`];
-if (minha.jogos >= MIN_JOGOS) partes.push(`Com ${heroi}, quem fecha ${faixa} vence ${pct(minha.wr)} (${fmtInt(minha.jogos)} partidas).`);
-if (antes.jogos >= MIN_JOGOS && minha.jogos >= MIN_JOGOS && antes.wr - minha.wr >= DIF_TIMING) {
-veredito = 'atrasado';
-partes.push(`Antes disso, ${pct(antes.wr)} (${fmtInt(antes.jogos)}).`);
-} else if (minha.jogos >= MIN_JOGOS && depois.jogos >= MIN_JOGOS && minha.wr - depois.wr >= DIF_TIMING) {
-veredito = 'bom';
-partes.push(`Mais tarde cai para ${pct(depois.wr)} (${fmtInt(depois.jogos)}).`);
-} else if (minha.jogos >= MIN_JOGOS && minha.wr >= agregado(rows).wr) {
-veredito = 'bom';
-}
-if (partes.length === 1) return null;
-texto = partes.join(' ');
-}
-
-if (jogador.posicao > 3) { veredito = 'neutro'; texto += ' (horários de todos que jogam o herói, em qualquer posição: para suporte é só referência)'; }
-return { item: compra.key, nome: compra.nome, t: compra.t, faixas: rows, faixaJogador: idx, veredito, texto };
-}
 
 function popularesDoHeroi(pop, itemIds, items, componentes, heroId) {
 const p = pop && (pop[heroId] || pop[String(heroId)]);
@@ -1015,7 +997,7 @@ const rivais = b.map((x) => x.heroi.nome).join(' e ');
 for (const dl of av.duelos) {
 const p = dl.jogador;
 const duelo = { rival: dl.rival.heroi.nome, ouro: dl.ouroDiff, pos: p.rota.pos, posRival: dl.rival.rota.pos };
-const info = { tipo, ouroDiff, xpDiff, rivais, cedo: cedo[p.idx], esperado, temDado, tipicas, duelo, n };
+const info = { tipo, ouroDiff, xpDiff, rivais, cedo: cedo[p.idx], esperado, temDado, tipicas, duelo, n, troca: harassTxt(av.harass, p, b, d > 0) };
 if (d > 0) add(p.idx, 'rota', C.rotaMult * d * fatia[p.idx], info);
 else if (d < 0) add(p.idx, 'credito_rota', C.rotaCredito * d * fatia[p.idx], info);
 }
@@ -1114,12 +1096,12 @@ const { tipo, ouroDiff, xpDiff, rivais, cedo, esperado, temDado, tipicas, duelo,
 const nome = { mid: 'a mid', safe: 'a safe lane', off: 'a offlane' }[tipo];
 const media = nRota > 1 ? ' (média dos duelos, core pesa mais)' : '';
 const dueloTxt = nRota > 1 && duelo ? `; no seu duelo (pos${duelo.pos} x pos${duelo.posRival}), ${fmtK(Math.abs(duelo.ouro))} de ouro ${duelo.ouro < 0 ? 'atrás' : 'na frente'} de ${duelo.rival}` : '';
-return `perdeu ${nome} contra ${rivais}: aos 10 min, ${difTxt(ouroDiff, xpDiff)}${media}${dueloTxt}${cedo ? `, com ${plural(cedo, 'morte', 'mortes')} antes dos 10 min` : ''}; ${esperadoTxt(esperado, temDado, tipicas)}`;
+return `perdeu ${nome} contra ${rivais}: aos 10 min, ${difTxt(ouroDiff, xpDiff)}${media}${dueloTxt}${cedo ? `, com ${plural(cedo, 'morte', 'mortes')} antes dos 10 min` : ''}; ${esperadoTxt(esperado, temDado, tipicas)}${infos[0].troca ? `; ${infos[0].troca}` : ''}`;
 }
 case 'credito_rota': {
 const { ouroDiff, rivais, esperado, temDado, tipicas, n: nRota } = infos[0];
 const { xpDiff } = infos[0];
-return `saiu da rota contra ${rivais} com ${difTxt(ouroDiff, xpDiff)} aos 10 min${nRota > 1 ? ' (média dos duelos, core pesa mais)' : ''}; ${esperadoTxt(esperado, temDado, tipicas)}`;
+return `saiu da rota contra ${rivais} com ${difTxt(ouroDiff, xpDiff)} aos 10 min${nRota > 1 ? ' (média dos duelos, core pesa mais)' : ''}; ${esperadoTxt(esperado, temDado, tipicas)}${infos[0].troca ? `; ${infos[0].troca}` : ''}`;
 }
 case 'rotacoes': {
 const quem = [...new Set(infos.map((x) => heroiDe(x.assassino)))].sort().join(' e ');
@@ -1612,9 +1594,30 @@ matchup: m && m.games_played >= MIN_JOGOS ? { wr: m.wins / m.games_played, jogos
 .slice(0, 3);
 }
 
+
+const SO_CORE = new Set(['bfury', 'radiance', 'maelstrom', 'mjollnir', 'hand_of_midas', 'butterfly', 'satanic', 'greater_crit', 'skadi', 'manta', 'desolator', 'monkey_king_bar', 'abyssal_blade', 'basher', 'diffusal_blade', 'disperser', 'heart', 'bloodthorn', 'harpoon', 'echo_sabre', 'sange_and_yasha', 'yasha_and_kage', 'kaya_and_sange', 'power_treads', 'phase_boots']);
+const SO_SUPORTE = new Set(['ward_observer', 'ward_sentry', 'dust', 'tranquil_boots', 'mekansm', 'guardian_greaves', 'holy_locket', 'boots_of_bearing', 'pavise', 'solar_crest', 'urn_of_shadows']);
+
+
+function papelDoJogo(p, ctx) {
+const base = p.posicao >= 4 ? 'suporte' : 'core';
+const time = ctx && ((ctx.nos || []).includes(p) ? ctx.nos : ctx.eles);
+const nw = (x) => Number(x.raw.net_worth ?? x.raw.total_gold) || 0;
+if (!time || !nw(p)) return { papel: base, virou: false };
+const cores = time.filter((x) => x !== p && x.posicao <= 3).map(nw).filter(Boolean);
+const sups = time.filter((x) => x !== p && x.posicao >= 4).map(nw).filter(Boolean);
+const abates = Number(p.raw.kills) || 0;
+if (base === 'suporte' && cores.length && (nw(p) >= 0.9 * Math.min(...cores) || (abates >= 10 && nw(p) >= 0.7 * Math.min(...cores)))) return { papel: 'core', virou: true, nw: nw(p), abates };
+if (base === 'core' && sups.length && nw(p) <= 1.1 * Math.max(...sups)) return { papel: 'suporte', virou: true, nw: nw(p), abates };
+return { papel: base, virou: false };
+}
+
 function itemDoPapel(p, keys) {
 const core = p.funcao === 'core';
+const papel = p.papelJogo || (p.posicao >= 4 ? 'suporte' : 'core');
 return (keys || []).filter((k) => {
+if (papel === 'suporte' && SO_CORE.has(k)) return false;
+if (papel === 'core' && p.posicao <= 2 && SO_SUPORTE.has(k)) return false;
 if (k === 'skadi') return p.heroi.atributo === 'agi';
 if (k === 'shivas_guard') return p.heroi.atributo !== 'agi';
 if (k === 'heavens_halberd') return p.heroi.atributo === 'str' || p.posicao === 3;
@@ -1902,9 +1905,14 @@ const tipo = tipoDoDano(p, ctx, e);
 const custo = (k) => Number(ctx.items[k] && ctx.items[k].cost) || 0;
 const jaTinha = new Set(L.compras.filter((c) => c.t <= t).map((c) => c.key));
 const teto = faixa.nivel === 'apertado' ? TETO_APERTADO : Infinity;
+
+const res = ref && ref.ouroDiff != null ? (ref.ouroDiff <= -400 ? 'perdeu' : ref.ouroDiff >= 400 ? 'ganhou' : null) : null;
+const rota = res ? { res, ouroDiff: Math.round(ref.ouroDiff), rival: ref.jogador } : null;
 const cands = [];
-for (const k of [atraso && atraso.key, ...sugeridos]) if (k) cands.push({ key: k, fonte: 'sugerido' });
-for (const k of (BARATO[tipo] || {})[p.funcao] || []) cands.push({ key: k, fonte: 'barato' });
+const sug = [atraso && atraso.key, ...sugeridos].filter(Boolean).map((k) => ({ key: k, fonte: 'sugerido' }));
+const bar = ((BARATO[tipo] || {})[p.papelJogo === 'core' ? 'core' : p.papelJogo === 'suporte' ? 'suporte' : p.funcao] || []).map((k) => ({ key: k, fonte: 'barato' }));
+if (res === 'perdeu') cands.push(...bar.filter((c) => custo(c.key) < custo(sug[0] ? sug[0].key : '') || !sug.length), ...sug, ...bar);
+else cands.push(...sug, ...bar);
 const degrau = atraso && DEGRAUS[atraso.key];
 if (degrau) cands.push({ key: degrau[0], fonte: 'degrau', faz: degrau[1], vira: atraso.key });
 const vistos = new Set();
@@ -1941,8 +1949,69 @@ return {
 momento, motivo: morte ? 'morte' : 'ancora',
 morte: morte ? { t: morte.t, assassino: morte.assassino, perda: morte.perda, dado: morte.dado } : null,
 orcamento: Math.round(orcamento(null)), bolso: Math.round(bolso), tipo, faixa,
-escolha, inverter, semSaida: !escolha,
+escolha, inverter, semSaida: !escolha, rota,
 };
+}
+
+
+
+function textoDoAtraso(p, ctx, key, ameaca) {
+let a = null;
+try { a = atrasoDoItem(p, ctx, key, ameaca); } catch (err) { a = null; }
+if (!a) return null;
+const nome = a.nome;
+const frases = [];
+const tarde = a.custou.mortes.length > 0 && /ordem|renda/.test(a.causa);
+const bom = a.tCompra != null && a.tBolso != null && a.tCompra - a.tBolso < 60 && a.custou.mortes.length === 0;
+const saiu = a.tCompra != null ? `${nome} saiu aos ${minutos(a.tCompra)}` : `${nome} não saiu`;
+if (/ordem/.test(a.causa) && a.tOuro != null) {
+const ds = a.ordem.desvios;
+const onde = ds.length ? `: foi antes para ${juntarNomes(ds.slice(0, 2).map((d) => `${d.nome} (${minutos(d.t)})`))}`
+: a.ordem.parado ? `: ficaram ${fmtK(a.ordem.parado.valor)} parados no bolso dos ${minutos(a.ordem.parado.de)} aos ${minutos(a.ordem.parado.ate)}` : '';
+frases.push(`${saiu}, mas o ouro para ele existia desde os ${minutos(a.tOuro)}${onde}.`);
+}
+if (/renda/.test(a.causa) && a.ref && a.renda.gap > 0) {
+const NOME = { rota: (x) => `${fmtK(x.ouro)} ficaram na rota`, morto: (x) => `~${fmtK(x.ouro)} foram tempo morto (${plural(x.mortes, 'morte', 'mortes')})`, perda: (x) => `${fmtK(x.ouro)} se perderam nas mortes`, farm: (x) => `~${fmtK(x.ouro)} foram farm a menos depois da rota` };
+const partes = a.renda.partes.map((x) => NOME[x.causa](x));
+const ini = /ordem/.test(a.causa) ? 'Além disso, o ouro entrou devagar' : `${saiu}: o ouro entrou devagar`;
+frases.push(`${ini}: você ficou ${fmtK(a.renda.gap)} atrás do ${a.ref.heroi.nome} no ouro ganho${partes.length ? `; disso, ${juntarNomes(partes)}` : ''}.`);
+}
+if (a.causa === 'sem_saida') frases.push(a.tCompra != null ? `${saiu}, assim que o ouro deixou: não tinha como sair antes.` : `${saiu}: o ouro nunca deu para ele.`);
+if (a.causa === 'no_ritmo') frases.push(`${saiu}, no ritmo do ouro que você tinha.`);
+if (tarde) {
+const c = a.custou;
+frases.push(`Nessa espera você morreu ${plural(c.mortes.length, 'vez', 'vezes')} (${fmtK(c.perda)} seus${c.dado != null ? ` + ${fmtK(c.dado)} para eles` : ''}).`);
+}
+if (tarde || a.causa === 'sem_saida') {
+let c = null;
+try { c = oQueCabia(p, ctx, ameaca, a); } catch (err) { c = null; }
+if (c && c.inverter) frases.push(`Na próxima: ${nome} antes de ${c.inverter.nome}; com o mesmo ouro, saía aos ~${minutos(c.inverter.t)}.`);
+else if (c && c.escolha && c.escolha.key !== key) {
+const e = c.escolha;
+const vira = e.vira ? ` e vira ${itemInfo(ctx.items, e.vira).nome} depois` : '';
+const rotaTxt = c.rota && c.rota.res === 'perdeu' && e.fonte === 'barato' ? `Com a rota perdida (${fmtK(-c.rota.ouroDiff)} atrás do ${c.rota.rival.heroi.nome} aos 10 min), o barato vinha antes: ` : '';
+frases.push(`${rotaTxt}${rotaTxt ? 'aos' : 'O que cabia aos'} ${minutos(c.momento)}, ${e.nome} (${fmtK(e.custo)})${e.papel ? `, ${e.papel}` : ''}${vira}${e.falta > 0 ? ` (faltavam ~${fmtK(e.falta)} no bolso)` : ''}.`);
+} else if (c && c.rota && c.rota.res === 'ganhou' && /ordem/.test(a.causa)) {
+frases.push(`Com a rota ganha (${fmtK(c.rota.ouroDiff)} na frente do ${c.rota.rival.heroi.nome} aos 10 min), o ouro sobrava: era acelerar ${nome}.`);
+}
+}
+if (!frases.length) return null;
+return { texto: frases.slice(0, 3).join(' '), tarde, bom, atraso: a };
+}
+
+
+function selosDeCompra(p, ctx, compras) {
+const grandes = compras.filter((c) => (c.custo || 0) >= 2000);
+
+const cobravel = (c) => c === grandes[0] || RESPONDE.fisico.has(c.key) || RESPONDE.magico.has(c.key);
+return grandes.map((c) => {
+const x = textoDoAtraso(p, ctx, c.key, null);
+if (!x || x.atraso.tCompra !== c.t) return null;
+const veredito = x.tarde && cobravel(c) ? 'atrasado' : x.bom ? 'bom' : null;
+if (!veredito) return null;
+const texto = x.bom ? `${c.nome} aos ${minutos(c.t)}, logo depois de o ouro dar: nada parado no bolso.` : x.texto;
+return { item: c.key, nome: c.nome, t: c.t, veredito, texto };
+}).filter(Boolean);
 }
 
 function sugestaoDeSobrevivencia(p, ctx, estado, populares, comprou) {
@@ -1955,30 +2024,27 @@ const ordenada = [...lista].sort((a, b) => (pop.includes(a) ? pop.indexOf(a) : 9
 const primeiraMorte = (ctx.mortes ? ctx.mortes[p.idx] : []).find((d) => d.t >= 600);
 const tem = lista.filter((k) => comprou.has(k)).sort((a, b) => comprou.get(a) - comprou.get(b))[0];
 let key;
+let atrasoTxt = null;
 if (tem) {
-const prazo = Math.max(prazoMinimo(itemInfo(ctx.items, tem).custo), primeiraMorte ? primeiraMorte.t : 0);
-if (comprou.get(tem) <= prazo + 300) return null;
+const x = textoDoAtraso(p, ctx, tem, null);
+if (!x || !x.tarde) return null; // chegou sem custar morte: o problema não era item
+atrasoTxt = x.texto;
 key = tem;
 } else {
 key = ordenada.find((k) => !doTime.has(k));
 }
 if (!key) return null;
 const info = itemInfo(ctx.items, key);
-const quando = Math.max(prazoMinimo(info.custo), 14 * 60);
+const quando = primeiraMorte ? primeiraMorte.t : null;
 const atrasado = comprou.has(key);
 const saiu = atrasado ? comprou.get(key) : null;
-
-const rows = linhasTiming(ctx.timings, p.heroi.id, key).filter((r) => r.ate <= quando + 300);
-const ag = agregado(rows);
-const jogos = ag.jogos >= MIN_JOGOS ? `${p.heroi.nome} que fecha ${info.nome} até ${mmss(rows[rows.length - 1].ate)} vence ${pct(ag.wr)} (${fmtInt(ag.jogos)} partidas)` : null;
 const tipoTxt = { magico: 'quase tudo de magia', fisico: 'quase tudo no ataque físico', misto: 'misturando ataque e magia' }[estado.tipo];
 return {
 ...info, prioridade: 5, quando, porque: 'sobreviver', contra: estado.quem, atrasado, sobrevivencia: true,
 papel: PAPEL_DEFESA[key] || 'te mantém vivo na luta',
 popular: pop.includes(key),
-jogos,
-saiu,
-motivo: `Você estava apanhando (${estado.motivos.join(', ')})${estado.quem ? ` e ${estado.quem} batia ${tipoTxt}` : ''}. Atrás no jogo, o primeiro item grande tem que te manter vivo: ${info.nome} (${PAPEL_DEFESA[key] || 'sobrevivência'})${saiu != null ? `, e o seu só saiu lá pelos ${minutos(saiu)}` : ''}.${jogos ? ` ${jogos}.` : ''}`,
+saiu, atrasoTxt,
+motivo: `Você estava apanhando (${estado.motivos.join(', ')})${estado.quem ? ` e ${estado.quem} batia ${tipoTxt}` : ''}. Atrás no jogo, o primeiro item grande tem que te manter vivo: ${info.nome} (${PAPEL_DEFESA[key] || 'sobrevivência'}).${atrasoTxt ? ` ${atrasoTxt}` : ''}`,
 };
 }
 
@@ -2000,16 +2066,13 @@ if (!ctx.items[key]) continue;
 const info = itemInfo(ctx.items, key);
 if (comprou.has(key)) {
 const t = comprou.get(key);
-const prazoReal = quando != null ? Math.max(quando, prazoMinimo(info.custo)) : null;
 const jaComentado = ((ctx.alocacao && ctx.alocacao.tardes.get(p.idx)) || []).some((x) => x.key === key) || comentados.has(key);
-if (prazoReal != null && t > prazoReal + 300) { if (!jaComentado) { comentados.add(key); observacoes.push(`${info.nome} contra ${contra} foi a escolha certa, mas chegou lá pelos ${minutos(t)}; o ideal era antes dos ${minutos(prazoReal)}.`); } }
+const x = textoDoAtraso(p, ctx, key, null);
+if (x && x.tarde) { if (!jaComentado) { comentados.add(key); observacoes.push(`${info.nome} contra ${contra} foi a escolha certa. ${x.texto}`); } }
 else acertosContra.push(`${info.nome} (${mmss(t)}) responde a ${contra}.`);
 return true; // já tem a resposta: não sugere outra para o mesmo problema
 }
-
-const minimo = prazoMinimo(info.custo);
-const prazo = quando != null ? Math.max(quando, minimo) : quando;
-cand.push({ ...info, motivo, prioridade: peso, quando: prazo, porque: prazo !== quando ? 'tipico_custo' : porque, contra });
+cand.push({ ...info, motivo, prioridade: peso, quando, porque, contra });
 return true;
 }
 return true;
@@ -2076,17 +2139,15 @@ propor(['dust', 'ward_sentry'], `${nomes} ${inimigo.invis.length > 1 ? 'ficam' :
 
 if (populares) {
 const top = populares.meio.slice(0, 3);
-const tipico = (key) => horarioTipico(ctx.timings, p.heroi.id, key);
 const naoComprado = top.find((i) => !comprou.has(i.key));
 if (naoComprado) {
-const t = tipico(naoComprado.key);
-cand.push({ ...naoComprado, motivo: `É o ${top.indexOf(naoComprado) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome} (OpenDota), e você não comprou.`, prioridade: 1, quando: t != null ? t : ctx.ancora, porque: t != null ? 'tipico' : ctx.ancoraMotivo });
+cand.push({ ...naoComprado, motivo: `É o ${top.indexOf(naoComprado) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome} (OpenDota), e você não comprou.`, prioridade: 1, quando: ctx.ancora, porque: ctx.ancoraMotivo });
 }
 for (const i of top) {
 const t0 = comprou.get(i.key);
 if (t0 != null && t0 > LATE) {
-const t = tipico(i.key);
-cand.push({ ...i, motivo: `É o ${top.indexOf(i) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome}, e o seu só saiu aos ${mmss(t0)}.`, prioridade: 2.5, quando: t != null ? t : ctx.ancora, porque: t != null ? 'tipico' : ctx.ancoraMotivo, atrasado: true });
+const x = textoDoAtraso(p, ctx, i.key, null);
+cand.push({ ...i, motivo: `É o ${top.indexOf(i) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome}. ${x ? x.texto : `O seu saiu aos ${mmss(t0)}.`}`, prioridade: 2.5, quando: ctx.ancora, porque: ctx.ancoraMotivo, atrasado: true });
 }
 }
 }
@@ -2215,7 +2276,7 @@ return { jogador: e, dano, fracao: totalTime ? dano / totalTime : 0, fracFisica:
 
 const necessidades = ameacas.map((a, i) => ({
 tipo: a.fracFisica >= 0.55 ? 'fisico' : a.fracFisica <= 0.45 ? 'magico' : (i === 0 ? 'fisico' : 'magico'),
-contra: a.jogador.heroi.nome,
+contra: a.jogador.heroi.nome, ameaca: a,
 porque: `${a.jogador.heroi.nome} fez ${pct(a.fracao)} do dano de heróis em vocês e matou ${a.mortes}`,
 nota: (NOTAS_HEROI[a.jogador.heroi.id] || {}).nota || null,
 quando: [a.primeira, ctx.ancora].filter((x) => x != null).sort((x, y) => x - y)[0] ?? null,
@@ -2247,9 +2308,9 @@ const tem = resp.itens.find((k) => comprou.get(p.idx).has(k));
 if (tem) {
 const tCompra = comprou.get(p.idx).get(tem);
 const alvo = n.tipo === 'cura' ? 'o corte de cura' : n.tipo === 'invis' ? `a invisibilidade de ${n.contra}` : `a ameaça de ${n.contra}`;
-const prazoReal = n.quando != null ? Math.max(n.quando, prazoMinimo(itemInfo(ctx.items, tem).custo)) : null;
-if (prazoReal != null && tCompra > prazoReal + 300) {
-if (!tardes.get(p.idx).some((x) => x.key === tem)) tardes.get(p.idx).push({ key: tem, texto: `${itemInfo(ctx.items, tem).nome} era a resposta certa para ${alvo}, mas só saiu lá pelos ${minutos(tCompra)}; o ideal era ter antes dos ${minutos(prazoReal)}.` });
+const at = textoDoAtraso(p, ctx, tem, n.ameaca || null);
+if (at && at.tarde) {
+if (!tardes.get(p.idx).some((x) => x.key === tem)) tardes.get(p.idx).push({ key: tem, texto: `${itemInfo(ctx.items, tem).nome} era a resposta certa para ${alvo}. ${at.texto}` });
 }
 else acertos.get(p.idx).push(`${itemInfo(ctx.items, tem).nome} (${mmss(tCompra)}) já cobria ${alvo}.`);
 resolvida = true;
@@ -2260,9 +2321,7 @@ const key = itemDoPapel(p, resp.itens).find((k) => ctx.items[k] && !(ITENS_DE_TI
 if (!key) continue;
 if (ITENS_DE_TIME.has(key)) doTime.add(key);
 const info = itemInfo(ctx.items, key);
-const custo = info.custo || 0;
-const minimo = prazoMinimo(custo);
-const quando = n.quando != null ? Math.max(n.quando, minimo) : minimo || null;
+const quando = n.quando != null ? n.quando : null;
 const sug = {
 ...info, contra: n.contra, prioridade: n.peso + 1, quando, porque: 'time', papel: resp.por,
 curto: n.tipo === 'cura' ? resp.por : `${resp.por}, contra ${n.contra}`,
@@ -2314,10 +2373,14 @@ const itemTime = quemComprou ? quemComprou.c : null;
 const pess = ITEM_PESSOAL_POR_TIPO[tipo][vitima.p.funcao];
 const itemPessoal = compra(vitima.p, pess);
 
-const PRAZO = { pipe: 18, crimson_guard: 16, assault: 25, shivas_guard: 25, black_king_bar: 22, butterfly: 28, heavens_halberd: 22, manta: 22, satanic: 30, ghost: 12, force_staff: 14, glimmer_cape: 14, cyclone: 15 };
-const prazoDe = (keys) => 60 * Math.min(...keys.map((k) => PRAZO[k] || 20));
-const prazoTime = prazoDe(it.keys);
-const prazoPessoal = prazoDe(pess);
+const prazoDe = (p, keys) => {
+const L = p ? ouroDe(p, ctx) : null;
+if (!L || !L.confiavel) return Infinity;
+const ts = keys.filter((k) => ctx.items[k]).map((k) => { try { return L.tOuro(k, { ate: L.fim }); } catch (err) { return null; } }).filter((t) => t != null);
+return ts.length ? Math.min(...ts) : Infinity;
+};
+const prazoTime = prazoDe(dono, it.keys);
+const prazoPessoal = prazoDe(vitima.p, pess);
 const nMortes = vitima.mortes.length;
 const cobraveisTime = vitima.mortes.filter((m) => m >= prazoTime && (!itemTime || m < itemTime.t));
 const cobraveisPessoal = vitima.mortes.filter((m) => m >= prazoPessoal && (!itemPessoal || m < itemPessoal.t));
@@ -2330,8 +2393,8 @@ const ultimaCobravel = cobraveisTime[cobraveisTime.length - 1];
 const fatos = [
 `${vitima.p.nome} (${vitima.p.heroi.nome}) foi quem mais sofreu: morreu ${nMortes} ${nMortes === 1 ? 'vez' : 'vezes'} para ${e.heroi.nome}, que batia em vocês ${tipo === 'magico' ? 'quase só com magia' : 'quase só no ataque físico'}.`,
 itemTime
-? `${quemComprou.p.nome} fechou ${itemTime.nome} lá pelos ${minutos(itemTime.t)}. ${cobraveisTime.length ? `Dos ${minutos(prazoTime)} (quando já dava para ter) até a compra, ${vezes(cobraveisTime.length)} ${cobraveisTime.length === 1 ? 'aconteceu' : 'aconteceram'} sem ele.` : 'Chegou a tempo.'}`
-: `Ninguém comprou ${nomeTime}.${dono ? ` O natural era ${dono.nome} (pos ${dono.posicao}, ${dono.heroi.nome}), e a partir dos ${minutos(prazoTime)} já dava para ter: depois disso, ${vezes(cobraveisTime.length)}.` : ''}`,
+? `${quemComprou.p.nome} fechou ${itemTime.nome} lá pelos ${minutos(itemTime.t)}. ${cobraveisTime.length ? `Dos ${minutos(prazoTime)} (quando o ouro já dava) até a compra, ${vezes(cobraveisTime.length)} ${cobraveisTime.length === 1 ? 'aconteceu' : 'aconteceram'} sem ele.` : 'Chegou a tempo.'}`
+: `Ninguém comprou ${nomeTime}.${dono && prazoTime !== Infinity ? ` O natural era ${dono.nome} (pos ${dono.posicao}, ${dono.heroi.nome}), e o ouro dele já dava aos ${minutos(prazoTime)}${cobraveisTime.length ? `: depois disso, ${vezes(cobraveisTime.length)}` : ''}.` : ''}`,
 dono && !itemTime && ultimaCobravel != null ? (() => { const b = buildAte(dono, ultimaCobravel); return b.length ? `No lugar, ${dono.nome} foi de ${b.length > 1 ? `${b.slice(0, -1).join(', ')} e ${b[b.length - 1]}` : b[0]}.` : `Até ali, ${dono.nome} não tinha fechado nenhum item grande.`; })() : null,
 itemPessoal
 ? `${vitima.p.nome} fechou ${itemPessoal.nome} lá pelos ${minutos(itemPessoal.t)}${cobraveisPessoal.length ? `; antes disso, ${vezes(cobraveisPessoal.length)} já ${cobraveisPessoal.length === 1 ? 'dava' : 'davam'} para ter evitado com ele` : ', a tempo'}.`
@@ -2370,8 +2433,6 @@ const RESPONDE = {
 fisico: new Set(['ghost', 'force_staff', 'heavens_halberd', 'butterfly', 'shivas_guard', 'assault', 'crimson_guard', 'solar_crest', 'blade_mail', 'black_king_bar', 'aeon_disk', 'manta', 'satanic', 'hurricane_pike', 'glimmer_cape', 'cyclone', 'wind_waker']),
 magico: new Set(['black_king_bar', 'pipe', 'glimmer_cape', 'hood_of_defiance', 'eternal_shroud', 'force_staff', 'cyclone', 'wind_waker', 'lotus_orb', 'sphere', 'aeon_disk', 'manta']),
 };
-
-const prazoMinimo = (custo) => ((custo || 0) >= 4000 ? 20 * 60 : (custo || 0) >= 2500 ? 15 * 60 : (custo || 0) >= 1500 ? 12 * 60 : 0);
 const minutos = (t) => `${Math.max(1, Math.round(t / 60))} min`;
 const juntarNomes = (xs) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} e ${xs[xs.length - 1]}`);
 
@@ -2429,12 +2490,21 @@ paragrafos.push(core ? `A build parou em ${botas.nome}: nenhum item grande saiu,
 }
 const primeiro = grandes[0];
 const tPrimeiro = primeiro ? timingDe(primeiro) : null;
-const tipico = primeiro ? horarioTipico(ctx.timings, p.heroi.id, primeiro.key) : null;
-if (primeiro && core && (tipico != null ? primeiro.t > tipico + 240 : tPrimeiro && tPrimeiro.veredito === 'atrasado')) {
-paragrafos.push(`O problema é o relógio: ${primeiro.nome} só ficou pronto lá pelos ${minutos(primeiro.t)}${tipico != null ? `, quando quem joga de ${p.heroi.nome} costuma fechar por volta dos ${minutos(tipico)}` : ''}. O meio do jogo passou com você ainda fraco.`);
+const xPrimeiro = primeiro && core ? textoDoAtraso(p, ctx, primeiro.key, null) : null;
+if (xPrimeiro && xPrimeiro.tarde) {
+paragrafos.push(`${xPrimeiro.texto} O meio do jogo passou com você ainda fraco.`);
 } else if (primeiro && tPrimeiro && tPrimeiro.veredito === 'bom') {
-paragrafos.push(`${primeiro.nome} saiu cedo, no horário de quem vence com ${p.heroi.nome}. Essa foi a melhor parte da sua build.`);
+paragrafos.push(`${tPrimeiro.texto} Essa foi a melhor parte da sua build.`);
 }
+}
+
+
+const pj = v.papelJogo;
+if (pj && pj.virou) {
+const nwTxt = `${fmtK(pj.nw)} de patrimônio`;
+paragrafos.push(pj.papel === 'core'
+? `Com ${pj.abates >= 5 ? `${plural(pj.abates, 'abate', 'abates')} e ` : ''}${nwTxt}, perto dos cores do time, dava para virar core: item de dano ou farm em vez de mais um item de suporte.`
+: `Com ${nwTxt}, no nível dos suportes, a build de core não ia sair: itens baratos de utilidade (Force Staff, Glimmer, Ghost) rendiam mais que guardar ouro para o item grande.`);
 }
 
 
@@ -2450,8 +2520,9 @@ if (!tipo) txt += ' Não tem um item só que resolva; aqui pesa mais posicioname
 else if (resposta.length) {
 const r = resposta[0];
 const tardes = (ctx.alocacao && ctx.alocacao.tardes.get(p.idx)) || [];
-const tarde = tardes.some((x) => x.key === r.key) || (a.primeiraMorte != null && r.t > Math.max(a.primeiraMorte, prazoMinimo(r.custo)) + 300);
-txt += tarde ? ` A sua build até respondia com ${r.nome}, mas ele chegou tarde: quando ficou pronto, ${e} já tinha feito o estrago.` : ` ${r.nome} era a resposta certa e chegou a tempo; daí em diante o problema foi mais posição do que item.`;
+const xr = textoDoAtraso(p, ctx, r.key, a);
+const tarde = (xr && xr.tarde) || tardes.some((x) => x.key === r.key);
+txt += tarde && xr ? ` A sua build até respondia com ${r.nome}. ${xr.texto}` : tarde ? ` A sua build até respondia com ${r.nome}, mas ele atrasou e custou morte.` : ` ${r.nome} era a resposta certa e chegou sem custar morte; daí em diante o problema foi mais posição do que item.`;
 } else {
 const foco = grandes.length ? { farm: 'farm', dano: 'dano', defesa: 'defesa', luta: 'utilidade' }[intencaoDe(grandes[0].key)] || 'outras coisas' : 'outras coisas';
 txt += ` Nada na sua build respondia a isso: o ouro foi para ${foco}, e ${e} encontrou você sempre do mesmo jeito.`;
@@ -2469,13 +2540,14 @@ const abre = ['O contexto importa: você chegou ao meio do jogo apanhando', 'Olh
 paragrafos.push(`${abre} (${est.motivos.join(', ')})${est.quem ? `, e o dano que te matava era ${tipoTxt}, principalmente de ${est.quem}` : ''}. Nessa situação a build muda: primeiro sobreviver, depois farmar.${it.ganancia ? ` ${it.ganancia.nome} é o item mais comum de ${p.heroi.nome} no meio do jogo, mas é item de quem está na frente: atrás e morrendo, só aumenta o alvo nas suas costas.` : ''}`);
 }
 if (sg.length) {
-const motivo = (x) => (x.sobrevivencia ? `${x.papel}${x.saiu != null ? `; o seu saiu lá pelos ${minutos(x.saiu)}, depois do estrago` : ''}${x.popular && x.saiu == null ? ` (é a escolha defensiva mais comum de quem joga de ${p.heroi.nome})` : ''}${x.jogos ? `; ${x.jogos}` : ''}` : x.papel ? `${x.papel}${x.contra && !/cura/.test(x.papel) ? `, contra ${x.contra}` : ''}` : x.atrasado ? 'é o item central do herói e precisa sair mais cedo' : x.prioridade === 1 ? `é o que quase todo ${p.heroi.nome} faz no meio do jogo` : x.contra ? `responde a ${x.contra}` : 'fecha o buraco da build');
-const ordem = sg.map((x) => `${x.nome}${x.quando != null ? ` até uns ${minutos(x.quando)}` : ''}`);
+const motivo = (x) => (x.sobrevivencia ? `${x.papel}${x.popular && x.saiu == null ? ` (é a escolha defensiva mais comum de quem joga de ${p.heroi.nome})` : ''}` : x.papel ? `${x.papel}${x.contra && !/cura/.test(x.papel) ? `, contra ${x.contra}` : ''}` : x.atrasado ? 'é o item central do herói' : x.prioridade === 1 ? `é o que quase todo ${p.heroi.nome} faz no meio do jogo` : x.contra ? `responde a ${x.contra}` : 'fecha o buraco da build');
+const ordem = sg.map((x) => x.nome);
 const base = botas ? `depois de ${botas.nome}, ` : '';
 const porques = sg.length === 2 && sg.every((x) => x.atrasado && !x.sobrevivencia)
-? `Os dois são o centro do ${p.heroi.nome} e saíram tarde demais`
+? `Os dois são o centro do ${p.heroi.nome}`
 : sg.map((x) => (x.papel ? `${x.nome}: ${motivo(x)}` : `${x.nome} porque ${motivo(x)}`)).join('. ');
-paragrafos.push(`Na próxima: ${base}${juntarNomes(ordem)}. ${porques}.`);
+const porqueAtraso = sg.map((x) => x.atrasoTxt).find((t) => t && !paragrafos.some((q) => q.includes(t.split('. ')[0])));
+paragrafos.push(`Na próxima: ${base}${juntarNomes(ordem)}. ${porques}.${porqueAtraso ? ` ${porqueAtraso}` : ''}`);
 }
 return paragrafos;
 }
@@ -2820,9 +2892,8 @@ break;
 }
 
 
-const timing = v.itens.timings.find((x) => x.veredito === 'bom' && x.faixas[x.faixaJogador]);
-const acerto = (v.itens.acertosContra || [])[0]
-|| (timing ? `${timing.nome} aos ${mmss(timing.t)}, no horário de quem vence ${pct(timing.faixas[timing.faixaJogador].wr)} com ${p.heroi.nome}` : null);
+const timing = v.itens.timings.find((x) => x.veredito === 'bom');
+const acerto = (v.itens.acertosContra || [])[0] || (timing ? timing.texto : null);
 if (acerto) add('item-na-mosca', 'Item na Mosca', 3, `${acerto.replace(/\.$/, '')}. Leu o jogo antes de todo mundo.`, timing ? timing.t : null);
 
 selos.sort((a, b) => b.peso - a.peso);
@@ -3114,8 +3185,8 @@ for (const sg of v.itens.sugestoes.slice(0, 2)) {
 const a = sg.contra && ameacaDe(sg.contra);
 const porque = sg.curto ? sg.curto : a
 ? (a.mortes >= 2 ? `${a.jogador.heroi.nome} te pegou ${a.mortes} vezes` : `${a.jogador.heroi.nome} foi quem mais te machucou`)
-: sg.atrasado ? 'é item central do herói e chegou tarde demais' : sg.contra ? `responde a ${sg.contra}` : 'é o que mais se compra com esse herói';
-plano.push(`${sg.nome}${sg.quando != null ? ` até uns ${minutos(sg.quando)}` : ''}: ${porque}.`);
+: sg.atrasado ? 'é item central do herói' : sg.contra ? `responde a ${sg.contra}` : 'é o que mais se compra com esse herói';
+plano.push(`${sg.nome}: ${porque}.`);
 }
 if (v.tatica) plano.splice(1, 0, v.tatica);
 const obs = (v.itens.observacoes || []).find((o) => o.includes('pare de bater') || o.includes('lute perto'));
@@ -3272,6 +3343,9 @@ p.stats.duracao = duracao;
 }
 
 const ctx = { jog, nos, eles, mortes, lutas, eventos, lead, leadXp, items, duracao, itensNos, itensEles };
+
+const mp = dados.mapa;
+ctx.mapa = mp && Array.isArray(mp.slots) && Array.isArray(mp.dano) ? mp : null;
 ctx.quedas = janelas(lead, -1, 3).map((w) => detalharMomento(w, 'queda', ctx)).sort((a, b) => a.delta - b.delta);
 ctx.viradas = janelas(lead, 1, 2).map((w) => detalharMomento(w, 'virada', ctx)).sort((a, b) => b.delta - a.delta);
 const primeiraPerdida = lutas.find((l) => l.resultado === 'perdeu' && l.inicio >= 15 * 60 && l.mortesNos >= 3);
@@ -3296,8 +3370,13 @@ const dadoConselho = new Set();
 for (const v of vereditos) {
 const p = v.jogador;
 const compras = comprasPor.get(p.idx);
-const timings = compras.filter((c) => (c.custo || 0) >= 2000).map((c) => analisarTiming(p, c, dados_.timings)).filter(Boolean);
-const populares = popularesDoHeroi(dados_.popularidade, itemIds, items, comps, p.heroi.id);
+const timings = selosDeCompra(p, ctx, compras);
+const pj = papelDoJogo(p, ctx);
+p.papelJogo = pj.papel;
+v.papelJogo = pj;
+
+const pop0 = popularesDoHeroi(dados_.popularidade, itemIds, items, comps, p.heroi.id);
+const populares = pop0 && Object.fromEntries(Object.entries(pop0).map(([f, xs]) => [f, xs.filter((x) => itemDoPapel(p, [x.key]).length)]));
 v.zoeira = v.pesou[0] ? ZOEIRAS[v.pesou[0].key] : null;
 v.provas = provasDoJogador(v, ctx);
 v.itens = {
@@ -3316,10 +3395,7 @@ const usados = {};
 v.itens.ameacasTexto = v.itens.ameacas.map((a, i) => frasesDeAmeaca(a, p, i, usados));
 v.ficha = fichaRPG(v, ctx);
 v.custou = v.provas.filter((x) => x.tipo === 'ruim').slice(0, 3).map((x) => x.texto);
-const timingsBons = v.itens.timings.filter((x) => x.veredito === 'bom').map((x) => {
-const f = x.faixas[x.faixaJogador];
-return `${x.nome} aos ${mmss(x.t)}: horário de quem vence ${pct(f.wr)} com ${p.heroi.nome}.`;
-});
+const timingsBons = v.itens.timings.filter((x) => x.veredito === 'bom').map((x) => x.texto);
 v.fezBem = [...v.provas.filter((x) => x.tipo === 'bom').map((x) => x.texto), ...(v.itens.acertosContra || []), ...timingsBons].slice(0, 3);
 const ranked = v.componentes.filter((c) => c.pontos >= 1 && CONSELHOS[c.key]);
 const chave = (ranked.find((c) => !dadoConselho.has(c.key)) || ranked[0] || {}).key;
@@ -4828,6 +4904,7 @@ o_que_custou: curto(v.custou, 3), o_que_fez_bem: curto(v.fezBem, 3), plano: curt
 leitura_da_build: curto(v.itens && v.itens.leitura, 4),
 destaques: curto(v.brilhos, 3).map((b) => `${b.titulo}: ${b.texto}`),
 selos: curto(v.selos, 4).map((x) => `${x.nome}: ${x.texto}`),
+ouro: curto(((v.itens && v.itens.timings) || []).map((x) => x.texto), 3),
 };
 };
 
@@ -5466,6 +5543,7 @@ fontes.forEach((f) => f.then((m) => { if (m) fim(m); else if (--faltam === 0) fi
 });
 if (!vivo()) return;
 if (mapa) {
+if (estado.dados && String((estado.dados.match || {}).match_id) === String(id)) estado.dados.mapa = mapa; // a troca na rota entra na próxima análise
 parar();
 marcar(4);
 relogio.textContent = `Tempo: ${relogioTxt(agora() - p.tentativa)}`;
@@ -7811,8 +7889,8 @@ const porItem = new Map(it.timings.map((t) => [`${t.item}@${t.t}`, t]));
 const ordem = it.compras.map((c) => {
 const t = porItem.get(`${c.key}@${c.t}`);
 const selo = t ? (t.veredito === 'bom' ? 'bom' : t.veredito === 'atrasado' ? 'tarde' : null) : null;
-return h('li', { class: selo ? `selo-${selo}` : null, title: `${c.nome} aos ${mmss(c.t)}` },
-iconeItem(c), h('span', {}, c.nome), h('small', {}, `${Math.max(1, Math.round(c.t / 60))} min${selo === 'tarde' ? ' · tarde' : selo === 'bom' ? ' · no horário' : ''}`));
+return h('li', { class: selo ? `selo-${selo}` : null, title: t && t.texto ? t.texto : `${c.nome} aos ${mmss(c.t)}` },
+iconeItem(c), h('span', {}, c.nome), h('small', {}, `${Math.max(1, Math.round(c.t / 60))} min${selo === 'tarde' ? ' · tarde' : selo === 'bom' ? ' · sem ouro parado' : ''}`));
 });
 const ameacas = it.ameacasTexto || [];
 const como = it.observacoes || [];
