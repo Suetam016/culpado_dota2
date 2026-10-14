@@ -1,0 +1,16 @@
+# Dados da coleta (branch órfão `dados`)
+
+Gravado pelo robô `.github/workflows/coleta.yml` (código em `coleta/` no branch `main`). Não é publicado no site.
+
+- `partidas/<id>.json.gz`: resposta crua de `https://api.opendota.com/api/matches/<id>` (gzip). Quase todas com a
+  análise do replay (séries por minuto, lances, compras, posições...); as com `"analisada": false` no índice são só
+  os dados básicos (o OpenDota não conseguiu analisar a tempo).
+- `indice.json`: uma linha por partida: início (unix), duração, contas visíveis de cada lado, contas do grupo,
+  analisada, tamanho do .gz.
+- `amigos.json`: quem o robô considera amigo (e quem quase entrou), com jogos juntos, sessões e a última vez.
+- `estado.json`: controle do robô (pedidos de análise pendentes, desistências e descartes, falhas, uso da cota por
+  dia). Em `desistencias`, `"salva": false` é partida descartada sem nenhum dado (erro que se repetiu).
+
+Baixar tudo: `git clone --branch dados --single-branch https://github.com/Suetam016/culpado_dota2 culpado-dados`
+
+Ler uma partida em Python: `json.loads(gzip.open("partidas/<id>.json.gz").read())`
