@@ -1,0 +1,56 @@
+name: Coleta de partidas (base para modelos)
+
+# Baixa, com a análise do replay, as partidas do Suéter (conta 81918076) dos últimos 14 dias e as dos amigos
+# (colegas de time em >= 3 partidas em >= 2 sessões diferentes, mais a lista do amigos.json) e guarda no branch órfão
+# "dados" deste repositório, fora do site: partidas/<id>.json.gz, indice.json, amigos.json, estado.json.
+# Gasta a cota grátis do OpenDota deixando ~200 consultas do dia livres (COLETA_RESERVA). Detalhes: coleta/LEIA-ME.md.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: coleta
+  cancel-in-progress: false
+
+jobs:
+  coleta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      COLETA_RESERVA: "200"                 # consultas do dia que o robô nunca usa
+      COLETA_TETO_DIA: "2000"               # teto próprio por dia (UTC), menos a reserva
+      COLETA_ORCAMENTO_SEM_CABECALHO: "80"  # por rodada, se o OpenDota não mandar os cabeçalhos de cota
+      COLETA_TEMPO_MAX_S: "2100"            # para de chamar a API em 35 min (sobra tempo para salvar)
+      COLETA_HISTORICO: "1"                 # com a sobra da cota, também partidas antigas já analisadas (0 desliga)
+    steps:
+      # o script vem sempre da ponta da main
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # clone parcial do branch dados: só os .json da raiz (partidas/ não é baixado); cria o branch se não existe;
+      # falha (e a coleta nem roda) se o push não vai funcionar
+      - name: Baixar o branch dados
+        id: dados
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash coleta/dados.sh preparar dados
+      - name: Coletar partidas
+        id: coleta
+        timeout-minutes: 42
+        # exec: o Python é quem recebe o sinal do runner (cancelamento ou tempo do passo) e grava o que já baixou
+        run: exec python coleta/coletar.py --dados dados --amigos amigos.json
+      # mesmo se a coleta falhar ou estourar o tempo: o que já foi baixado vai para o branch
+      - name: Salvar no branch dados
+        if: always() && steps.dados.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MENSAGEM: "Coleta: ${{ steps.coleta.outputs.novas || 0 }} partidas novas (rodada ${{ github.run_number }})"
+        run: bash coleta/dados.sh salvar dados "$MENSAGEM"
