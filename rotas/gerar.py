@@ -163,11 +163,11 @@ def _farm_forte(j: dict, max_lh: float) -> bool:
     return _farm_de_core(j, max_lh) and not _suporte_fraco(j)
 
 
-def _rota_tem_core(ordem: list[dict], max_lh: float) -> bool:
+def _rota_tem_core(ordem: list[dict], max_lh: float, mid: bool = False) -> bool:
     """O primeiro da fila tem farm de core, ou tem 10+ LH e bem mais que o parceiro (offlaner apanhando), ou estava
     sozinho na rota (= rotaTemCore do painel)."""
     a = ordem[0]
-    if _suporte_fraco(a):
+    if not (mid and len(ordem) == 1) and _suporte_fraco(a):  # sozinho no mid com 10+ LH é o pos2 mesmo com position_est 4/5
         return False
     if _farm_de_core(a, max_lh):
         return True
@@ -210,7 +210,7 @@ def atribuir_posicoes(jogadores: list[dict]) -> list[dict]:
         for lane, xs in por.items():
             tipo = tipo_da_lane(lane, radiant)
             ordem = sorted(xs, key=lambda j: (_suporte_fraco(j), -(j["lh10"] if j.get("lh10") is not None else -1), -(j.get("g10") or 0), -(j.get("gpm") or 0)))
-            tem_core = _rota_tem_core(ordem, max_lh)
+            tem_core = _rota_tem_core(ordem, max_lh, tipo == "mid")
             if tem_core and len(ordem) > 1:
                 a, b = ordem[0], ordem[1]
                 dois = _farm_forte(b, max_lh)

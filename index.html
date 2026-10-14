@@ -208,9 +208,11 @@ const suporteFraco = (p) => sinalDeSuporte(p) && (lh10De(p) ?? 0) < 2 * ROTA.far
 const farmForte = (p, maxLh) => farmDeCore(p, maxLh) && !suporteFraco(p);
 
 
-function rotaTemCore(ord, maxLh) {
+
+
+function rotaTemCore(ord, maxLh, mid) {
 const [a, b] = ord;
-if (suporteFraco(a)) return false;
+if (!(mid && !b) && suporteFraco(a)) return false;
 if (farmDeCore(a, maxLh)) return true;
 const la = lh10De(a) ?? 0;
 if (la < ROTA.farmMin) return false;
@@ -250,7 +252,7 @@ const tipo = xs[0].rota.tipo;
 const ord = [...xs].sort((a, b) => Number(suporteFraco(a)) - Number(suporteFraco(b)) || (lh10De(b) ?? -1) - (lh10De(a) ?? -1)
 || (valorEm(b.raw, 'gold_t', 10) ?? 0) - (valorEm(a.raw, 'gold_t', 10) ?? 0)
 || (b.raw.gold_per_min || 0) - (a.raw.gold_per_min || 0));
-const temCore = rotaTemCore(ord, maxLh);
+const temCore = rotaTemCore(ord, maxLh, tipo === 'mid');
 if (temCore && ord.length > 1) {
 const [a, b] = ord;
 const doisCores = farmForte(b, maxLh);
