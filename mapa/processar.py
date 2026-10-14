@@ -9,9 +9,8 @@ descompacta, manda pro parser e guarda só as posições (eventos "interval") em
 Pedidos do site (botão "Gerar o mapa agora", pelo Worker): arquivo mapa/pedidos/<id>. Cada pedido é tentado
 mesmo que a partida já tenha falhado MAX_FALHAS vezes e sai da pasta depois da tentativa; o resultado fica em
 mapas/<id>.json ou, se falhou, em mapa/falhas.json ({"<id>": {"n", "motivo", "quando"}}), que o Worker lê.
-Com --amigos, um pedido só é processado se algum jogador da partida está no amigos.json (o endereço do Worker é
-público: sem isso, qualquer partida do mundo viraria 500 KB no repositório). Se o OpenDota ainda não tem o
-replay_url, o pedido espera aqui mesmo (até ESPERA_REPLAY_S) em vez de voltar ao site e gerar outra rodada.
+Agora aberto a todos: qualquer partida pode ter mapa gerado (antes era só com amigos no time).
+Se o OpenDota ainda não tem o replay_url, o pedido espera aqui mesmo (até ESPERA_REPLAY_S) em vez de voltar ao site e gerar outra rodada.
 """
 from __future__ import annotations
 
@@ -121,11 +120,9 @@ def tem_amigo(m: dict, amigos) -> bool:
 
 
 def processar(match_id: int, parser: str, tmp: Path, amigos=None, espera_replay_s: float = 0, dormir=None) -> dict:
-    """amigos: contas do amigos.json (só para pedidos do site; None = não confere).
+    """amigos: contas do amigos.json (não usado; antes restringia apenas a amigos, agora aberto a todos).
     espera_replay_s: sem replay_url, pede a análise ao OpenDota e consulta de novo a cada ESPERA_PASSO_S até esse tempo."""
     m = get(f"/matches/{match_id}")
-    if amigos is not None and not tem_amigo(m, amigos):
-        raise RuntimeError("partida sem nenhum amigo")
     url = m.get("replay_url")
     if not url and espera_replay_s > 0:
         try:
@@ -288,8 +285,6 @@ def n_falhas(v) -> int:
 def motivo_da_falha(e: Exception) -> str:
     """Texto curto que o site mostra; "sem replay_url" = o OpenDota ainda não analisou (o site espera e tenta de novo)."""
     txt = str(e)
-    if "sem nenhum amigo" in txt:
-        return "sem amigos"
     if "replay_url" in txt:
         return "sem replay_url"
     if isinstance(e, urllib.error.HTTPError) and "valve" in str(getattr(e, "url", "") or "").lower():
