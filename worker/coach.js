@@ -999,6 +999,32 @@ async function saudeMapa(env) {
   return dados;
 }
 
+// Feedback do site: POST /feedback {texto, partida?, nome?} grava feedback/<data>-<rand>.json no repositório.
+const FEEDBACK_POR_HORA = 10; // por conexão
+async function receberFeedback(req, env, origem) {
+  const texto = await lerCorpo(req, 6_000);
+  if (texto == null) return recusar(413, 'grande', origem, env);
+  let c;
+  try { c = JSON.parse(texto); } catch { return recusar(400, 'invalido', origem, env); }
+  const msg = String((c && c.texto) || '').trim().slice(0, 2000);
+  if (msg.length < 3) return recusar(400, 'invalido', origem, env);
+  const hora = horaAtual();
+  const k = `fb:${chaveDoIp(req.headers.get('CF-Connecting-IP'))}:${hora}`;
+  if (!abrirEspaco(contagem, hora) && !contagem.has(k)) return json(429, { erro: 'limite' }, origem, env);
+  const n = (contagem.get(k) || 0) + 1;
+  if (n > FEEDBACK_POR_HORA) return json(429, { erro: 'limite' }, origem, env);
+  contagem.set(k, n);
+  const quando = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+  const dados = { quando, texto: msg, partida: String((c && c.partida) || '').replace(/[^0-9a-z-]/gi, '').slice(0, 30), nome: String((c && c.nome) || '').slice(0, 40) };
+  const arq = `feedback/${quando.replace(/[:]/g, '-')}-${Math.random().toString(36).slice(2, 8)}.json`;
+  try {
+    const r = await github(env, 'PUT', arq, { message: 'Feedback do site', content: base64(JSON.stringify(dados, null, 1) + '\n') });
+    if (r.status === 200 || r.status === 201) return json(200, { ok: true }, origem, env);
+    console.log('feedback PUT', r.status);
+  } catch (e) { console.log('feedback erro', e && e.message); }
+  return json(502, { erro: 'falhou' }, origem, env);
+}
+
 // ------------------------------------------------------------------ entrada
 
 export default {
@@ -1026,6 +1052,11 @@ export default {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
       if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: MSG_MAPA.desligado }, origem, env);
       return req.method === 'POST' ? pedirMapa(req, env, origem) : consultarMapa(req, env, origem, rotaMapa[1], Boolean(rotaMapa[2]));
+    }
+    if (req.method === 'POST' && caminho === '/feedback') {
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!tokenGithub(env)) return json(503, { erro: 'desligado' }, origem, env);
+      return receberFeedback(req, env, origem);
     }
     if (req.method !== 'POST' || caminho !== '/chat') return recusar(404, 'rota', origem, env);
     if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
