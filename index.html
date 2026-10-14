@@ -6422,13 +6422,12 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
 
   // -------- "Gerar o mapa agora": pede o mapa ao robô pelo mesmo Worker do coach (POST /mapa, GET /mapa/<id>)
   // O Worker cria mapa/pedidos/<id> no repositório do site; o push acorda o robô (mapa.yml), que publica
-  // mapas/<id>.json em ~1 min; o GitHub Pages leva mais ~1 min para servir (se demorar, o mapa vem pelo Worker,
-  // GET /mapa/<id>/arquivo). Tudo aparece sem recarregar a página.
+  // mapas/<id>.json em ~30-40 s; quando o robô termina, o site busca o mapa ao mesmo tempo no GitHub Pages e
+  // no Worker (GET /mapa/<id>/arquivo, fresco direto do repositório) e usa o que chegar primeiro. Tudo aparece sem recarregar a página.
   const TEMPOS_MAPA = {
-    consulta: 8000, // GET /mapa/<id> enquanto o robô trabalha
+    consulta: 2500, // GET /mapa/<id> enquanto o robô trabalha (aba visível; o 'pronto' aparece em ~1 s)
     consultaOculta: 30000, // com a aba em segundo plano (poupa a cota da API do GitHub do Worker)
     site: 6000, // busca mapas/<id>.json no próprio site até o GitHub Pages servir
-    viaWorker: 90000, // o Pages não serviu em 90 s: busca o arquivo pelo Worker
     opendota: [3 * 60000, 6 * 60000, 10 * 60000], // novas tentativas quando o OpenDota ainda não liberou o replay
     opendotaMax: 35 * 60000, // (o robô já espera até 5 min por tentativa; cada tentativa = 2 commits no site)
     demora: 8 * 60000, // robô sem resposta: mensagem honesta e "Tentar de novo"
@@ -6492,9 +6491,9 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
   function painelPedirMapa(id) {
     const TIT_SEM_MAPA = 'O mapa animado desta partida ainda não foi gerado.';
     const titulo = h('p', { class: 'mp-tit' }, TIT_SEM_MAPA);
-    const sub = h('p', { class: 'mp-sub', hidden: true }, 'Leva uns 2 min e aparece aqui sozinho. Qualquer um da resenha pode apertar.');
+    const sub = h('p', { class: 'mp-sub', hidden: true }, 'Leva uns 30-40 s e aparece aqui sozinho. Qualquer um da resenha pode apertar.');
     const bGerar = h('button', { type: 'button', class: 'botao mp-gerar', hidden: true }, iconeSvg('play', 16), h('span', {}, 'Gerar o mapa agora'));
-    const NOMES_ETAPAS = ['Pedido enviado', 'Robô assistindo o replay (~1 min)', 'Publicando no site (~1 min)', 'Pronto!'];
+    const NOMES_ETAPAS = ['Pedido enviado', 'Robô assistindo o replay (~30 s)', 'Buscando o mapa', 'Pronto!'];
     const ETAPA_OPENDOTA = 'Esperando o OpenDota liberar o replay';
     const etapas = NOMES_ETAPAS.map((txt) => h('li', { class: 'mp-etapa' },
       h('span', { class: 'mp-marca', 'aria-hidden': 'true' }), h('span', { class: 'mp-etapa-txt' }, txt), h('span', { class: 'sr-only mp-etapa-sr' })));
@@ -6682,7 +6681,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
         bDeNovo.hidden = false;
       } else if (!demorou && avisou < 1 && passou > 20000) {
         avisou = 1; // uma vez só (cada troca de texto é lida pelo leitor de tela)
-        dizer('O robô está assistindo o replay. Costuma levar 1 min; pode continuar lendo os pareceres, o mapa aparece aqui sozinho.');
+        dizer('O robô está assistindo o replay. Costuma levar uns 30 s; pode continuar lendo os pareceres, o mapa aparece aqui sozinho.');
       } else if (!demorou && avisou < 2 && passou > 150000) {
         avisou = 2;
         dizer('Ainda no robô. Se a partida acabou agora, ele espera o OpenDota liberar o replay (até uns 5 min).');
@@ -6722,7 +6721,7 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       salvar();
       marcar(2);
       relogioDe(p.tentativa);
-      dizer('O robô terminou. Esperando o site publicar o mapa (pode levar mais 1 ou 2 minutos)…');
+      dizer('O robô terminou. Buscando o mapa…');
       buscarNoSite();
     }
 
@@ -6736,11 +6735,17 @@ details.detalhes summary small { font-size: 0.92em; color: var(--ink-2); }
       } catch (e) { return null; }
     }
 
+    let workerFalhou = false; // Worker sem token: para de pedir a ele nesta espera
     async function buscarNoSite() {
       const passou = agora() - (p.publicandoDesde || agora());
-      // o GitHub Pages ainda não serviu em 90 s (fila de publicações): o mesmo arquivo direto do repositório, pelo Worker
-      let mapa = await baixar(`mapas/${id}.json?t=${agora()}`, { cache: 'no-store' });
-      if (!mapa && url && passou > TEMPOS_MAPA.viaWorker) mapa = await baixar(`${url}/mapa/${id}/arquivo`, {});
+      // o Pages leva ~30 s para publicar depois do robô: pede ao Pages e ao Worker (o mesmo arquivo, direto do
+      // repositório) ao mesmo tempo e fica com o primeiro mapa válido; sem Worker, só o Pages, como antes
+      const fontes = [baixar(`mapas/${id}.json?t=${agora()}`, { cache: 'no-store' })];
+      if (url && !workerFalhou) fontes.push(baixar(`${url}/mapa/${id}/arquivo`, { cache: 'no-store' }).then((m) => { if (!m) workerFalhou = true; return m; }));
+      const mapa = await new Promise((fim) => {
+        let faltam = fontes.length;
+        fontes.forEach((f) => f.then((m) => { if (m) fim(m); else if (--faltam === 0) fim(null); }));
+      });
       if (!vivo()) return;
       if (mapa) {
         parar();

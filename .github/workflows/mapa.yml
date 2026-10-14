@@ -30,42 +30,48 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Tem partida nova?
-        id: fila
-        run: python mapa/processar.py --amigos amigos.json --so-fila
-      - uses: actions/setup-java@v4
-        if: steps.fila.outputs.fila != '0'
-        with:
-          distribution: temurin
-          java-version: "21"
-      # o parser leva ~3 min para compilar: guarda o .jar pronto em cache, pela versão do parser
+      # o parser (~4 s para subir) e o zstandard vão em segundo plano já aqui, junto com o "Tem partida nova?":
+      # quando o pedido do site chega na vez, o parser já está no ar. Java 21 é o que já vem no ubuntu-latest.
       - name: Versão do parser
         id: versao
-        if: steps.fila.outputs.fila != '0'
         run: echo "sha=$(git ls-remote https://github.com/odota/parser.git HEAD | cut -f1)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
-        if: steps.fila.outputs.fila != '0'
+      - uses: actions/cache/restore@v4
+        id: cache
         with:
           path: parser-jar
           key: parser-jar-${{ steps.versao.outputs.sha }}
+      - name: Subir o parser e as dependências (em segundo plano)
+        run: |
+          (pip install -q zstandard > pip.log 2>&1 && touch pip.ok) &
+          if [ -f parser-jar/parser.jar ]; then
+            nohup "$JAVA_HOME_21_X64/bin/java" -Xmx5g -jar parser-jar/parser.jar 5600 > parser.log 2>&1 &
+          fi
+      - name: Tem partida nova?
+        id: fila
+        run: python mapa/processar.py --amigos amigos.json --so-fila
+      # o parser leva ~3 min para compilar: guarda o .jar pronto em cache, pela versão do parser
       - name: Parser de replays do OpenDota
         if: steps.fila.outputs.fila != '0'
         run: |
           if [ ! -f parser-jar/parser.jar ]; then
             echo "compilando o parser (sem cache)"
             git clone --depth 1 https://github.com/odota/parser.git parser
-            (cd parser && mvn -q -DskipTests package)
+            (cd parser && JAVA_HOME="$JAVA_HOME_21_X64" mvn -q -DskipTests package)
             mkdir -p parser-jar
             cp "$(ls parser/target/*.jar | grep -v original | head -1)" parser-jar/parser.jar
+            nohup "$JAVA_HOME_21_X64/bin/java" -Xmx5g -jar parser-jar/parser.jar 5600 > parser.log 2>&1 &
           else
             echo "parser do cache"
           fi
-          nohup java -Xmx5g -jar parser-jar/parser.jar 5600 > parser.log 2>&1 &
-          for i in $(seq 1 60); do nc -z localhost 5600 && break; sleep 2; done
+          for i in $(seq 1 120); do nc -z localhost 5600 && break; sleep 0.5; done
           nc -z localhost 5600 && echo "parser no ar" || { cat parser.log; exit 1; }
-      - name: Dependências
-        if: steps.fila.outputs.fila != '0'
-        run: pip install -q zstandard
+          for i in $(seq 1 120); do [ -f pip.ok ] && break; sleep 0.5; done
+          [ -f pip.ok ] || { cat pip.log; exit 1; }
+      - uses: actions/cache/save@v4
+        if: steps.fila.outputs.fila != '0' && steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: parser-jar
+          key: parser-jar-${{ steps.versao.outputs.sha }}
       # pedidos do botão "Gerar o mapa agora" primeiro, publicados na hora (quem pediu está esperando na página)
       - name: Processar os pedidos do site
         if: steps.fila.outputs.pedidos != '0' && steps.fila.outputs.pedidos != ''

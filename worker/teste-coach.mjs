@@ -879,6 +879,14 @@ test('mapa: consultas seguidas da mesma partida usam o cache (poupa a cota da AP
   assert.equal(j.naFila, true);
 });
 
+test('mapa: com pedido aberto o estado fica no cache no máximo ~2 s (o "pronto" chega rápido ao site)', async () => {
+  githubFalso();
+  await pedirMapa(ID);
+  assert.equal((await (await consultar(ID)).json()).naFila, true);
+  const c = _interno.cacheMapa.get(ID);
+  assert.ok(c && c.ate - Date.now() <= 2_000, `cache de ${c && c.ate - Date.now()} ms`);
+});
+
 test('mapa: origem estranha = 403, método errado = 404, e o chat continua funcionando junto', async () => {
   githubFalso();
   let r = await pedirMapa(ID, { origem: 'https://malvado.com' });

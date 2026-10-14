@@ -692,12 +692,12 @@ const MAPA_ARQUIVOS_POR_IP = 12; // pedidos criados por conexão (pedir de novo 
 const MAPA_GLOBAL_POR_HORA = 15; // pedidos criados por hora, somando todo mundo (cada um = 1 rodada do robô)
 const MAPA_POR_PARTIDA = 10; // pedidos da mesma partida por hora (o site tenta de novo enquanto o OpenDota analisa)
 const MAPA_FILA_MAX = 8; // pedidos pendentes no repositório (vale para todas as instâncias do Worker)
-const MAPA_CONSULTAS_POR_HORA = 900; // GET /mapa/<id> por conexão (o site consulta a cada ~8 s)
+const MAPA_CONSULTAS_POR_HORA = 900; // GET /mapa/<id> por conexão (o site consulta a cada ~2,5 s só enquanto espera o robô)
 const MAPA_IDS_CONSULTA_POR_HORA = 20; // partidas diferentes consultadas por conexão (repetir a mesma usa o cache)
 const GITHUB_POR_HORA = 1500; // chamadas à API do GitHub por instância (a cota do token é 5000/h da conta inteira)
 const MAX_CHAVES = 5000; // tamanho máximo de cada Map de contadores
 const PEDIDO_PARADO_MS = 8 * 60_000; // pedido mais velho que isto e ainda na fila: o robô travou; o Worker refaz o pedido
-const CACHE_ESTADO_MS = 5_000; // várias pessoas olhando a mesma partida dividem a mesma consulta ao GitHub
+const CACHE_ESTADO_MS = 2_000; // várias pessoas olhando a mesma partida dividem a mesma consulta ao GitHub
 const CACHE_NADA_MS = 30_000; // partida que ninguém pediu (sem mapa, sem pedido, sem falha)
 const CACHE_FALHAS_MS = 10_000;
 const CACHE_SAUDE_MS = 60_000;

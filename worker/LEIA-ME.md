@@ -45,7 +45,9 @@ nunca chega conta. (Uma chave num projeto com faturamento é cobrada a cada perg
 Sem isto, a partida que ainda não tem mapa animado mostra só "O replay animado desta partida ainda não foi
 gerado." Com isto, aparece o botão **Gerar o mapa agora**: qualquer amigo aperta, o Worker cria o arquivo
 `mapa/pedidos/<id>` no repositório do site, o push acorda o robô (`.github/workflows/mapa.yml`) e o mapa
-aparece sozinho na página em uns 2 minutos (1 do robô + 1 do GitHub Pages), sem recarregar.
+aparece sozinho na página em uns 30-45 s, sem recarregar: assim que o robô termina, o site pede o mapa ao
+mesmo tempo ao GitHub Pages e ao Worker (`GET /mapa/<id>/arquivo`, direto do repositório) e usa o que chegar
+primeiro, sem esperar os ~30 s do Pages publicar.
 
 O Worker precisa de uma chave do GitHub que só mexe neste repositório:
 
@@ -114,8 +116,8 @@ apaga o pedido e publica `mapas/<id>.json`. Se o OpenDota ainda não liberou o r
 terminar), o robô pede a análise e espera até 5 minutos na mesma rodada. Se ainda assim não sair, anota o
 motivo em `mapa/falhas.json`; o site mostra "Esperando o OpenDota liberar o replay" e pede de novo sozinho
 depois de 3, 6 e 10 minutos (no máximo 3 vezes, para não encher o histórico nem o limite de publicações do
-GitHub Pages). Se o GitHub Pages demorar para publicar, o site busca o mapa direto pelo Worker
-(`GET /mapa/<id>/arquivo`). Entradas do `falhas.json` com mais de 30 dias saem sozinhas.
+GitHub Pages). Enquanto espera o robô, o site consulta `GET /mapa/<id>` a cada 2,5 s (30 s com a aba
+escondida); com pedido aberto o Worker guarda esse estado só 2 s. Entradas do `falhas.json` com mais de 30 dias saem sozinhas.
 
 ## Quanto dá para usar
 
