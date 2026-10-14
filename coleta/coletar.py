@@ -748,9 +748,11 @@ class Rodada:
             self.log(f"  histórico de {conta}: HTTP {st}, sem lista")
             return
         limite = self.relogio() - self.a.janela * 86400
+        # partida de mais de COLETA_HISTORICO_ANOS anos (padrão 2) é de outro Dota: não serve para modelo
+        mais_velha = self.relogio() - env_float("COLETA_HISTORICO_ANOS", 2) * 365 * 86400
         ids = {str(j["match_id"]): int(j.get("start_time") or 0) for j in lst
                if isinstance(j, dict) and RE_ID.fullmatch(str(j.get("match_id"))) and j.get("version") is not None
-               and int(j.get("start_time") or 0) < limite and str(j["match_id"]) not in self.base.indice}
+               and mais_velha <= int(j.get("start_time") or 0) < limite and str(j["match_id"]) not in self.base.indice}
         hist[str(conta)] = {"em": iso(self.relogio()), "analisadas": ids}
         self.log(f"  histórico de {conta}: {len(lst)} partidas, {len(ids)} antigas já analisadas a baixar")
 

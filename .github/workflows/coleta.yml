@@ -26,7 +26,8 @@ jobs:
     timeout-minutes: 50
     env:
       COLETA_RESERVA: "200"                 # consultas do dia que o robô nunca usa
-      COLETA_TETO_DIA: "2000"               # teto próprio por dia (UTC), menos a reserva
+      COLETA_TETO_DIA: "3000"               # teto próprio por dia (UTC), menos a reserva (o OpenDota mostrou 3000/dia)
+      COLETA_HISTORICO_ANOS: "2"            # histórico antigo só até 2 anos atrás
       COLETA_ORCAMENTO_SEM_CABECALHO: "80"  # por rodada, se o OpenDota não mandar os cabeçalhos de cota
       COLETA_TEMPO_MAX_S: "2100"            # para de chamar a API em 35 min (sobra tempo para salvar)
       COLETA_HISTORICO: "1"                 # com a sobra da cota, também partidas antigas já analisadas (0 desliga)
