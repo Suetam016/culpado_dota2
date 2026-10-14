@@ -2018,37 +2018,267 @@ return { item: c.key, nome: c.nome, t: c.t, veredito, texto };
 }).filter(Boolean);
 }
 
-function sugestaoDeSobrevivencia(p, ctx, estado, populares, comprou) {
-const lista = itemDoPapel(p, SOBREVIVER[estado.tipo][p.funcao]).filter((k) => ctx.items[k]);
 
+
+
+
+
+
+const ETIQUETAS_HEROI = {
+pudge: 'alvo_unico catch', lion: 'alvo_unico controle', necrolyte: 'alvo_unico cura', lina: 'alvo_unico',
+doom_bringer: 'alvo_unico silencio', legion_commander: 'alvo_unico catch', ogre_magi: 'alvo_unico', rubick: 'alvo_unico',
+grimstroke: 'alvo_unico silencio', dark_willow: 'alvo_unico controle', nyx_assassin: 'alvo_unico invisivel catch',
+shadow_shaman: 'alvo_unico controle', viper: 'alvo_unico', lich: 'alvo_unico', vengefulspirit: 'alvo_unico',
+skywrath_mage: 'alvo_unico silencio', chaos_knight: 'alvo_unico ilusoes', bounty_hunter: 'alvo_unico invisivel catch',
+spirit_breaker: 'alvo_unico catch', axe: 'alvo_unico controle', tiny: 'alvo_unico', windrunner: 'alvo_unico evasao',
+bane: 'alvo_unico', beastmaster: 'alvo_unico controle', earth_spirit: 'controle catch', invoker: 'controle',
+disruptor: 'controle silencio', witch_doctor: 'controle', mirana: 'catch', ancient_apparition: 'controle',
+phantom_assassin: 'evasao catch', warlock: 'controle', zuus: '', sven: 'controle', crystal_maiden: 'controle',
+faceless_void: 'controle catch', slark: 'catch', enigma: 'controle', dawnbreaker: 'controle', hoodwink: 'controle',
+night_stalker: 'silencio catch', silencer: 'silencio', tidehunter: 'controle', phantom_lancer: 'ilusoes',
+magnataur: 'controle', puck: 'silencio controle', bloodseeker: 'silencio catch', undying: 'cura', kunkka: 'controle',
+spectre: 'passiva catch', tusk: 'catch', riki: 'invisivel silencio catch', life_stealer: 'cura',
+bristleback: 'passiva', terrorblade: 'ilusoes', naga_siren: 'ilusoes controle', clinkz: 'invisivel catch',
+weaver: 'invisivel', drow_ranger: 'silencio', storm_spirit: 'catch', oracle: 'cura', abaddon: 'cura',
+alchemist: 'cura', huskar: 'cura', treant: 'cura invisivel', omniknight: 'cura', templar_assassin: 'invisivel',
+brewmaster: 'evasao controle', mars: 'controle', centaur: 'controle', marci: 'catch', muerta: 'controle',
+};
+
+const ANULA = {
+ghost: { nullifier: 0.15, diffusal_blade: 0.4, disperser: 0.4 },
+glimmer_cape: { nullifier: 0.2, diffusal_blade: 0.5, disperser: 0.5, gem: 0.6, dust: 0.8 },
+cyclone: { nullifier: 0.4 }, wind_waker: { nullifier: 0.4 }, force_staff: { nullifier: 0.6 },
+solar_crest: { nullifier: 0.5, diffusal_blade: 0.6, disperser: 0.6 }, lotus_orb: { nullifier: 0.6 },
+butterfly: { monkey_king_bar: 0.2, bloodthorn: 0.3 }, talisman_of_evasion: { monkey_king_bar: 0.2, bloodthorn: 0.3 },
+heavens_halberd: { black_king_bar: 0.5 }, sphere: { nullifier: 0.7 },
+};
+
+const TIME_UNICO = [['pipe'], ['crimson_guard'], ['mekansm', 'guardian_greaves'], ['vladmir'], ['shivas_guard'], ['assault'], ['spirit_vessel', 'urn_of_shadows'], ['lotus_orb'], ['monkey_king_bar'], ['gem']];
+const plural2 = (n) => (n === 2 ? 'as duas' : n === 3 ? 'as três' : n > 3 ? `as ${n}` : '');
+
+const CANDIDATOS = {
+lotus_orb: { papel: 'ambos', pos: [3, 4, 5], v: (e) => (e.tags.has('alvo_unico') ? 1 : 0), min: 0.9,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'te pegam' : 'te pega'} com magia de alvo único; a Lotus devolve ${ns.length > 1 ? plural2(ns.length) : 'ela'}` },
+sphere: { papel: 'core', pos: [1, 2], v: (e) => (e.tags.has('alvo_unico') ? 1 : 0), min: 0.9,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'abrem' : 'abre'} o combo com magia de alvo único; a Linken bloqueia` },
+black_king_bar: { papel: 'core', v: (e) => e.mag * (1 + (e.tags.has('controle') ? 0.5 : 0) + (e.tags.has('silencio') ? 0.3 : 0)), min: 0.7,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} com magia e controle; a BKB te deixa bater a luta inteira` },
+eternal_shroud: { papel: 'core', v: (e) => e.mag * 0.8, min: 0.7, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} com magia; a Shroud dá resistência mágica` },
+glimmer_cape: { papel: 'ambos', pos: [3, 4, 5], v: (e) => e.mag * 0.8 + (e.tags.has('catch') ? 0.3 : 0), min: 0.6,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'pegam' : 'pega'} com magia; a Glimmer dá resistência mágica e some do mapa` },
+ghost: { papel: 'ambos', v: (e) => e.fis * (e.fis >= 0.55 ? 1 : 0.3), min: 0.6,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} no ataque físico; com a Ghost ninguém te acerta por 4 s` },
+force_staff: { papel: 'ambos', pos: [3, 4, 5], v: (e) => (e.tags.has('catch') ? 0.8 : 0) + 0.2, min: 0.8,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'pegam' : 'pega'} quem anda sozinho; a Force te tira de lá` },
+cyclone: { papel: 'ambos', v: (e) => (e.tags.has('silencio') ? 0.7 : 0) + e.mag * 0.4, min: 0.8,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'silenciam ou explodem' : 'silencia ou explode'} com magia; o Eul te tira do combo e limpa o silence` },
+blade_mail: { papel: 'core', pos: [1, 2, 3], v: (e) => (e.fis >= 0.6 ? e.fis : 0), min: 0.8,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} físico em você; a Blade Mail devolve o dano` },
+heavens_halberd: { papel: 'core', v: (e) => (e.fis >= 0.6 && e.carry ? e.fis : 0), min: 0.7,
+porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'vivem' : 'vive'} de ataque; o Halberd desarma na luta` },
+butterfly: { papel: 'core', v: (e) => (e.fis >= 0.6 ? e.fis : 0), min: 0.8, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} físico; a Butterfly desvia os ataques` },
+solar_crest: { papel: 'suporte', v: (e) => (e.fis >= 0.6 ? e.fis : 0), min: 0.7, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} físico; a Solar dá armadura no aliado focado` },
+crimson_guard: { papel: 'core', pos: [3], time: true, v: (e) => (e.fis >= 0.6 ? e.fis : 0), min: 0.8, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} físico no time; a Crimson bloqueia o dano de todo mundo` },
+pipe: { papel: 'ambos', pos: [3, 4], time: true, v: (e) => e.mag, min: 1.2, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'batem' : 'bate'} com magia no time; o Pipe é escudo mágico para todos` },
+aeon_disk: { papel: 'core', v: (e) => (e.tags.has('catch') ? 0.6 : 0.2), min: 0.9, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'te matam' : 'te mata'} num combo só; o Aeon segura o primeiro` },
+manta: { papel: 'core', v: (e) => (e.tags.has('silencio') ? 0.8 : 0), min: 0.7, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'silenciam' : 'silencia'}; a Manta limpa o silence` },
+monkey_king_bar: { papel: 'core', time: true, v: (e) => (e.tags.has('evasao') || e.butterfly ? 1 : 0), min: 0.7, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'têm' : 'tem'} evasão; o MKB acerta mesmo assim` },
+silver_edge: { papel: 'core', v: (e) => (e.tags.has('passiva') ? 1 : 0), min: 0.8, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'dependem' : 'depende'} de passiva; o Break da Silver Edge desliga` },
+dust: { papel: 'suporte', time: true, v: (e) => (e.tags.has('invisivel') || e.invisItem ? 1 : 0), min: 0.7, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'ficam' : 'fica'} invisível; o Dust revela na hora da luta` },
+spirit_vessel: { papel: 'ambos', pos: [3, 4, 5], time: true, v: (e) => (e.cura >= 3000 || e.tags.has('cura') ? 1 : 0), min: 0.9, porque: (ns) => `${juntarNomes(ns)} ${ns.length > 1 ? 'curam' : 'cura'} muito; o Vessel corta a cura` },
+};
+
+const DEFESA_PONTUADA = new Set(['lotus_orb', 'sphere', 'black_king_bar', 'eternal_shroud', 'glimmer_cape', 'ghost', 'force_staff', 'cyclone', 'blade_mail', 'heavens_halberd', 'butterfly', 'solar_crest', 'aeon_disk', 'manta', 'pipe', 'crimson_guard']);
+
+
+function inimigosEtiquetados(p, ctx) {
+const cache = ctx.etiquetados || (ctx.etiquetados = new Map());
+if (cache.has(p.idx)) return cache.get(p.idx);
+const nos = (ctx.nos || []).includes(p) ? ctx.nos : ctx.eles;
+const eles = nos === ctx.nos ? ctx.eles : ctx.nos;
+const rec = p.raw.damage_taken || {};
+const total = soma(Object.entries(rec).filter(([k]) => k.startsWith('npc_dota_hero_')).map(([, x]) => x)) || 0;
+const mortes = ctx.mortes ? ctx.mortes[p.idx] || [] : [];
+const out = (eles || []).map((e) => {
+const base = (e.heroi.npc || '').replace('npc_dota_hero_', '');
+
+let danoT = 0;
+let hab = 0;
+for (const j of nos) {
+danoT += Number((j.raw.damage_taken || {})[e.heroi.npc]) || 0;
+hab += soma(Object.entries(j.raw.damage_inflictor_received || {}).filter(([k]) => base && k.startsWith(`${base}_`)).map(([, x]) => x));
+}
+const fis = danoT >= 2000 ? Math.max(0, danoT - hab) / danoT : e.heroi.atributo === 'agi' ? 0.75 : e.heroi.atributo === 'int' ? 0.25 : 0.5;
+const frac = total ? (Number(rec[e.heroi.npc]) || 0) / total : 0;
+const nM = mortes.filter((d) => d.assassino === e.idx).length;
+const compras = e.raw.purchase_log || [];
+return {
+jogador: e, nome: e.heroi.nome, fis, mag: 1 - fis, frac, mortes: nM,
+peso: 0.5 + 1.5 * frac + 0.25 * Math.min(nM, 4),
+tags: new Set(String(ETIQUETAS_HEROI[base] || '').split(' ').filter(Boolean)),
+carry: e.posicao <= 2 || e.heroi.atributo === 'agi',
+cura: Number(e.raw.hero_healing) || 0,
+butterfly: compras.some((x) => x.key === 'butterfly'),
+invisItem: compras.some((x) => ITENS_INVIS.has(x.key)),
+};
+});
+cache.set(p.idx, out);
+return out;
+}
+
+
+function ouroBruto(p, ctx) {
+const cache = ctx.ouroBruto || (ctx.ouroBruto = new Map());
+if (!cache.has(p.idx)) { let L = null; try { L = linhaDoOuro(p, ctx.items, null); } catch (err) { L = null; } cache.set(p.idx, L); }
+return cache.get(p.idx);
+}
+
+
+function quandoOOuroDava(p, ctx, key) {
+const custo = Number(ctx.items[key] && ctx.items[key].cost) || 0;
+if (!custo) return 0;
+const L = ouroBruto(p, ctx);
+if (L) return L.tOuro(key);
+const gpm = Number(p.raw.gold_per_min) || 0;
+const dur = Number(ctx.duracao) || 0;
+if (!gpm) return null;
+const t = Math.round(((Math.max(0, custo - 600)) / (gpm * 0.5)) * 60);
+return dur && t > dur ? null : t;
+}
+
+
+function pontoDoItem(p, ctx, key) {
+const c = CANDIDATOS[key];
+const info = itemInfo(ctx.items, key);
+const r = { key, nome: info.nome, custo: info.custo, pontos: 0, bruto: 0, porque: null, quem: [], anulado: null, tOuro: null };
+if (!c || !ctx.items[key]) return r;
+const papel = p.papelJogo || (p.posicao >= 4 ? 'suporte' : 'core');
+if (c.papel !== 'ambos' && c.papel !== papel) return r;
+if (c.pos && !c.pos.includes(p.posicao)) return r;
+if (!itemDoPapel(p, [key]).length) return r;
+const es = inimigosEtiquetados(p, ctx);
+const contrib = es.map((e) => ({ e, x: c.v(e) * e.peso })).filter((y) => y.x > 0.05).sort((a, b) => b.x - a.x);
+const bruto = soma(contrib, (y) => y.x);
+r.bruto = bruto;
+if (bruto < c.min) return r;
+r.quem = contrib.filter((y) => y.x >= 0.25).slice(0, 3).map((y) => y.e.nome);
+if (!r.quem.length) r.quem = [contrib[0].e.nome];
+r.porque = c.porque(r.quem);
+let pts = bruto;
+
+const nos = (ctx.nos || []).includes(p) ? ctx.nos : ctx.eles;
+const grupo = TIME_UNICO.find((g) => g.includes(key));
+if (grupo) {
+const dono = nos.find((j) => j !== p && (j.raw.purchase_log || []).some((x) => grupo.includes(x.key)));
+const pedido = ctx.alocacao && [...ctx.alocacao.porJogador.entries()].some(([idx, xs]) => idx !== p.idx && xs.some((x) => grupo.includes(x.key)));
+if (dono || pedido) return { ...r, pontos: 0, porque: dono ? `${dono.heroi.nome} já tinha ${info.nome}` : r.porque };
+}
+
+r.tOuro = quandoOOuroDava(p, ctx, key);
+if (r.tOuro == null) return { ...r, pontos: 0 };
+const eles = (ctx.nos || []).includes(p) ? ctx.eles : ctx.nos;
+for (const [anul, fator] of Object.entries(ANULA[key] || {})) {
+const quem = eles.map((e) => ({ e, t: ((e.raw.purchase_log || []).find((x) => x.key === anul) || {}).time })).filter((y) => y.t != null).sort((a, b) => a.t - b.t)[0];
+if (!quem) continue;
+const cedo = Number(quem.t) <= r.tOuro + 600; // o item ia ter menos de 10 min de vida útil
+const f = cedo ? fator : Math.min(1, fator + 0.4);
+if (f < 1) {
+pts *= f;
+if (!r.anulado || f < r.anulado.fator) r.anulado = { key: anul, nome: itemInfo(ctx.items, anul).nome, heroi: quem.e.heroi.nome, t: Number(quem.t), fator: f };
+}
+}
+
+const fim = Number(ctx.duracao) || 0;
+if (fim) pts *= 1 - 0.5 * Math.min(1, r.tOuro / fim);
+r.pontos = Math.round(pts * 100) / 100;
+return r;
+}
+
+
+function pontuarItens(p, ctx, so) {
+const ja = new Set((p.raw.purchase_log || []).map((x) => x.key));
+return Object.keys(CANDIDATOS).filter((k) => (!so || so.has(k)) && !ja.has(k)).map((k) => pontoDoItem(p, ctx, k))
+.filter((x) => x.bruto > 0 && x.porque).sort((a, b) => b.pontos - a.pontos);
+}
+const textoAnulado = (x) => `${x.nome} não serve tanto aqui: eles têm ${x.anulado.nome} (${x.anulado.heroi}) desde os ${minutos(x.anulado.t)}.`;
+const textoDoOuro = (t) => `O seu ouro fechava ele aos ~${minutos(t)}.`;
+
+
+const REGEN = new Set(['tango', 'tango_single', 'flask', 'clarity', 'enchanted_mango', 'faerie_fire', 'bottle', 'magic_stick', 'magic_wand']);
+const TODAS_BOTAS = new Set([...BOTAS, 'travel_boots', 'travel_boots_2', 'guardian_greaves', 'boots_of_bearing']);
+function basicoQueFaltou(p, ctx) {
+const log = (p.raw.purchase_log || []).map((x) => ({ key: x.key, t: Number(x.time) || 0 }));
+const out = [];
+const bota = log.find((x) => TODAS_BOTAS.has(x.key));
+if ((!bota || bota.t > 12 * 60) && ctx.items.boots) {
+const t = quandoOOuroDava(p, ctx, 'boots') ?? 0;
+out.push({ ...itemInfo(ctx.items, 'boots'), prioridade: 6, quando: Math.max(t, 4 * 60), basico: true, papel: 'bota antes de item grande',
+curto: 'sem bota você não chega na luta nem foge dela',
+motivo: `${bota ? `A sua bota só saiu aos ${minutos(bota.t)}` : 'Você jogou sem bota'}: sem ela você não chega na luta nem foge dela. Bota antes de qualquer item grande.` });
+}
+const mortes10 = (ctx.mortes ? ctx.mortes[p.idx] || [] : []).filter((d) => d.t < 600).length;
+const regen10 = log.filter((x) => x.t < 600 && REGEN.has(x.key)).length;
+if (mortes10 >= 2 && regen10 <= 2 && ctx.items.flask) {
+out.push({ ...itemInfo(ctx.items, 'flask'), prioridade: 5.5, quando: 60, basico: true, papel: 'regen para segurar a rota',
+curto: 'regen segura a rota',
+motivo: `${plural(mortes10, 'morte', 'mortes')} antes dos 10 min e só ${plural(regen10, 'item', 'itens')} de regen até lá: Healing Salve, Tango e Magic Wand seguram a rota sem voltar para a base.` });
+}
+return out;
+}
+
+
+function ajustarAoOuro(p, ctx, s) {
+if (s.basico) return s;
+const t = quandoOOuroDava(p, ctx, s.key);
+if (t == null) return null;
+if (s.quando == null || s.quando < t) {
+const motivo = s.motivo && !s.motivo.includes('O seu ouro fechava') ? `${s.motivo} ${textoDoOuro(t)}` : s.motivo;
+return { ...s, quando: t, tOuro: t, motivo };
+}
+return { ...s, tOuro: t };
+}
+
+function sugestaoDeSobrevivencia(p, ctx, estado, populares, comprou) {
+
+
+
+const responde = new Set([...DEFESA_PONTUADA].filter((k) => (estado.tipo === 'misto' ? RESPONDE.fisico.has(k) || RESPONDE.magico.has(k) : RESPONDE[estado.tipo].has(k))));
+const rank = pontuarItens(p, ctx, responde);
 const pop = populares ? [...populares.inicio, ...populares.meio, ...populares.fim].map((x) => x.key) : [];
 const doTime = new Set((ctx.alocacao ? [...ctx.alocacao.porJogador.values()].flat() : []).map((x) => x.key));
-const ordenada = [...lista].sort((a, b) => (pop.includes(a) ? pop.indexOf(a) : 99) - (pop.includes(b) ? pop.indexOf(b) : 99));
+const vale = rank.filter((x) => x.pontos > 0).map((x) => ({ ...x, pontos: x.pontos * (pop.includes(x.key) ? 1.15 : 1) })).sort((a, b) => b.pontos - a.pontos);
+const lista = itemDoPapel(p, SOBREVIVER[estado.tipo][p.funcao]).filter((k) => ctx.items[k]);
 
 const primeiraMorte = (ctx.mortes ? ctx.mortes[p.idx] : []).find((d) => d.t >= 600);
-const tem = lista.filter((k) => comprou.has(k)).sort((a, b) => comprou.get(a) - comprou.get(b))[0];
+const tem = [...new Set([...DEFESA_PONTUADA, ...lista])].filter((k) => comprou.has(k) && (lista.includes(k) || pontoDoItem(p, ctx, k).bruto > 0)).sort((a, b) => comprou.get(a) - comprou.get(b))[0];
 let key;
 let atrasoTxt = null;
+let esc = null;
 if (tem) {
 const x = textoDoAtraso(p, ctx, tem, null);
 if (!x || !x.tarde) return null; // chegou sem custar morte: o problema não era item
 atrasoTxt = x.texto;
 key = tem;
 } else {
-key = ordenada.find((k) => !doTime.has(k));
+esc = vale.find((x) => !doTime.has(x.key)) || null;
+key = esc ? esc.key : lista.find((k) => !doTime.has(k) && quandoOOuroDava(p, ctx, k) != null);
 }
 if (!key) return null;
 const info = itemInfo(ctx.items, key);
-const quando = primeiraMorte ? primeiraMorte.t : null;
 const atrasado = comprou.has(key);
 const saiu = atrasado ? comprou.get(key) : null;
+const tOuro = atrasado ? null : quandoOOuroDava(p, ctx, key);
+const quando = primeiraMorte ? Math.max(primeiraMorte.t, tOuro || 0) : tOuro;
 const tipoTxt = { magico: 'quase tudo de magia', fisico: 'quase tudo no ataque físico', misto: 'misturando ataque e magia' }[estado.tipo];
+const anulados = rank.filter((x) => x.anulado && x.anulado.fator <= 0.4 && x.bruto >= (esc ? esc.bruto * 0.6 : 0.6)).slice(0, 1).map(textoAnulado);
+const porque = esc ? `${info.nome}. ${frase0(esc.porque)}.` : `${info.nome} (${PAPEL_DEFESA[key] || 'sobrevivência'}).`;
+const ouroTxt = tOuro != null && primeiraMorte && tOuro > primeiraMorte.t ? ` ${textoDoOuro(tOuro)}` : '';
 return {
-...info, prioridade: 5, quando, porque: 'sobreviver', contra: estado.quem, atrasado, sobrevivencia: true,
-papel: PAPEL_DEFESA[key] || 'te mantém vivo na luta',
-popular: pop.includes(key),
+...info, prioridade: 5, quando, tOuro, porque: 'sobreviver', contra: estado.quem, atrasado, sobrevivencia: true,
+papel: esc ? esc.porque.split('; ').pop() : PAPEL_DEFESA[key] || 'te mantém vivo na luta',
+popular: pop.includes(key), anulados,
 saiu, atrasoTxt,
-motivo: `Você estava apanhando (${estado.motivos.join(', ')})${estado.quem ? ` e ${estado.quem} batia ${tipoTxt}` : ''}. Atrás no jogo, o primeiro item grande tem que te manter vivo: ${info.nome} (${PAPEL_DEFESA[key] || 'sobrevivência'}).${atrasoTxt ? ` ${atrasoTxt}` : ''}`,
+motivo: `Você estava apanhando (${estado.motivos.join(', ')})${estado.quem ? ` e ${estado.quem} batia ${tipoTxt}` : ''}. Atrás no jogo, o primeiro item grande tem que te manter vivo: ${atrasoTxt ? `${info.nome}. ${atrasoTxt}` : `${porque}${ouroTxt}`}${anulados.length ? ` ${anulados[0]}` : ''}`,
 };
 }
 
@@ -2169,7 +2399,12 @@ if (evitado) ganancia = { key: evitado.key, nome: evitado.nome };
 pessoais = pessoais.filter((c) => !GANANCIA.has(c.key));
 sobreviver = sugestaoDeSobrevivencia(p, ctx, estado, populares, comprou);
 }
-const sugestoes = [...(sobreviver ? [sobreviver] : []), ...doTime, ...pessoais].filter((c) => !vistos.has(c.key) && vistos.add(c.key)).slice(0, 3);
+
+const basico = basicoQueFaltou(p, ctx);
+
+const doTime2 = sobreviver ? doTime.filter((x) => !(x.todos && DEFESA_PONTUADA.has(x.key))) : doTime;
+const sugestoes = [...basico, ...(sobreviver ? [sobreviver] : []), ...doTime2, ...pessoais].map((c) => ajustarAoOuro(p, ctx, c)).filter((c) => c && !vistos.has(c.key) && vistos.add(c.key)).slice(0, 3);
+if (sobreviver && sobreviver.anulados) observacoes.push(...sobreviver.anulados);
 if (ctx.alocacao) { acertosContra.push(...ctx.alocacao.acertos.get(p.idx)); observacoes.unshift(...ctx.alocacao.tardes.get(p.idx).map((x) => x.texto)); }
 return { ameacas, sugestoes, observacoes: [...new Set(observacoes)].slice(0, 4), acertosContra: [...new Set(acertosContra)], estado, ganancia };
 }
@@ -2250,12 +2485,12 @@ fisico: [
 { pos: [3], itens: ['crimson_guard', 'assault', 'shivas_guard'], por: 'aura de armadura e bloqueio para o time inteiro' },
 { pos: [5], itens: ['ghost', 'force_staff'], por: 'fica imune a ataque quando ele pular em você' },
 { pos: [4], itens: ['solar_crest', 'force_staff'], por: 'armadura no aliado que ele focar' },
-{ pos: [1, 2], todos: true, itens: ['heavens_halberd', 'butterfly', 'black_king_bar'], por: 'desarma ou desvia os ataques dele na luta' },
+{ pos: [1, 2], todos: true, itens: ['heavens_halberd', 'blade_mail', 'butterfly', 'black_king_bar'], por: 'desarma ou desvia os ataques dele na luta' },
 ],
 magico: [
 { pos: [3, 4], itens: ['pipe'], por: 'escudo mágico para o time inteiro' },
-{ pos: [5, 4], itens: ['glimmer_cape', 'force_staff'], por: 'resistência mágica e fuga para você ou um aliado' },
-{ pos: [1, 2], todos: true, itens: ['black_king_bar'], por: 'imunidade a magia para bater na luta' },
+{ pos: [5, 4], itens: ['glimmer_cape', 'force_staff', 'lotus_orb'], por: 'resistência mágica e fuga para você ou um aliado' },
+{ pos: [1, 2], todos: true, itens: ['black_king_bar', 'sphere', 'eternal_shroud'], por: 'imunidade a magia para bater na luta' },
 ],
 cura: [
 { pos: [4, 3, 5], itens: ['spirit_vessel'], por: 'corta a cura deles', um: true },
@@ -2321,15 +2556,27 @@ resolvida = true;
 if (resp.todos) continue;
 break;
 }
-const key = itemDoPapel(p, resp.itens).find((k) => ctx.items[k] && !(ITENS_DE_TIME.has(k) && doTime.has(k)) && !porJogador.get(p.idx).some((x) => x.key === k));
-if (!key) continue;
+
+
+
+if (resp.todos && porJogador.get(p.idx).some((x) => x.todos)) continue;
+const livres = itemDoPapel(p, resp.itens).filter((k) => ctx.items[k] && !(ITENS_DE_TIME.has(k) && doTime.has(k)) && !porJogador.get(p.idx).some((x) => x.key === k));
+const pont = livres.map((k, i) => {
+if (CANDIDATOS[k]) { const x = pontoDoItem(p, ctx, k); return { k, pts: x.pontos, x }; }
+const t = quandoOOuroDava(p, ctx, k);
+return { k, pts: t == null ? 0 : 0.5 - i * 0.01, x: { tOuro: t } };
+}).filter((y) => y.pts > 0).sort((a, b) => b.pts - a.pts);
+if (!pont.length) continue;
+const key = pont[0].k;
+const xp = pont[0].x;
 if (ITENS_DE_TIME.has(key)) doTime.add(key);
 const info = itemInfo(ctx.items, key);
-const quando = n.quando != null ? n.quando : null;
+const quando = Math.max(n.quando ?? 0, xp.tOuro ?? 0) || null;
+const papel = xp.porque ? xp.porque.split('; ').pop() : resp.por;
 const sug = {
-...info, contra: n.contra, prioridade: n.peso + 1, quando, porque: 'time', papel: resp.por,
-curto: n.tipo === 'cura' ? resp.por : `${resp.por}, contra ${n.contra}`,
-motivo: `${n.porque}. ${resp.por.charAt(0).toUpperCase() + resp.por.slice(1)}.${n.nota ? ` ${n.nota}` : ''}`,
+...info, contra: n.contra, prioridade: n.peso + 1, quando, tOuro: xp.tOuro, porque: 'time', papel, todos: Boolean(resp.todos),
+curto: n.tipo === 'cura' ? papel : `${papel}, contra ${n.contra}`,
+motivo: `${n.porque}. ${frase0(xp.porque || resp.por)}.${xp.tOuro != null && n.quando != null && xp.tOuro > n.quando ? ` ${textoDoOuro(xp.tOuro)}` : ''}${n.nota ? ` ${n.nota}` : ''}`,
 };
 porJogador.get(p.idx).push(sug);
 plano.push({ jogador: p, ...sug });
@@ -3549,6 +3796,7 @@ return resultado;
 const CONTEXTOS = new WeakMap();
 
 return { analisar, rotaDe, posicoesNaRota, LABELS, ZOEIRAS, VITORIA_FEATURES, chanceRadiant, estadoRadiant, util: { mmss, fmtInt, fmtK, pct, plural },
+itens: { pontoDoItem, pontuarItens, quandoOOuroDava, ETIQUETAS_HEROI },
 ouro: { linhaDoOuro, catDaCompra, respostasDe, ouroDe, atrasoDoItem, oQueCabia, referenciaDe, BARATO, DEGRAUS, contexto: (r) => CONTEXTOS.get(r) } };
 });
 
