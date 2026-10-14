@@ -297,7 +297,7 @@ class NuncaApagaABoa(unittest.TestCase):
             d = Path(t)
             (d / "base.json").write_text('{"boa": true}')
             with mock.patch.object(G, "contagem_do_explorer", side_effect=RuntimeError("x")), \
-                    mock.patch.object(G, "fonte_amostra", return_value=(G.nova_acc(), 50, {})):
+                    mock.patch.object(G, "fonte_amostra", return_value=(G.nova_acc(), 3, {})):
                 self.assertEqual(self._rodar(d), 1)
             self.assertEqual(json.loads((d / "base.json").read_text()), {"boa": True})
             self.assertFalse((d / "acc.json").exists())

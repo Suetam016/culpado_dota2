@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "17 * * * *"
   workflow_dispatch:
+  # o agendamento do GitHub demora (ou falha) neste repositório: um push em coleta/disparar (qualquer conteúdo) roda na hora
+  push:
+    branches: [main]
+    paths: ["coleta/disparar", "coleta/coletar.py", ".github/workflows/coleta.yml"]
 
 permissions:
   contents: write

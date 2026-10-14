@@ -58,7 +58,7 @@ MINUTO = 10
 MIN_N = 20              # só vai para a base.json linha com 20+ rotas (o painel não usa menos que isso)
 PRIOR_N = 30            # pseudo-rotas que puxam a média para o nível de cima (amostra pequena = perto do típico)
 LIMIAR_GANHA = 1000     # rota "ganha" = +1000 de ouro aos 10 min
-MIN_PARTIDAS = 100      # rodada com menos partidas novas que isso não grava nada
+MIN_PARTIDAS = 5        # rodada com menos partidas novas que isso não grava nada (a base acumula entre rodadas; o OpenDota manda muita Turbo)
 DECAIMENTO_SEMANA = 0.8  # peso das rodadas anteriores por semana que passou
 PODA = 0.5              # par com menos que isso (depois do decaimento) sai do acumulado
 ESPERA = 1.1            # segundos entre chamadas (<= 60/min, limite do OpenDota sem chave)
