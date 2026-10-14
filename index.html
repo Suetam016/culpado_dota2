@@ -1599,8 +1599,12 @@ const SO_CORE = new Set(['bfury', 'radiance', 'maelstrom', 'mjollnir', 'hand_of_
 const SO_SUPORTE = new Set(['ward_observer', 'ward_sentry', 'dust', 'tranquil_boots', 'mekansm', 'guardian_greaves', 'holy_locket', 'boots_of_bearing', 'pavise', 'solar_crest', 'urn_of_shadows']);
 
 
+
+
+const TROCA_DE_PAPEL = false;
 function papelDoJogo(p, ctx) {
 const base = p.posicao >= 4 ? 'suporte' : 'core';
+if (!TROCA_DE_PAPEL) return { papel: base, virou: false };
 const time = ctx && ((ctx.nos || []).includes(p) ? ctx.nos : ctx.eles);
 const nw = (x) => Number(x.raw.net_worth ?? x.raw.total_gold) || 0;
 if (!time || !nw(p)) return { papel: base, virou: false };
