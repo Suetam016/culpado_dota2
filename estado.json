@@ -1,14 +1,8 @@
 {
  "cota": {
-  "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
-   "X-Rate-Limit-Remaining-Minute": "59"
-  },
-  "quando": "2026-10-15T07:28:02Z",
-  "restante": {
-   "dia": 2983,
-   "minuto": 43
-  }
+  "cabecalhos_primeira_resposta": null,
+  "quando": "2026-10-15T13:45:12Z",
+  "restante": {}
  },
  "desistencias": {
   "1820161034": {
@@ -1805,10 +1799,23 @@
     "minuto": 43
    },
    "sobra_do_dia": 2764
+  },
+  {
+   "basicas": 0,
+   "chamadas": 18,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-10-15T13:27:11Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {},
+   "sobra_do_dia": 2746
   }
  ],
  "uso": {
   "2026-10-14": 1072,
-  "2026-10-15": 36
+  "2026-10-15": 54
  }
 }
