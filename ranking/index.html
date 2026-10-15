@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ranking — Marocas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-inner">
+      <div class="marca">
+        <h1>Marocas</h1>
+        <span class="tag">Ranking</span>
+      </div>
+      <button class="voltar" id="voltar" title="Voltar para o painel">← Painel</button>
+    </div>
+  </header>
+
+  <main class="pagina">
+    <section class="ranking-secao">
+      <div class="abas">
+        <button class="aba aba-ativa" data-aba="geral">Geral</button>
+        <button class="aba" data-aba="stack">Com o Stack</button>
+        <button class="aba" data-aba="solo">Solo</button>
+      </div>
+
+      <div class="conteudo-abas">
+        <div class="aba-conteudo aba-conteudo-ativa" id="aba-geral">
+          <table class="ranking-tabela">
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>🚨 Culpados</th>
+                <th>✨ Craques</th>
+                <th>Partidas</th>
+                <th>Win Rate</th>
+                <th>Streak</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-geral">
+              <!-- preenchido por JS -->
+            </tbody>
+          </table>
+          <p class="carregando" id="carregando-geral">Carregando ranking...</p>
+        </div>
+
+        <div class="aba-conteudo" id="aba-stack">
+          <table class="ranking-tabela">
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>🚨 Culpados</th>
+                <th>✨ Craques</th>
+                <th>Partidas</th>
+                <th>Win Rate</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-stack">
+              <!-- preenchido por JS -->
+            </tbody>
+          </table>
+          <p class="carregando" id="carregando-stack">Carregando ranking...</p>
+        </div>
+
+        <div class="aba-conteudo" id="aba-solo">
+          <table class="ranking-tabela">
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>🚨 Culpados</th>
+                <th>✨ Craques</th>
+                <th>Partidas</th>
+                <th>Win Rate</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-solo">
+              <!-- preenchido por JS -->
+            </tbody>
+          </table>
+          <p class="carregando" id="carregando-solo">Carregando ranking...</p>
+        </div>
+      </div>
+
+      <div class="rodape">
+        <p id="atualizado-em">Atualizado em: —</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
