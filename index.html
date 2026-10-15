@@ -4752,6 +4752,7 @@ principal = h('div', { class: 'topo-vitoria' }, cartaz, botao, elo);
 }
 return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
 r.partida.provisorio ? h('p', { class: 'selo-provisorio' }, 'Veredito provisório · só com o placar') : null,
+seletorDeTime(r),
 principal,
 parcial ? h('div', { class: 'cartao esperando' },
 h('span', { class: 'pulso', 'aria-hidden': 'true' }),
@@ -4759,7 +4760,6 @@ h('div', {},
 h('p', { class: 'esperando-titulo' }, 'Esperando os dados do replay para corroborar o veredito…'),
 h('p', {}, 'Por enquanto o tribunal só tem o placar e o farm. Quando o replay for analisado (de 1 a 10 min), a sentença sai completa e o site libera tudo. Deixe a aba aberta.')))
 : h('div', { class: 'topo-time' },
-seletorDeTime(r),
 h('div', { class: 'figurinhas' }, (vitoria ? r.craques.map((c) => r.vereditos.find((v) => v.jogador === c.jogador)) : r.vereditos).map((v, i) => figurinha(v, i, !vitoria && cs.includes(v), vitoria ? r.craques.find((c) => c.jogador === v.jogador) : null, vitoria && craquesDe(r).some((c) => c.jogador === v.jogador))))));
 }
 
