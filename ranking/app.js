@@ -3,8 +3,10 @@
  */
 
 const RANKING_URL = '../amigos/ranking.json';
+const INSIGHTS_URL = '../reddit/insights.json';
 
 let dados = null;
+let insights = null;
 let abaAtiva = 'geral';
 
 // Carregar ranking ao iniciar
@@ -27,9 +29,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Carregar dados
   try {
-    const resp = await fetch(RANKING_URL);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    dados = await resp.json();
+    const respRanking = await fetch(RANKING_URL);
+    if (!respRanking.ok) throw new Error(`HTTP ${respRanking.status}`);
+    dados = await respRanking.json();
+
+    // Carregar insights (não é crítico se falhar)
+    try {
+      const respInsights = await fetch(INSIGHTS_URL);
+      if (respInsights.ok) {
+        insights = await respInsights.json();
+      }
+    } catch (e) {
+      console.warn('Insights não disponíveis:', e);
+    }
+
     renderizar();
   } catch (erro) {
     console.error('Erro ao carregar ranking:', erro);
@@ -70,6 +83,7 @@ function renderizar() {
   renderizarAba('geral', dados.ranking);
   renderizarAbaStack('stack');
   renderizarAbaSolo('solo');
+  renderizarAbaMeta('meta');
 }
 
 function renderizarAba(nomeAba, ranking) {
@@ -187,6 +201,78 @@ function renderizarAbaSolo(nomeAba) {
   const ranking = Object.values(rankingSolo).sort((a, b) => b.culpados - a.culpados);
   carregando.style.display = 'none';
   renderizarAba(nomeAba, ranking);
+}
+
+function renderizarAbaMeta(nomeAba) {
+  const container = document.getElementById('meta-topicos');
+  const carregando = document.getElementById(`carregando-${nomeAba}`);
+
+  if (!insights || !insights.topicos) {
+    carregando.textContent = 'Insights não disponíveis. Execute reddit/insights.py para coletar dados.';
+    return;
+  }
+
+  carregando.style.display = 'none';
+  container.innerHTML = '';
+
+  // Renderizar cada tópico
+  const topicos = Object.entries(insights.topicos);
+  if (topicos.length === 0) {
+    carregando.textContent = 'Nenhum insight coletado ainda.';
+    carregando.style.display = 'block';
+    return;
+  }
+
+  topicos.forEach(([topicoKey, topico]) => {
+    const topicoDiv = document.createElement('div');
+    topicoDiv.className = 'topico-card';
+
+    const titulo = document.createElement('div');
+    titulo.className = 'topico-titulo';
+    titulo.textContent = topicoKey.charAt(0).toUpperCase() + topicoKey.slice(1);
+
+    const descricao = document.createElement('div');
+    descricao.className = 'topico-descricao';
+    descricao.textContent = topico.descricao;
+
+    const stats = document.createElement('div');
+    stats.className = 'topico-stats';
+    stats.innerHTML = `
+      <div class="stat-item">
+        <span class="stat-label">Menções:</span>
+        <span class="stat-valor">${topico.count}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Score médio:</span>
+        <span class="stat-valor">${topico.avgScore}</span>
+      </div>
+    `;
+
+    const insightsList = document.createElement('div');
+    insightsList.className = 'insights-list';
+
+    topico.insights.forEach(insight => {
+      const insightDiv = document.createElement('div');
+      insightDiv.className = 'insight-item';
+
+      const texto = document.createElement('div');
+      texto.className = 'insight-texto';
+      texto.textContent = insight.texto;
+
+      const meta = document.createElement('div');
+      meta.className = 'insight-meta';
+      meta.innerHTML = `
+        <span class="insight-autor">— ${escapeHtml(insight.autor)}</span>
+        <span class="insight-score">👍 ${insight.score}</span>
+      `;
+
+      insightDiv.append(texto, meta);
+      insightsList.append(insightDiv);
+    });
+
+    topicoDiv.append(titulo, descricao, stats, insightsList);
+    container.append(topicoDiv);
+  });
 }
 
 function escapeHtml(text) {

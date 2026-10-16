@@ -232,6 +232,102 @@ body {
   font-style: italic;
 }
 
+/* Meta insights */
+.meta-container {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.topico-card {
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s;
+}
+
+.topico-card:hover {
+  border-color: var(--cor-acento);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.1);
+}
+
+.topico-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cor-acento);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.topico-descricao {
+  font-size: 0.85rem;
+  color: var(--cor-texto-fraco);
+  margin-bottom: 1rem;
+}
+
+.topico-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  color: var(--cor-texto-fraco);
+}
+
+.stat-valor {
+  font-weight: 600;
+  color: var(--cor-sucesso);
+}
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.insight-item {
+  background: rgba(255, 107, 107, 0.05);
+  border-left: 3px solid var(--cor-acento);
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+}
+
+.insight-texto {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.insight-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--cor-texto-fraco);
+}
+
+.insight-autor {
+  font-style: italic;
+}
+
+.insight-score {
+  background: rgba(81, 207, 102, 0.2);
+  color: var(--cor-sucesso);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
 /* Rodapé */
 .rodape {
   padding: 1.5rem 2rem;
