@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
   <header class="topo">
@@ -19,17 +19,30 @@
       </div>
       <a class="voltar" href="../">← Painel</a>
     </div>
-    <nav class="abas" role="tablist">
-      <button class="aba aba-ativa" data-aba="geral" role="tab">Geral</button>
-      <button class="aba" data-aba="stack" role="tab">Com o stack</button>
-      <button class="aba" data-aba="solo" role="tab">Solo</button>
-      <button class="aba" data-aba="duplas" role="tab">Duplas</button>
-      <button class="aba" data-aba="composicoes" role="tab">Composições</button>
-      <button class="aba" data-aba="meta" role="tab">Meta</button>
-    </nav>
   </header>
 
   <main class="pagina">
+    <nav class="abas" role="tablist" aria-label="Seções do ranking">
+      <button class="aba aba-ativa" data-aba="geral" role="tab" aria-selected="true">
+        <span class="aba-icone" aria-hidden="true">🏆</span><span class="aba-nome">Geral</span><span class="aba-sub">Culpados e craques</span>
+      </button>
+      <button class="aba" data-aba="stack" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">👥</span><span class="aba-nome">Com o stack</span><span class="aba-sub">Jogando juntos</span>
+      </button>
+      <button class="aba" data-aba="solo" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">🎯</span><span class="aba-nome">Solo</span><span class="aba-sub">Sozinho na fila</span>
+      </button>
+      <button class="aba" data-aba="duplas" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">🤝</span><span class="aba-nome">Duplas</span><span class="aba-sub">Quem combina</span><span class="aba-novo">Novo</span>
+      </button>
+      <button class="aba" data-aba="composicoes" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">🛡️</span><span class="aba-nome">Times e picks</span><span class="aba-sub">Monte o time de hoje</span><span class="aba-novo">Novo</span>
+      </button>
+      <button class="aba" data-aba="meta" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">🔥</span><span class="aba-nome">Meta</span><span class="aba-sub">Dicas do Reddit</span>
+      </button>
+    </nav>
+
     <section class="aba-conteudo aba-conteudo-ativa" id="aba-ranking">
       <div class="barra">
         <p class="barra-desc" id="ranking-desc"></p>
@@ -61,6 +74,19 @@
 
     <section class="aba-conteudo" id="aba-composicoes">
       <div class="secao-titulo">
+        <h2>Monte o time de hoje</h2>
+        <p>Marque quem vai jogar (até 5). A sugestão usa o histórico de cada um em cada herói e posição, mais as duplas de heróis que já deram certo entre vocês.</p>
+      </div>
+      <div class="escolha" id="escolha-jogadores" role="group" aria-label="Quem vai jogar"></div>
+      <div id="time-sugerido"></div>
+
+      <div class="secao-titulo">
+        <h2>Os heróis de cada um</h2>
+        <p>Onde cada um mais ganha, e o que é melhor deixar no banco.</p>
+      </div>
+      <div class="cartoes cartoes-pool" id="pool-jogadores"></div>
+
+      <div class="secao-titulo">
         <h2>Nossas composições</h2>
         <p>Partidas com 3 ou mais amigos do mesmo lado: quem joga onde e com quais heróis.</p>
       </div>
@@ -89,6 +115,6 @@
   </form>
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

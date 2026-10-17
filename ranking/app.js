@@ -61,7 +61,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function mudarAba(aba) {
-  document.querySelectorAll('.aba').forEach(b => b.classList.toggle('aba-ativa', b.dataset.aba === aba));
+  document.querySelectorAll('.aba').forEach(b => {
+    b.classList.toggle('aba-ativa', b.dataset.aba === aba);
+    b.setAttribute('aria-selected', String(b.dataset.aba === aba));
+  });
   const secao = aba in VISOES ? 'ranking' : aba;
   document.querySelectorAll('.aba-conteudo').forEach(s => s.classList.toggle('aba-conteudo-ativa', s.id === `aba-${secao}`));
   history.replaceState(null, '', `#${aba}`);
@@ -173,7 +176,9 @@ function nomeHeroi(id) {
 }
 
 function nomeJogador(conta) {
-  return parceiros.jogadores[conta] ? parceiros.jogadores[conta].nome : conta;
+  if (parceiros.jogadores[conta]) return parceiros.jogadores[conta].nome;
+  const r = ranking && ranking.ranking.find(j => j.accountId === conta);
+  return r ? r.nome : conta;
 }
 
 function corWr(wr, jogos) {
@@ -285,6 +290,8 @@ function cartaoDupla(p, destaque) {
 /* ---------- Composições ---------- */
 
 function renderizarComposicoes() {
+  montarSugestao();
+  renderizarPool();
   const lista = $('lista-composicoes');
   const grupos = (parceiros && parceiros.composicoes) || [];
   if (!grupos.length) {
@@ -301,11 +308,15 @@ function cartaoComposicao(g) {
   div.className = 'cartao' + (g.jogos < MIN_JOGOS_GRUPO ? ' cartao-poucos' : '');
   const tamanho = { 3: 'Trio', 4: 'Quarteto', 5: 'Time fechado' }[g.membros.length] || 'Grupo';
 
+  // herói que cada um mais jogou (e ganhou) com esse grupo
+  const heroiDoGrupo = c => ((g.herois || {})[c] || [])[0];
   const formacao = f => {
     const quem = {};
-    Object.entries(f.posicoes).forEach(([c, pos]) => { quem[pos] = nomeJogador(c); });
-    return `<div class="formacao">${[1, 2, 3, 4, 5].map(pos => `
-      <div class="slot${quem[pos] ? '' : ' slot-vazio'}"><span>${POSICOES[pos]}</span><b>${quem[pos] ? esc(quem[pos]) : 'random'}</b></div>`).join('')}</div>
+    Object.entries(f.posicoes).forEach(([c, pos]) => { quem[pos] = c; });
+    return `<div class="formacao">${[1, 2, 3, 4, 5].map(pos => {
+      const c = quem[pos], h = c && heroiDoGrupo(c);
+      return `<div class="slot${c ? '' : ' slot-vazio'}"><span>${POSICOES[pos]}</span>${h ? heroi(h.heroi) : ''}<b>${c ? esc(nomeJogador(c)) : 'random'}</b>${h ? `<small>${esc(nomeHeroi(h.heroi))} ${h.vitorias}/${h.jogos}</small>` : ''}</div>`;
+    }).join('')}</div>
       <div class="formacao-num">${f.winRate}% · ${f.vitorias}V em ${f.jogos}</div>`;
   };
 
@@ -333,6 +344,173 @@ function cartaoComposicao(g) {
     <div class="bloco-titulo">Últimas partidas</div>
     ${g.partidas.map(partida).join('')}`;
   return div;
+}
+
+/* ---------- Sugestão de time ----------
+ * Win rate de cada amigo em cada (herói, posição), puxada pra 50% quando há poucos jogos (prior de PESO_PRIOR
+ * partidas), mais um bônus para duplas de heróis que já deram certo entre dois amigos. Busca exaustiva: no
+ * máximo 5 amigos × 120 jeitos de distribuir as posições × 3 heróis por amigo/posição. */
+
+const PESO_PRIOR = 10;
+const MIN_JOGOS_PICK = 2;
+const PESO_SINERGIA = 0.5;
+const MAX_TIME = 5;
+let escolhidos = null;
+
+const suavizado = (v, j) => (v + PESO_PRIOR / 2) / (j + PESO_PRIOR);
+const logit = p => Math.log(p / (1 - p));
+
+function candidatos(conta) {
+  const pool = (parceiros.pool || {})[conta] || [];
+  const porPos = {};
+  for (const minimo of [MIN_JOGOS_PICK, 1]) {
+    pool.filter(x => x.pos && x.jogos >= minimo).forEach(x => {
+      (porPos[x.pos] = porPos[x.pos] || []).push({ ...x, nota: logit(suavizado(x.vitorias, x.jogos)) });
+    });
+    if (Object.keys(porPos).length) break;
+  }
+  Object.values(porPos).forEach(l => l.sort((a, b) => b.nota - a.nota));
+  return porPos;
+}
+
+function sinergiaEntre(ca, ha, cb, hb) {
+  const p = parceiros.pares.find(x => (x.a === ca && x.b === cb) || (x.a === cb && x.b === ca));
+  if (!p) return null;
+  const [h1, h2] = p.a === ca ? [ha, hb] : [hb, ha];
+  return [...p.herois, ...p.heroisPiores].find(x => x.heroiA === h1 && x.heroiB === h2) || null;
+}
+
+function permutacoes(n, livres = [1, 2, 3, 4, 5]) {
+  if (!n) return [[]];
+  return livres.flatMap(pos => permutacoes(n - 1, livres.filter(x => x !== pos)).map(r => [pos, ...r]));
+}
+
+function melhoresTimes(contas) {
+  const cand = Object.fromEntries(contas.map(c => [c, candidatos(c)]));
+  const times = [];
+  for (const posicoes of permutacoes(contas.length)) {
+    const opcoes = contas.map((c, i) => (cand[c][posicoes[i]] || []).slice(0, 3));
+    if (opcoes.some(o => !o.length)) continue;
+    const combinar = (i, atual) => {
+      if (i === contas.length) {
+        const herois = new Set(atual.map(x => x.heroi));
+        if (herois.size < atual.length) return;
+        let nota = atual.reduce((s, x) => s + x.nota, 0);
+        const sinergias = [];
+        for (let a = 0; a < atual.length; a++) for (let b = a + 1; b < atual.length; b++) {
+          const sn = sinergiaEntre(contas[a], atual[a].heroi, contas[b], atual[b].heroi);
+          if (sn) {
+            nota += PESO_SINERGIA * logit(suavizado(sn.vitorias, sn.jogos));
+            sinergias.push({ a: contas[a], b: contas[b], ...sn, ha: atual[a].heroi, hb: atual[b].heroi });
+          }
+        }
+        times.push({ nota, picks: atual.map((x, k) => ({ ...x, conta: contas[k], pos: posicoes[k] })), sinergias });
+        return;
+      }
+      opcoes[i].forEach(o => combinar(i + 1, [...atual, o]));
+    };
+    combinar(0, []);
+  }
+  times.sort((a, b) => b.nota - a.nota);
+  return { times, semDados: contas.filter(c => !Object.keys(cand[c]).length) };
+}
+
+function montarSugestao() {
+  const box = $('escolha-jogadores');
+  if (!parceiros || !parceiros.pool) { $('time-sugerido').innerHTML = '<p class="carregando">Sem histórico de heróis ainda.</p>'; return; }
+  const total = c => ((parceiros.pool || {})[c] || []).reduce((s, x) => s + x.jogos, 0);
+  const contas = Object.keys(parceiros.pool).sort((a, b) => total(b) - total(a));
+  escolhidos = new Set(contas.slice(0, MAX_TIME));
+
+  const aviso = document.createElement('p');
+  aviso.className = 'escolha-aviso';
+  contas.forEach(c => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = nomeJogador(c);
+    b.setAttribute('aria-pressed', String(escolhidos.has(c)));
+    b.addEventListener('click', () => {
+      aviso.textContent = '';
+      if (escolhidos.has(c)) escolhidos.delete(c);
+      else if (escolhidos.size >= MAX_TIME) { aviso.textContent = 'Time cheio: desmarque alguém antes.'; return; }
+      else escolhidos.add(c);
+      b.setAttribute('aria-pressed', String(escolhidos.has(c)));
+      renderizarSugestao();
+    });
+    box.append(b);
+  });
+  box.append(aviso);
+  renderizarSugestao();
+}
+
+function renderizarSugestao() {
+  const alvo = $('time-sugerido');
+  const contas = [...escolhidos];
+  if (!contas.length) { alvo.innerHTML = '<p class="carregando">Marque quem vai jogar.</p>'; return; }
+  const { times, semDados } = melhoresTimes(contas);
+  if (!times.length) {
+    alvo.innerHTML = `<p class="carregando">Não deu pra montar um time sem repetir posição com o histórico de ${esc(semDados.map(nomeJogador).join(', ') || 'vocês')}. Tente outra combinação.</p>`;
+    return;
+  }
+  const [melhor] = times;
+  const media = Math.round(100 * melhor.picks.reduce((s, x) => s + suavizado(x.vitorias, x.jogos), 0) / melhor.picks.length);
+  // segunda opção de cada um: o melhor time em que essa pessoa joga outro herói
+  const alternativa = c => {
+    const atual = melhor.picks.find(x => x.conta === c).heroi;
+    const t = times.find(t => t.picks.find(x => x.conta === c).heroi !== atual);
+    return t && t.picks.find(x => x.conta === c);
+  };
+  const ordenados = [...melhor.picks].sort((a, b) => a.pos - b.pos);
+  alvo.innerHTML = `
+    <div class="time">
+      <div class="time-cab">
+        <div><h3>Time sugerido</h3><p>${contas.length} ${contas.length === 1 ? 'jogador' : 'jogadores'} · aproveitamento médio nesses picks ≈ ${media}%</p></div>
+      </div>
+      <div class="escalacao">${ordenados.map(x => {
+        const alt = alternativa(x.conta);
+        return `<div class="pick">
+          <div class="pick-pos">${POSICOES[x.pos]}</div>
+          ${heroi(x.heroi)}
+          <div class="pick-heroi">${esc(nomeHeroi(x.heroi))}</div>
+          <div class="pick-quem">${esc(nomeJogador(x.conta))}</div>
+          <div class="pick-num ${x.vitorias / x.jogos > 0.5 ? 'bom' : x.vitorias / x.jogos < 0.5 ? 'ruim' : ''}">${x.vitorias}V em ${x.jogos} (${Math.round(100 * x.vitorias / x.jogos)}%)</div>
+          ${alt ? `<div class="pick-alt">ou ${esc(nomeHeroi(alt.heroi))} de ${POSICOES[alt.pos]} (${alt.vitorias}/${alt.jogos})</div>` : ''}
+        </div>`;
+      }).join('')}</div>
+      ${melhor.sinergias.length ? `<div class="sinergia-time">Sinergia: ${melhor.sinergias.map(sn =>
+        `${esc(nomeHeroi(sn.ha))} (${esc(nomeJogador(sn.a))}) + ${esc(nomeHeroi(sn.hb))} (${esc(nomeJogador(sn.b))}) <b>${sn.vitorias}/${sn.jogos}</b>`).join(' · ')}</div>` : ''}
+      <p class="time-nota">Com poucos jogos num herói o modelo puxa a nota pra 50%, então quem tem muitos jogos bons pesa mais que um 2/2. É o histórico de vocês, não leva em conta o draft do inimigo.</p>
+    </div>`;
+}
+
+function renderizarPool() {
+  const alvo = $('pool-jogadores');
+  if (!parceiros || !parceiros.pool) return;
+  const total = c => parceiros.pool[c].reduce((s, x) => s + x.jogos, 0);
+  Object.keys(parceiros.pool).sort((a, b) => total(b) - total(a)).forEach(c => {
+    // junta as posições: aqui interessa o herói
+    const porHeroi = {};
+    parceiros.pool[c].forEach(x => {
+      const h = porHeroi[x.heroi] = porHeroi[x.heroi] || { heroi: x.heroi, jogos: 0, vitorias: 0, pos: {} };
+      h.jogos += x.jogos; h.vitorias += x.vitorias;
+      if (x.pos) h.pos[x.pos] = (h.pos[x.pos] || 0) + x.jogos;
+    });
+    const herois = Object.values(porHeroi).filter(h => h.jogos >= MIN_JOGOS_PICK)
+      .map(h => ({ ...h, nota: suavizado(h.vitorias, h.jogos), posPrincipal: Object.entries(h.pos).sort((a, b) => b[1] - a[1])[0] }));
+    const bons = [...herois].sort((a, b) => b.nota - a.nota).filter(h => h.vitorias / h.jogos > 0.5).slice(0, 4);
+    const ruins = [...herois].sort((a, b) => a.nota - b.nota).filter(h => h.vitorias / h.jogos < 0.5 && h.jogos >= 3).slice(0, 2);
+    const item = (h, boa) => `<div class="pool-item">${heroi(h.heroi)}
+      <div class="pool-txt"><b>${esc(nomeHeroi(h.heroi))}</b><span>${h.posPrincipal ? POSICOES[h.posPrincipal[0]] : ''}</span></div>
+      <div class="pool-num ${boa ? 'bom' : 'ruim'}">${h.vitorias}/${h.jogos}<br>${Math.round(100 * h.vitorias / h.jogos)}%</div></div>`;
+    const card = document.createElement('article');
+    card.className = 'cartao';
+    card.innerHTML = `
+      <div class="cartao-topo"><div class="cartao-titulo">${esc(nomeJogador(c))}</div><div class="cartao-sub">${total(c)} partidas · ${Object.keys(porHeroi).length} heróis</div></div>
+      <div class="bloco-titulo">✅ Picks que ganham</div>
+      <div class="pool-lista">${bons.length ? bons.map(h => item(h, true)).join('') : '<span class="cartao-sub">Ainda sem herói com 2+ jogos e mais vitórias que derrotas.</span>'}</div>
+      ${ruins.length ? `<div class="bloco-titulo">🚫 Melhor deixar no banco</div><div class="pool-lista">${ruins.map(h => item(h, false)).join('')}</div>` : ''}`;
+    alvo.append(card);
+  });
 }
 
 /* ---------- Meta ---------- */

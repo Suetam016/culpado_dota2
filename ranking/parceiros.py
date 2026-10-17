@@ -59,7 +59,10 @@ def main():
     usados = set()
 
     # grupo de 3+ amigos do mesmo lado (tupla de contas ordenada) -> estatísticas
-    grupos = defaultdict(lambda: {'jogos': 0, 'vitorias': 0, 'formacoes': defaultdict(lambda: [0, 0]), 'partidas': []})
+    grupos = defaultdict(lambda: {'jogos': 0, 'vitorias': 0, 'formacoes': defaultdict(lambda: [0, 0]), 'partidas': [],
+                                  'herois': defaultdict(lambda: defaultdict(lambda: [0, 0]))})
+    # conta -> (herói, posição) -> [jogos, vitórias], em qualquer partida (solo ou com amigos): base da sugestão de picks
+    pool = defaultdict(lambda: defaultdict(lambda: [0, 0]))
 
     # (a, b) com a < b -> estatísticas
     pares = defaultdict(lambda: {'jogos': 0, 'vitorias': 0, 'rotas': defaultdict(lambda: [0, 0]),
@@ -79,6 +82,12 @@ def main():
         lidas += 1
         for radiant in (True, False):
             doLado = [p for p in match['players'] if p.get('account_id') in amigos and p.get('isRadiant') == radiant]
+            for p in doLado:
+                if p.get('hero_id'):
+                    chave = (p['hero_id'], p.get('position_est') or 0)
+                    pool[p['account_id']][chave][0] += 1
+                    pool[p['account_id']][chave][1] += match.get('radiant_win') == radiant
+                    usados.add(p['hero_id'])
             if len(doLado) < 2:
                 continue
             inicio_mais_antigo = min(inicio_mais_antigo or match['start_time'], match['start_time'])
@@ -97,6 +106,10 @@ def main():
                 if all(posicoes):
                     grupo['formacoes'][posicoes][0] += 1
                     grupo['formacoes'][posicoes][1] += venceu
+                for p in ordenados:
+                    if p.get('hero_id'):
+                        grupo['herois'][p['account_id']][p['hero_id']][0] += 1
+                        grupo['herois'][p['account_id']][p['hero_id']][1] += venceu
                 grupo['partidas'].append({
                     'matchId': match.get('match_id'), 'inicio': match['start_time'], 'venceu': venceu,
                     'herois': {str(p['account_id']): {'heroi': p.get('hero_id'), 'pos': p.get('position_est')}
@@ -139,6 +152,7 @@ def main():
         partidas = sorted(g['partidas'], key=lambda x: -x['inicio'])[:PARTIDAS_POR_GRUPO]
         composicoes.append({
             'membros': [str(c) for c in membros],
+            'herois': {str(c): resumir(g['herois'][c], 1, lambda k: {'heroi': k})[:3] for c in membros},
             'jogos': g['jogos'], 'vitorias': g['vitorias'], 'winRate': wr(g['vitorias'], g['jogos']),
             'formacoes': formacoes[:3],
             'partidas': partidas,
@@ -154,6 +168,9 @@ def main():
                       for k, (j, v) in individuais.items()},
         'pares': saida,
         'composicoes': composicoes,
+        'pool': {str(c): sorted(({'heroi': h, 'pos': pos, 'jogos': j, 'vitorias': v} for (h, pos), (j, v) in hs.items()),
+                                key=lambda x: (-x['jogos'], -x['vitorias']))
+                 for c, hs in pool.items()},
         'herois': {str(h): herois.get(h, [None, f'#{h}']) for h in sorted(usados)},
     }, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f'{destino}: {len(saida)} duplas, {len(composicoes)} composições, {lidas} partidas lidas')
