@@ -141,7 +141,7 @@ async function main() {
             ? (craques.has(p.account_id) ? 'craque' : 'vitoria')
             : (culpados.has(p.account_id) ? 'culpado' : 'derrota');
           const ranqueada = match.lobby_type === LOBBY_RANQUEADA;
-          historicos[String(p.account_id)].push({ matchId: mid, tipo, inicio: match.start_time, comStack, ranqueada });
+          historicos[String(p.account_id)].push({ matchId: mid, lado, tipo, inicio: match.start_time, comStack, ranqueada });
         }
       }
     }

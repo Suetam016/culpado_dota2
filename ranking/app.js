@@ -128,7 +128,8 @@ function renderizarRanking() {
     const pontos = j.forma.map(h => {
       const v = h.tipo === 'vitoria' || h.tipo === 'craque';
       const icone = h.tipo === 'craque' ? '✨' : h.tipo === 'culpado' ? '🚨' : '';
-      return `<span class="ponto ponto-${v ? 'v' : 'd'}" title="${rotuloTipo(h.tipo)}${h.inicio ? ' · ' + data(h.inicio * 1000) : ''}">${icone}</span>`;
+      const titulo = `${rotuloTipo(h.tipo)}${h.inicio ? ' · ' + data(h.inicio * 1000) : ''} · ver partida`;
+      return `<a class="ponto ponto-${v ? 'v' : 'd'}" href="../#${h.matchId}${h.lado ? '-' + h.lado : ''}" title="${titulo}" aria-label="${titulo}">${icone}</a>`;
     }).join('');
 
     li.innerHTML = `

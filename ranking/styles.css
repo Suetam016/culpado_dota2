@@ -172,6 +172,8 @@ button, select { font: inherit; color: inherit; }
 .ponto {
   width: 18px; height: 18px; border-radius: 4px; display: grid; place-items: center; font-size: 11px; line-height: 1;
 }
+a.ponto { text-decoration: none; transition: transform .12s; }
+a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(--gold); }
 .ponto-v { background: var(--good-wash); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--good) 50%, transparent); }
 .ponto-d { background: var(--bad-wash); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bad) 50%, transparent); }
 .mmr-pos { color: var(--good-ink); }
