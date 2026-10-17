@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   montarFeedback();
 
-  const pegar = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
+  const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
   [ranking, parceiros, insights] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL)]);
 
   if (!ranking || !ranking.historicos) {
