@@ -1,0 +1,46 @@
+name: Insights do Reddit (aba Meta)
+
+# Gera reddit/insights.json com os comentários estratégicos da semana no r/DotA2, para a aba Meta do ranking.
+# Todo dia, na mão (Actions > Run workflow) ou com push em reddit/pedido (qualquer conteúdo) ou no robô.
+# Precisa dos secrets REDDIT_CLIENT_ID e REDDIT_CLIENT_SECRET (app "script" em https://www.reddit.com/prefs/apps).
+# Se a coleta falhar ou vier vazia, o insights.json anterior fica como está (nunca volta para os exemplos).
+on:
+  schedule:
+    - cron: "41 9 * * *"   # todo dia, 06:41 em Brasília
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["reddit/pedido", "reddit/insights.py", ".github/workflows/reddit.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reddit
+  cancel-in-progress: false
+
+jobs:
+  reddit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install praw
+      - name: Coletar
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+        run: python reddit/insights.py --exigir
+      - name: Salvar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reddit/insights.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Reddit: insights da semana"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1

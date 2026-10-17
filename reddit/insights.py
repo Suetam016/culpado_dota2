@@ -4,10 +4,15 @@ Coleta insights estratégicos do r/DotA2 e gera reddit/insights.json.
 Roda periodicamente (ex: 1x por dia).
 
 Uso:
-  python3 reddit/insights.py [--limit 50]
+  python3 reddit/insights.py            # Reddit se tiver credenciais, senão exemplos offline
+  python3 reddit/insights.py --exigir   # só Reddit: se falhar, sai com erro e não mexe no insights.json
+
+Credenciais (app "script" em https://www.reddit.com/prefs/apps), por variável de ambiente:
+  REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET
 """
 
 import json
+import os
 import sys
 import re
 from pathlib import Path
@@ -94,12 +99,16 @@ def coletar_reddit():
         return []
 
     try:
-        # Tenta usar Reddit anônimo (read-only)
-        # Se quiser autenticação, adicione credenciais em .env ou cliente_id, secret, user_agent
+        client_id = os.environ.get('REDDIT_CLIENT_ID')
+        client_secret = os.environ.get('REDDIT_CLIENT_SECRET')
+        if not client_id or not client_secret:
+            print("Sem REDDIT_CLIENT_ID/REDDIT_CLIENT_SECRET no ambiente.", file=sys.stderr)
+            return []
+        # read-only: só client_id + secret, sem login de usuário
         reddit = praw.Reddit(
-            client_id='YOUR_CLIENT_ID',
-            client_secret='YOUR_CLIENT_SECRET',
-            user_agent='dota2-insights-miner/1.0'
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent='dota2-insights-miner/1.0 (github.com/suetam016/culpado_dota2)'
         )
 
         insights = []
@@ -183,7 +192,7 @@ def carregar_insights_offline():
         }
     ]
 
-def gerar_insights(insights_brutos):
+def gerar_insights(insights_brutos, fonte):
     """Processa insights e gera ranking por tópico."""
     topicos_stats = defaultdict(lambda: {'count': 0, 'insights': [], 'score_total': 0})
 
@@ -206,6 +215,7 @@ def gerar_insights(insights_brutos):
     # Criar resultado estruturado
     resultado = {
         'atualizadoEm': datetime.now(timezone.utc).isoformat(),
+        'fonte': fonte,  # 'reddit' ou 'exemplo'
         'totalInsights': len(insights_brutos),
         'topicos': {}
     }
@@ -229,19 +239,22 @@ def salvar_insights(dados):
     print(f"✓ Insights salvos em {insights_path}", file=sys.stderr)
 
 def main():
-    # Tentar coletar do Reddit, ou usar exemplos offline
-    if PRAW_AVAILABLE:
-        print("Tentando coletar do Reddit...", file=sys.stderr)
-        insights_brutos = coletar_reddit()
-        if not insights_brutos:
-            print("Nenhum insight coletado. Usando exemplos offline.", file=sys.stderr)
-            insights_brutos = carregar_insights_offline()
-    else:
-        print("PRAW não disponível. Usando exemplos offline para desenvolvimento.", file=sys.stderr)
+    exigir = '--exigir' in sys.argv[1:]
+    insights_brutos = coletar_reddit() if PRAW_AVAILABLE else []
+    fonte = 'reddit'
+    if not insights_brutos:
+        if exigir:
+            # na coleta automática: nunca troca dados reais por exemplos
+            print("Nada coletado do Reddit; insights.json fica como está.", file=sys.stderr)
+            sys.exit(1)
+        if not PRAW_AVAILABLE:
+            print("PRAW não instalado (pip install praw).", file=sys.stderr)
+        print("Usando exemplos offline para desenvolvimento.", file=sys.stderr)
         insights_brutos = carregar_insights_offline()
+        fonte = 'exemplo'
 
-    print(f"Processando {len(insights_brutos)} insights...", file=sys.stderr)
-    insights = gerar_insights(insights_brutos)
+    print(f"Processando {len(insights_brutos)} insights ({fonte})...", file=sys.stderr)
+    insights = gerar_insights(insights_brutos, fonte)
     salvar_insights(insights)
 
 if __name__ == '__main__':
