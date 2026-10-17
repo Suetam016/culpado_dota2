@@ -2,9 +2,9 @@
  * Carrega amigos/ranking.json e renderiza as abas de ranking.
  */
 
-const RANKING_URL = '../amigos/ranking.json';
+const RANKING_URL = `../amigos/ranking.json?t=${Date.now()}`;
 const INSIGHTS_URL = '../reddit/insights.json';
-const PARCEIROS_URL = '../amigos/parceiros.json';
+const PARCEIROS_URL = `../amigos/parceiros.json?t=${Date.now()}`;
 const MIN_JOGOS_DUPLA = 5;  // abaixo disso a dupla vai para o fim da lista (amostra pequena)
 
 let dados = null;
