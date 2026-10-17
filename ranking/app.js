@@ -2,9 +2,9 @@
  * Carrega amigos/ranking.json e renderiza as abas de ranking.
  */
 
-const RANKING_URL = '../amigos/ranking.json';
+const RANKING_URL = `../amigos/ranking.json?t=${Date.now()}`;
 const INSIGHTS_URL = '../reddit/insights.json';
-const PARCEIROS_URL = '../amigos/parceiros.json';
+const PARCEIROS_URL = `../amigos/parceiros.json?t=${Date.now()}`;
 const MIN_JOGOS_DUPLA = 5;  // abaixo disso a dupla vai para o fim da lista (amostra pequena)
 
 let dados = null;
@@ -170,13 +170,17 @@ function renderizarAbaFiltrada(nomeAba, filtro) {
   }
 
   const ranking = [];
+  const semPartidas = [];
 
   for (const [accountId, historico] of Object.entries(dados.historicos)) {
     const jogador = dados.ranking.find(j => j.accountId === accountId);
     if (!jogador) continue;
 
     const partidasFiltradas = historico.filter(filtro);
-    if (partidasFiltradas.length === 0) continue;
+    if (partidasFiltradas.length === 0) {
+      semPartidas.push(jogador.nome);
+      continue;
+    }
 
     const culpados = partidasFiltradas.filter(h => h.tipo === 'culpado').length;
     const craques = partidasFiltradas.filter(h => h.tipo === 'craque').length;
@@ -193,6 +197,12 @@ function renderizarAbaFiltrada(nomeAba, filtro) {
   ranking.sort((a, b) => b.culpados - a.culpados);
   carregando.style.display = 'none';
   renderizarAba(nomeAba, ranking);
+
+  // quem não tem nenhuma partida nessa aba aparece numa linha embaixo, em vez de sumir
+  const aviso = document.getElementById(`sem-partidas-${nomeAba}`);
+  aviso.textContent = semPartidas.length
+    ? `Sem partidas ${nomeAba === 'solo' ? 'solo' : 'com o stack'} nas últimas analisadas: ${semPartidas.join(', ')}`
+    : '';
 }
 
 const NOMES_POSICAO = { 1: 'Carry', 2: 'Mid', 3: 'Offlane', 4: 'Sup 4', 5: 'Sup 5' };
