@@ -25,10 +25,15 @@ MIN_JOGOS_HEROIS = 2   # dupla de heróis idem
 TOP = 5                # quantas combinações guardar por dupla (melhores e piores)
 
 
-def nomes_herois():
+MIN_JOGOS_FORMACAO = 2
+PARTIDAS_POR_GRUPO = 8
+
+
+def dados_herois():
+    """id -> [slug da imagem, nome]"""
     html = (RAIZ / 'index.html').read_text(encoding='utf-8')
     m = re.search(r'<script type="application/json" id="dados-embutidos">([\s\S]*?)</script>', html)
-    return {int(k): v[1] for k, v in json.loads(m.group(1))['constantes']['h'].items()}
+    return {int(k): [v[0], v[1]] for k, v in json.loads(m.group(1))['constantes']['h'].items()}
 
 
 def wr(v, j):
@@ -49,12 +54,16 @@ def main():
     args = ap.parse_args()
 
     amigos = {int(k): v for k, v in json.loads((RAIZ / 'amigos.json').read_text(encoding='utf-8')).items()}
-    herois = nomes_herois()
+    herois = dados_herois()
     desde = time.time() - args.dias * 86400 if args.dias else 0
+    usados = set()
+
+    # grupo de 3+ amigos do mesmo lado (tupla de contas ordenada) -> estatísticas
+    grupos = defaultdict(lambda: {'jogos': 0, 'vitorias': 0, 'formacoes': defaultdict(lambda: [0, 0]), 'partidas': []})
 
     # (a, b) com a < b -> estatísticas
     pares = defaultdict(lambda: {'jogos': 0, 'vitorias': 0, 'rotas': defaultdict(lambda: [0, 0]),
-                                 'herois': defaultdict(lambda: [0, 0])})
+                                 'herois': defaultdict(lambda: [0, 0]), 'partidas': []})
     individuais = defaultdict(lambda: [0, 0])  # conta -> [jogos, vitorias], só partidas com outro amigo do lado
     lidas = 0
     inicio_mais_antigo = None
@@ -77,6 +86,22 @@ def main():
             for p in doLado:
                 individuais[p['account_id']][0] += 1
                 individuais[p['account_id']][1] += venceu
+                if p.get('hero_id'):
+                    usados.add(p['hero_id'])
+            if len(doLado) >= 3:
+                ordenados = sorted(doLado, key=lambda x: x['account_id'])
+                grupo = grupos[tuple(p['account_id'] for p in ordenados)]
+                grupo['jogos'] += 1
+                grupo['vitorias'] += venceu
+                posicoes = tuple(p.get('position_est') for p in ordenados)
+                if all(posicoes):
+                    grupo['formacoes'][posicoes][0] += 1
+                    grupo['formacoes'][posicoes][1] += venceu
+                grupo['partidas'].append({
+                    'matchId': match.get('match_id'), 'inicio': match['start_time'], 'venceu': venceu,
+                    'herois': {str(p['account_id']): {'heroi': p.get('hero_id'), 'pos': p.get('position_est')}
+                               for p in ordenados},
+                })
             for p, q in combinations(sorted(doLado, key=lambda x: x['account_id']), 2):
                 par = pares[(p['account_id'], q['account_id'])]
                 par['jogos'] += 1
@@ -89,12 +114,13 @@ def main():
                 if hp and hq:
                     par['herois'][(hp, hq)][0] += 1
                     par['herois'][(hp, hq)][1] += venceu
+                    par['partidas'].append({'matchId': match.get('match_id'), 'inicio': match['start_time'],
+                                            'venceu': venceu, 'heroiA': hp, 'heroiB': hq, 'posA': pp, 'posB': pq})
 
     saida = []
     for (a, b), par in pares.items():
         rotas = resumir(par['rotas'], MIN_JOGOS_ROTA, lambda k: {'posA': k[0], 'posB': k[1]})
-        duplas = resumir(par['herois'], MIN_JOGOS_HEROIS,
-                         lambda k: {'heroiA': herois.get(k[0], f'#{k[0]}'), 'heroiB': herois.get(k[1], f'#{k[1]}')})
+        duplas = resumir(par['herois'], MIN_JOGOS_HEROIS, lambda k: {'heroiA': k[0], 'heroiB': k[1]})
         saida.append({
             'a': str(a), 'b': str(b), 'nomeA': amigos[a], 'nomeB': amigos[b],
             'jogos': par['jogos'], 'vitorias': par['vitorias'], 'winRate': wr(par['vitorias'], par['jogos']),
@@ -102,8 +128,22 @@ def main():
             'rotasPiores': [r for r in rotas[::-1] if r['winRate'] < 50][:3],
             'herois': [h for h in duplas if h['winRate'] > 50][:TOP],
             'heroisPiores': [h for h in duplas[::-1] if h['winRate'] < 50][:3],
+            'partidas': sorted(par['partidas'], key=lambda x: -x['inicio'])[:PARTIDAS_POR_GRUPO],
         })
     saida.sort(key=lambda x: (-x['winRate'], -x['jogos']))
+
+    composicoes = []
+    for membros, g in grupos.items():
+        formacoes = resumir(g['formacoes'], MIN_JOGOS_FORMACAO,
+                            lambda k, m=membros: {'posicoes': {str(c): pos for c, pos in zip(m, k)}})
+        partidas = sorted(g['partidas'], key=lambda x: -x['inicio'])[:PARTIDAS_POR_GRUPO]
+        composicoes.append({
+            'membros': [str(c) for c in membros],
+            'jogos': g['jogos'], 'vitorias': g['vitorias'], 'winRate': wr(g['vitorias'], g['jogos']),
+            'formacoes': formacoes[:3],
+            'partidas': partidas,
+        })
+    composicoes.sort(key=lambda x: (-x['winRate'], -x['jogos']))
 
     destino = RAIZ / 'amigos' / 'parceiros.json'
     destino.write_text(json.dumps({
@@ -113,8 +153,10 @@ def main():
         'jogadores': {str(k): {'nome': amigos[k], 'jogos': j, 'vitorias': v, 'winRate': wr(v, j)}
                       for k, (j, v) in individuais.items()},
         'pares': saida,
+        'composicoes': composicoes,
+        'herois': {str(h): herois.get(h, [None, f'#{h}']) for h in sorted(usados)},
     }, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
-    print(f'{destino}: {len(saida)} duplas, {lidas} partidas lidas')
+    print(f'{destino}: {len(saida)} duplas, {len(composicoes)} composições, {lidas} partidas lidas')
 
 
 if __name__ == '__main__':

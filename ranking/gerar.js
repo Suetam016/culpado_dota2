@@ -152,6 +152,7 @@ async function main() {
     const culpados = eventos.filter((e) => e.tipo === 'culpado').length;
     const craques = eventos.filter((e) => e.tipo === 'craque').length;
     const partidasN = eventos.length;
+    const vitorias = eventos.filter((e) => e.tipo === 'vitoria' || e.tipo === 'craque').length;
     const ranqueadas = eventos.filter((e) => e.ranqueada);
     const vitoriasRanq = ranqueadas.filter((e) => e.tipo === 'vitoria' || e.tipo === 'craque').length;
     return {
@@ -160,7 +161,8 @@ async function main() {
       culpados,
       craques,
       partidas: partidasN,
-      winRate: partidasN ? Math.round((craques / partidasN) * 100) : 0,
+      vitorias,
+      winRate: partidasN ? Math.round((vitorias / partidasN) * 100) : 0,
       streak: sequencia(eventos.map((e) => e.tipo)),
       mmrGanho: vitoriasRanq * MMR_POR_PARTIDA,
       mmrPerdido: (ranqueadas.length - vitoriasRanq) * MMR_POR_PARTIDA,

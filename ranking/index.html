@@ -4,119 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ranking — Marocas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topo">
     <div class="topo-inner">
       <div class="marca">
+        <span class="marca-tag">Ranking do grupo</span>
         <h1>Marocas</h1>
-        <span class="tag">Ranking</span>
       </div>
-      <button class="voltar" id="voltar" title="Voltar para o painel">← Painel</button>
+      <a class="voltar" href="../">← Painel</a>
     </div>
+    <nav class="abas" role="tablist">
+      <button class="aba aba-ativa" data-aba="geral" role="tab">Geral</button>
+      <button class="aba" data-aba="stack" role="tab">Com o stack</button>
+      <button class="aba" data-aba="solo" role="tab">Solo</button>
+      <button class="aba" data-aba="duplas" role="tab">Duplas</button>
+      <button class="aba" data-aba="composicoes" role="tab">Composições</button>
+      <button class="aba" data-aba="meta" role="tab">Meta</button>
+    </nav>
   </header>
 
   <main class="pagina">
-    <section class="ranking-secao">
-      <div class="abas">
-        <button class="aba aba-ativa" data-aba="geral">Geral</button>
-        <button class="aba" data-aba="stack">Com o Stack</button>
-        <button class="aba" data-aba="solo">Solo</button>
-        <button class="aba" data-aba="parceiros">Parceiros 🤝</button>
-        <button class="aba" data-aba="meta">Meta 🔥</button>
-      </div>
-
-      <div class="conteudo-abas">
-        <div class="aba-conteudo aba-conteudo-ativa" id="aba-geral">
-          <table class="ranking-tabela">
-            <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>🚨 Culpados</th>
-                <th>✨ Craques</th>
-                <th>Partidas</th>
-                <th>Win Rate</th>
-                <th title="Estimativa: ±25 por partida ranqueada">MMR ≈</th>
-                <th>Streak</th>
-              </tr>
-            </thead>
-            <tbody id="ranking-geral">
-              <!-- preenchido por JS -->
-            </tbody>
-          </table>
-          <p class="carregando" id="carregando-geral">Carregando ranking...</p>
-        </div>
-
-        <div class="aba-conteudo" id="aba-stack">
-          <table class="ranking-tabela">
-            <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>🚨 Culpados</th>
-                <th>✨ Craques</th>
-                <th>Partidas</th>
-                <th>Win Rate</th>
-                <th title="Estimativa: ±25 por partida ranqueada">MMR ≈</th>
-                <th>Streak</th>
-              </tr>
-            </thead>
-            <tbody id="ranking-stack">
-              <!-- preenchido por JS -->
-            </tbody>
-          </table>
-          <p class="carregando" id="carregando-stack">Carregando ranking...</p>
-        </div>
-
-        <div class="aba-conteudo" id="aba-solo">
-          <table class="ranking-tabela">
-            <thead>
-              <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>🚨 Culpados</th>
-                <th>✨ Craques</th>
-                <th>Partidas</th>
-                <th>Win Rate</th>
-                <th title="Estimativa: ±25 por partida ranqueada">MMR ≈</th>
-                <th>Streak</th>
-              </tr>
-            </thead>
-            <tbody id="ranking-solo">
-              <!-- preenchido por JS -->
-            </tbody>
-          </table>
-          <p class="carregando" id="carregando-solo">Carregando ranking...</p>
-        </div>
-
-        <div class="aba-conteudo" id="aba-parceiros">
-          <div class="parceiros-filtro">
-            <label for="parceiros-jogador">Parceiros de</label>
-            <select id="parceiros-jogador">
-              <option value="">todo mundo</option>
-            </select>
-          </div>
-          <div class="parceiros-lista" id="parceiros-lista">
-            <!-- preenchido por JS -->
-          </div>
-          <p class="carregando" id="carregando-parceiros">Carregando parceiros...</p>
-        </div>
-
-        <div class="aba-conteudo" id="aba-meta">
-          <div class="meta-container" id="meta-topicos">
-            <!-- preenchido por JS -->
-          </div>
-          <p class="carregando" id="carregando-meta">Carregando insights do Reddit...</p>
+    <section class="aba-conteudo aba-conteudo-ativa" id="aba-ranking">
+      <div class="barra">
+        <p class="barra-desc" id="ranking-desc"></p>
+        <div class="ordem" role="group" aria-label="Ordenar por">
+          <button class="chip chip-ativo" data-ordem="culpados">🚨 Mais culpado</button>
+          <button class="chip" data-ordem="craques">✨ Mais craque</button>
+          <button class="chip" data-ordem="winRate">Win rate</button>
+          <button class="chip" data-ordem="mmr">MMR</button>
         </div>
       </div>
-
-      <div class="rodape">
-        <p id="atualizado-em">Atualizado em: —</p>
-      </div>
+      <ol class="lista-jogadores" id="lista-jogadores"></ol>
     </section>
+
+    <section class="aba-conteudo" id="aba-duplas">
+      <div class="secao-titulo">
+        <h2>Quem joga bem com quem</h2>
+        <p>Win rate de cada dupla quando caem do mesmo lado. Toque numa casa pra ver a dupla.</p>
+      </div>
+      <div class="grade-wrap"><table class="grade" id="grade-sinergia"></table></div>
+
+      <div class="secao-titulo">
+        <h2>As duplas</h2>
+        <label class="filtro">Parceiros de
+          <select id="filtro-jogador"><option value="">todo mundo</option></select>
+        </label>
+      </div>
+      <div class="cartoes" id="lista-duplas"></div>
+    </section>
+
+    <section class="aba-conteudo" id="aba-composicoes">
+      <div class="secao-titulo">
+        <h2>Nossas composições</h2>
+        <p>Partidas com 3 ou mais amigos do mesmo lado: quem joga onde e com quais heróis.</p>
+      </div>
+      <div class="cartoes" id="lista-composicoes"></div>
+    </section>
+
+    <section class="aba-conteudo" id="aba-meta">
+      <div class="secao-titulo">
+        <h2>Meta do r/DotA2</h2>
+        <p id="meta-desc"></p>
+      </div>
+      <div class="cartoes" id="meta-topicos"></div>
+    </section>
+
+    <p class="carregando" id="carregando">Carregando ranking…</p>
   </main>
+
+  <footer class="rodape"><p id="atualizado-em"></p></footer>
 
   <script src="app.js"></script>
 </body>
