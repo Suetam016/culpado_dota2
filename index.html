@@ -8703,13 +8703,13 @@ document.body.append(caixa, botao);
 }
 
 function montarAvisoRanking() {
-if (SO_EMBUTIDO || ler('culpado:aviso-ranking') || document.querySelector('.av-rk')) return;
-const fechar = (ev) => { if (ev) ev.preventDefault(); guardar('culpado:aviso-ranking', true); aviso.classList.remove('av-rk-on'); setTimeout(() => aviso.remove(), 300); };
+if (SO_EMBUTIDO || ler('culpado:aviso-ranking-2') || document.querySelector('.av-rk')) return;
+const fechar = (ev) => { if (ev) ev.preventDefault(); guardar('culpado:aviso-ranking-2', true); aviso.classList.remove('av-rk-on'); setTimeout(() => aviso.remove(), 300); };
 const aviso = h('aside', { class: 'av-rk', role: 'status', 'aria-label': 'Novidade: ranking dos amigos' },
 h('span', { class: 'av-rk-selo' }, 'Novo'),
 h('strong', { class: 'av-rk-tit' }, 'Ranking dos amigos'),
 h('p', { class: 'av-rk-txt' }, 'Quem é o mais culpado do grupo, as duplas que jogam bem juntas e as melhores composições.'),
-h('a', { class: 'av-rk-ir', href: 'ranking/', onclick: () => guardar('culpado:aviso-ranking', true) }, 'Ver o ranking →'),
+h('a', { class: 'av-rk-ir', href: 'ranking/' }, 'Ver o ranking →'),
 h('button', { class: 'av-rk-x', type: 'button', 'aria-label': 'Fechar aviso', onclick: fechar }, '×'));
 document.body.append(aviso);
 const mostrar = (espera) => setTimeout(() => {
