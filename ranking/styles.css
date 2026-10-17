@@ -314,3 +314,28 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
   .formacao { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
   .slot b { font-size: 12px; }
 }
+
+/* Feedback */
+.fb-botao {
+  position: fixed; right: 16px; bottom: 16px; z-index: 60; min-height: 44px; padding: 10px 16px;
+  border-radius: 999px; border: 1px solid var(--gold); background: var(--gold); color: var(--on-gold);
+  font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+}
+.fb-caixa {
+  position: fixed; right: 16px; bottom: 72px; z-index: 60; width: min(340px, calc(100vw - 32px));
+  display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: var(--radius);
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
+}
+.fb-caixa[hidden] { display: none; }
+.fb-caixa strong { font-family: var(--font-display); }
+.fb-caixa textarea, .fb-caixa input {
+  width: 100%; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong);
+  background: var(--surface-2); color: inherit; font: inherit; resize: vertical;
+}
+.fb-enviar {
+  min-height: 44px; border-radius: var(--radius-sm); border: 0; background: var(--gold); color: var(--on-gold);
+  font-weight: 800; cursor: pointer;
+}
+.fb-enviar:disabled { opacity: .6; cursor: wait; }
+.fb-status { font-size: 14px; min-height: 1.2em; color: var(--ink-2); }
+.rodape { padding-bottom: 80px; }

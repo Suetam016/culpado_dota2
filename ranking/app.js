@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderizarRanking();
   }));
 
+  montarFeedback();
+
   const pegar = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
   [ranking, parceiros, insights] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL)]);
 
@@ -72,7 +74,11 @@ function mudarAba(aba) {
 /* ---------- Ranking (geral / stack / solo) ---------- */
 
 function estatisticas(conta, nome, historico) {
-  const eventos = historico.filter(VISOES[visao].filtro).sort((a, b) => (a.inicio || 0) - (b.inicio || 0));
+  const vistas = new Set();
+  const eventos = historico
+    .filter(h => !vistas.has(h.matchId) && vistas.add(h.matchId))
+    .filter(VISOES[visao].filtro)
+    .sort((a, b) => (a.inicio || 0) - (b.inicio || 0));
   const venceu = h => h.tipo === 'vitoria' || h.tipo === 'craque';
   const vitorias = eventos.filter(venceu).length;
   const temRanqueada = eventos.some(h => 'ranqueada' in h);
@@ -360,6 +366,55 @@ function renderizarMeta() {
         </div>`).join('')}`;
     box.append(div);
   });
+}
+
+/* ---------- Feedback (mesmo worker do painel: POST <coach>/feedback grava em feedback/) ---------- */
+
+function montarFeedback() {
+  const caixa = $('fb-caixa'), botao = $('fb-botao'), campo = $('fb-texto'), nome = $('fb-nome');
+  const status = $('fb-status'), enviar = $('fb-enviar');
+  let coach = null;
+  const urlDoCoach = () => (coach = coach || fetch('../config.json', { cache: 'no-cache' })
+    .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
+    .catch(() => ''));
+
+  try { nome.value = localStorage.getItem('culpado:fb-nome') || ''; } catch (e) { /* sem storage */ }
+
+  botao.addEventListener('click', () => {
+    caixa.hidden = !caixa.hidden;
+    botao.setAttribute('aria-expanded', String(!caixa.hidden));
+    if (!caixa.hidden) { urlDoCoach(); campo.focus(); }
+  });
+
+  caixa.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const texto = campo.value.trim();
+    if (texto.length < 3) { status.textContent = 'Escreve um pouquinho mais.'; return; }
+    const url = await urlDoCoach();
+    if (!url) { status.textContent = 'O envio está desligado agora.'; return; }
+    const aba = (document.querySelector('.aba-ativa') || {}).dataset?.aba || 'geral';
+    enviar.disabled = true;
+    status.textContent = 'Enviando…';
+    try {
+      const r = await fetch(`${url}/feedback`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ texto, nome: nome.value.trim(), partida: `ranking-${aba}` }),
+      });
+      if (!r.ok) throw new Error(r.status);
+      try { localStorage.setItem('culpado:fb-nome', nome.value.trim()); } catch (e) { /* sem storage */ }
+      campo.value = '';
+      status.textContent = 'Valeu! Recebido.';
+      setTimeout(() => { caixa.hidden = true; botao.setAttribute('aria-expanded', 'false'); status.textContent = ''; }, 1800);
+    } catch (e) {
+      status.textContent = r429(e) ? 'Muitos envios seguidos. Tenta daqui a pouco.' : 'Não deu pra enviar. Tenta de novo daqui a pouco.';
+    }
+    enviar.disabled = false;
+  });
+}
+
+function r429(e) {
+  return String(e && e.message) === '429';
 }
 
 /* ---------- utilidades ---------- */

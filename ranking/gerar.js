@@ -102,6 +102,7 @@ async function main() {
   const idsAmigos = new Set(Object.keys(amigos).map(Number));
 
   const partidas = new Map();
+  const julgadas = new Set();
   const historicos = Object.fromEntries(Object.keys(amigos).map((k) => [k, []]));
   let semReplay = 0;
 
@@ -119,7 +120,9 @@ async function main() {
         partidas.set(mid, detalhe);
       }
       const match = partidas.get(mid);
-      if (!match) continue;
+      // a mesma partida aparece na lista de cada amigo que jogou; o julgamento abaixo já cobre todos eles
+      if (!match || julgadas.has(mid)) continue;
+      julgadas.add(mid);
 
       const amigosNaPartida = match.players.filter((p) => idsAmigos.has(p.account_id));
       for (const lado of ['radiant', 'dire']) {
