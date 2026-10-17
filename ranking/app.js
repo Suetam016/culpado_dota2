@@ -109,10 +109,33 @@ function renderizarAba(nomeAba, ranking) {
       <td class="ranking-craques">${jogador.craques}</td>
       <td>${jogador.partidas}</td>
       <td>${jogador.winRate}%</td>
+      <td>${formatarMmr(jogador)}</td>
       <td>${streak}</td>
     `;
     tbody.append(tr);
   });
+}
+
+// A Valve não expõe o MMR de cada partida: ±25 por ranqueada é uma estimativa
+const MMR_POR_PARTIDA = 25;
+
+// Históricos gerados antes do campo "ranqueada" não têm como saber: MMR fica indefinido
+function mmrDe(partidas) {
+  if (!partidas.some(h => 'ranqueada' in h)) return { mmrGanho: undefined, mmrPerdido: undefined };
+  const ranqueadas = partidas.filter(h => h.ranqueada);
+  const vitorias = ranqueadas.filter(h => h.tipo === 'vitoria' || h.tipo === 'craque').length;
+  return {
+    mmrGanho: vitorias * MMR_POR_PARTIDA,
+    mmrPerdido: (ranqueadas.length - vitorias) * MMR_POR_PARTIDA
+  };
+}
+
+function formatarMmr(jogador) {
+  if (jogador.mmrGanho == null) return '<span class="ranking-mmr">—</span>';
+  const saldo = jogador.mmrGanho - jogador.mmrPerdido;
+  const classe = saldo > 0 ? 'mmr-positivo' : saldo < 0 ? 'mmr-negativo' : '';
+  return `<span class="ranking-mmr ${classe}">${saldo > 0 ? '+' : ''}${saldo}</span>` +
+    `<span class="ranking-mmr-detalhe">+${jogador.mmrGanho} / −${jogador.mmrPerdido}</span>`;
 }
 
 function renderizarAbaStack(nomeAba) {
@@ -148,7 +171,8 @@ function renderizarAbaFiltrada(nomeAba, filtro) {
       culpados,
       craques,
       partidas: partidasFiltradas.length,
-      winRate: Math.round((craques / partidasFiltradas.length) * 100)
+      winRate: Math.round((craques / partidasFiltradas.length) * 100),
+      ...mmrDe(partidasFiltradas)
     });
   }
 

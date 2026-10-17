@@ -232,6 +232,26 @@ body {
   font-style: italic;
 }
 
+/* MMR estimado */
+.ranking-mmr {
+  font-weight: 600;
+}
+
+.mmr-positivo {
+  color: var(--cor-sucesso);
+}
+
+.mmr-negativo {
+  color: var(--cor-acento);
+}
+
+.ranking-mmr-detalhe {
+  display: block;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
 /* Meta insights */
 .meta-container {
   display: grid;

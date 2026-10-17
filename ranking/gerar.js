@@ -11,6 +11,9 @@ const API = 'https://api.opendota.com/api';
 const PARTIDAS_POR_AMIGO = 20;
 const PAUSA_MS = 1100;
 const EMPATE_TECNICO = 0.05;
+const LOBBY_RANQUEADA = 7;
+// A Valve não expõe o MMR de cada partida; ±25 é a variação típica de uma ranqueada (é uma estimativa)
+const MMR_POR_PARTIDA = 25;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -137,7 +140,8 @@ async function main() {
           const tipo = venceu
             ? (craques.has(p.account_id) ? 'craque' : 'vitoria')
             : (culpados.has(p.account_id) ? 'culpado' : 'derrota');
-          historicos[String(p.account_id)].push({ matchId: mid, tipo, inicio: match.start_time, comStack });
+          const ranqueada = match.lobby_type === LOBBY_RANQUEADA;
+          historicos[String(p.account_id)].push({ matchId: mid, tipo, inicio: match.start_time, comStack, ranqueada });
         }
       }
     }
@@ -148,6 +152,8 @@ async function main() {
     const culpados = eventos.filter((e) => e.tipo === 'culpado').length;
     const craques = eventos.filter((e) => e.tipo === 'craque').length;
     const partidasN = eventos.length;
+    const ranqueadas = eventos.filter((e) => e.ranqueada);
+    const vitoriasRanq = ranqueadas.filter((e) => e.tipo === 'vitoria' || e.tipo === 'craque').length;
     return {
       accountId: conta,
       nome,
@@ -156,6 +162,8 @@ async function main() {
       partidas: partidasN,
       winRate: partidasN ? Math.round((craques / partidasN) * 100) : 0,
       streak: sequencia(eventos.map((e) => e.tipo)),
+      mmrGanho: vitoriasRanq * MMR_POR_PARTIDA,
+      mmrPerdido: (ranqueadas.length - vitoriasRanq) * MMR_POR_PARTIDA,
     };
   }).sort((a, b) => b.culpados - a.culpados);
 
