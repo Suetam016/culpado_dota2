@@ -223,6 +223,19 @@ function renderizarAbaMeta(nomeAba) {
     return;
   }
 
+  // aviso quando ainda não tem coleta real do Reddit
+  if (insights.fonte === 'exemplo') {
+    const aviso = document.createElement('div');
+    aviso.className = 'meta-aviso';
+    aviso.textContent = 'Dados de exemplo: a coleta automática do Reddit ainda não rodou.';
+    container.appendChild(aviso);
+  } else if (insights.atualizadoEm) {
+    const quando = document.createElement('div');
+    quando.className = 'meta-aviso';
+    quando.textContent = `Coletado do r/DotA2 em ${new Date(insights.atualizadoEm).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`;
+    container.appendChild(quando);
+  }
+
   topicos.forEach(([topicoKey, topico]) => {
     const topicoDiv = document.createElement('div');
     topicoDiv.className = 'topico-card';
