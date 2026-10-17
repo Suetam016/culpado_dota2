@@ -116,51 +116,15 @@ function renderizarAba(nomeAba, ranking) {
 }
 
 function renderizarAbaStack(nomeAba) {
-  const tbody = document.getElementById(`ranking-${nomeAba}`);
-  const carregando = document.getElementById(`carregando-${nomeAba}`);
-
-  if (!dados || !dados.historicos) {
-    carregando.textContent = 'Sem dados ainda.';
-    return;
-  }
-
-  // Contar culpados/craques com stack (partidas onde party_id tinha 2+ amigos)
-  const rankingStack = {};
-
-  for (const [accountId, historico] of Object.entries(dados.historicos)) {
-    const jogador = dados.ranking.find(j => j.accountId === accountId);
-    if (!jogador) continue;
-
-    let culpados = 0, craques = 0, partidas = 0;
-
-    historico.forEach(h => {
-      // TODO: filtrar por party (quando o script adicionar)
-      // Por enquanto, mostrar todos (igual ao geral)
-      // Quando tiver h.comStack: if (!h.comStack) return;
-
-      partidas++;
-      if (h.tipo === 'culpado') culpados++;
-      else if (h.tipo === 'craque') craques++;
-    });
-
-    if (partidas > 0) {
-      rankingStack[accountId] = {
-        ...jogador,
-        culpados,
-        craques,
-        partidas,
-        winRate: Math.round((craques / partidas) * 100)
-      };
-    }
-  }
-
-  const ranking = Object.values(rankingStack).sort((a, b) => b.culpados - a.culpados);
-  carregando.style.display = 'none';
-  renderizarAba(nomeAba, ranking);
+  renderizarAbaFiltrada(nomeAba, h => h.comStack === true);
 }
 
 function renderizarAbaSolo(nomeAba) {
-  const tbody = document.getElementById(`ranking-${nomeAba}`);
+  renderizarAbaFiltrada(nomeAba, h => h.comStack === false);
+}
+
+// Ranking só com as partidas do histórico que passam no filtro (com stack = 2+ amigos do mesmo lado)
+function renderizarAbaFiltrada(nomeAba, filtro) {
   const carregando = document.getElementById(`carregando-${nomeAba}`);
 
   if (!dados || !dados.historicos) {
@@ -168,37 +132,27 @@ function renderizarAbaSolo(nomeAba) {
     return;
   }
 
-  // Contar culpados/craques solo (partidas onde party_id tinha só esse jogador)
-  const rankingSolo = {};
+  const ranking = [];
 
   for (const [accountId, historico] of Object.entries(dados.historicos)) {
     const jogador = dados.ranking.find(j => j.accountId === accountId);
     if (!jogador) continue;
 
-    let culpados = 0, craques = 0, partidas = 0;
+    const partidasFiltradas = historico.filter(filtro);
+    if (partidasFiltradas.length === 0) continue;
 
-    historico.forEach(h => {
-      // TODO: filtrar por party (quando o script adicionar)
-      // Por enquanto, mostrar todos
-      // Quando tiver h.comStack: if (h.comStack) return;
-
-      partidas++;
-      if (h.tipo === 'culpado') culpados++;
-      else if (h.tipo === 'craque') craques++;
+    const culpados = partidasFiltradas.filter(h => h.tipo === 'culpado').length;
+    const craques = partidasFiltradas.filter(h => h.tipo === 'craque').length;
+    ranking.push({
+      ...jogador,
+      culpados,
+      craques,
+      partidas: partidasFiltradas.length,
+      winRate: Math.round((craques / partidasFiltradas.length) * 100)
     });
-
-    if (partidas > 0) {
-      rankingSolo[accountId] = {
-        ...jogador,
-        culpados,
-        craques,
-        partidas,
-        winRate: Math.round((craques / partidas) * 100)
-      };
-    }
   }
 
-  const ranking = Object.values(rankingSolo).sort((a, b) => b.culpados - a.culpados);
+  ranking.sort((a, b) => b.culpados - a.culpados);
   carregando.style.display = 'none';
   renderizarAba(nomeAba, ranking);
 }
