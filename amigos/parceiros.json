@@ -1,13 +1,13 @@
 {
- "atualizadoEm": "2026-10-17T04:23:57Z",
+ "atualizadoEm": "2026-10-17T12:16:22Z",
  "desde": "2025-10-24",
- "partidasLidas": 387,
+ "partidasLidas": 394,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
-   "jogos": 61,
-   "vitorias": 27,
-   "winRate": 44
+   "jogos": 66,
+   "vitorias": 28,
+   "winRate": 42
   },
   "241782761": {
    "nome": "[Pau]DeCamelo",
@@ -17,81 +17,52 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 100,
-   "vitorias": 48,
-   "winRate": 48
+   "jogos": 105,
+   "vitorias": 49,
+   "winRate": 47
   },
   "1000265186": {
    "nome": "gustavoDotinhaPro",
-   "jogos": 64,
-   "vitorias": 29,
-   "winRate": 45
+   "jogos": 67,
+   "vitorias": 31,
+   "winRate": 46
   },
   "111257540": {
    "nome": "Kuscomem",
-   "jogos": 39,
-   "vitorias": 19,
-   "winRate": 49
+   "jogos": 44,
+   "vitorias": 21,
+   "winRate": 48
   },
   "83300280": {
    "nome": "ptn",
-   "jogos": 10,
+   "jogos": 12,
    "vitorias": 7,
-   "winRate": 70
+   "winRate": 58
   }
  },
  "pares": [
-  {
-   "a": "83300280",
-   "b": "1254464470",
-   "nomeA": "ptn",
-   "nomeB": "Conhecido do Baia",
-   "jogos": 4,
-   "vitorias": 3,
-   "winRate": 75,
-   "rotas": [
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    }
-   ],
-   "rotasPiores": [],
-   "herois": [
-    {
-     "heroiA": "Axe",
-     "heroiB": "Hoodwink",
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    }
-   ],
-   "heroisPiores": []
-  },
   {
    "a": "81918076",
    "b": "83300280",
    "nomeA": "Suéter",
    "nomeB": "ptn",
-   "jogos": 10,
+   "jogos": 12,
    "vitorias": 7,
-   "winRate": 70,
+   "winRate": 58,
    "rotas": [
-    {
-     "posA": 2,
-     "posB": 3,
-     "jogos": 3,
-     "vitorias": 3,
-     "winRate": 100
-    },
     {
      "posA": 2,
      "posB": 5,
      "jogos": 3,
      "vitorias": 2,
      "winRate": 67
+    },
+    {
+     "posA": 2,
+     "posB": 3,
+     "jogos": 5,
+     "vitorias": 3,
+     "winRate": 60
     },
     {
      "posA": 3,
@@ -105,17 +76,17 @@
    "herois": [
     {
      "heroiA": "Earth Spirit",
-     "heroiB": "Axe",
-     "jogos": 3,
-     "vitorias": 3,
-     "winRate": 100
-    },
-    {
-     "heroiA": "Earth Spirit",
      "heroiB": "Jakiro",
      "jogos": 2,
      "vitorias": 2,
      "winRate": 100
+    },
+    {
+     "heroiA": "Earth Spirit",
+     "heroiB": "Axe",
+     "jogos": 5,
+     "vitorias": 3,
+     "winRate": 60
     }
    ],
    "heroisPiores": []
@@ -186,15 +157,110 @@
   },
   {
    "a": "83300280",
-   "b": "111257540",
+   "b": "1254464470",
    "nomeA": "ptn",
-   "nomeB": "Kuscomem",
-   "jogos": 2,
-   "vitorias": 1,
+   "nomeB": "Conhecido do Baia",
+   "jogos": 6,
+   "vitorias": 3,
    "winRate": 50,
-   "rotas": [],
-   "rotasPiores": [],
+   "rotas": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
+     "posA": 3,
+     "posB": 4,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 3,
+     "posB": 4,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
    "herois": [],
+   "heroisPiores": []
+  },
+  {
+   "a": "111257540",
+   "b": "1000265186",
+   "nomeA": "Kuscomem",
+   "nomeB": "gustavoDotinhaPro",
+   "jogos": 23,
+   "vitorias": 11,
+   "winRate": 48,
+   "rotas": [
+    {
+     "posA": 4,
+     "posB": 3,
+     "jogos": 3,
+     "vitorias": 2,
+     "winRate": 67
+    },
+    {
+     "posA": 5,
+     "posB": 1,
+     "jogos": 5,
+     "vitorias": 3,
+     "winRate": 60
+    },
+    {
+     "posA": 5,
+     "posB": 2,
+     "jogos": 4,
+     "vitorias": 2,
+     "winRate": 50
+    },
+    {
+     "posA": 1,
+     "posB": 2,
+     "jogos": 2,
+     "vitorias": 1,
+     "winRate": 50
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 5,
+     "vitorias": 2,
+     "winRate": 40
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 4,
+     "posB": 2,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 5,
+     "vitorias": 2,
+     "winRate": 40
+    }
+   ],
+   "herois": [
+    {
+     "heroiA": "Nature's Prophet",
+     "heroiB": "Invoker",
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    }
+   ],
    "heroisPiores": []
   },
   {
@@ -310,8 +376,8 @@
    "b": "1000265186",
    "nomeA": "Suéter",
    "nomeB": "gustavoDotinhaPro",
-   "jogos": 46,
-   "vitorias": 21,
+   "jogos": 48,
+   "vitorias": 22,
    "winRate": 46,
    "rotas": [
     {
@@ -361,9 +427,9 @@
     {
      "posA": 2,
      "posB": 1,
-     "jogos": 7,
-     "vitorias": 3,
-     "winRate": 43
+     "jogos": 9,
+     "vitorias": 4,
+     "winRate": 44
     },
     {
      "posA": 3,
@@ -521,171 +587,13 @@
    "heroisPiores": []
   },
   {
-   "a": "111257540",
-   "b": "1000265186",
-   "nomeA": "Kuscomem",
-   "nomeB": "gustavoDotinhaPro",
-   "jogos": 20,
-   "vitorias": 9,
-   "winRate": 45,
-   "rotas": [
-    {
-     "posA": 5,
-     "posB": 1,
-     "jogos": 5,
-     "vitorias": 3,
-     "winRate": 60
-    },
-    {
-     "posA": 5,
-     "posB": 2,
-     "jogos": 4,
-     "vitorias": 2,
-     "winRate": 50
-    },
-    {
-     "posA": 1,
-     "posB": 2,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    },
-    {
-     "posA": 4,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 4,
-     "posB": 2,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "herois": [
-    {
-     "heroiA": "Nature's Prophet",
-     "heroiB": "Invoker",
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    }
-   ],
-   "heroisPiores": []
-  },
-  {
-   "a": "81918076",
-   "b": "111257540",
-   "nomeA": "Suéter",
-   "nomeB": "Kuscomem",
-   "jogos": 26,
-   "vitorias": 11,
-   "winRate": 42,
-   "rotas": [
-    {
-     "posA": 2,
-     "posB": 5,
-     "jogos": 3,
-     "vitorias": 3,
-     "winRate": 100
-    },
-    {
-     "posA": 3,
-     "posB": 4,
-     "jogos": 7,
-     "vitorias": 3,
-     "winRate": 43
-    },
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 7,
-     "vitorias": 3,
-     "winRate": 43
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "posA": 2,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 2,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 7,
-     "vitorias": 3,
-     "winRate": 43
-    }
-   ],
-   "herois": [
-    {
-     "heroiA": "Earth Spirit",
-     "heroiB": "Techies",
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    },
-    {
-     "heroiA": "Earth Spirit",
-     "heroiB": "Nature's Prophet",
-     "jogos": 7,
-     "vitorias": 4,
-     "winRate": 57
-    }
-   ],
-   "heroisPiores": []
-  },
-  {
    "a": "1000265186",
    "b": "1254464470",
    "nomeA": "gustavoDotinhaPro",
    "nomeB": "Conhecido do Baia",
-   "jogos": 29,
-   "vitorias": 12,
-   "winRate": 41,
+   "jogos": 31,
+   "vitorias": 13,
+   "winRate": 42,
    "rotas": [
     {
      "posA": 1,
@@ -697,8 +605,8 @@
     {
      "posA": 1,
      "posB": 4,
-     "jogos": 6,
-     "vitorias": 3,
+     "jogos": 8,
+     "vitorias": 4,
      "winRate": 50
     },
     {
@@ -737,12 +645,91 @@
   },
   {
    "a": "81918076",
+   "b": "111257540",
+   "nomeA": "Suéter",
+   "nomeB": "Kuscomem",
+   "jogos": 30,
+   "vitorias": 12,
+   "winRate": 40,
+   "rotas": [
+    {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 5,
+     "vitorias": 3,
+     "winRate": 60
+    },
+    {
+     "posA": 3,
+     "posB": 4,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
+    },
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    },
+    {
+     "posA": 2,
+     "posB": 3,
+     "jogos": 4,
+     "vitorias": 1,
+     "winRate": 25
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 2,
+     "posB": 3,
+     "jogos": 4,
+     "vitorias": 1,
+     "winRate": 25
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    },
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
+    }
+   ],
+   "herois": [
+    {
+     "heroiA": "Earth Spirit",
+     "heroiB": "Techies",
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    }
+   ],
+   "heroisPiores": []
+  },
+  {
+   "a": "81918076",
    "b": "1254464470",
    "nomeA": "Suéter",
    "nomeB": "Conhecido do Baia",
-   "jogos": 47,
-   "vitorias": 19,
-   "winRate": 40,
+   "jogos": 52,
+   "vitorias": 20,
+   "winRate": 38,
    "rotas": [
     {
      "posA": 5,
@@ -754,19 +741,12 @@
     {
      "posA": 2,
      "posB": 4,
-     "jogos": 8,
-     "vitorias": 4,
-     "winRate": 50
+     "jogos": 12,
+     "vitorias": 5,
+     "winRate": 42
     },
     {
      "posA": 3,
-     "posB": 5,
-     "jogos": 8,
-     "vitorias": 3,
-     "winRate": 38
-    },
-    {
-     "posA": 2,
      "posB": 5,
      "jogos": 8,
      "vitorias": 3,
@@ -778,6 +758,13 @@
      "jogos": 11,
      "vitorias": 4,
      "winRate": 36
+    },
+    {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 9,
+     "vitorias": 3,
+     "winRate": 33
     }
    ],
    "rotasPiores": [
@@ -789,18 +776,18 @@
      "winRate": 33
     },
     {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 9,
+     "vitorias": 3,
+     "winRate": 33
+    },
+    {
      "posA": 3,
      "posB": 4,
      "jogos": 11,
      "vitorias": 4,
      "winRate": 36
-    },
-    {
-     "posA": 2,
-     "posB": 5,
-     "jogos": 8,
-     "vitorias": 3,
-     "winRate": 38
     }
    ],
    "herois": [
@@ -848,23 +835,30 @@
    "b": "1254464470",
    "nomeA": "Kuscomem",
    "nomeB": "Conhecido do Baia",
-   "jogos": 14,
-   "vitorias": 5,
-   "winRate": 36,
+   "jogos": 18,
+   "vitorias": 6,
+   "winRate": 33,
    "rotas": [
-    {
-     "posA": 5,
-     "posB": 4,
-     "jogos": 5,
-     "vitorias": 3,
-     "winRate": 60
-    },
     {
      "posA": 3,
      "posB": 5,
      "jogos": 2,
      "vitorias": 1,
      "winRate": 50
+    },
+    {
+     "posA": 3,
+     "posB": 4,
+     "jogos": 2,
+     "vitorias": 1,
+     "winRate": 50
+    },
+    {
+     "posA": 5,
+     "posB": 4,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
     },
     {
      "posA": 4,
@@ -881,6 +875,13 @@
      "jogos": 5,
      "vitorias": 1,
      "winRate": 20
+    },
+    {
+     "posA": 5,
+     "posB": 4,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
     }
    ],
    "herois": [
@@ -904,6 +905,35 @@
    "winRate": 33,
    "rotas": [],
    "rotasPiores": [],
+   "herois": [],
+   "heroisPiores": []
+  },
+  {
+   "a": "83300280",
+   "b": "111257540",
+   "nomeA": "ptn",
+   "nomeB": "Kuscomem",
+   "jogos": 4,
+   "vitorias": 1,
+   "winRate": 25,
+   "rotas": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
    "herois": [],
    "heroisPiores": []
   }
