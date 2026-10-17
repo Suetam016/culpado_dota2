@@ -4,9 +4,12 @@
 
 const RANKING_URL = '../amigos/ranking.json';
 const INSIGHTS_URL = '../reddit/insights.json';
+const PARCEIROS_URL = '../amigos/parceiros.json';
+const MIN_JOGOS_DUPLA = 5;  // abaixo disso a dupla vai para o fim da lista (amostra pequena)
 
 let dados = null;
 let insights = null;
+let parceiros = null;
 let abaAtiva = 'geral';
 
 // Carregar ranking ao iniciar
@@ -41,6 +44,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (e) {
       console.warn('Insights não disponíveis:', e);
+    }
+
+    // Carregar parceiros (não é crítico se falhar)
+    try {
+      const respParceiros = await fetch(PARCEIROS_URL);
+      if (respParceiros.ok) {
+        parceiros = await respParceiros.json();
+      }
+    } catch (e) {
+      console.warn('Parceiros não disponíveis:', e);
     }
 
     renderizar();
@@ -83,6 +96,7 @@ function renderizar() {
   renderizarAba('geral', dados.ranking);
   renderizarAbaStack('stack');
   renderizarAbaSolo('solo');
+  renderizarAbaParceiros();
   renderizarAbaMeta('meta');
 }
 
@@ -179,6 +193,86 @@ function renderizarAbaFiltrada(nomeAba, filtro) {
   ranking.sort((a, b) => b.culpados - a.culpados);
   carregando.style.display = 'none';
   renderizarAba(nomeAba, ranking);
+}
+
+const NOMES_POSICAO = { 1: 'Carry', 2: 'Mid', 3: 'Offlane', 4: 'Sup 4', 5: 'Sup 5' };
+
+function renderizarAbaParceiros() {
+  const carregando = document.getElementById('carregando-parceiros');
+  const select = document.getElementById('parceiros-jogador');
+
+  if (!parceiros || !parceiros.pares || parceiros.pares.length === 0) {
+    carregando.textContent = 'Sem dados de parceiros ainda.';
+    return;
+  }
+
+  carregando.style.display = 'none';
+  if (select.options.length === 1) {
+    Object.entries(parceiros.jogadores)
+      .sort((a, b) => a[1].nome.localeCompare(b[1].nome))
+      .forEach(([id, j]) => select.add(new Option(j.nome, id)));
+    select.addEventListener('change', renderizarListaParceiros);
+  }
+  renderizarListaParceiros();
+}
+
+function renderizarListaParceiros() {
+  const lista = document.getElementById('parceiros-lista');
+  const filtro = document.getElementById('parceiros-jogador').value;
+  lista.innerHTML = '';
+
+  const desde = parceiros.desde ? new Date(parceiros.desde + 'T00:00:00').toLocaleDateString('pt-BR') : null;
+  const info = document.createElement('div');
+  info.className = 'meta-aviso';
+  info.textContent = `Partidas jogadas do mesmo lado${desde ? ` desde ${desde}` : ''}. Duplas com menos de ${MIN_JOGOS_DUPLA} jogos ficam no fim.`;
+  lista.appendChild(info);
+
+  const pares = parceiros.pares
+    .filter(p => !filtro || p.a === filtro || p.b === filtro)
+    .map(p => (filtro && p.b === filtro) ? inverterPar(p) : p)
+    .sort((x, y) => (y.jogos >= MIN_JOGOS_DUPLA) - (x.jogos >= MIN_JOGOS_DUPLA) || y.winRate - x.winRate || y.jogos - x.jogos);
+
+  pares.forEach(p => lista.appendChild(cartaoDupla(p)));
+}
+
+// Deixa o jogador escolhido no filtro sempre como "A"
+function inverterPar(p) {
+  const trocarRota = r => ({ ...r, posA: r.posB, posB: r.posA });
+  const trocarHeroi = h => ({ ...h, heroiA: h.heroiB, heroiB: h.heroiA });
+  return {
+    ...p, a: p.b, b: p.a, nomeA: p.nomeB, nomeB: p.nomeA,
+    rotas: p.rotas.map(trocarRota), rotasPiores: p.rotasPiores.map(trocarRota),
+    herois: p.herois.map(trocarHeroi), heroisPiores: p.heroisPiores.map(trocarHeroi)
+  };
+}
+
+function cartaoDupla(p) {
+  const card = document.createElement('div');
+  card.className = 'topico-card dupla-card' + (p.jogos < MIN_JOGOS_DUPLA ? ' dupla-poucos' : '');
+  const classeWr = p.winRate > 50 ? 'mmr-positivo' : p.winRate < 50 ? 'mmr-negativo' : '';
+  const nomeA = escapeHtml(p.nomeA), nomeB = escapeHtml(p.nomeB);
+
+  const linhaRota = r => `<li>${nomeA} <b>${NOMES_POSICAO[r.posA] || r.posA}</b> + ${nomeB} <b>${NOMES_POSICAO[r.posB] || r.posB}</b>` +
+    ` <span class="dupla-num">${r.winRate}% em ${r.jogos}</span></li>`;
+  const linhaHeroi = h => `<li><b>${escapeHtml(h.heroiA)}</b> + <b>${escapeHtml(h.heroiB)}</b>` +
+    ` <span class="dupla-num">${h.vitorias}/${h.jogos}</span></li>`;
+  const bloco = (titulo, itens, linha) => itens.length
+    ? `<div class="dupla-bloco"><div class="dupla-bloco-titulo">${titulo}</div><ul>${itens.map(linha).join('')}</ul></div>`
+    : '';
+
+  card.innerHTML = `
+    <div class="dupla-topo">
+      <div class="topico-titulo">${nomeA} + ${nomeB}</div>
+      <div class="dupla-wr ${classeWr}">${p.winRate}%</div>
+    </div>
+    <div class="topico-descricao">${p.vitorias} vitórias em ${p.jogos} jogos juntos${p.jogos < MIN_JOGOS_DUPLA ? ' · poucos jogos' : ''}</div>
+    <div class="dupla-barra"><div style="width:${p.winRate}%"></div></div>
+    ${bloco('✅ Rotas que funcionam', p.rotas.filter(r => r.winRate >= 50).slice(0, 3), linhaRota)}
+    ${bloco('❌ Rotas pra evitar', p.rotasPiores, linhaRota)}
+    ${bloco('🦸 Heróis que dão certo juntos', p.herois, linhaHeroi)}
+    ${bloco('💀 Heróis que não combinam', p.heroisPiores, linhaHeroi)}
+  `;
+  return card;
 }
 
 function renderizarAbaMeta(nomeAba) {

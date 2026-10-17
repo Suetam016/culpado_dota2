@@ -167,6 +167,12 @@ async function main() {
     };
   }).sort((a, b) => b.culpados - a.culpados);
 
+  if (![...partidas.values()].some(Boolean)) {
+    // OpenDota fora do ar ou sem cota: não troca o ranking bom anterior por um vazio
+    console.error('Nenhuma partida analisada; ranking.json fica como está.');
+    process.exit(1);
+  }
+
   const saida = path.join(RAIZ, 'amigos', 'ranking.json');
   fs.mkdirSync(path.dirname(saida), { recursive: true });
   fs.writeFileSync(saida, JSON.stringify({

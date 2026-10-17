@@ -1,0 +1,64 @@
+name: Ranking dos amigos (culpados, MMR e parceiros)
+
+# Gera amigos/ranking.json (culpados, craques e MMR estimado, com ranking/gerar.js: últimas 20 partidas de cada amigo
+# no OpenDota) e amigos/parceiros.json (win rate de cada dupla, rotas e heróis, com ranking/parceiros.py: partidas
+# guardadas pelo robô de coleta no branch "dados"). Todo dia, na mão (Actions > Run workflow) ou com push em
+# ranking/pedido (qualquer conteúdo), no robô ou no amigos.json. Se um dos dois falhar, o arquivo anterior fica.
+on:
+  schedule:
+    - cron: "23 8 * * *"   # todo dia, 05:23 em Brasília
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["ranking/pedido", "ranking/gerar.js", "ranking/parceiros.py", "amigos.json", ".github/workflows/ranking.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ranking
+  cancel-in-progress: false
+
+jobs:
+  ranking:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          ref: dados
+          path: .dados
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ranking (OpenDota)
+        id: ranking
+        continue-on-error: true
+        timeout-minutes: 20
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: node ranking/gerar.js
+      - name: Parceiros (branch dados)
+        id: parceiros
+        continue-on-error: true
+        run: python ranking/parceiros.py --dados .dados
+      - name: Salvar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add amigos/ranking.json amigos/parceiros.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Ranking: culpados, MMR e parceiros"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
+      - name: Falhou?
+        if: steps.ranking.outcome == 'failure' || steps.parceiros.outcome == 'failure'
+        run: |
+          echo "ranking: ${{ steps.ranking.outcome }} · parceiros: ${{ steps.parceiros.outcome }}"
+          exit 1

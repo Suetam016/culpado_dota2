@@ -23,6 +23,7 @@
         <button class="aba aba-ativa" data-aba="geral">Geral</button>
         <button class="aba" data-aba="stack">Com o Stack</button>
         <button class="aba" data-aba="solo">Solo</button>
+        <button class="aba" data-aba="parceiros">Parceiros 🤝</button>
         <button class="aba" data-aba="meta">Meta 🔥</button>
       </div>
 
@@ -88,6 +89,19 @@
             </tbody>
           </table>
           <p class="carregando" id="carregando-solo">Carregando ranking...</p>
+        </div>
+
+        <div class="aba-conteudo" id="aba-parceiros">
+          <div class="parceiros-filtro">
+            <label for="parceiros-jogador">Parceiros de</label>
+            <select id="parceiros-jogador">
+              <option value="">todo mundo</option>
+            </select>
+          </div>
+          <div class="parceiros-lista" id="parceiros-lista">
+            <!-- preenchido por JS -->
+          </div>
+          <p class="carregando" id="carregando-parceiros">Carregando parceiros...</p>
         </div>
 
         <div class="aba-conteudo" id="aba-meta">
