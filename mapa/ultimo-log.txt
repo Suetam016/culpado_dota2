@@ -1055,3 +1055,12 @@ OK 9048410839
   1731 usos de skill/item de 2573 no combat log
 OK 9048371137
 3 mapas novos
+Fila: [9048562887] (pedidos do site: [9048562887])
+  replay http://replay201.valve.net/570/9048562887_1370385155.dem.bz2 -> HTTP 200 application/octet-stream 91589216 inicio=b'(\xb5/\xfd\x00`<;\x0f^i\xde'
+  9048562887: 307122 eventos; tipos [('actions', 111044), ('DOTA_COMBATLOG_DAMAGE', 60362), ('interval', 43530), ('DOTA_COMBATLOG_MODIFIER_ADD', 24973), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 24900), ('DOTA_COMBATLOG_HEAL', 11311), ('DOTA_COMBATLOG_DEATH', 7545), ('DOTA_COMBATLOG_XP', 6886)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Furion", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 53, "variant": 0, "facet_hero_id": 53, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ran
+  exemplo de habilidade: {"time": -86, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_invoker", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "invoker_exort"}
+  6061 registros de dano herói->herói
+  6655 usos de skill/item de 8071 no combat log
+OK 9048562887
+1 mapas novos
