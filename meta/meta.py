@@ -104,18 +104,30 @@ def main():
 
     # neutros e habilidades vêm com custo 0: na build só entra o que se compra na loja
     compravel = lambda k: isinstance(itens.get(k), list) and (itens[k][2] or 0) > 0
+    pais = {}   # peça -> itens que ela ajuda a montar
+    for chave, v in itens.items():
+        if isinstance(v, list) and len(v) > 3 and isinstance(v[3], list):
+            for peca in v[3]:
+                pais.setdefault(peca, set()).add(chave)
     builds = {}
     for x in fortes[:HEROIS_COM_BUILD]:
         pop = pedir(f'/heroes/{x["id"]}/itemPopularity')
         time.sleep(1.1)
         if not isinstance(pop, dict):
             continue
-        fases = {}
+        candidatos = {}
         for fase, chave in (('inicio', 'start_game_items'), ('cedo', 'early_game_items'),
                             ('meio', 'mid_game_items'), ('tarde', 'late_game_items')):
             contagem = pop.get(chave) or {}
             chaves = [ids_itens.get(str(i)) for i, _ in sorted(contagem.items(), key=lambda kv: -kv[1])]
-            fases[fase] = [k for k in chaves if k and not IGNORAR.match(k) and compravel(k)][:ITENS_POR_FASE]
+            candidatos[fase] = [k for k in chaves if k and not IGNORAR.match(k) and compravel(k)][:15]
+        fases = {'inicio': candidatos['inicio'][:ITENS_POR_FASE]}
+        ordem = ['cedo', 'meio', 'tarde']
+        for n, fase in enumerate(ordem):
+            depois = {k for f in ordem[n:] for k in candidatos[f]}
+            # peça de receita sai: barata, ou o item que ela monta aparece nesta fase ou depois
+            fases[fase] = [k for k in candidatos[fase]
+                           if k not in pais or ((itens[k][2] or 0) >= 2100 and not (pais[k] & depois))][:ITENS_POR_FASE]
         builds[str(x['id'])] = fases
 
     usados = {k for b in builds.values() for f in b.values() for k in f}
