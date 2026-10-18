@@ -4804,7 +4804,7 @@ const SECOES = [
 { id: 'chat', precisa: ['replay'], montar: secaoChat },
 { id: 'lances', precisa: ['replay', 'mortes'], montar: secaoLances, sil: silLances },
 { id: 'jogo', precisa: ['replay', 'vantagem'], montar: secaoJogo, sil: silJogo },
-{ id: 'janela', precisa: ['replay', 'vantagem'], montar: secaoJanela },
+{ id: 'janela', precisa: ['replay', 'vantagem'], montar: secaoJanela, sil: silJanela },
 { id: 'craques', precisa: ['replay'], montar: secaoCraques },
 { id: 'rotas', precisa: ['replay', 'rotas'], montar: secaoRotas, sil: silRotas, refaz: ['mapa'] },
 { id: 'itens', precisa: ['replay', 'compras'], montar: secaoItensDoTime, sil: silItens },
@@ -4914,6 +4914,9 @@ return silhueta('lances', { titulo: 'Lances da partida', teaser, forma: 'mapa', 
 }
 function silJogo(r, status = 'chegando') {
 return silhueta('jogo', { titulo: 'O jogo em um gráfico', teaser: `Minuto a minuto, a vantagem de ouro e onde ela ${r && r.partida.venceu ? 'foi construída' : 'foi embora'}.`, linhas: [100, 100, 100, 100], status });
+}
+function silJanela(r, status = 'chegando') {
+return silhueta('janela', { titulo: r && r.partida.venceu ? 'Como vocês fecharam o jogo' : 'A janela de fechar o jogo', teaser: 'Quando um time ficou bem na frente, o que fez com a vantagem e onde cada um estava no mapa.', linhas: [100, 86, 92], status });
 }
 function silRotas(r, status = 'chegando') {
 return silhueta('rotas', { titulo: 'Fase de rotas', teaser: 'As 3 rotas aos 10 min, em ouro: quem ganhou o duelo direto.', linhas: [88, 70, 80], status });
