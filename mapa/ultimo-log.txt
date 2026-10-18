@@ -1329,3 +1329,12 @@ Fila: [9051617064] (pedidos do site: [9051617064])
   6002 usos de skill/item de 7351 no combat log
 OK 9051617064
 1 mapas novos
+Fila: [9051525934]
+  replay http://replay202.valve.net/570/9051525934_340271561.dem.bz2 -> HTTP 200 application/octet-stream 47727439 inicio=b'(\xb5/\xfd\x00`\x84;\x0f\xbey\xde'
+  9051525934: 185462 eventos; tipos [('actions', 90092), ('DOTA_COMBATLOG_DAMAGE', 31091), ('interval', 27760), ('DOTA_COMBATLOG_MODIFIER_ADD', 8007), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 7961), ('DOTA_COMBATLOG_HEAL', 5328), ('DOTA_COMBATLOG_DEATH', 3913), ('DOTA_COMBATLOG_XP', 3860)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_EarthSpirit", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 107, "variant": 0, "facet_hero_id": 107, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 
+  exemplo de habilidade: {"time": -80, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_legion_commander", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  2246 registros de dano herói->herói
+  1754 usos de skill/item de 2674 no combat log
+OK 9051525934
+1 mapas novos
