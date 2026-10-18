@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <header class="topo">
@@ -22,6 +22,14 @@
   </header>
 
   <main class="pagina">
+    <div class="atualizacao" id="atualizacao">
+      <p class="att-quando">Atualizado pela última vez em: <b id="att-data">—</b> <span id="att-rel"></span></p>
+      <div class="att-acao">
+        <button type="button" class="att-botao" id="att-botao" disabled>↻ Atualizar agora</button>
+        <span class="att-status" id="att-status" role="status"></span>
+      </div>
+    </div>
+
     <nav class="abas" role="tablist" aria-label="Seções do ranking">
       <button class="aba aba-ativa" data-aba="geral" role="tab" aria-selected="true">
         <span class="aba-icone" aria-hidden="true">🏆</span><span class="aba-nome">Geral</span><span class="aba-sub">Culpados e craques</span>
@@ -132,6 +140,6 @@
   </form>
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

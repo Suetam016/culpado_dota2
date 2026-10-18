@@ -1052,3 +1052,49 @@ test('mapa: falhas.json grande demais (a API manda sem conteúdo) vai para o log
   } finally { console.log = log; }
   assert.ok(linhas.some((l) => /falhas\.json grande demais/.test(l)));
 });
+
+// ------------------------------------------------------------------ ranking (GET/POST /ranking)
+const rankingJson = (iso) => ({ content: JSON.stringify({ atualizadoEm: iso, ranking: [] }), sha: 'r1' });
+const pedirRanking = (metodo = 'POST', opts = {}) => worker.fetch(pedido(metodo === 'POST' ? {} : null, { caminho: '/ranking', metodo, ...opts }), opts.env || ENV_MAPA);
+
+test('ranking: com 30+ min desde a última atualização, POST cria ranking/pedido e só escreve ali', async () => {
+  const repo = githubFalso({ arquivos: { 'amigos/ranking.json': rankingJson(new Date(Date.now() - 31 * 60_000).toISOString()) } });
+  const r = await pedirRanking();
+  assert.equal(r.status, 200);
+  const j = await r.json();
+  assert.equal(j.estado, 'pedido');
+  assert.match(repo.arquivos['ranking/pedido'].content, new RegExp(j.pedidoEm));
+  assert.ok(repo.chamadas.filter((c) => c.metodo === 'PUT').every((c) => c.caminho === 'ranking/pedido'));
+  assert.ok(repo.chamadas.every((c) => ['amigos/ranking.json', 'ranking/pedido'].includes(c.caminho)));
+  assert.ok(!JSON.stringify(j).includes('github_pat'));
+});
+
+test('ranking: antes de 30 min (da atualização ou do último pedido) recusa com 429 e não escreve nada', async () => {
+  let repo = githubFalso({ arquivos: { 'amigos/ranking.json': rankingJson(new Date(Date.now() - 10 * 60_000).toISOString()) } });
+  let r = await pedirRanking();
+  assert.equal(r.status, 429);
+  const j = await r.json();
+  assert.equal(j.erro, 'cedo');
+  assert.ok(j.minutos >= 19 && j.minutos <= 20);
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+  _interno.limparCacheMapa();
+  repo = githubFalso({ arquivos: {
+    'amigos/ranking.json': rankingJson(new Date(Date.now() - 3 * 3_600_000).toISOString()),
+    'ranking/pedido': { content: `pedido pelo site em ${agoraIso(-5 * 60_000)}\n`, sha: 'p1' },
+  } });
+  r = await pedirRanking();
+  assert.equal(r.status, 429, 'pedido de 5 min atrás também segura o botão');
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+});
+
+test('ranking: GET diz quando atualizou, quando libera e se o robô ainda está rodando', async () => {
+  const atualizado = new Date(Date.now() - 2 * 3_600_000).toISOString();
+  githubFalso({ arquivos: { 'amigos/ranking.json': rankingJson(atualizado), 'ranking/pedido': { content: `pedido pelo site em ${agoraIso(-60_000)}\n`, sha: 'p1' } } });
+  const r = await pedirRanking('GET');
+  assert.equal(r.status, 200);
+  const j = await r.json();
+  assert.equal(j.atualizadoEm, atualizado);
+  assert.equal(j.atualizando, true);
+  assert.equal(j.podeAtualizar, false);
+  assert.equal(j.sha, undefined);
+});

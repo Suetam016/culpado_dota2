@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   $('carregando').hidden = true;
   $('atualizado-em').textContent = `Atualizado em ${dataHora(ranking.atualizadoEm)}`;
+  montarAtualizacao();
 
   renderizarRanking();
   renderizarDuplas();
@@ -631,15 +632,97 @@ function renderizarReddit() {
   });
 }
 
+/* ---------- Worker do coach (feedback e botão de atualizar) ---------- */
+
+let coachPromessa = null;
+const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json', { cache: 'no-cache' })
+  .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
+  .catch(() => ''));
+
+/* ---------- Atualizar agora (no máximo a cada 30 min; a regra vale no Worker) ---------- */
+
+const INTERVALO_ATT_MIN = 30;
+const ESPERA_ROBO_MS = 12 * 60_000;
+let timerAtt = 0;
+
+function relativo(iso) {
+  const min = Math.round((Date.now() - Date.parse(iso)) / 60_000);
+  if (!Number.isFinite(min)) return '';
+  if (min < 1) return '(agora há pouco)';
+  if (min < 60) return `(há ${min} min)`;
+  const h = Math.floor(min / 60);
+  return h < 24 ? `(há ${h} h${min % 60 ? ` ${min % 60} min` : ''})` : `(há ${Math.floor(h / 24)} ${Math.floor(h / 24) === 1 ? 'dia' : 'dias'})`;
+}
+
+function montarAtualizacao() {
+  const botao = $('att-botao'); const status = $('att-status');
+  const pintarData = () => {
+    $('att-data').textContent = dataHora(ranking.atualizadoEm);
+    $('att-rel').textContent = relativo(ranking.atualizadoEm);
+  };
+  const travarAte = (liberaEm) => {
+    clearInterval(timerAtt);
+    const tick = () => {
+      pintarData();
+      const falta = Math.ceil((Date.parse(liberaEm) - Date.now()) / 60_000);
+      if (falta > 0) { botao.disabled = true; status.textContent = `Libera em ${falta} min (uma atualização a cada ${INTERVALO_ATT_MIN} min).`; return; }
+      clearInterval(timerAtt); botao.disabled = false; status.textContent = '';
+    };
+    tick();
+    timerAtt = setInterval(tick, 30_000);
+  };
+  const esperarRobo = (desde) => {
+    clearInterval(timerAtt);
+    botao.disabled = true;
+    status.textContent = 'Atualizando… o robô leva uns 3 minutos. A página recarrega sozinha.';
+    const antes = ranking.atualizadoEm;
+    const inicio = Date.now();
+    timerAtt = setInterval(async () => {
+      const novo = await fetch(RANKING_URL, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+      if (novo && novo.atualizadoEm && novo.atualizadoEm !== antes && Date.parse(novo.atualizadoEm) >= Date.parse(desde || 0) - 60_000) {
+        clearInterval(timerAtt);
+        status.textContent = 'Pronto! Recarregando…';
+        setTimeout(() => location.reload(), 800);
+      } else if (Date.now() - inicio > ESPERA_ROBO_MS) {
+        clearInterval(timerAtt);
+        status.textContent = 'O robô está demorando mais que o normal. Recarregue a página daqui a pouco.';
+      }
+    }, 20_000);
+  };
+
+  pintarData();
+  const localLibera = new Date(Date.parse(ranking.atualizadoEm) + INTERVALO_ATT_MIN * 60_000).toISOString();
+  urlDoCoach().then(async url => {
+    if (!url) { travarAte(localLibera); return; }
+    const est = await fetch(`${url}/ranking`, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    if (est && est.atualizando) esperarRobo(est.pedidoEm);
+    else travarAte(est && est.liberaEm ? est.liberaEm : localLibera);
+  });
+
+  botao.addEventListener('click', async () => {
+    botao.disabled = true;
+    status.textContent = 'Pedindo ao robô…';
+    const url = await urlDoCoach();
+    if (!url) { status.textContent = 'A atualização está desligada agora.'; return; }
+    try {
+      const r = await fetch(`${url}/ranking`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok) { esperarRobo(j.pedidoEm); return; }
+      if (r.status === 429 && j.liberaEm) { if (j.atualizando) esperarRobo(); else travarAte(j.liberaEm); return; }
+      status.textContent = j.msg || 'Não deu pra pedir agora. Tente de novo em um minuto.';
+      botao.disabled = false;
+    } catch (e) {
+      status.textContent = 'Não deu pra pedir agora. Tente de novo em um minuto.';
+      botao.disabled = false;
+    }
+  });
+}
+
 /* ---------- Feedback (mesmo worker do painel: POST <coach>/feedback grava em feedback/) ---------- */
 
 function montarFeedback() {
   const caixa = $('fb-caixa'), botao = $('fb-botao'), campo = $('fb-texto'), nome = $('fb-nome');
   const status = $('fb-status'), enviar = $('fb-enviar');
-  let coach = null;
-  const urlDoCoach = () => (coach = coach || fetch('../config.json', { cache: 'no-cache' })
-    .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
-    .catch(() => ''));
 
   try { nome.value = localStorage.getItem('culpado:fb-nome') || ''; } catch (e) { /* sem storage */ }
 

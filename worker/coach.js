@@ -742,6 +742,9 @@ const caminhoMapa = {
   fila: () => 'mapa/pedidos',
   falhas: () => 'mapa/falhas.json',
 };
+// Ranking dos amigos: o Worker só ESCREVE ranking/pedido (o push dispara o robô ranking.yml) e só LÊ esse arquivo
+// e amigos/ranking.json (para saber quando foi a última atualização).
+const caminhoRanking = { pedido: 'ranking/pedido', ranking: 'amigos/ranking.json' };
 
 async function github(env, metodo, caminho, corpo, accept = 'application/vnd.github+json') {
   // orçamento por instância: a cota de 5000/h é da conta do dono (dividida com o gh e os outros tokens dele)
@@ -954,6 +957,67 @@ async function pedirMapa(req, env, origem) {
   }
 }
 
+// Botão "Atualizar agora" do ranking: no máximo uma atualização a cada RANKING_INTERVALO_MIN minutos, contando da
+// última atualização do ranking.json ou do último pedido (o que for mais recente). O limite vale para todo mundo
+// porque fica no próprio repositório, não na memória do Worker.
+//   GET /ranking  -> {atualizadoEm, pedidoEm, liberaEm, podeAtualizar, atualizando}
+//   POST /ranking -> {estado:'pedido', pedidoEm, liberaEm} ou 429 {erro:'cedo', liberaEm, minutos}
+const RANKING_INTERVALO_MIN = 30;
+const RANKING_RODANDO_MS = 15 * 60_000; // pedido mais novo que o ranking e com menos que isto: o robô ainda está rodando
+let cacheRanking = { ate: 0, dados: null };
+
+async function estadoRanking(env) {
+  if (cacheRanking.ate > Date.now()) return cacheRanking.dados;
+  let atualizadoEm = null;
+  const r = await github(env, 'GET', caminhoRanking.ranking, null, 'application/vnd.github.raw+json');
+  if (r.status === 200) {
+    const txt = await r.text().catch(() => '');
+    atualizadoEm = (txt.match(/"atualizadoEm"\s*:\s*"([^"]+)"/) || [])[1] || null;
+  } else descartar(r);
+  let pedidoEm = null; let sha = null;
+  const p = await github(env, 'GET', caminhoRanking.pedido);
+  if (p.status === 200) {
+    const j = await p.json().catch(() => ({}));
+    sha = j.sha || null;
+    try { pedidoEm = (deBase64(j.content).match(/\d{4}-\d\d-\d\dT[\d:.]+Z/) || [])[0] || null; } catch { /* conteúdo estranho */ }
+  } else descartar(p);
+  const ultima = Math.max(Date.parse(atualizadoEm) || 0, Date.parse(pedidoEm) || 0);
+  const libera = ultima + RANKING_INTERVALO_MIN * 60_000;
+  const atualizando = Boolean(pedidoEm) && (Date.parse(pedidoEm) || 0) > (Date.parse(atualizadoEm) || 0) && Date.now() - Date.parse(pedidoEm) < RANKING_RODANDO_MS;
+  const dados = { atualizadoEm, pedidoEm, liberaEm: new Date(libera).toISOString(), podeAtualizar: Date.now() >= libera, atualizando, sha };
+  cacheRanking = { ate: Date.now() + 5_000, dados };
+  return dados;
+}
+
+async function rotaRanking(req, env, origem) {
+  const resp = (status, dados, extra) => json(status, dados, origem, env, extra);
+  try {
+    const est = await estadoRanking(env);
+    const { sha, ...publico } = est;
+    if (req.method === 'GET') return resp(200, { ...publico, agora: new Date().toISOString() });
+    if (!est.podeAtualizar) {
+      const minutos = Math.max(1, Math.ceil((Date.parse(est.liberaEm) - Date.now()) / 60_000));
+      return resp(429, { erro: 'cedo', msg: `O ranking foi atualizado há pouco. Libera de novo em ${minutos} min.`, liberaEm: est.liberaEm, minutos, atualizando: est.atualizando }, { 'Retry-After': String(minutos * 60) });
+    }
+    const quando = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    const corpo = { message: 'Pedido de ranking pelo site', content: conteudoPedido(quando), ...(sha ? { sha } : {}) };
+    const r = await github(env, 'PUT', caminhoRanking.pedido, corpo);
+    cacheRanking = { ate: 0, dados: null };
+    if (r.status === 200 || r.status === 201) {
+      return resp(200, { estado: 'pedido', pedidoEm: quando, liberaEm: new Date(Date.parse(quando) + RANKING_INTERVALO_MIN * 60_000).toISOString() });
+    }
+    const txt = await r.text().catch(() => '');
+    console.log('github PUT ranking', r.status, txt.slice(0, 200));
+    // 409/422: alguém pediu no mesmo instante (sha mudou): para quem clicou, dá no mesmo
+    if (r.status === 409 || r.status === 422) return resp(200, { estado: 'pedido', pedidoEm: quando });
+    return resp(502, { erro: 'github', msg: 'O robô do ranking não respondeu agora. Tente de novo em um minuto.' });
+  } catch (e) {
+    console.log('ranking: falhou', e && e.codigo, String(e && e.message).slice(0, 200));
+    if (e && e.codigo === 'orcamento') return respostaOrcamento(resp);
+    return resp(502, { erro: e && e.codigo === 'token' ? 'token' : 'github', msg: 'O robô do ranking não respondeu agora. Tente de novo em um minuto.' });
+  }
+}
+
 async function consultarMapa(req, env, origem, id, arquivo = false) {
   const resp = (status, dados, extra) => json(status, dados, origem, env, extra);
   if (!ID_MAPA.test(id)) return resp(400, { erro: 'invalido', msg: MSG_MAPA.invalido });
@@ -1053,6 +1117,11 @@ export default {
       if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: MSG_MAPA.desligado }, origem, env);
       return req.method === 'POST' ? pedirMapa(req, env, origem) : consultarMapa(req, env, origem, rotaMapa[1], Boolean(rotaMapa[2]));
     }
+    if (caminho === '/ranking' && (req.method === 'GET' || req.method === 'POST')) {
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: 'A atualização do ranking ainda não foi ligada pelo dono do site.' }, origem, env);
+      return rotaRanking(req, env, origem);
+    }
     if (req.method === 'POST' && caminho === '/feedback') {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
       if (!tokenGithub(env)) return json(503, { erro: 'desligado' }, origem, env);
@@ -1087,5 +1156,6 @@ export const _interno = {
   limparCacheMapa: () => {
     cacheMapa.clear(); consultas.clear();
     cacheFalhas = { ate: 0, dados: null }; cacheSaude = { ate: 0, dados: null }; orcamentoGithub = { hora: -1, n: 0 };
+    cacheRanking = { ate: 0, dados: null };
   },
 };
