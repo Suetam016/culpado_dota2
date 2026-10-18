@@ -51,10 +51,23 @@ function carregarMotor() {
   return ctx.module.exports;
 }
 
+// Mesmo formato que o painel passa ao motor (expandirConstantes do index.html): sem isso o motor não acha o
+// nome interno dos heróis e perde a linha do tempo das mortes.
 function dadosEmbutidos() {
   const html = fs.readFileSync(path.join(RAIZ, 'index.html'), 'utf8');
   const m = html.match(/<script type="application\/json" id="dados-embutidos">([\s\S]*?)<\/script>/);
-  return JSON.parse(m[1]).constantes;
+  const c = JSON.parse(m[1]).constantes;
+  const h = {};
+  const i = {};
+  const ids = { ...(c.ids || {}) };
+  for (const [id, [nome, localizado, attr, ataque]] of Object.entries(c.h || {})) {
+    h[id] = { name: `npc_dota_hero_${nome}`, localized_name: localizado, primary_attr: attr, attack_type: ataque };
+  }
+  for (const [key, [id, dname, cost, components]] of Object.entries(c.i || {})) {
+    i[key] = { id, dname, cost, components: components || null };
+    if (id != null && !(id in ids)) ids[id] = key;
+  }
+  return { h, i, ids };
 }
 
 async function pedir(caminho) {

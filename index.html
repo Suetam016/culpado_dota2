@@ -153,7 +153,7 @@ escala: 100, rotaMin: 10, rotaMult: 1.5, rotaCredito: 0.5, xpPeso: 0.5,
 rotacaoAte: 12 * 60, rotacaoFracao: 0.5, snowballAbates: 5, snowballAte: 25 * 60, snowballExtra: 0.3,
 pickoffExtra: 0.25, pickoffJanela: 20, throwLead: 2000, throwExtra: 0.5, troca: 0.6,
 objetivos: { tower1: 300, tower2: 500, tower3: 700, tower4: 600, melee_rax: 900, range_rax: 600 }, roshan: 800,
-ausencia: 400, creditoAbates: 0.25, creditoMax: 0.65,
+ausencia: 400, creditoAbates: 0.25, creditoMax: 0.65, creditoSuporte: 0.3,
 rotaTolerancia: 400,
 };
 
@@ -428,7 +428,7 @@ ctx.rotasAval = out;
 return out;
 }
 
-function fatiasDaRota(av, perdeu, cedo) {
+function fatiasDaRota(av, perdeu, cedo, papel = ROTA.papel) {
 const w = {};
 for (const dl of av.duelos) {
 const s = perdeu ? Math.max(0, -dl.saldo) : Math.max(0, dl.saldo);
@@ -437,7 +437,7 @@ const h = av.harass;
 const meu = h ? h[dl.jogador.idx] || 0 : 0;
 const deles = h ? Math.max(0, ...av.b.map((x) => h[x.idx] || 0)) : 0;
 const troca = h && deles >= 400 && deles >= 2 * meu ? (perdeu ? 1.15 : 0.9) : 1;
-w[dl.jogador.idx] = troca * ROTA.papel[dl.papel] * (1 + 0.2 * (cedo ? cedo[dl.jogador.idx] || 0 : 0)) * (0.3 + s / 1000);
+w[dl.jogador.idx] = troca * papel[dl.papel] * (1 + 0.2 * (cedo ? cedo[dl.jogador.idx] || 0 : 0)) * (0.3 + s / 1000);
 }
 const sw = soma(Object.values(w)) || 1;
 return Object.fromEntries(Object.entries(w).map(([k, v]) => [k, v / sw]));
@@ -460,6 +460,7 @@ visao: 'Pouca visão',
 participacao: 'Pouca participação nos abates',
 credito_rota: 'Ganhou a rota',
 credito_abates: 'Abates que fez',
+credito_suporte: 'Trabalho de suporte',
 };
 
 const ZOEIRAS = {
@@ -975,6 +976,84 @@ return Number(sr[Math.min(minuto, sr.length - 1)]);
 }
 
 
+// Trabalho de suporte que não aparece em abate/dano: stacks, wards inimigas quebradas (pelo tempo de vida que
+// sobrava), visão de pé nos abates fora de luta e roam do começo do jogo. Valores em ouro, como o resto.
+const SUPORTE = {
+stack: 120, // um acampamento stackado vale ~um acampamento a mais de ouro para o time
+obsVida: 360, senVida: 420, dewardObs: 60, dewardObsVida: 200, dewardSen: 25, dewardSenVida: 60,
+visaoPickoff: 0.3, // fatia do ouro do abate fora de luta que vai para quem tinha observer de pé
+roamAte: 12 * 60, roam: 0.35, roamFlag: 1.3,
+creditoCulpa: 0.3, // quanto desse trabalho desconta da culpa do suporte
+};
+function trabalhoDeSuporte(ctx, match) {
+const { nos, eles } = ctx;
+const out = Object.fromEntries(nos.map((p) => [p.idx, {}]));
+const add = (i, k, ouro, info) => {
+if (!(i in out) || !(ouro > 0)) return;
+const slot = out[i][k] || (out[i][k] = { ouro: 0, infos: [] });
+slot.ouro += ouro;
+if (info !== undefined) slot.infos.push(info);
+};
+const porNpc = Object.fromEntries(nos.map((p) => [p.heroi.npc, p.idx]));
+
+for (const p of nos) if (p.raw.camps_stacked) add(p.idx, 'stacks', p.raw.camps_stacked * SUPORTE.stack, p.raw.camps_stacked);
+
+// ward deles quebrada por um de nós: vale mais quanto mais vida ela ainda tinha
+for (const e of eles) {
+for (const [tipo, vida, base, porVida] of [['obs', SUPORTE.obsVida, SUPORTE.dewardObs, SUPORTE.dewardObsVida], ['sen', SUPORTE.senVida, SUPORTE.dewardSen, SUPORTE.dewardSenVida]]) {
+const postas = new Map((e.raw[`${tipo}_log`] || []).map((w) => [w.ehandle, w.time]));
+for (const w of e.raw[`${tipo}_left_log`] || []) {
+const quem = porNpc[w.attackername];
+if (quem == null) continue;
+const posta = postas.has(w.ehandle) ? postas.get(w.ehandle) : null;
+const sobra = posta == null ? vida / 2 : Math.max(0, vida - (w.time - posta));
+add(quem, 'deward', base + porVida * (sobra / vida), { tipo, sobra });
+}
+}
+}
+
+// observers nossos de pé em cada abate fora de luta
+const lutas = (match.teamfights || []).filter((tf) => tf.start != null).map((tf) => [tf.start - 10, (tf.end ?? tf.start) + 10]);
+const emLuta = (t) => lutas.some(([a, b]) => t >= a && t <= b);
+const wards = [];
+for (const p of nos) {
+const saiu = new Map((p.raw.obs_left_log || []).map((w) => [w.ehandle, w.time]));
+for (const w of p.raw.obs_log || []) wards.push({ idx: p.idx, de: w.time, ate: saiu.has(w.ehandle) ? saiu.get(w.ehandle) : w.time + SUPORTE.obsVida });
+}
+const mortesDe = (i) => (ctx.mortes ? ctx.mortes[i] : []).map((d) => ({ ...d, ouro: d.ouro == null ? ouroEstimado(d.t) : d.ouro }));
+if (ctx.mortes && wards.length) {
+for (const e of eles) {
+for (const x of mortesDe(e.idx)) {
+if (!(x.assassino in out) || emLuta(x.t)) continue;
+const ativas = wards.filter((w) => w.de <= x.t && x.t < w.ate);
+const porDono = {};
+for (const w of ativas) porDono[w.idx] = (porDono[w.idx] || 0) + 1;
+for (const [dono, n] of Object.entries(porDono)) add(Number(dono), 'visaoPickoff', (SUPORTE.visaoPickoff * x.ouro * n) / ativas.length, x.t);
+}
+}
+}
+
+// roam: abates e lutas ganhas no começo do jogo com o suporte dentro
+for (const p of nos) {
+if (p.posicao < 4) continue;
+const mult = p.raw.is_roaming ? SUPORTE.roamFlag : 1;
+const contados = new Set();
+if (ctx.mortes) {
+for (const e of eles) for (const x of mortesDe(e.idx)) {
+if (x.t < SUPORTE.roamAte && x.assassino === p.idx) { contados.add(`${e.idx}@${x.t}`); add(p.idx, 'roam', SUPORTE.roam * mult * x.ouro, x.t); }
+}
+}
+for (const tf of match.teamfights || []) {
+if (tf.start == null || tf.start >= SUPORTE.roamAte || !tf.players || tf.players.length < 10) continue;
+const fp = tf.players[p.idx];
+const dentro = fp && (fp.damage || (fp.ability_uses && Object.keys(fp.ability_uses).length));
+const mortosEles = soma(eles.map((e) => e.idx), (j) => tf.players[j].deaths || 0);
+if (dentro && mortosEles) add(p.idx, 'roam', SUPORTE.roam * mult * mortosEles * ouroEstimado(tf.start) * 0.5, tf.start);
+}
+}
+return out;
+}
+
 function cenariosDeCulpa(ctx, match) {
 const C = CULPA;
 const { nos, eles, duracao } = ctx;
@@ -1101,6 +1180,13 @@ const esperado = Math.max(minutos * wardsPorMin(p), 1);
 add(p.idx, 'visao', Math.max(0, 1 - wards / esperado) * minutos * 30, { wards, esperado, roamer: Boolean(p.rota && p.rota.roamer), pos: p.posicao });
 }
 }
+const sup = trabalhoDeSuporte(ctx, match);
+for (const p of nos) {
+if (p.posicao < 4) continue;
+const partes = Object.entries(sup[p.idx]);
+const total = soma(partes, ([, c]) => c.ouro);
+if (total > 0) add(p.idx, 'credito_suporte', -C.creditoSuporte * total, Object.fromEntries(partes.map(([k, c]) => [k, c.infos.length || c.ouro])));
+}
 return acc;
 }
 
@@ -1152,6 +1238,12 @@ return `${plural(wards, 'ward', 'wards')} na partida; o esperado para ${roamer ?
 }
 case 'participacao': return `esteve em ${pct(infos[0])} dos abates do time`;
 case 'credito_abates': return `${fmtK(-ouro / CULPA.creditoAbates)} de ouro tirado do inimigo nos próprios abates`;
+case 'credito_suporte': {
+const x = infos[0] || {};
+const partes = [x.stacks ? plural(p.raw.camps_stacked, 'stack', 'stacks') : '', x.deward ? plural(x.deward, 'ward inimiga quebrada', 'wards inimigas quebradas') : '',
+x.visaoPickoff ? plural(x.visaoPickoff, 'abate fora de luta com ward dele de pé', 'abates fora de luta com ward dele de pé') : '', x.roam ? 'roam que rendeu abate no começo' : ''].filter(Boolean);
+return partes.join(', ');
+}
 default: return '';
 }
 }
@@ -1159,17 +1251,19 @@ default: return '';
 
 
 
-const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15 };
+const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15, rotaSuporte: 0.9 };
 const LABELS_BOM = {
 rota: 'Ganhou a rota', abates: 'Abates', assist: 'Assistências', lutas: 'Decidiu as lutas ganhas', objetivos: 'Derrubou estruturas',
 roshan: 'Pegou o Roshan', farm: 'Farm acima do herói', dano: 'Dano acima do herói', visao: 'Visão do mapa', controle: 'Controle (stuns)',
 cura: 'Segurou o time vivo', vivo: 'Ficou vivo',
+stacks: 'Stackou os camps', deward: 'Quebrou a visão deles', visaoPickoff: 'Visão que achou abate', roam: 'Roam que rendeu abate',
 };
 const ELOGIOS = {
 rota: 'amassou a rota e deu o tom do jogo', abates: 'colecionou cabeça como se fosse figurinha da Copa', assist: 'esteve em todas, igual Wi-Fi de shopping',
 lutas: 'chegou na luta e apagou a luz', objetivos: 'tratou torre como item de decoração', roshan: 'jantou o Roshan e ainda pediu sobremesa',
 farm: 'farmou como se o mapa fosse dele', dano: 'bateu como se tivesse raiva pessoal', visao: 'iluminou o mapa mais que poste de LED',
 controle: 'deixou o inimigo parado mais tempo que fila de banco', cura: 'virou o SUS do time', vivo: 'morrer não estava nos planos',
+stacks: 'empilhou camp como quem empilha prato pro carry', deward: 'apagou as luzes do inimigo', visaoPickoff: 'a ward dele entregou o jantar', roam: 'apareceu na rota dos outros sem avisar',
 };
 function craquesDaPartida(ctx, match) {
 const { nos, eles, duracao } = ctx;
@@ -1189,7 +1283,7 @@ const mortesDe = (i) => (ctx.mortes ? ctx.mortes[i] : []).map((d) => ({ ...d, ou
 for (const av of avaliarRotas(ctx)) {
 const sobra = av.diff - av.esperado - CULPA.rotaTolerancia;
 if (!(sobra > 0)) continue;
-const fatia = fatiasDaRota(av, false, null);
+const fatia = fatiasDaRota(av, false, null, { ...ROTA.papel, suporte: MERITO.rotaSuporte });
 for (const dl of av.duelos) add(dl.jogador.idx, 'rota', MERITO.rotaMult * sobra * av.duelos.length * fatia[dl.jogador.idx], { tipo: av.tipo, ouroDiff: av.ouroDiff, rivais: av.b.map((x) => x.heroi.nome).join(' e '), esperado: av.esperado, temDado: av.expectativa.temDado, tipicas: av.expectativa.tipicas, n: av.duelos.length });
 }
 
@@ -1246,9 +1340,14 @@ const wards = s.obs + s.sen;
 const esperado = Math.max(minutos * wardsPorMin(p), 1);
 if (wards > esperado) add(p.idx, 'visao', Math.min(1, wards / esperado - 1) * minutos * 30, { wards, esperado, roamer: Boolean(p.rota && p.rota.roamer), pos: p.posicao });
 }
-if (s.stuns) add(p.idx, 'controle', s.stuns * MERITO.stun, s.stuns);
+if (s.stuns) {
+const kp = Math.min(1, (s.kills + s.assists) / (soma(nos, (q) => q.raw.kills) || 1));
+add(p.idx, 'controle', s.stuns * MERITO.stun * (0.5 + kp), { stuns: s.stuns, kp });
+}
 if (p.raw.hero_healing) add(p.idx, 'cura', p.raw.hero_healing * MERITO.cura, p.raw.hero_healing);
 }
+const sup = trabalhoDeSuporte(ctx, match);
+for (const p of nos) for (const [k, c] of Object.entries(sup[p.idx])) { add(p.idx, k, c.ouro); acc[p.idx][k].infos.push(...c.infos); }
 const arred = (x) => Math.round(x * 10) / 10;
 const evid = (k, c, p) => {
 const n = c.infos.length;
@@ -1270,7 +1369,12 @@ case 'farm': return `GPM no percentil ${pct(c.infos[0])} de quem joga de ${p.her
 case 'dano': return `dano em herói no percentil ${pct(c.infos[0])} de quem joga de ${p.heroi.nome} (todas as posições)`;
 case 'vivo': return `${plural(c.infos[0], 'morte', 'mortes')} em ${Math.round(minutos)} min`;
 case 'visao': return `${plural(c.infos[0].wards, 'ward', 'wards')}, acima das ~${Math.round(c.infos[0].esperado)} esperadas para ${c.infos[0].roamer ? 'um pos4 que roama' : `pos${c.infos[0].pos}`}`;
-case 'controle': return `${Math.round(c.infos[0])} s de stun no inimigo`;
+case 'controle': return `${Math.round(c.infos[0].stuns)} s de stun no inimigo, e esteve em ${pct(c.infos[0].kp)} dos abates do time`;
+case 'stacks': return `${plural(c.infos[0], 'acampamento stackado', 'acampamentos stackados')} (~${fmtK(c.ouro)} de ouro a mais na selva)`;
+case 'deward': { const obs = c.infos.filter((x) => x.tipo === 'obs'); const sen = c.infos.length - obs.length; const sobra = obs.length ? soma(obs, (x) => x.sobra) / obs.length : 0;
+return `quebrou ${[obs.length ? plural(obs.length, 'observer', 'observers') : '', sen ? plural(sen, 'sentry', 'sentries') : ''].filter(Boolean).join(' e ')} deles${obs.length ? `, com ~${Math.round(sobra / 60)} min de vida sobrando em média` : ''}`; }
+case 'visaoPickoff': return `${plural(c.infos.length, 'abate fora de luta', 'abates fora de luta')} com observer dele de pé no mapa`;
+case 'roam': return `${plural(c.infos.length, 'abate ou luta ganha', 'abates ou lutas ganhas')} com ele antes dos ${SUPORTE.roamAte / 60} min${p.raw.is_roaming ? ' (jogou rodando o mapa)' : ''}`;
 case 'cura': return `${fmtK(c.infos[0])} de vida curada nos aliados`;
 default: return '';
 }
