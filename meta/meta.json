@@ -1,0 +1,1089 @@
+{
+ "atualizadoEm": "2026-10-18T14:31:27Z",
+ "fonte": "OpenDota (/heroStats e /itemPopularity)",
+ "patch": "7.41",
+ "faixa": "Archon a Ancient",
+ "partidas": 2492953,
+ "fortes": [
+  {
+   "id": 42,
+   "nome": "Wraith King",
+   "slug": "skeleton_king",
+   "funcoes": [
+    "Carry",
+    "Support",
+    "Durable",
+    "Disabler",
+    "Initiator"
+   ],
+   "picks": 324308,
+   "winRate": 54.8,
+   "proPicks": 3,
+   "proWinRate": 33.3,
+   "pickRate": 13.0,
+   "variacao": null
+  },
+  {
+   "id": 76,
+   "nome": "Outworld Devourer",
+   "slug": "obsidian_destroyer",
+   "funcoes": [
+    "Carry",
+    "Nuker",
+    "Disabler"
+   ],
+   "picks": 311841,
+   "winRate": 54.2,
+   "proPicks": 44,
+   "proWinRate": 45.5,
+   "pickRate": 12.5,
+   "variacao": null
+  },
+  {
+   "id": 67,
+   "nome": "Spectre",
+   "slug": "spectre",
+   "funcoes": [
+    "Carry",
+    "Durable",
+    "Escape"
+   ],
+   "picks": 241297,
+   "winRate": 53.3,
+   "proPicks": 5,
+   "proWinRate": 60.0,
+   "pickRate": 9.7,
+   "variacao": null
+  },
+  {
+   "id": 8,
+   "nome": "Juggernaut",
+   "slug": "juggernaut",
+   "funcoes": [
+    "Carry",
+    "Pusher",
+    "Escape"
+   ],
+   "picks": 458702,
+   "winRate": 53.2,
+   "proPicks": 13,
+   "proWinRate": 46.2,
+   "pickRate": 18.4,
+   "variacao": null
+  },
+  {
+   "id": 12,
+   "nome": "Phantom Lancer",
+   "slug": "phantom_lancer",
+   "funcoes": [
+    "Carry",
+    "Escape",
+    "Pusher",
+    "Nuker"
+   ],
+   "picks": 286292,
+   "winRate": 53.1,
+   "proPicks": 16,
+   "proWinRate": 62.5,
+   "pickRate": 11.5,
+   "variacao": null
+  },
+  {
+   "id": 32,
+   "nome": "Riki",
+   "slug": "riki",
+   "funcoes": [
+    "Carry",
+    "Escape",
+    "Disabler"
+   ],
+   "picks": 133343,
+   "winRate": 53.1,
+   "proPicks": 0,
+   "proWinRate": null,
+   "pickRate": 5.3,
+   "variacao": null
+  },
+  {
+   "id": 49,
+   "nome": "Dragon Knight",
+   "slug": "dragon_knight",
+   "funcoes": [
+    "Carry",
+    "Pusher",
+    "Durable",
+    "Disabler",
+    "Initiator",
+    "Nuker"
+   ],
+   "picks": 356440,
+   "winRate": 52.8,
+   "proPicks": 114,
+   "proWinRate": 56.1,
+   "pickRate": 14.3,
+   "variacao": null
+  },
+  {
+   "id": 31,
+   "nome": "Lich",
+   "slug": "lich",
+   "funcoes": [
+    "Support",
+    "Nuker"
+   ],
+   "picks": 278640,
+   "winRate": 52.7,
+   "proPicks": 22,
+   "proWinRate": 59.1,
+   "pickRate": 11.2,
+   "variacao": null
+  },
+  {
+   "id": 4,
+   "nome": "Bloodseeker",
+   "slug": "bloodseeker",
+   "funcoes": [
+    "Carry",
+    "Disabler",
+    "Nuker",
+    "Initiator"
+   ],
+   "picks": 72918,
+   "winRate": 52.6,
+   "proPicks": 6,
+   "proWinRate": 83.3,
+   "pickRate": 2.9,
+   "variacao": null
+  },
+  {
+   "id": 88,
+   "nome": "Nyx Assassin",
+   "slug": "nyx_assassin",
+   "funcoes": [
+    "Disabler",
+    "Nuker",
+    "Initiator",
+    "Escape"
+   ],
+   "picks": 278303,
+   "winRate": 52.6,
+   "proPicks": 31,
+   "proWinRate": 51.6,
+   "pickRate": 11.2,
+   "variacao": null
+  },
+  {
+   "id": 135,
+   "nome": "Dawnbreaker",
+   "slug": "dawnbreaker",
+   "funcoes": [
+    "Carry",
+    "Durable"
+   ],
+   "picks": 233336,
+   "winRate": 52.6,
+   "proPicks": 51,
+   "proWinRate": 52.9,
+   "pickRate": 9.4,
+   "variacao": null
+  },
+  {
+   "id": 20,
+   "nome": "Vengeful Spirit",
+   "slug": "vengefulspirit",
+   "funcoes": [
+    "Support",
+    "Initiator",
+    "Disabler",
+    "Nuker",
+    "Escape"
+   ],
+   "picks": 240804,
+   "winRate": 52.5,
+   "proPicks": 0,
+   "proWinRate": null,
+   "pickRate": 9.7,
+   "variacao": null
+  }
+ ],
+ "fracos": [
+  {
+   "id": 11,
+   "nome": "Shadow Fiend",
+   "slug": "nevermore",
+   "funcoes": [
+    "Carry",
+    "Nuker"
+   ],
+   "picks": 222760,
+   "winRate": 42.7,
+   "proPicks": 9,
+   "proWinRate": 55.6,
+   "pickRate": 8.9,
+   "variacao": null
+  },
+  {
+   "id": 53,
+   "nome": "Nature's Prophet",
+   "slug": "furion",
+   "funcoes": [
+    "Carry",
+    "Pusher",
+    "Escape",
+    "Nuker"
+   ],
+   "picks": 226153,
+   "winRate": 42.7,
+   "proPicks": 61,
+   "proWinRate": 52.5,
+   "pickRate": 9.1,
+   "variacao": null
+  },
+  {
+   "id": 19,
+   "nome": "Tiny",
+   "slug": "tiny",
+   "funcoes": [
+    "Carry",
+    "Nuker",
+    "Pusher",
+    "Initiator",
+    "Durable",
+    "Disabler"
+   ],
+   "picks": 132110,
+   "winRate": 43.9,
+   "proPicks": 39,
+   "proWinRate": 41.0,
+   "pickRate": 5.3,
+   "variacao": null
+  },
+  {
+   "id": 109,
+   "nome": "Terrorblade",
+   "slug": "terrorblade",
+   "funcoes": [
+    "Carry",
+    "Pusher",
+    "Nuker"
+   ],
+   "picks": 127124,
+   "winRate": 44.4,
+   "proPicks": 50,
+   "proWinRate": 54.0,
+   "pickRate": 5.1,
+   "variacao": null
+  },
+  {
+   "id": 145,
+   "nome": "Kez",
+   "slug": "kez",
+   "funcoes": [
+    "Carry",
+    "Escape",
+    "Disabler"
+   ],
+   "picks": 99711,
+   "winRate": 44.4,
+   "proPicks": 47,
+   "proWinRate": 53.2,
+   "pickRate": 4.0,
+   "variacao": null
+  },
+  {
+   "id": 83,
+   "nome": "Treant Protector",
+   "slug": "treant",
+   "funcoes": [
+    "Support",
+    "Initiator",
+    "Durable",
+    "Disabler",
+    "Escape"
+   ],
+   "picks": 60001,
+   "winRate": 45.4,
+   "proPicks": 0,
+   "proWinRate": null,
+   "pickRate": 2.4,
+   "variacao": null
+  }
+ ],
+ "populares": [
+  {
+   "id": 14,
+   "nome": "Pudge",
+   "slug": "pudge",
+   "funcoes": [
+    "Disabler",
+    "Initiator",
+    "Durable",
+    "Nuker"
+   ],
+   "picks": 697146,
+   "winRate": 51.1,
+   "proPicks": 19,
+   "proWinRate": 57.9,
+   "pickRate": 28.0,
+   "variacao": null
+  },
+  {
+   "id": 26,
+   "nome": "Lion",
+   "slug": "lion",
+   "funcoes": [
+    "Support",
+    "Disabler",
+    "Nuker",
+    "Initiator"
+   ],
+   "picks": 639342,
+   "winRate": 48.5,
+   "proPicks": 10,
+   "proWinRate": 80.0,
+   "pickRate": 25.6,
+   "variacao": null
+  },
+  {
+   "id": 86,
+   "nome": "Rubick",
+   "slug": "rubick",
+   "funcoes": [
+    "Support",
+    "Disabler",
+    "Nuker"
+   ],
+   "picks": 536686,
+   "winRate": 49.6,
+   "proPicks": 84,
+   "proWinRate": 40.5,
+   "pickRate": 21.5,
+   "variacao": null
+  },
+  {
+   "id": 35,
+   "nome": "Sniper",
+   "slug": "sniper",
+   "funcoes": [
+    "Carry",
+    "Nuker"
+   ],
+   "picks": 480922,
+   "winRate": 49.4,
+   "proPicks": 8,
+   "proWinRate": 75.0,
+   "pickRate": 19.3,
+   "variacao": null
+  },
+  {
+   "id": 74,
+   "nome": "Invoker",
+   "slug": "invoker",
+   "funcoes": [
+    "Carry",
+    "Nuker",
+    "Disabler",
+    "Escape",
+    "Pusher"
+   ],
+   "picks": 472209,
+   "winRate": 50.7,
+   "proPicks": 34,
+   "proWinRate": 55.9,
+   "pickRate": 18.9,
+   "variacao": null
+  },
+  {
+   "id": 8,
+   "nome": "Juggernaut",
+   "slug": "juggernaut",
+   "funcoes": [
+    "Carry",
+    "Pusher",
+    "Escape"
+   ],
+   "picks": 458702,
+   "winRate": 53.2,
+   "proPicks": 13,
+   "proWinRate": 46.2,
+   "pickRate": 18.4,
+   "variacao": null
+  },
+  {
+   "id": 6,
+   "nome": "Drow Ranger",
+   "slug": "drow_ranger",
+   "funcoes": [
+    "Carry",
+    "Disabler",
+    "Pusher"
+   ],
+   "picks": 456765,
+   "winRate": 45.9,
+   "proPicks": 2,
+   "proWinRate": 0.0,
+   "pickRate": 18.3,
+   "variacao": null
+  },
+  {
+   "id": 21,
+   "nome": "Windranger",
+   "slug": "windrunner",
+   "funcoes": [
+    "Carry",
+    "Support",
+    "Disabler",
+    "Escape",
+    "Nuker"
+   ],
+   "picks": 431179,
+   "winRate": 48.3,
+   "proPicks": 134,
+   "proWinRate": 55.2,
+   "pickRate": 17.3,
+   "variacao": null
+  }
+ ],
+ "pros": [
+  {
+   "id": 119,
+   "nome": "Dark Willow",
+   "slug": "dark_willow",
+   "funcoes": [
+    "Support",
+    "Nuker",
+    "Disabler",
+    "Escape"
+   ],
+   "picks": 175672,
+   "winRate": 49.1,
+   "proPicks": 142,
+   "proWinRate": 49.3,
+   "pickRate": 7.0,
+   "variacao": null
+  },
+  {
+   "id": 123,
+   "nome": "Hoodwink",
+   "slug": "hoodwink",
+   "funcoes": [
+    "Support",
+    "Nuker",
+    "Escape",
+    "Disabler"
+   ],
+   "picks": 278204,
+   "winRate": 47.2,
+   "proPicks": 141,
+   "proWinRate": 44.7,
+   "pickRate": 11.2,
+   "variacao": null
+  },
+  {
+   "id": 21,
+   "nome": "Windranger",
+   "slug": "windrunner",
+   "funcoes": [
+    "Carry",
+    "Support",
+    "Disabler",
+    "Escape",
+    "Nuker"
+   ],
+   "picks": 431179,
+   "winRate": 48.3,
+   "proPicks": 134,
+   "proWinRate": 55.2,
+   "pickRate": 17.3,
+   "variacao": null
+  },
+  {
+   "id": 49,
+   "nome": "Dragon Knight",
+   "slug": "dragon_knight",
+   "funcoes": [
+    "Carry",
+    "Pusher",
+    "Durable",
+    "Disabler",
+    "Initiator",
+    "Nuker"
+   ],
+   "picks": 356440,
+   "winRate": 52.8,
+   "proPicks": 114,
+   "proWinRate": 56.1,
+   "pickRate": 14.3,
+   "variacao": null
+  },
+  {
+   "id": 112,
+   "nome": "Winter Wyvern",
+   "slug": "winter_wyvern",
+   "funcoes": [
+    "Support",
+    "Disabler",
+    "Nuker"
+   ],
+   "picks": 149556,
+   "winRate": 49.7,
+   "proPicks": 107,
+   "proWinRate": 45.8,
+   "pickRate": 6.0,
+   "variacao": null
+  },
+  {
+   "id": 105,
+   "nome": "Techies",
+   "slug": "techies",
+   "funcoes": [
+    "Nuker",
+    "Disabler"
+   ],
+   "picks": 335738,
+   "winRate": 51.1,
+   "proPicks": 102,
+   "proWinRate": 59.8,
+   "pickRate": 13.5,
+   "variacao": null
+  },
+  {
+   "id": 120,
+   "nome": "Pangolier",
+   "slug": "pangolier",
+   "funcoes": [
+    "Carry",
+    "Nuker",
+    "Disabler",
+    "Durable",
+    "Escape",
+    "Initiator"
+   ],
+   "picks": 83308,
+   "winRate": 45.9,
+   "proPicks": 94,
+   "proWinRate": 48.9,
+   "pickRate": 3.3,
+   "variacao": null
+  },
+  {
+   "id": 86,
+   "nome": "Rubick",
+   "slug": "rubick",
+   "funcoes": [
+    "Support",
+    "Disabler",
+    "Nuker"
+   ],
+   "picks": 536686,
+   "winRate": 49.6,
+   "proPicks": 84,
+   "proWinRate": 40.5,
+   "pickRate": 21.5,
+   "variacao": null
+  }
+ ],
+ "subindo": [],
+ "builds": {
+  "42": {
+   "inicio": [
+    "quelling_blade",
+    "gauntlets",
+    "magic_stick",
+    "circlet"
+   ],
+   "cedo": [
+    "boots",
+    "chainmail",
+    "phase_boots",
+    "bracer"
+   ],
+   "meio": [
+    "radiance",
+    "talisman_of_evasion",
+    "relic",
+    "mithril_hammer"
+   ],
+   "tarde": [
+    "black_king_bar",
+    "hyperstone",
+    "blink",
+    "assault"
+   ]
+  },
+  "76": {
+   "inicio": [
+    "circlet",
+    "mantle",
+    "magic_stick",
+    "quelling_blade"
+   ],
+   "cedo": [
+    "null_talisman",
+    "boots",
+    "power_treads",
+    "staff_of_wizardry"
+   ],
+   "meio": [
+    "staff_of_wizardry",
+    "blink",
+    "force_staff",
+    "blade_of_alacrity"
+   ],
+   "tarde": [
+    "mystic_staff",
+    "sheepstick",
+    "hurricane_pike",
+    "black_king_bar"
+   ]
+  },
+  "67": {
+   "inicio": [
+    "quelling_blade",
+    "magic_stick",
+    "circlet",
+    "slippers"
+   ],
+   "cedo": [
+    "boots",
+    "power_treads",
+    "urn_of_shadows",
+    "wraith_band"
+   ],
+   "meio": [
+    "blade_of_alacrity",
+    "relic",
+    "talisman_of_evasion",
+    "radiance"
+   ],
+   "tarde": [
+    "ultimate_orb",
+    "skadi",
+    "manta",
+    "basher"
+   ]
+  },
+  "8": {
+   "inicio": [
+    "quelling_blade",
+    "magic_stick",
+    "circlet",
+    "slippers"
+   ],
+   "cedo": [
+    "boots",
+    "power_treads",
+    "ring_of_health",
+    "broadsword"
+   ],
+   "meio": [
+    "broadsword",
+    "blade_of_alacrity",
+    "yasha",
+    "bfury"
+   ],
+   "tarde": [
+    "eagle",
+    "blink",
+    "ultimate_orb",
+    "butterfly"
+   ]
+  },
+  "12": {
+   "inicio": [
+    "quelling_blade",
+    "circlet",
+    "magic_stick",
+    "slippers"
+   ],
+   "cedo": [
+    "boots",
+    "power_treads",
+    "blade_of_alacrity",
+    "wraith_band"
+   ],
+   "meio": [
+    "blade_of_alacrity",
+    "ogre_axe",
+    "staff_of_wizardry",
+    "manta"
+   ],
+   "tarde": [
+    "ultimate_orb",
+    "skadi",
+    "orchid",
+    "bloodthorn"
+   ]
+  },
+  "32": {
+   "inicio": [
+    "quelling_blade",
+    "circlet",
+    "magic_stick",
+    "slippers"
+   ],
+   "cedo": [
+    "boots",
+    "power_treads",
+    "wraith_band",
+    "blade_of_alacrity"
+   ],
+   "meio": [
+    "blade_of_alacrity",
+    "diffusal_blade",
+    "yasha",
+    "diadem"
+   ],
+   "tarde": [
+    "eagle",
+    "manta",
+    "disperser",
+    "basher"
+   ]
+  },
+  "49": {
+   "inicio": [
+    "gauntlets",
+    "circlet",
+    "magic_stick",
+    "quelling_blade"
+   ],
+   "cedo": [
+    "boots",
+    "power_treads",
+    "soul_ring",
+    "bracer"
+   ],
+   "meio": [
+    "blink",
+    "aghanims_shard",
+    "ogre_axe",
+    "mithril_hammer"
+   ],
+   "tarde": [
+    "soul_booster",
+    "octarine_core",
+    "ultimate_scepter",
+    "shivas_guard"
+   ]
+  },
+  "31": {
+   "inicio": [
+    "magic_stick",
+    "wind_lace",
+    "quelling_blade",
+    "circlet"
+   ],
+   "cedo": [
+    "boots",
+    "tranquil_boots",
+    "arcane_boots"
+   ],
+   "meio": [
+    "aghanims_shard",
+    "blink",
+    "glimmer_cape",
+    "staff_of_wizardry"
+   ],
+   "tarde": [
+    "ultimate_scepter",
+    "blink",
+    "aeon_disk",
+    "glimmer_cape"
+   ]
+  },
+  "4": {
+   "inicio": [
+    "quelling_blade",
+    "circlet",
+    "magic_stick",
+    "magic_wand"
+   ],
+   "cedo": [
+    "boots",
+    "chainmail",
+    "phase_boots",
+    "javelin"
+   ],
+   "meio": [
+    "mithril_hammer",
+    "ogre_axe",
+    "maelstrom",
+    "hyperstone"
+   ],
+   "tarde": [
+    "eagle",
+    "basher",
+    "sange",
+    "blink"
+   ]
+  },
+  "88": {
+   "inicio": [
+    "boots",
+    "circlet",
+    "wind_lace",
+    "magic_stick"
+   ],
+   "cedo": [
+    "boots",
+    "tranquil_boots",
+    "arcane_boots",
+    "urn_of_shadows"
+   ],
+   "meio": [
+    "blink",
+    "essence_distiller",
+    "staff_of_wizardry",
+    "arcane_boots"
+   ],
+   "tarde": [
+    "blink",
+    "cyclone",
+    "aeon_disk",
+    "ultimate_scepter"
+   ]
+  },
+  "135": {
+   "inicio": [
+    "gauntlets",
+    "circlet",
+    "quelling_blade",
+    "magic_stick"
+   ],
+   "cedo": [
+    "boots",
+    "soul_ring",
+    "chainmail",
+    "phase_boots"
+   ],
+   "meio": [
+    "ogre_axe",
+    "broadsword",
+    "echo_sabre",
+    "mithril_hammer"
+   ],
+   "tarde": [
+    "basher",
+    "hyperstone",
+    "assault",
+    "black_king_bar"
+   ]
+  },
+  "20": {
+   "inicio": [
+    "circlet",
+    "magic_stick",
+    "quelling_blade",
+    "slippers"
+   ],
+   "cedo": [
+    "boots",
+    "power_treads",
+    "wraith_band",
+    "blade_of_alacrity"
+   ],
+   "meio": [
+    "blade_of_alacrity",
+    "specialists_array",
+    "staff_of_wizardry",
+    "broadsword"
+   ],
+   "tarde": [
+    "eagle",
+    "manta",
+    "hydras_breath",
+    "butterfly"
+   ]
+  }
+ },
+ "itens": {
+  "aeon_disk": "Aeon Disk",
+  "aghanims_shard": "Aghanim's Shard",
+  "arcane_boots": "Arcane Boots",
+  "assault": "Assault Cuirass",
+  "basher": "Skull Basher",
+  "bfury": "Battle Fury",
+  "black_king_bar": "Black King Bar",
+  "blade_of_alacrity": "Blade of Alacrity",
+  "blink": "Blink Dagger",
+  "bloodthorn": "Bloodthorn",
+  "boots": "Boots of Speed",
+  "bracer": "Bracer",
+  "broadsword": "Broadsword",
+  "butterfly": "Butterfly",
+  "chainmail": "Chainmail",
+  "circlet": "Circlet",
+  "cyclone": "Eul's Scepter of Divinity",
+  "diadem": "Diadem",
+  "diffusal_blade": "Diffusal Blade",
+  "disperser": "Disperser",
+  "eagle": "Eaglesong",
+  "echo_sabre": "Echo Sabre",
+  "essence_distiller": "Essence Distiller",
+  "force_staff": "Force Staff",
+  "gauntlets": "Gauntlets of Strength",
+  "glimmer_cape": "Glimmer Cape",
+  "hurricane_pike": "Hurricane Pike",
+  "hydras_breath": "Hydra's Breath",
+  "hyperstone": "Hyperstone",
+  "javelin": "Javelin",
+  "maelstrom": "Maelstrom",
+  "magic_stick": "Magic Stick",
+  "magic_wand": "Magic Wand",
+  "manta": "Manta Style",
+  "mantle": "Mantle of Intelligence",
+  "mithril_hammer": "Mithril Hammer",
+  "mystic_staff": "Mystic Staff",
+  "null_talisman": "Null Talisman",
+  "octarine_core": "Octarine Core",
+  "ogre_axe": "Ogre Axe",
+  "orchid": "Orchid Malevolence",
+  "phase_boots": "Phase Boots",
+  "power_treads": "Power Treads",
+  "quelling_blade": "Quelling Blade",
+  "radiance": "Radiance",
+  "relic": "Sacred Relic",
+  "ring_of_health": "Ring of Health",
+  "sange": "Sange",
+  "sheepstick": "Scythe of Vyse",
+  "shivas_guard": "Shiva's Guard",
+  "skadi": "Eye of Skadi",
+  "slippers": "Slippers of Agility",
+  "soul_booster": "Soul Booster",
+  "soul_ring": "Soul Ring",
+  "specialists_array": "Specialist's Array",
+  "staff_of_wizardry": "Staff of Wizardry",
+  "talisman_of_evasion": "Talisman of Evasion",
+  "tranquil_boots": "Tranquil Boots",
+  "ultimate_orb": "Ultimate Orb",
+  "ultimate_scepter": "Aghanim's Scepter",
+  "urn_of_shadows": "Urn of Shadows",
+  "wind_lace": "Wind Lace",
+  "wraith_band": "Wraith Band",
+  "yasha": "Yasha"
+ },
+ "historico": [
+  {
+   "quando": 1792333872,
+   "wr": {
+    "1": 51.3,
+    "2": 50.3,
+    "3": 49.1,
+    "4": 52.6,
+    "5": 51.5,
+    "6": 45.9,
+    "7": 50.6,
+    "8": 53.2,
+    "9": 51.6,
+    "10": 47.9,
+    "11": 42.7,
+    "12": 53.1,
+    "13": 46.8,
+    "14": 51.1,
+    "15": 50.8,
+    "16": 49.1,
+    "17": 47.1,
+    "18": 52.1,
+    "19": 43.9,
+    "20": 52.5,
+    "21": 48.3,
+    "22": 50.3,
+    "23": 49.5,
+    "25": 47.2,
+    "26": 48.5,
+    "27": 51.6,
+    "28": 48.9,
+    "29": 49.3,
+    "30": 52.2,
+    "31": 52.7,
+    "32": 53.1,
+    "33": 51.0,
+    "34": 47.9,
+    "35": 49.4,
+    "36": 50.6,
+    "37": 49.8,
+    "39": 47.3,
+    "40": 48.7,
+    "41": 48.4,
+    "42": 54.8,
+    "43": 48.6,
+    "44": 50.8,
+    "45": 51.2,
+    "46": 45.8,
+    "47": 48.6,
+    "48": 50.7,
+    "49": 52.8,
+    "50": 51.3,
+    "51": 47.1,
+    "52": 51.9,
+    "53": 42.7,
+    "54": 52.0,
+    "55": 49.4,
+    "56": 50.2,
+    "57": 51.4,
+    "58": 47.3,
+    "59": 45.5,
+    "60": 52.3,
+    "62": 52.2,
+    "63": 47.7,
+    "64": 48.3,
+    "67": 53.3,
+    "68": 51.5,
+    "69": 47.7,
+    "70": 49.5,
+    "71": 52.2,
+    "72": 47.0,
+    "73": 46.8,
+    "74": 50.7,
+    "75": 50.2,
+    "76": 54.2,
+    "78": 50.5,
+    "80": 48.9,
+    "81": 50.9,
+    "83": 45.4,
+    "84": 50.0,
+    "85": 49.9,
+    "86": 49.6,
+    "87": 50.6,
+    "88": 52.6,
+    "90": 49.2,
+    "91": 50.0,
+    "93": 49.3,
+    "94": 49.4,
+    "95": 51.8,
+    "96": 49.4,
+    "97": 49.5,
+    "98": 45.5,
+    "99": 47.4,
+    "100": 48.0,
+    "101": 49.8,
+    "102": 50.8,
+    "104": 52.5,
+    "105": 51.1,
+    "106": 49.2,
+    "107": 49.7,
+    "108": 48.1,
+    "109": 44.4,
+    "110": 51.8,
+    "111": 49.3,
+    "112": 49.7,
+    "113": 52.5,
+    "114": 46.0,
+    "119": 49.1,
+    "120": 45.9,
+    "121": 52.2,
+    "123": 47.2,
+    "126": 50.0,
+    "128": 49.4,
+    "129": 47.7,
+    "131": 48.9,
+    "135": 52.6,
+    "136": 48.6,
+    "137": 48.5,
+    "138": 48.1,
+    "145": 44.4
+   }
+  }
+ ]
+}
