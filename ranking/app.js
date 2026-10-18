@@ -4,6 +4,8 @@
 const RANKING_URL = '../amigos/ranking.json';
 const PARCEIROS_URL = '../amigos/parceiros.json';
 const INSIGHTS_URL = '../reddit/insights.json';
+const META_URL = '../meta/meta.json';
+const ITEM_IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/';
 const HEROI_IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/';
 const MIN_JOGOS_DUPLA = 5;   // abaixo disso a dupla vai pro fim (amostra pequena)
 const MIN_JOGOS_GRUPO = 3;
@@ -22,6 +24,7 @@ const VISOES = {
 let ranking = null;
 let parceiros = null;
 let insights = null;
+let meta = null;
 let visao = 'geral';
 let ordem = 'culpados';
 
@@ -38,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   montarFeedback();
 
   const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
-  [ranking, parceiros, insights] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL)]);
+  [ranking, parceiros, insights, meta] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL)]);
 
   if (!ranking || !ranking.historicos) {
     $('carregando').textContent = 'Não deu pra carregar o ranking. Tente recarregar.';
@@ -515,34 +518,116 @@ function renderizarPool() {
 
 /* ---------- Meta ---------- */
 
+const FUNCOES = { Carry: 'Carry', Support: 'Suporte', Nuker: 'Nuker', Disabler: 'Controle', Initiator: 'Iniciador',
+  Durable: 'Resistente', Escape: 'Fuga', Pusher: 'Push', Jungler: 'Selva' };
+const FASES = [['inicio', 'Começo'], ['cedo', 'Cedo'], ['meio', 'Meio'], ['tarde', 'Tarde']];
+
+function retrato(slug, nome) {
+  return slug
+    ? `<img class="heroi heroi-g" src="${HEROI_IMG}${slug}.png" alt="${esc(nome)}" title="${esc(nome)}" loading="lazy" width="72" height="40">`
+    : `<span class="heroi-falta">${esc(nome)}</span>`;
+}
+
+function iconeItem(chave) {
+  const nome = (meta.itens && meta.itens[chave]) || chave;
+  return `<img class="item" src="${ITEM_IMG}${chave}.png" alt="${esc(nome)}" title="${esc(nome)}" loading="lazy" width="44" height="32">`;
+}
+
+// quem do grupo já jogou esse herói (todas as posições juntas)
+function noGrupo(heroiId) {
+  if (!parceiros || !parceiros.pool) return [];
+  return Object.entries(parceiros.pool).map(([c, l]) => {
+    const xs = l.filter(x => x.heroi === heroiId);
+    return { conta: c, jogos: xs.reduce((s, x) => s + x.jogos, 0), vitorias: xs.reduce((s, x) => s + x.vitorias, 0) };
+  }).filter(x => x.jogos >= 2).sort((a, b) => b.jogos - a.jogos);
+}
+
 function renderizarMeta() {
-  const box = $('meta-topicos');
   const desc = $('meta-desc');
-  if (!insights || !insights.topicos || !Object.keys(insights.topicos).length) {
-    desc.textContent = 'Insights ainda não disponíveis.';
+  if (!meta || !meta.fortes || !meta.fortes.length) {
+    desc.textContent = 'O meta do patch ainda não foi gerado. O robô "Meta do patch" atualiza todo dia.';
+  } else {
+    desc.textContent = `${meta.patch ? `Patch ${meta.patch} · ` : ''}partidas de ${meta.faixa} na OpenDota · atualizado em ${dataHora(meta.atualizadoEm)}. ` +
+      'Os heróis que mais ganham agora, com a build mais comprada e quem de vocês já joga.';
+    meta.fortes.forEach((x, i) => $('meta-fortes').append(cartaoHeroiMeta(x, i)));
+
+    if (meta.subindo && meta.subindo.length) {
+      $('meta-subindo-bloco').hidden = false;
+      $('meta-subindo').innerHTML = meta.subindo.map(x => `
+        <div class="subindo-item">${retrato(x.slug, x.nome)}<b>${esc(x.nome)}</b>
+          <span class="bom">+${x.variacao.toLocaleString('pt-BR')} pts</span><small>${x.winRate.toLocaleString('pt-BR')}%</small></div>`).join('');
+    }
+
+    const lista = (titulo, itens, num) => `
+      <article class="cartao"><div class="bloco-titulo">${titulo}</div>
+        <div class="pool-lista">${itens.map(x => `<div class="pool-item">${retrato(x.slug, x.nome)}
+          <div class="pool-txt"><b>${esc(x.nome)}</b><span>${esc((x.funcoes || []).slice(0, 2).map(f => FUNCOES[f] || f).join(' · '))}</span></div>
+          <div class="pool-num">${num(x)}</div></div>`).join('')}</div></article>`;
+    const wr = x => `<span class="${x.winRate >= 50 ? 'bom' : 'ruim'}">${x.winRate.toLocaleString('pt-BR')}%</span>`;
+    $('meta-listas').innerHTML =
+      lista('🔥 Mais escolhidos', meta.populares || [], x => `${wr(x)}<br><small>${x.pickRate.toLocaleString('pt-BR')}% dos jogos</small>`) +
+      lista('🏆 Os pros estão pegando', meta.pros || [], x => `${x.proPicks} picks<br><small>${x.proWinRate == null ? '' : x.proWinRate.toLocaleString('pt-BR') + '%'}</small>`) +
+      lista('🧊 Fuja desses', meta.fracos || [], x => wr(x));
+  }
+  renderizarReddit();
+}
+
+function cartaoHeroiMeta(x, i) {
+  const card = document.createElement('article');
+  card.className = 'cartao meta-heroi';
+  const build = meta.builds && meta.builds[x.id];
+  const grupo = noGrupo(x.id);
+  card.innerHTML = `
+    <div class="meta-topo">
+      <span class="meta-pos">${i + 1}</span>
+      ${retrato(x.slug, x.nome)}
+      <div class="meta-nome"><b>${esc(x.nome)}</b><span>${esc((x.funcoes || []).slice(0, 3).map(f => FUNCOES[f] || f).join(' · '))}</span></div>
+      <div class="meta-wr"><b class="${x.winRate >= 50 ? 'bom' : 'ruim'}">${x.winRate.toLocaleString('pt-BR')}%</b>
+        <span>${x.pickRate.toLocaleString('pt-BR')}% dos jogos${x.variacao ? ` · <span class="${x.variacao > 0 ? 'bom' : 'ruim'}">${x.variacao > 0 ? '▲' : '▼'} ${Math.abs(x.variacao).toLocaleString('pt-BR')}</span>` : ''}</span></div>
+    </div>
+    ${build ? `<div class="bloco-titulo">Build mais comprada</div>
+      <div class="build">${FASES.filter(([k]) => build[k] && build[k].length).map(([k, nome]) => `
+        <div class="fase"><span>${nome}</span><div>${build[k].map(iconeItem).join('')}</div></div>`).join('')}</div>` : ''}
+    ${grupo.length ? `<div class="no-grupo">Quem de vocês joga: ${grupo.map(g =>
+      `<span class="${g.vitorias / g.jogos > 0.5 ? 'bom' : g.vitorias / g.jogos < 0.5 ? 'ruim' : ''}">${esc(nomeJogador(g.conta))} ${g.vitorias}/${g.jogos}</span>`).join(' · ')}</div>`
+      : '<div class="no-grupo">Ninguém do grupo jogou ainda. Bora testar?</div>'}`;
+  return card;
+}
+
+function renderizarReddit() {
+  const desc = $('reddit-desc');
+  if (!insights || insights.fonte !== 'reddit') {
+    desc.textContent = 'Comentários da semana no r/DotA2 sobre o meta e dicas gerais. Aparece aqui quando a chave do Reddit for configurada no robô.';
     return;
   }
-  desc.textContent = insights.fonte === 'exemplo'
-    ? 'Dados de exemplo: a coleta automática do Reddit ainda não rodou.'
-    : `Coletado do r/DotA2 em ${dataHora(insights.atualizadoEm)}.`;
+  desc.textContent = `Os comentários mais votados da semana no r/DotA2, coletados em ${dataHora(insights.atualizadoEm)}.`;
 
-  Object.entries(insights.topicos).forEach(([chave, t]) => {
+  const herois = parceiros && parceiros.herois;
+  const nomeH = id => (herois && herois[id] ? herois[id][1] : (meta && [...(meta.fortes || []), ...(meta.populares || [])].find(x => x.id === id) || {}).nome) || `#${id}`;
+  const comentario = i => `
+    <div class="insight">
+      <p>${esc(i.texto)}</p>
+      <div class="insight-meta"><span>${(i.herois || []).map(h => `<b>${esc(nomeH(h))}</b>`).join(' · ')} — ${esc(i.autor)}</span>
+        <span>👍 ${i.score}${i.url ? ` · <a href="${esc(i.url)}" target="_blank" rel="noopener">ver</a>` : ''}</span></div>
+    </div>`;
+
+  if (insights.meta && insights.meta.length) {
+    const div = document.createElement('article');
+    div.className = 'cartao';
+    div.innerHTML = `<div class="cartao-titulo">O que a galera fala do meta</div>
+      ${insights.heroisCitados && insights.heroisCitados.length ? `<div class="cartao-sub">Mais citados: ${insights.heroisCitados.slice(0, 6).map(h => `${esc(nomeH(h.heroi))} (${h.vezes})`).join(', ')}</div>` : ''}
+      ${insights.meta.slice(0, 8).map(comentario).join('')}`;
+    $('reddit-meta').append(div);
+  }
+
+  Object.entries(insights.topicos || {}).forEach(([chave, t]) => {
     const div = document.createElement('article');
     div.className = 'cartao';
     div.innerHTML = `
-      <div class="cartao-topo">
-        <div>
-          <div class="cartao-titulo">${esc(chave.charAt(0).toUpperCase() + chave.slice(1))}</div>
-          <div class="cartao-sub">${esc(t.descricao)}</div>
-        </div>
-        <div class="cartao-sub">${t.count} menções</div>
-      </div>
-      ${t.insights.map(i => `
-        <div class="insight">
-          <p>${esc(i.texto)}</p>
-          <div class="insight-meta"><span>— ${esc(i.autor)}</span><span>👍 ${i.score}</span></div>
-        </div>`).join('')}`;
-    box.append(div);
+      <div class="cartao-topo"><div><div class="cartao-titulo">Dicas: ${esc(chave.charAt(0).toUpperCase() + chave.slice(1))}</div>
+        <div class="cartao-sub">${esc(t.descricao)}</div></div><div class="cartao-sub">${t.count} menções</div></div>
+      ${t.insights.map(comentario).join('')}`;
+    $('meta-topicos').append(div);
   });
 }
 

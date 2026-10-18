@@ -423,3 +423,31 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Meta do patch */
+.cartoes-meta { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.meta-topo { display: flex; align-items: center; gap: 12px; }
+.meta-pos { font-family: var(--font-display); font-weight: 900; font-size: 20px; color: var(--gold); min-width: 22px; text-align: center; }
+.meta-nome { flex: 1; min-width: 0; }
+.meta-nome b { display: block; font-size: 17px; }
+.meta-nome span { font-size: 13px; color: var(--muted); }
+.meta-wr { text-align: right; }
+.meta-wr b { display: block; font-family: var(--font-mono); font-size: 22px; font-weight: 500; line-height: 1.1; }
+.meta-wr span { font-size: 12px; color: var(--muted); }
+.build { display: grid; gap: 6px; }
+.fase { display: flex; align-items: center; gap: 8px; }
+.fase > span { width: 56px; flex: none; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.fase > div { display: flex; flex-wrap: wrap; gap: 4px; }
+.item { width: 44px; height: 32px; border-radius: 4px; object-fit: cover; background: #000; box-shadow: 0 0 0 1px rgba(0, 0, 0, .35); }
+.no-grupo { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+.no-grupo span { font-weight: 700; }
+.subindo { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.subindo-item {
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); font-size: 14px;
+}
+.subindo-item .heroi { width: 48px; height: 27px; border-radius: 999px; }
+.subindo-item small { color: var(--muted); }
+.cartoes-listas { margin-top: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.pool-num small { color: var(--muted); font-size: 11px; }
+.insight a { color: var(--gold-2); }

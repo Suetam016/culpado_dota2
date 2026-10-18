@@ -3,7 +3,7 @@ name: Insights do Reddit (aba Meta)
 # Gera reddit/insights.json com os comentários estratégicos da semana no r/DotA2, para a aba Meta do ranking.
 # Todo dia, na mão (Actions > Run workflow) ou com push em reddit/pedido (qualquer conteúdo) ou no robô.
 # Precisa dos secrets REDDIT_CLIENT_ID e REDDIT_CLIENT_SECRET (app "script" em https://www.reddit.com/prefs/apps).
-# Se a coleta falhar ou vier vazia, o insights.json anterior fica como está (nunca volta para os exemplos).
+# Sem os secrets, pula sem erro. Se a coleta falhar ou vier vazia, o insights.json anterior fica como está.
 on:
   schedule:
     - cron: "41 9 * * *"   # todo dia, 06:41 em Brasília
@@ -35,7 +35,12 @@ jobs:
         env:
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
-        run: python reddit/insights.py --exigir
+        run: |
+          if [ -z "$REDDIT_CLIENT_ID" ] || [ -z "$REDDIT_CLIENT_SECRET" ]; then
+            echo "::notice::Sem os secrets REDDIT_CLIENT_ID/REDDIT_CLIENT_SECRET: coleta do Reddit pulada (a aba Meta segue com o meta da OpenDota)."
+            exit 0
+          fi
+          python reddit/insights.py --exigir
       - name: Salvar
         run: |
           git config user.name "github-actions[bot]"

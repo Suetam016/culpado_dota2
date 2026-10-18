@@ -66,6 +66,30 @@ TOPICOS = {
     }
 }
 
+# comentário que cita um herói junto com uma dessas palavras vai para "meta" (quem está forte, build, patch)
+PALAVRAS_META = ['broken', 'strong', ' op ', 'overpowered', 'busted', 'meta', 'nerf', 'buff', 'patch', 'build',
+                 'facet', 'winrate', 'win rate', 'spam', 'insane', 'underrated', 'overrated', 'counter', 'item']
+BUSCA_META = 'meta OR patch OR nerf OR buff OR broken OR build OR "win rate"'
+
+
+def herois_conhecidos():
+    """[(regex do nome, id)] a partir das constantes embutidas no index.html do site."""
+    html = (Path(__file__).resolve().parent.parent / 'index.html').read_text(encoding='utf-8')
+    m = re.search(r'<script type="application/json" id="dados-embutidos">([\s\S]*?)</script>', html)
+    herois = json.loads(m.group(1))['constantes']['h']
+    return [(re.compile(r'\b' + re.escape(v[1].lower()) + r'\b'), int(k)) for k, v in herois.items()]
+
+
+def herois_citados(texto, herois):
+    t = texto.lower()
+    return sorted({hid for rx, hid in herois if rx.search(t)})
+
+
+def eh_meta(texto, herois_no_texto):
+    t = f' {texto.lower()} '
+    return bool(herois_no_texto) and any(p in t for p in PALAVRAS_META)
+
+
 def extrair_topicos(texto):
     """Detecta quais tópicos estão presentes no texto."""
     texto_lower = texto.lower()
@@ -117,8 +141,15 @@ def coletar_reddit():
         # Buscar top comments da semana
         subreddit = reddit.subreddit('DotA2')
 
-        # Coletar posts top da semana
-        for post in subreddit.top('week', limit=30):
+        herois = herois_conhecidos()
+        vistos = set()
+        posts = []
+        for post in list(subreddit.top(time_filter='week', limit=30)) + list(subreddit.search(BUSCA_META, sort='top', time_filter='week', limit=20)):
+            if post.id not in vistos:
+                vistos.add(post.id)
+                posts.append(post)
+
+        for post in posts:
             # Expandir comentários
             post.comments.replace_more(limit=2)
 
@@ -130,11 +161,15 @@ def coletar_reddit():
                 if len(texto) < 50 or score < 5:
                     continue
 
-                topicos = extrair_topicos(texto)
-                if not topicos:
+                citados = herois_citados(texto, herois)
+                meta = eh_meta(texto, citados)
+                topicos = [] if meta else extrair_topicos(texto)
+                if not meta and not topicos:
                     continue
 
                 insight = {
+                    'categoria': 'meta' if meta else 'dicas',
+                    'herois': citados,
                     'id': comment.id,
                     'autor': comment.author.name if comment.author else 'Anônimo',
                     'score': score,
@@ -196,6 +231,12 @@ def gerar_insights(insights_brutos, fonte):
     """Processa insights e gera ranking por tópico."""
     topicos_stats = defaultdict(lambda: {'count': 0, 'insights': [], 'score_total': 0})
 
+    meta = sorted((i for i in insights_brutos if i.get('categoria') == 'meta'), key=lambda x: -x['score'])
+    citados = defaultdict(int)
+    for i in meta:
+        for h in i.get('herois', []):
+            citados[h] += 1
+
     for insight in insights_brutos:
         for topico in insight['topicos']:
             topicos_stats[topico]['count'] += 1
@@ -217,7 +258,10 @@ def gerar_insights(insights_brutos, fonte):
         'atualizadoEm': datetime.now(timezone.utc).isoformat(),
         'fonte': fonte,  # 'reddit' ou 'exemplo'
         'totalInsights': len(insights_brutos),
-        'topicos': {}
+        'topicos': {},
+        'meta': [{'texto': i['texto'], 'score': i['score'], 'autor': i['autor'], 'url': i['url'], 'herois': i.get('herois', [])}
+                 for i in meta[:12]],
+        'heroisCitados': [{'heroi': h, 'vezes': n} for h, n in sorted(citados.items(), key=lambda kv: -kv[1])[:10]],
     }
 
     for topico in sorted(topicos_stats.keys()):

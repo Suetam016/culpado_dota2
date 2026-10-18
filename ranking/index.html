@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
   <header class="topo">
@@ -39,7 +39,7 @@
         <span class="aba-icone" aria-hidden="true">🛡️</span><span class="aba-nome">Times e picks</span><span class="aba-sub">Monte o time de hoje</span><span class="aba-novo">Novo</span>
       </button>
       <button class="aba" data-aba="meta" role="tab" aria-selected="false">
-        <span class="aba-icone" aria-hidden="true">🔥</span><span class="aba-nome">Meta</span><span class="aba-sub">Dicas do Reddit</span>
+        <span class="aba-icone" aria-hidden="true">🔥</span><span class="aba-nome">Meta</span><span class="aba-sub">Quem tá forte no patch</span><span class="aba-novo">Novo</span>
       </button>
     </nav>
 
@@ -95,9 +95,26 @@
 
     <section class="aba-conteudo" id="aba-meta">
       <div class="secao-titulo">
-        <h2>Meta do r/DotA2</h2>
+        <h2>Meta do patch</h2>
         <p id="meta-desc"></p>
       </div>
+      <div class="cartoes cartoes-meta" id="meta-fortes"></div>
+
+      <div id="meta-subindo-bloco" hidden>
+        <div class="secao-titulo">
+          <h2>Subindo na semana</h2>
+          <p>Heróis que mais ganharam win rate desde a semana passada.</p>
+        </div>
+        <div class="subindo" id="meta-subindo"></div>
+      </div>
+
+      <div class="cartoes cartoes-listas" id="meta-listas"></div>
+
+      <div class="secao-titulo">
+        <h2>Dicas da comunidade</h2>
+        <p id="reddit-desc"></p>
+      </div>
+      <div class="cartoes" id="reddit-meta"></div>
       <div class="cartoes" id="meta-topicos"></div>
     </section>
 
@@ -115,6 +132,6 @@
   </form>
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

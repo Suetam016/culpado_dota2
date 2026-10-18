@@ -1,0 +1,44 @@
+name: Meta do patch (aba Meta)
+
+# Gera meta/meta.json com o meta atual na faixa de rank do grupo (Archon a Ancient), pela OpenDota: heróis mais
+# fortes, mais escolhidos, mais fracos, o que os pros pegam, quem está subindo na semana e a build de cada herói
+# forte. Todo dia, na mão (Actions > Run workflow) ou com push em meta/pedido (qualquer conteúdo) ou no robô.
+# Se a OpenDota falhar, o meta.json anterior fica como está.
+on:
+  schedule:
+    - cron: "53 9 * * *"   # todo dia, 06:53 em Brasília
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["meta/pedido", "meta/meta.py", ".github/workflows/meta.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: meta
+  cancel-in-progress: false
+
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Meta (OpenDota)
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: python meta/meta.py
+      - name: Salvar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add meta/meta.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Meta: heróis fortes e builds do patch"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
