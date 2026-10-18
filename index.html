@@ -4369,6 +4369,7 @@ const vivo = () => estado.carga === carga;
 let pedirAnalise = false;
 el.botao.disabled = true;
 marcar('F0');
+if (!exemplo) montarAvisoRanking();
 
 const mesma = Boolean(estado.resultado) && estado.id === id;
 if (mesma) el.pagina.classList.add('recarregando');
@@ -8702,20 +8703,26 @@ botao.addEventListener('click', () => { caixa.hidden = !caixa.hidden; if (!caixa
 document.body.append(caixa, botao);
 }
 
+// Aviso do ranking: aparece toda vez que a página abre e a cada partida julgada; o × fecha só até a próxima.
+let avisoRanking = null;
+let avisoTimer = 0;
 function montarAvisoRanking() {
-if (SO_EMBUTIDO || ler('culpado:aviso-ranking-2') || document.querySelector('.av-rk')) return;
-const fechar = (ev) => { if (ev) ev.preventDefault(); guardar('culpado:aviso-ranking-2', true); aviso.classList.remove('av-rk-on'); setTimeout(() => aviso.remove(), 300); };
-const aviso = h('aside', { class: 'av-rk', role: 'status', 'aria-label': 'Novidade: ranking dos amigos' },
+if (SO_EMBUTIDO) return;
+if (!avisoRanking) {
+const fechar = (ev) => { if (ev) ev.preventDefault(); clearTimeout(avisoTimer); avisoRanking.classList.remove('av-rk-on'); };
+avisoRanking = h('aside', { class: 'av-rk', role: 'status', 'aria-label': 'Novidade: ranking dos amigos' },
 h('span', { class: 'av-rk-selo' }, 'Novo'),
 h('strong', { class: 'av-rk-tit' }, 'Ranking dos amigos'),
 h('p', { class: 'av-rk-txt' }, 'Quem é o mais culpado do grupo, as duplas que jogam bem juntas e as melhores composições.'),
 h('a', { class: 'av-rk-ir', href: 'ranking/' }, 'Ver o ranking →'),
 h('button', { class: 'av-rk-x', type: 'button', 'aria-label': 'Fechar aviso', onclick: fechar }, '×'));
-document.body.append(aviso);
-const mostrar = (espera) => setTimeout(() => {
+document.body.append(avisoRanking);
+}
+clearTimeout(avisoTimer);
+const mostrar = (espera) => { avisoTimer = setTimeout(() => {
 if (document.querySelector('.revelacao')) return mostrar(800); // espera a revelação do culpado acabar
-aviso.classList.add('av-rk-on');
-}, espera);
+avisoRanking.classList.add('av-rk-on');
+}, espera); };
 mostrar(2500);
 }
 
