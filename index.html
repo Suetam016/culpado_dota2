@@ -105,6 +105,53 @@
 </main>
 <p class="visitas-site" id="visitas-site" hidden></p>
 <style>
+.draft-sub{font-size:var(--t-sm,14px);color:var(--muted);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.draft-ordem{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
+.draft-passo{position:relative;border-radius:6px;padding:2px;background:var(--nos-wash);box-shadow:inset 0 0 0 1px var(--nos)}
+.draft-passo.eles{background:var(--eles-wash);box-shadow:inset 0 0 0 1px var(--eles)}
+.draft-passo .retrato{width:44px;height:25px}
+.draft-passo.ban{opacity:.45;filter:grayscale(1)}
+.draft-passo.ban::after{content:"";position:absolute;left:4px;right:4px;top:50%;height:2px;background:var(--bad);transform:rotate(-20deg)}
+.draft-lados{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;margin-bottom:16px}
+.draft-lado h3{margin:0 0 8px}
+.draft-lado.nos{border-top:3px solid var(--nos)}
+.draft-lado.eles{border-top:3px solid var(--eles)}
+.draft-herois{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.draft-img{position:relative;display:inline-block;flex:none}
+.draft-power{position:absolute;top:-6px;right:-6px;font-size:11px;line-height:1;padding:2px 4px;border-radius:999px;background:rgba(10,8,4,.85);box-shadow:0 0 0 1px rgba(246,210,122,.6)}
+.draft-power.forte{box-shadow:0 0 0 1px #f6d27a,0 0 10px rgba(246,210,122,.8)}
+.draft-power.fraco{box-shadow:0 0 0 1px rgba(120,180,255,.6)}
+.draft-chips{display:flex;flex-wrap:wrap;gap:6px}
+.draft-chip{font-size:12.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface-2)}
+.draft-chip.nivel-1{border-color:#b0773f}.draft-chip.nivel-2{border-color:#b9c3cc}.draft-chip.nivel-3{border-color:#f6d27a;box-shadow:0 0 10px rgba(246,210,122,.25)}
+.draft-alerta{font-size:12.5px;color:var(--bad-ink);width:100%}
+.draft-picks{display:grid;gap:10px}
+.draft-pick{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line-strong);border-radius:12px;padding:12px 14px}
+.draft-pick.draft-mestre{border-left-color:var(--gold);box-shadow:var(--glow-ouro)}
+.draft-pick.draft-precario{border-left-color:var(--bad)}
+.draft-pick.draft-solido{border-left-color:var(--good)}
+.draft-pick-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.draft-pick-cab>div{flex:1;min-width:160px;display:flex;flex-direction:column}
+.draft-pick-cab small{color:var(--muted)}
+.draft-selo{font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;background:var(--surface-3)}
+.draft-selo.mestre{background:var(--gold);color:var(--on-gold)}
+.draft-selo.precario{background:var(--eles-wash);color:var(--bad-ink)}
+.draft-selo.solido{color:var(--good-ink)}
+.draft-icones{display:flex;gap:3px;margin-top:3px}
+.draft-traco{font-size:12px;width:22px;height:22px;display:inline-grid;place-items:center;border-radius:6px;background:var(--surface-3);box-shadow:inset 0 0 0 1px var(--line-strong);cursor:help}
+.draft-motivos{margin:10px 0 0 18px;display:grid;gap:3px;font-size:14px;color:var(--ink-2)}
+.draft-motivos .bom{color:var(--good-ink)}.draft-motivos .ruim{color:var(--bad-ink)}
+.draft-sugestoes{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-strong)}
+.draft-sugestoes p{margin:6px 0;font-size:13.5px;color:var(--gold-2);font-weight:700}
+.draft-opcoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.draft-opcao{display:flex;gap:10px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px}
+.draft-opcao>div{display:flex;flex-direction:column;min-width:0}
+.draft-opcao small{color:var(--muted);font-size:12px}
+.draft-opcao small.bom{color:var(--good-ink)}
+.draft-nota{color:var(--muted);font-size:13px;margin-top:12px}
+</style>
+
+<style>
 .visitas-site{max-width:1100px;margin:0 auto;padding:4px 16px 28px;color:var(--muted);font-size:13px;text-align:center}
 .visitas-site b{color:var(--good-ink)}
 .visitas-site i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;animation:visitas-pulsa 2s infinite}
@@ -3920,6 +3967,8 @@ nos, eles, lead, leadXp, lutas, eventos, mortes,
 itensNos, itensEles,
 quedas: ctx.quedas, viradas: ctx.viradas,
 janela: (() => { try { return janelaDoJogo(ctx, match, venceu); } catch (e) { console.error('janela', e); return null; } })(),
+matchups: ctx.matchups, // o mesmo objeto que completarHerois preenche depois
+draft: Array.isArray(match.picks_bans) && match.picks_bans.length ? match.picks_bans.map((x) => ({ is_pick: Boolean(x.is_pick), hero_id: x.hero_id, team: x.team, order: x.order })) : null,
 vereditos, craques: craquesDaPartida(ctx, match), comparativo, rotas, inimigo, dadosDeItens, itensQueMudamALuta,
 planoDoTime: ctx.alocacao.plano, ameacasDoTime: ctx.alocacao.ameacas, debates: debatesDeItens(ctx),
 historia: parseado && ctx.mortes ? historiaDaPartida(ctx, rotas, venceu) : [],
@@ -4813,6 +4862,7 @@ const SECOES = [
 { id: 'lances', precisa: ['replay', 'mortes'], montar: secaoLances, sil: silLances },
 { id: 'jogo', precisa: ['replay', 'vantagem'], montar: secaoJogo, sil: silJogo },
 { id: 'janela', precisa: ['replay', 'vantagem'], montar: secaoJanela, sil: silJanela },
+{ id: 'draft', montar: secaoDraft },
 { id: 'craques', precisa: ['replay'], montar: secaoCraques },
 { id: 'rotas', precisa: ['replay', 'rotas'], montar: secaoRotas, sil: silRotas, refaz: ['mapa'] },
 { id: 'itens', precisa: ['replay', 'compras'], montar: secaoItensDoTime, sil: silItens },
@@ -9061,6 +9111,186 @@ ordem.length ? h('div', { class: 'detalhes-largo' }, h('h4', {}, 'Ordem de compr
 }
 
 
+
+// ---------- O draft: os picks dos dois times com os traços dos heróis (herois-tracos.js), o meta do patch
+// (meta/meta.json) e a proficiência de cada amigo no herói (amigos/parceiros.json). Nota de cada pick = força no meta
+// + proficiência + quanto o herói soma nas sinergias do time + matchup contra os 5 deles (OpenDota), quando houver.
+const DRAFT_PESO_META = 2;
+const DRAFT_PESO_CONTRA = 1.5;
+const DRAFT_PRIOR = 10;
+const DRAFT_MESTRE = 0.5;
+const DRAFT_PRECARIO = -0.1;
+let draftDados = null;
+
+function carregarDraft() {
+if (draftDados) return draftDados;
+const script = () => (window.HeroisTracos ? Promise.resolve() : new Promise((ok, erro) => {
+const el_ = document.createElement('script');
+el_.src = 'herois-tracos.js?v=1';
+el_.onload = ok;
+el_.onerror = erro;
+document.head.append(el_);
+}));
+const json = (u) => fetch(u, { cache: 'no-cache' }).then((x) => (x.ok ? x.json() : null)).catch(() => null);
+draftDados = Promise.all([script(), json('meta/meta.json'), json('amigos/parceiros.json')]).then(([, meta, parc]) => ({ meta, parc }));
+draftDados.catch(() => { draftDados = null; });
+return draftDados;
+}
+
+function secaoDraft(r) {
+if (SO_EMBUTIDO) return null;
+const corpo = h('div', { class: 'draft-corpo' }, h('p', { class: 'sil-status', 'data-status': 'chegando' }, STATUS_SIL.chegando));
+carregarDraft()
+.then((d) => corpo.replaceChildren(montarDraft(r, d)))
+.catch((e) => { console.error('draft', e); corpo.replaceChildren(h('p', { class: 'sil-status', 'data-status': 'indisponivel' }, 'Análise do draft indisponível agora.')); });
+return h('section', { class: 'bloco draft', 'aria-labelledby': 'titulo-draft' },
+cabecalho('O draft', 'Os picks de cada time como no TFT: o que cada herói soma, quem acertou o pick e o que dava pra ter pegado no lugar.', 'titulo-draft'),
+corpo);
+}
+
+function montarDraft(r, { meta, parc }) {
+const T = window.HeroisTracos;
+const herois = (constantesEmbutidas || expandirConstantes(EMBUTIDO.constantes)).heroes || {};
+const slugDe = (id) => String(((herois[id] || herois[String(id)]) || {}).name || '').replace('npc_dota_hero_', '');
+const infoDe = (id) => { const x = herois[id] || herois[String(id)] || {}; return { id: Number(id), nome: x.localized_name || `Herói #${id}`, npc: x.name || null, img: x.img || null }; };
+const ultimo = meta && meta.historico && meta.historico[meta.historico.length - 1];
+const metaWr = (id) => (ultimo && ultimo.wr && typeof ultimo.wr[id] === 'number' ? ultimo.wr[id] : null);
+const lg = (p) => Math.log(p / (1 - p));
+const pool = (conta) => (conta != null && parc && parc.pool && parc.pool[String(conta)]) || null;
+const prof = (conta, id) => {
+const xs = (pool(conta) || []).filter((x) => x.heroi === id);
+return { jogos: xs.reduce((s_, x) => s_ + x.jogos, 0), vitorias: xs.reduce((s_, x) => s_ + x.vitorias, 0) };
+};
+const ctx = { matchups: r.matchups };
+const eles = r.eles.map((p) => p.heroi.id);
+const contra = (id) => {
+const mu = (ctx.matchups && (ctx.matchups[id] || ctx.matchups[String(id)])) || null;
+if (!Array.isArray(mu)) return null;
+const xs = eles.map((e) => mu.find((m) => m.hero_id === e)).filter((m) => m && m.games_played >= 30);
+if (!xs.length) return null;
+return xs.reduce((s_, m) => s_ + m.wins / m.games_played, 0) / xs.length;
+};
+
+// ordem do draft (quando o OpenDota tem): quem já estava pego ou banido quando cada um escolheu
+const nossoTime = r.partida.ladoRadiant ? 0 : 1;
+const draft = Array.isArray(r.draft) ? [...r.draft].sort((a, b) => a.order - b.order) : null;
+const ordemDe = (id) => (draft ? (draft.find((x) => x.is_pick && x.hero_id === id) || {}).order : null);
+const todosOcupados = new Set([...r.nos, ...r.eles].map((p) => p.heroi.id).concat(draft ? draft.map((x) => x.hero_id) : []));
+const ocupadosAntes = (id) => {
+const o = ordemDe(id);
+return o == null ? todosOcupados : new Set(draft.filter((x) => x.order < o).map((x) => x.hero_id));
+};
+
+// core ou suporte nessa partida: os 3 com mais ouro são os cores
+const porOuro = [...r.nos].sort((a, b) => (b.raw.net_worth || b.raw.total_gold || 0) - (a.raw.net_worth || a.raw.total_gold || 0));
+const ehCore = (p) => porOuro.indexOf(p) < 3;
+const time = r.nos.map((p) => slugDe(p.heroi.id));
+const sinTime = T.sinergias(time);
+const sinEles = T.sinergias(r.eles.map((p) => slugDe(p.heroi.id)));
+const marginal = (i, novoSlug) => {
+const sem = time.filter((_, k) => k !== i);
+const com = novoSlug == null ? time : [...sem, novoSlug];
+return T.sinergias(com).nota - T.sinergias(sem).nota;
+};
+// quanto cada herói soma comparado com a média do time (todo herói com traço soma alguma coisa)
+const mediaMarginal = time.reduce((s_, _, i) => s_ + marginal(i, null), 0) / Math.max(1, time.length);
+const notaDe = (p, i, id, comContra = true) => {
+const wr = metaWr(id);
+const pr = prof(p.conta, id);
+const temPool = Boolean(pool(p.conta));
+const partes = {
+meta: wr == null ? 0 : DRAFT_PESO_META * lg(wr / 100),
+prof: temPool ? (pr.jogos ? lg((pr.vitorias + DRAFT_PRIOR / 2) / (pr.jogos + DRAFT_PRIOR)) + 0.15 * Math.log(1 + pr.jogos) : -0.2) : 0,
+sinergia: marginal(i, slugDe(id)) - mediaMarginal,
+contra: 0,
+};
+const c = comContra ? contra(id) : null;
+if (c != null) partes.contra = DRAFT_PESO_CONTRA * lg(Math.min(0.9, Math.max(0.1, c)));
+return { nota: partes.meta + partes.prof + partes.sinergia + partes.contra, partes, wr, pr, temPool, c };
+};
+
+const picks = r.nos.map((p, i) => ({ p, i, ...notaDe(p, i, p.heroi.id) }))
+.sort((a, b) => (ordemDe(a.p.heroi.id) ?? a.i) - (ordemDe(b.p.heroi.id) ?? b.i));
+const melhor = [...picks].sort((a, b) => b.nota - a.nota)[0];
+const pior = [...picks].sort((a, b) => a.nota - b.nota)[0];
+const selo = (x) => {
+if (x === melhor && x.nota >= DRAFT_MESTRE) return ['mestre', '🏆 Pick de mestre'];
+if ((x === pior && x.nota <= DRAFT_PRECARIO) || x.nota <= -0.6) return ['precario', '⚠️ Pick precário'];
+return x.nota >= 0.2 ? ['solido', '👍 Pick sólido'] : ['ok', '😐 Pick ok'];
+};
+
+// sugestões para quem fez o pick precário: heróis que a pessoa já joga (proficiência) e uma ideia nova do meta
+const papelOk = (p, pos) => !pos || (ehCore(p) ? pos <= 3 : pos >= 4);
+const temTraco = (slug, ts) => T.tracos(slug).some((t) => ts.includes(t));
+const sugestoes = (x) => {
+const ocup = ocupadosAntes(x.p.heroi.id);
+const base = notaDe(x.p, x.i, x.p.heroi.id, false).nota;
+const doPool = (pool(x.p.conta) || [])
+.filter((e) => e.heroi !== x.p.heroi.id && !ocup.has(e.heroi) && papelOk(x.p, e.pos))
+.reduce((acc, e) => (acc.some((y) => y.heroi === e.heroi) ? acc : [...acc, e]), [])
+.map((e) => ({ id: e.heroi, ...notaDe(x.p, x.i, e.heroi, false) }))
+.filter((c) => c.pr.jogos >= 2 && c.nota > base + 0.15)
+.sort((a, b) => b.nota - a.nota).slice(0, 3);
+const funcao = ehCore(x.p) ? ['dps', 'late', 'burst'] : ['baba', 'controle'];
+const novas = Object.keys(herois).map(Number)
+.filter((id) => id && id !== x.p.heroi.id && !ocup.has(id) && !doPool.some((c) => c.id === id) && prof(x.p.conta, id).jogos === 0)
+.filter((id) => (metaWr(id) ?? 0) >= 51 && temTraco(slugDe(id), funcao))
+.map((id) => ({ id, ...notaDe(x.p, x.i, id, false) }))
+.filter((c) => c.nota > base + 0.15)
+.sort((a, b) => b.nota - a.nota).slice(0, 2);
+return { doPool, novas };
+};
+
+const sinal = (v) => (v > 0.05 ? 'bom' : v < -0.05 ? 'ruim' : '');
+const pct = (v) => `${Math.round(v * 100)}%`;
+const icones = (slug) => T.tracos(slug).map((t) => h('span', { class: 'draft-traco', title: `${T.TRACOS[t].nome}: ${T.TRACOS[t].desc}` }, T.TRACOS[t].icone));
+const chips = (s_) => h('div', { class: 'draft-chips' },
+s_.lista.filter((x) => x.nivel).sort((a, b) => b.nivel - a.nivel).map((x) => h('span', { class: `draft-chip nivel-${Math.min(3, x.nivel)}`, title: x.desc }, `${x.icone} ${x.nome}`)),
+s_.alertas.map((a) => h('span', { class: 'draft-alerta' }, a)));
+const powerUp = (wr) => (wr == null ? null : wr >= 54 ? h('span', { class: 'draft-power forte', title: `Muito forte no patch: ${String(wr).replace('.', ',')}%` }, '⚡⚡')
+: wr >= 52 ? h('span', { class: 'draft-power', title: `Forte no patch: ${String(wr).replace('.', ',')}%` }, '⚡')
+: wr <= 47 ? h('span', { class: 'draft-power fraco', title: `Fraco no patch: ${String(wr).replace('.', ',')}%` }, '🧊') : null);
+const opcao = (c, novo) => h('div', { class: 'draft-opcao' },
+h('span', { class: 'draft-img' }, retrato(infoDe(c.id)), powerUp(c.wr)),
+h('div', {}, h('b', {}, infoDe(c.id).nome), h('span', { class: 'draft-icones' }, icones(slugDe(c.id))),
+h('small', {}, novo ? `nunca jogou · meta ${c.wr != null ? String(c.wr).replace('.', ',') + '%' : '?'}` : `${c.pr.vitorias}V em ${c.pr.jogos} · meta ${c.wr != null ? String(c.wr).replace('.', ',') + '%' : '?'}`),
+c.partes.sinergia > 0.05 ? h('small', { class: 'bom' }, 'encaixa melhor nas sinergias') : null));
+
+const cartao = (x) => {
+const [cls, rotulo] = selo(x);
+const o = ordemDe(x.p.heroi.id);
+const sug = cls === 'precario' ? sugestoes(x) : null;
+const linhas = [
+x.wr != null ? h('li', { class: sinal(x.partes.meta) }, `Meta: ${String(x.wr).replace('.', ',')}% de vitória no patch`) : null,
+x.temPool ? h('li', { class: sinal(x.partes.prof) }, x.pr.jogos ? `${x.p.nome}: ${x.pr.vitorias}V em ${x.pr.jogos} com o herói (${pct(x.pr.vitorias / x.pr.jogos)})` : `${x.p.nome} nunca tinha jogado de ${x.p.heroi.nome} nas partidas guardadas`) : null,
+h('li', { class: sinal(x.partes.sinergia) }, x.partes.sinergia > 0.05 ? 'Puxou as sinergias do time (acima da média dos 5)' : x.partes.sinergia < -0.05 ? 'Somou pouco nas sinergias do time (abaixo da média dos 5)' : 'Na média das sinergias do time'),
+x.c != null ? h('li', { class: sinal(x.partes.contra) }, `Contra os 5 deles: ${pct(x.c)} de vitória em média (OpenDota)`) : null,
+];
+return h('article', { class: `draft-pick draft-${cls}` },
+h('div', { class: 'draft-pick-cab' },
+h('span', { class: 'draft-img' }, retrato(x.p.heroi), powerUp(x.wr)),
+h('div', {}, h('b', {}, x.p.heroi.nome), h('small', {}, `${x.p.nome}${o != null ? ` · ${picks.indexOf(x) + 1}º pick do time` : ''} · ${ehCore(x.p) ? 'core' : 'suporte'}`),
+h('span', { class: 'draft-icones' }, icones(slugDe(x.p.heroi.id)))),
+h('span', { class: `draft-selo ${cls}` }, rotulo)),
+h('ul', { class: 'draft-motivos' }, linhas),
+sug && (sug.doPool.length || sug.novas.length) ? h('div', { class: 'draft-sugestoes' },
+sug.doPool.length ? [h('p', {}, `Dava pra ter ido de${o != null ? ' (estava livre na hora)' : ''}:`), h('div', { class: 'draft-opcoes' }, sug.doPool.map((c) => opcao(c, false)))] : null,
+sug.novas.length ? [h('p', {}, '💡 Ideia nova, forte no patch e encaixa no time:'), h('div', { class: 'draft-opcoes' }, sug.novas.map((c) => opcao(c, true)))] : null) : null);
+};
+
+const ordemTexto = draft ? h('div', { class: 'draft-ordem', 'aria-label': 'Ordem do draft' }, draft.map((x) => h('span', {
+class: `draft-passo ${x.team === nossoTime ? 'nos' : 'eles'}${x.is_pick ? '' : ' ban'}`,
+title: `${x.order + 1}. ${x.is_pick ? 'Pick' : 'Ban'} ${x.team === nossoTime ? 'de vocês' : 'deles'}: ${infoDe(x.hero_id).nome}`,
+}, retrato(infoDe(x.hero_id))))) : null;
+
+return h('div', {},
+ordemTexto ? [h('h3', { class: 'draft-sub' }, 'Ordem do draft'), ordemTexto] : null,
+h('div', { class: 'draft-lados' },
+h('div', { class: 'cartao draft-lado nos' }, h('h3', {}, 'Vocês'), h('div', { class: 'draft-herois' }, r.nos.map((p) => h('span', { class: 'draft-img', title: p.heroi.nome }, retrato(p.heroi), powerUp(metaWr(p.heroi.id))))), chips(sinTime)),
+h('div', { class: 'cartao draft-lado eles' }, h('h3', {}, 'Eles'), h('div', { class: 'draft-herois' }, r.eles.map((p) => h('span', { class: 'draft-img', title: p.heroi.nome }, retrato(p.heroi), powerUp(metaWr(p.heroi.id))))), chips(sinEles))),
+h('div', { class: 'draft-picks' }, picks.map(cartao)),
+h('p', { class: 'draft-nota' }, 'A nota de cada pick soma a força do herói no patch, a experiência de quem pegou (partidas guardadas do grupo), quanto ele completa as sinergias do time e, quando o OpenDota tem, o matchup contra os 5 deles. É o draft no papel: execução é outra conversa.'));
+}
 
 function secaoTime(r) {
 
