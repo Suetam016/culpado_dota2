@@ -6270,10 +6270,10 @@ f.stop(t0 + 0.8);
 };
 }
 
-// Alarme da revelação a partir do B.O. (raridade 1+): arquivos em som/ (B.O., Interpol, Haia e Tribunal). No
+// Som da revelação por nível: Procurado (Among Us) e Tribunal entram no lugar do "plim"; do B.O. ao Haia, sirenes por cima. Arquivos em som/. No
 // Tribunal ele entra no lugar do "plim" do áudio da abertura. Pré-carrega no começo da roleta; se o arquivo não
 // existir, fica só o áudio da abertura. Devolve como tocar e calar (botão Pular).
-const ALARMES = [null, 'som/alarme-bo.mp3', 'som/alarme-interpol.mp3', 'som/alarme-haia.mp3', 'som/alarme-tribunal.mp3'];
+const ALARMES = ['som/alarme-procurado.mp3', 'som/alarme-bo.mp3', 'som/alarme-interpol.mp3', 'som/alarme-haia.mp3', 'som/alarme-tribunal.mp3'];
 const ALARME_MAX = 12; // segundos no máximo segurando a tela aberta
 function alarmeDoNivel(raridade) {
 if (!ALARMES[raridade] || !somLigado() || !volumeMapa()) return null;
@@ -6394,11 +6394,12 @@ cartas.forEach((c) => c.el.classList.toggle('vencedor', finais.includes(c.p)));
 // a partir do B.O. toca o alarme do nível; no Tribunal ele entra no lugar do "plim" do áudio
 const durAlarme = alarme ? alarme.tocar() : 0;
 alarmeTocando = alarme;
+const trocaPlim = raridade === 0 || raridade >= 4; // Procurado (som do Among Us) e Tribunal: no lugar do "plim"
 if (durAlarme) {
-ov.classList.add(raridade >= 4 ? 'alarme-nuclear' : 'alarme-policia');
-if (raridade >= 4 && durAlarme && audio) { audio.pause(); audio = null; }
+if (raridade >= 1) ov.classList.add(raridade >= 4 ? 'alarme-nuclear' : 'alarme-policia');
+if (trocaPlim && audio) { audio.pause(); audio = null; }
 }
-if (som && !(durAlarme && raridade >= 4)) som.brilho(raridade);
+if (som && !(durAlarme && trocaPlim)) som.brilho(raridade);
 const resta = Math.max((ABERTURA.fecha - ABERTURA.revela) / (tocando ? 1 : ABERTURA_SEM_SOM), durAlarme ? durAlarme + 0.3 : 0);
 relogios.push(setTimeout(() => { calarAudio(); terminar(); }, reduz && !durAlarme ? 900 : resta * 1000));
 };
