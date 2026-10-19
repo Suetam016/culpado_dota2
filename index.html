@@ -6208,32 +6208,34 @@ f.connect(bp).connect(g).connect(mestre);
 f.start(t0);
 nota(1100 + rapidez * 500, t0, 0.04, 0.05, 'triangle');
 },
-// eliminado: vento curto descendo e um baque abafado
-vento() {
-const t0 = ac.currentTime + 0.01;
+// eliminado: "vupt" curto subindo (ar cortado) e um estalo
+vupt() {
+const t0 = ac.currentTime + 0.005;
 const f = ac.createBufferSource();
 f.buffer = longo;
 const bp = ac.createBiquadFilter();
 bp.type = 'bandpass';
-bp.Q.value = 1.2;
-bp.frequency.setValueAtTime(2400, t0);
-bp.frequency.exponentialRampToValueAtTime(380, t0 + 0.4);
+bp.Q.value = 2.2;
+bp.frequency.setValueAtTime(600, t0);
+bp.frequency.exponentialRampToValueAtTime(3800, t0 + 0.13);
 const g = ac.createGain();
 g.gain.setValueAtTime(0.0001, t0);
-g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.06);
-g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.45);
+g.gain.exponentialRampToValueAtTime(0.5, t0 + 0.025);
+g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.17);
 f.connect(bp).connect(g).connect(mestre);
 f.start(t0);
-f.stop(t0 + 0.5);
+f.stop(t0 + 0.2);
 const o = ac.createOscillator();
-o.frequency.setValueAtTime(160, t0);
-o.frequency.exponentialRampToValueAtTime(55, t0 + 0.25);
+o.type = 'triangle';
+o.frequency.setValueAtTime(320, t0);
+o.frequency.exponentialRampToValueAtTime(1400, t0 + 0.1);
 const go = ac.createGain();
-go.gain.setValueAtTime(0.3, t0);
-go.gain.exponentialRampToValueAtTime(0.001, t0 + 0.3);
+go.gain.setValueAtTime(0.0001, t0);
+go.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+go.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.13);
 o.connect(go).connect(mestre);
 o.start(t0);
-o.stop(t0 + 0.32);
+o.stop(t0 + 0.15);
 },
 // revelação: baque grave + arpejo subindo; raridade 0..4 decide quantas notas e o brilho no topo
 brilho(raridade) {
@@ -6270,9 +6272,23 @@ f.stop(t0 + 0.8);
 
 // Raridade da revelação, como os itens do Dota: sobe com a gravidade da culpa (mesmos níveis dos cartazes)
 const RARIDADES = [['Raro', '#4b69ff'], ['Mítico', '#8847ff'], ['Lendário', '#d32ce6'], ['Imortal', '#e4ae39'], ['Arcana', '#ade55c']];
+// o nome que aparece na revelação do culpado, na mesma escala dos cartazes
+const NIVEIS_DO_CRIME = ['Procurado', 'Criminoso', 'Criminoso transnacional', 'Criminoso contra a humanidade', 'Genocida'];
 
 // A abertura: os 5 rostos rodam num carrossel (avatar da Steam para os amigos, herói para o resto) e saem um a um,
 // do menos culpado (ou do que menos carregou, na vitória) para o mais, até sobrar quem o tribunal escolheu.
+// Som da abertura: o unboxing refeito no FL Studio pelo dono do site (som/abertura.mp3, cortado a partir dos 13 s
+// do original). Marcos em segundos desse corte: picos onde cai cada carta, a parada em silêncio e a batida.
+const AUDIO_ABERTURA = 'som/abertura.mp3';
+const ABERTURA = { picos: [2.25, 2.75, 4.25, 5.35, 6.7, 7.5, 8.5], para: 9.45, revela: 10.1, fecha: 12.4 };
+const ABERTURA_SEM_SOM = 1.6; // sem o áudio tocando, a mesma coreografia corre mais rápido
+
+function marcosDeSaida(n) {
+if (n === 4) return [2.25, 4.25, 6.7, 8.5];
+if (n === 3) return [2.75, 5.35, 8.5];
+return Array.from({ length: n }, (_, i) => (n === 1 ? 5.35 : 2.25 + (i * (8.5 - 2.25)) / (n - 1)));
+}
+
 function revelar(r) {
 return new Promise((resolve) => {
 const vitoria = Boolean(r.partida.venceu && r.craques && r.craques.length);
@@ -6280,8 +6296,9 @@ const cs = vitoria ? craquesDe(r) : culpados(r);
 const finais = cs.map((v) => v.jogador);
 const reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const raridade = vitoria ? 3 : cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
-const [nomeRaridade, corRaridade] = RARIDADES[raridade];
-carregarPerfis(); // os avatares chegam enquanto a roleta gira
+const corRaridade = RARIDADES[raridade][1];
+const nomeRaridade = vitoria ? 'Herói da partida' : NIVEIS_DO_CRIME[raridade];
+carregarPerfis(); // os avatares chegam enquanto as cartas giram
 const peso = (p) => {
 if (vitoria) { const c = (r.craques || []).find((x) => x.jogador === p); return c ? c.fatia : 0; }
 const v = r.vereditos.find((x) => x.jogador === p);
@@ -6291,19 +6308,22 @@ const jogadores = r.vereditos.map((v) => v.jogador);
 const ordemSaida = jogadores.filter((p) => !finais.includes(p)).sort((a, b) => peso(a) - peso(b));
 
 const titulo = h('p', { class: 'rev-titulo' }, r.partida.venceu ? 'Vitória! Quem carregou?' : r.partida.parseado ? 'O tribunal está reunido' : 'Veredito preliminar');
-const anel = h('div', { class: 'bau-anel' });
+const fila = h('div', { class: 'bau-fila' });
 const raios = h('div', { class: 'bau-raios', 'aria-hidden': 'true' });
-const palco = h('div', { class: 'bau-palco', 'aria-hidden': 'true' }, raios, anel);
+const palco = h('div', { class: 'bau-palco', 'aria-hidden': 'true' }, raios, fila);
 const nome = h('p', { class: 'rev-nome' }, '');
 const selo = h('p', { class: 'bau-raridade' }, '');
 const pular = h('button', { class: 'rev-pular', type: 'button' }, 'Pular');
 const ov = h('div', { class: 'revelacao bau', role: 'dialog', 'aria-label': 'Revelação do culpado', style: `--raridade:${corRaridade}` },
 titulo, palco, nome, selo, pular);
+// cada carta gira no próprio eixo, uma do lado da outra; o verso é a balança do tribunal
 const cartas = jogadores.map((p, i) => {
-const dentro = h('div', { class: 'bau-carta-dentro' }, fotoDe(p, true), h('span', { class: 'bau-x', 'aria-hidden': 'true' }, '✕'));
-const el_ = h('div', { class: 'bau-carta' }, dentro);
-anel.append(el_);
-return { p, i, el: el_, dentro, vivo: true, off: (2 * Math.PI * i) / jogadores.length, ant: null };
+const frente = h('div', { class: 'bau-face bau-frente' }, fotoDe(p, true), h('span', { class: 'bau-x', 'aria-hidden': 'true' }, '✕'));
+const verso = h('div', { class: 'bau-face bau-verso', 'aria-hidden': 'true' }, h('span', {}, '⚖'));
+const gira = h('div', { class: 'bau-gira' }, frente, verso);
+const el_ = h('div', { class: 'bau-carta' }, gira);
+fila.append(el_);
+return { p, el: el_, gira, vivo: true, ang: i * 47, voltas: 0 };
 });
 document.body.append(ov);
 
@@ -6319,7 +6339,21 @@ ov.classList.add('saindo');
 setTimeout(() => { ov.remove(); resolve(); }, 450);
 };
 pular.addEventListener('click', terminar);
-const som = somDoBau();
+let som = null; // sons sintetizados: só se o áudio da abertura não tocar
+let audio = null;
+let tocando = false;
+if (somLigado() && volumeMapa()) {
+audio = new Audio(AUDIO_ABERTURA);
+audio.volume = Math.min(1, volumeMapa());
+audio.play().then(() => { tocando = !fim; if (fim) audio.pause(); }).catch(() => { audio = null; som = somDoBau(); });
+}
+const calarAudio = () => {
+if (!audio) return;
+const a = audio;
+const passo_ = () => { a.volume = Math.max(0, a.volume - 0.08); if (a.volume > 0.01) setTimeout(passo_, 40); else a.pause(); };
+passo_();
+};
+pular.addEventListener('click', calarAudio);
 
 const mostrarFinal = () => {
 ov.classList.add('bateu', 'revelado');
@@ -6327,96 +6361,70 @@ ov.classList.toggle('vitoria', vitoria);
 titulo.textContent = vitoria ? (cs.length > 1 ? 'Craques da partida!' : 'Craque da partida!') : cs.length > 1 ? 'Culpados!' : 'Culpado!';
 nome.textContent = finais.map((p) => p.nome).join(' e ');
 nome.setAttribute('aria-live', 'polite');
-selo.textContent = `★ ${nomeRaridade}`;
-cartas.forEach((c) => c.dentro.classList.toggle('vencedor', finais.includes(c.p)));
+selo.textContent = `★ ${nomeRaridade} ★`;
+cartas.forEach((c) => c.el.classList.toggle('vencedor', finais.includes(c.p)));
 if (som) som.brilho(raridade);
-relogios.push(setTimeout(terminar, reduz ? 900 : 1700));
+const resta = (ABERTURA.fecha - ABERTURA.revela) / (tocando ? 1 : ABERTURA_SEM_SOM);
+relogios.push(setTimeout(() => { calarAudio(); terminar(); }, reduz ? 900 : resta * 1000));
 };
 
 if (reduz) {
-// sem movimento: só os escolhidos, de frente
-cartas.forEach((c) => {
-if (!finais.includes(c.p)) { c.el.hidden = true; return; }
-const k = finais.indexOf(c.p);
-c.el.style.transform = `translate(-50%, -50%) translateX(${finais.length > 1 ? (k ? 70 : -70) : 0}px)`;
-c.el.style.zIndex = '10';
-});
+cartas.forEach((c) => { if (!finais.includes(c.p)) c.el.hidden = true; });
 mostrarFinal();
 return;
 }
 
-// linha do tempo (segundos)
-const ELIM_INI = 1.4;
-const ELIM_PASSO = 0.7;
-const ultimaElim = ELIM_INI + ELIM_PASSO * Math.max(0, ordemSaida.length - 1);
-const T_APROX = ultimaElim + 0.45; // começa a parar
-const D_APROX = 1.1;
-const W_MAX = 11; // rad/s
-const W_MIN = 3.2;
-const raio = () => Math.min(210, palco.clientWidth * 0.36);
+// linha do tempo no relógio do áudio: as cartas giram, a cada pico do som some uma (do menos pro mais culpado),
+// param de frente no silêncio e o escolhido aparece na batida
+const saidas = marcosDeSaida(ordemSaida.length);
+const D_PARA = 0.85;
+const T_PARA = ABERTURA.para - D_PARA;
+const W_MAX = 1080; // graus por segundo
+const W_MIN = 380;
 const t0 = performance.now();
 let antes = t0;
-let rot = 0;
 let proxElim = 0;
-let aprox = null;
-const doisFinais = finais.length > 1;
-const norm = (a) => { a %= 2 * Math.PI; if (a > Math.PI) a -= 2 * Math.PI; if (a < -Math.PI) a += 2 * Math.PI; return a; };
+let parada = null;
+let ultimoTique = 0;
 
+let tRel = 0;
+let revelado = false;
 const passo = (agora) => {
 if (fim) return;
-const t = (agora - t0) / 1000;
-const dt = Math.min(0.05, (agora - antes) / 1000);
+const dtReal = Math.min(0.05, (agora - antes) / 1000);
 antes = agora;
+tRel = tocando && audio ? Math.max(tRel, audio.currentTime) : tRel + dtReal * ABERTURA_SEM_SOM;
+const t = tRel;
+const dt = dtReal * (tocando ? 1 : ABERTURA_SEM_SOM);
 
-// eliminações, do menos culpado para o mais
-while (proxElim < ordemSaida.length && t >= ELIM_INI + proxElim * ELIM_PASSO) {
+while (proxElim < ordemSaida.length && t >= saidas[proxElim]) {
 const c = cartas.find((x) => x.p === ordemSaida[proxElim]);
 c.vivo = false;
-c.dentro.classList.add('fora');
-if (som) som.vento();
+c.el.classList.add('fora');
+if (som) som.vupt();
 proxElim++;
 }
 
-// giro: acelera, desacelera e para com o escolhido de frente
-if (t < T_APROX) {
-const w = t < 0.5 ? W_MAX * (t / 0.5) : W_MAX - (W_MAX - W_MIN) * Math.min(1, (t - 0.5) / Math.max(0.1, T_APROX - 0.5));
-rot += w * dt;
+const vivas = cartas.filter((c) => c.vivo);
+if (t < T_PARA) {
+const w = t < 0.4 ? W_MAX * (t / 0.4) : W_MAX - (W_MAX - W_MIN) * Math.min(1, (t - 0.4) / Math.max(0.1, T_PARA - 0.4));
+vivas.forEach((c) => {
+c.ang += w * dt;
+const volta = Math.floor(c.ang / 360);
+if (volta > c.voltas) {
+c.voltas = volta;
+if (som && agora - ultimoTique > 55) { som.tique(Math.min(1, w / W_MAX)); ultimoTique = agora; }
+}
+});
 } else {
-if (!aprox) {
-const delta = (W_MIN * D_APROX) / 3; // ease-out cúbico começando na velocidade atual
-const base = rot + delta;
-const alvo = Math.round(base / (2 * Math.PI)) * 2 * Math.PI;
-aprox = { de: rot, alvo: alvo < rot + 0.6 ? alvo + 2 * Math.PI : alvo };
+// para de frente: cada carta vai até a próxima volta inteira, desacelerando
+if (!parada) parada = vivas.map((c) => ({ c, de: c.ang, ate: Math.ceil((c.ang + 200) / 360) * 360 }));
+const s_ = Math.min(1, (t - T_PARA) / D_PARA);
+parada.forEach((x) => { x.c.ang = x.de + (x.ate - x.de) * (1 - (1 - s_) ** 3); });
 }
-const s_ = Math.min(1, (t - T_APROX) / D_APROX);
-rot = aprox.de + (aprox.alvo - aprox.de) * (1 - (1 - s_) ** 3);
-}
+cartas.forEach((c) => { if (c.vivo) c.gira.style.transform = `rotateY(${c.ang.toFixed(1)}deg)`; });
 
-// os vivos se redistribuem pelo anel; no fim, dois culpados ficam lado a lado na frente
-const vivos = cartas.filter((c) => c.vivo);
-vivos.forEach((c, k) => {
-const alvoOff = vivos.length === 2 && doisFinais && proxElim >= ordemSaida.length ? (k ? 0.42 : -0.42) : (2 * Math.PI * k) / vivos.length;
-c.off += norm(alvoOff - c.off) * Math.min(1, dt * 6);
-});
-
-const R = raio();
-let frente = null;
-cartas.forEach((c) => {
-const a = norm(rot + c.off);
-if (c.vivo) {
-// passou pela frente: clique
-if (c.ant != null && c.ant < 0 && a >= 0 && a < 1.2 && som && t < T_APROX + D_APROX * 0.85) som.tique(Math.min(1, (t < T_APROX ? 1 : 0.4)));
-c.ant = a;
-if (!frente || Math.abs(a) < Math.abs(frente.a)) frente = { c, a };
-}
-const prof = (Math.cos(a) + 1) / 2;
-c.el.style.transform = `translate(-50%, -50%) translateX(${(Math.sin(a) * R).toFixed(1)}px) scale(${(0.55 + 0.45 * prof).toFixed(3)})`;
-c.el.style.zIndex = String(Math.round(prof * 100));
-c.el.style.setProperty('--prof', prof.toFixed(3));
-});
-if (frente && t < T_APROX + D_APROX) nome.textContent = frente.c.p.nome;
-
-if (t >= T_APROX + D_APROX) { mostrarFinal(); return; }
+if (!revelado && t >= ABERTURA.revela) { revelado = true; mostrarFinal(); return; }
 quadro = requestAnimationFrame(passo);
 };
 quadro = requestAnimationFrame(passo);
@@ -10344,31 +10352,31 @@ iniciar();
 </script>
 
 <style>
-/* ---------- abertura estilo baú do Dota ---------- */
+/* ---------- abertura estilo baú do Dota: cartas lado a lado girando no próprio eixo ---------- */
 .revelacao.bau{gap:10px;--raridade:#e4ae39}
-.bau-palco{position:relative;width:min(680px,94vw);height:clamp(190px,34vw,250px)}
-.bau-anel{position:absolute;inset:0}
-.bau-carta{position:absolute;left:50%;top:50%;will-change:transform;--prof:1}
-.bau-carta-dentro{position:relative;transition:transform .45s cubic-bezier(.2,.9,.3,1.3),opacity .45s,filter .45s;filter:brightness(calc(.45 + .55 * var(--prof)))}
-.bau .bau-carta .retrato.grande{width:clamp(84px,17vw,124px);height:clamp(84px,17vw,124px);border-radius:14px;font-size:2rem;box-shadow:0 0 0 3px #2a2f3a,0 10px 24px rgba(0,0,0,.6);background:#1b1f27;color:#ddd}
-.bau .bau-carta .retrato img{width:100%;height:100%;object-fit:cover}
-.bau-x{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(2.6rem,7vw,4rem);font-weight:900;color:#e5533d;text-shadow:0 2px 8px #000;opacity:0;transform:scale(1.6);transition:opacity .2s,transform .25s}
-.bau-carta-dentro.fora{opacity:0;transform:translateY(46px) rotate(-14deg) scale(.7);filter:grayscale(1) brightness(.5);transition-delay:.18s}
-.bau-carta-dentro.fora .bau-x{opacity:1;transform:scale(1);transition-delay:0s}
-.bau-carta-dentro.vencedor{transform:scale(1.32);filter:none}
-.bau-carta-dentro.vencedor .retrato.grande{box-shadow:0 0 0 4px var(--raridade),0 0 34px var(--raridade),0 0 90px color-mix(in srgb,var(--raridade) 55%,transparent);animation:estalo .35s ease}
-.bau-raios{position:absolute;left:50%;top:50%;width:min(520px,90vw);aspect-ratio:1;transform:translate(-50%,-50%) scale(.2);border-radius:50%;opacity:0;pointer-events:none;
+.bau-palco{position:relative;width:min(760px,96vw);height:clamp(170px,30vw,230px);display:grid;place-items:center}
+.bau-fila{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,16px);perspective:900px}
+.bau-carta{flex:0 0 auto;width:clamp(58px,15vw,118px);transition:width .4s cubic-bezier(.4,0,.2,1) .12s,margin .4s .12s,opacity .3s,transform .35s cubic-bezier(.5,-.4,.6,1)}
+.bau-gira{position:relative;width:100%;aspect-ratio:3/4;transform-style:preserve-3d;will-change:transform}
+.bau-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;box-shadow:0 0 0 2px #3a3f4c,0 10px 22px rgba(0,0,0,.6)}
+.bau-frente .retrato.grande{width:100%;height:100%;border-radius:0;border:0;box-shadow:none;font-size:1.6rem;background:#1b1f27;color:#ddd}
+.bau-frente .retrato img{width:100%;height:100%;object-fit:cover}
+.bau-verso{transform:rotateY(180deg);display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#3a2a12,#120d07 75%);color:#e3b448;font-size:clamp(1.6rem,5vw,2.6rem);box-shadow:0 0 0 2px #6b5326,inset 0 0 0 4px #1f170c,inset 0 0 0 5px #6b5326}
+.bau-x{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(2.2rem,6vw,3.6rem);font-weight:900;color:#e5533d;text-shadow:0 2px 8px #000;opacity:0}
+.bau-carta.fora{width:0;margin:0 calc(-1 * clamp(3px,1vw,8px));opacity:0;transform:scale(.25) translateY(-30px)}
+.bau-carta.fora .bau-x{opacity:1}
+.bau-carta.vencedor{width:clamp(96px,24vw,170px);transition:width .45s cubic-bezier(.2,.9,.3,1.3)}
+.bau-carta.vencedor .bau-frente{box-shadow:0 0 0 4px var(--raridade),0 0 34px var(--raridade),0 0 90px color-mix(in srgb,var(--raridade) 55%,transparent);animation:estalo .35s ease}
+.bau-raios{position:absolute;left:50%;top:50%;width:min(560px,92vw);aspect-ratio:1;transform:translate(-50%,-50%) scale(.2);border-radius:50%;opacity:0;pointer-events:none;
 background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--raridade) 70%,transparent) 0 6deg,transparent 6deg 18deg);
 -webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%);transition:opacity .4s,transform .6s cubic-bezier(.2,.9,.3,1)}
 .bau.revelado .bau-raios{opacity:1;transform:translate(-50%,-50%) scale(1);animation:bau-gira 6s linear infinite}
 @keyframes bau-gira{to{transform:translate(-50%,-50%) scale(1) rotate(360deg)}}
-.bau-palco::before{content:"";position:absolute;left:50%;top:50%;width:2px;height:118%;transform:translate(-50%,-50%);background:linear-gradient(transparent,rgba(227,180,72,.6),transparent);pointer-events:none;z-index:200;transition:opacity .3s}
-.bau.revelado .bau-palco::before{opacity:0}
-.bau-raridade{min-height:1.4em;font-family:var(--font-display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--raridade);text-shadow:0 0 18px var(--raridade);opacity:0;transform:translateY(6px);transition:opacity .35s .15s,transform .35s .15s}
+.bau-raridade{min-height:1.4em;font-family:var(--font-display);font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-align:center;padding:0 12px;color:var(--raridade);text-shadow:0 0 18px var(--raridade);opacity:0;transform:translateY(6px);transition:opacity .35s .15s,transform .35s .15s}
 .bau.revelado .bau-raridade{opacity:1;transform:none}
 .bau.revelado .rev-titulo{color:var(--raridade)}
 .bau .rev-nome{min-height:1.5em;text-align:center;padding:0 16px}
-@media (prefers-reduced-motion:reduce){.bau.revelado .bau-raios{animation:none}.bau-carta-dentro,.bau-raios{transition:none}}
+@media (prefers-reduced-motion:reduce){.bau.revelado .bau-raios{animation:none}.bau-carta,.bau-raios{transition:none}}
 </style>
 </body>
 </html>
