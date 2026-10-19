@@ -6270,6 +6270,178 @@ f.stop(t0 + 0.8);
 };
 }
 
+// Alarme da revelação a partir do B.O. (raridade 1+), sintetizado: sirene de polícia no B.O., sirene europeia de
+// dois tons na Interpol, polícia + buzina do mal em Haia e, no Tribunal (o topo), a sirene de ataque nuclear no lugar
+// do "plim", subindo e descendo por alguns ciclos. Devolve quanto tempo dura e como calar (botão Pular).
+function alarmeDoNivel(raridade, liberado) {
+if (raridade < 1 || !somLigado()) return null;
+const vol = volumeMapa();
+if (!vol) return null;
+let ac = audioCtx;
+if (!ac && (liberado || (navigator.userActivation && navigator.userActivation.hasBeenActive))) { try { ac = contextoAudio(); } catch (e) { return null; } }
+if (!ac) return null;
+if (ac.state === 'suspended') ac.resume().catch(() => {});
+const comp = ac.createDynamicsCompressor();
+comp.threshold.value = -14;
+comp.ratio.value = 6;
+const mestre = ac.createGain();
+mestre.gain.value = Math.min(1, vol) * 0.9;
+mestre.connect(comp).connect(ac.destination);
+const t0 = ac.currentTime + (raridade >= 4 ? 0.02 : 0.25); // até o Haia, o "plim" do áudio cai primeiro
+const fontes = [];
+const sujo = (k) => { // distorção de megafone/alto-falante velho
+const ws = ac.createWaveShaper();
+const c = new Float32Array(1024);
+for (let i = 0; i < c.length; i++) { const x = (i / 511.5) - 1; c[i] = Math.tanh(k * x) / Math.tanh(k); }
+ws.curve = c;
+return ws;
+};
+const osc = (tipo, destino, ini, fimT) => {
+const o = ac.createOscillator();
+o.type = tipo;
+o.connect(destino);
+o.start(ini);
+o.stop(fimT);
+fontes.push(o);
+return o;
+};
+const envelope = (pontos) => { // [[t, ganho], ...] em segundos depois de t0
+const g = ac.createGain();
+g.gain.setValueAtTime(0.0001, t0);
+pontos.forEach(([t, v]) => g.gain.linearRampToValueAtTime(v, t0 + t));
+return g;
+};
+// baque grave no começo de tudo
+const baque = (em, forca) => {
+const g = ac.createGain();
+g.gain.setValueAtTime(forca, t0 + em);
+g.gain.exponentialRampToValueAtTime(0.001, t0 + em + 0.9);
+g.connect(mestre);
+const o = osc('sine', g, t0 + em, t0 + em + 1);
+o.frequency.setValueAtTime(110, t0 + em);
+o.frequency.exponentialRampToValueAtTime(32, t0 + em + 0.7);
+};
+// sirene de polícia (wail): sobe e desce em ciclos, dois osciladores levemente desafinados
+const policia = (ini, ciclos, periodo, ganho) => {
+const dur = ciclos * periodo;
+const g = envelope([[ini + 0.05, ganho], [ini + dur - 0.15, ganho], [ini + dur, 0.0001]]);
+const bp = ac.createBiquadFilter();
+bp.type = 'bandpass';
+bp.frequency.value = 1500;
+bp.Q.value = 0.6;
+const ws = sujo(2.5);
+ws.connect(bp).connect(g).connect(mestre);
+[1, 1.006].forEach((d) => {
+const o = osc('sawtooth', ws, t0 + ini, t0 + ini + dur + 0.05);
+o.frequency.setValueAtTime(620 * d, t0 + ini);
+for (let i = 0; i < ciclos; i++) {
+const a = t0 + ini + i * periodo;
+o.frequency.exponentialRampToValueAtTime(1380 * d, a + periodo * 0.5);
+o.frequency.exponentialRampToValueAtTime(620 * d, a + periodo);
+}
+});
+return ini + dur;
+};
+// sirene europeia de dois tons (a da Interpol)
+const doisTons = (ini, trocas, passo_, ganho) => {
+const dur = trocas * passo_;
+const g = envelope([[ini + 0.03, ganho], [ini + dur - 0.08, ganho], [ini + dur, 0.0001]]);
+const lp = ac.createBiquadFilter();
+lp.type = 'lowpass';
+lp.frequency.value = 2600;
+const ws = sujo(1.8);
+ws.connect(lp).connect(g).connect(mestre);
+[1, 2.01].forEach((m, k) => {
+const o = osc(k ? 'triangle' : 'square', ws, t0 + ini, t0 + ini + dur + 0.05);
+for (let i = 0; i < trocas; i++) o.frequency.setValueAtTime((i % 2 ? 622 : 466) * m, t0 + ini + i * passo_);
+});
+return ini + dur;
+};
+// buzina do mal: acorde grave e dissonante (segunda menor + trítono), filtro abrindo, em toques longos
+const buzina = (ini, toques, ganho) => {
+let fimB = ini;
+toques.forEach(([de, ate]) => {
+const g = envelope([[de, 0.0001], [de + 0.12, ganho], [ate - 0.25, ganho * 0.85], [ate, 0.0001]]);
+const lp = ac.createBiquadFilter();
+lp.type = 'lowpass';
+lp.Q.value = 4;
+lp.frequency.setValueAtTime(180, t0 + de);
+lp.frequency.exponentialRampToValueAtTime(1400, t0 + de + 0.35);
+lp.frequency.exponentialRampToValueAtTime(420, t0 + ate);
+const ws = sujo(3.5);
+ws.connect(lp).connect(g).connect(mestre);
+[55, 58.27, 77.78, 110, 116.54].forEach((f, i) => {
+const o = osc('sawtooth', ws, t0 + de, t0 + ate + 0.05);
+o.frequency.setValueAtTime(f, t0 + de);
+o.detune.setValueAtTime(i % 2 ? 9 : -9, t0 + de);
+o.frequency.linearRampToValueAtTime(f * 0.94, t0 + ate); // afunda no fim do toque
+});
+fimB = Math.max(fimB, ate);
+});
+return fimB;
+};
+// sirene de ataque aéreo/nuclear: rotor subindo devagar, segurando lá em cima e despencando; tremor do motor
+const nuclear = (ini, ciclos, ganho) => {
+const SOBE = 2.1;
+const SEGURA = 0.9;
+const DESCE = 1.7;
+const periodo = SOBE + SEGURA + DESCE;
+const dur = ciclos * periodo;
+const g = ac.createGain();
+g.gain.setValueAtTime(0.0001, t0 + ini);
+for (let i = 0; i < ciclos; i++) {
+const a = ini + i * periodo;
+g.gain.linearRampToValueAtTime(ganho, t0 + a + SOBE * 0.8);
+g.gain.linearRampToValueAtTime(ganho, t0 + a + SOBE + SEGURA);
+g.gain.linearRampToValueAtTime(ganho * (i === ciclos - 1 ? 0.001 : 0.25), t0 + a + periodo);
+}
+const lp = ac.createBiquadFilter();
+lp.type = 'lowpass';
+lp.frequency.value = 2400;
+const ws = sujo(1.6);
+ws.connect(lp).connect(g).connect(mestre);
+const vib = ac.createOscillator(); // o rotor não gira liso
+vib.frequency.value = 5.5;
+const vibG = ac.createGain();
+vibG.gain.value = 9;
+vib.connect(vibG);
+vib.start(t0 + ini);
+vib.stop(t0 + ini + dur + 0.1);
+fontes.push(vib);
+[[1, 'sawtooth'], [1.19, 'sawtooth'], [0.5, 'square']].forEach(([m, tipo]) => { // duas notas em terça menor + o ronco
+const o = osc(tipo, ws, t0 + ini, t0 + ini + dur + 0.05);
+vibG.connect(o.frequency);
+o.frequency.setValueAtTime(140 * m, t0 + ini);
+for (let i = 0; i < ciclos; i++) {
+const a = t0 + ini + i * periodo;
+o.frequency.setTargetAtTime(560 * m, a, SOBE / 3);
+o.frequency.setTargetAtTime(150 * m, a + SOBE + SEGURA, DESCE / 2.5);
+}
+});
+return ini + dur;
+};
+
+let dur;
+if (raridade === 1) { baque(0, 0.5); dur = policia(0.05, 2, 1.1, 0.32); }
+else if (raridade === 2) { baque(0, 0.6); dur = doisTons(0.05, 6, 0.42, 0.3); }
+else if (raridade === 3) { baque(0, 0.8); dur = Math.max(policia(0.05, 3, 1.05, 0.2), buzina(0, [[0, 1.3], [1.55, 3.3]], 0.34)); }
+else {
+baque(0, 1); baque(4.7, 0.7); baque(9.4, 0.7); // um tambor de guerra a cada volta da sirene
+buzina(0, [[0, 1.6]], 0.3);
+dur = nuclear(0.25, 2, 0.42);
+}
+return {
+dur: dur + (t0 - ac.currentTime),
+parar() {
+const t = ac.currentTime;
+mestre.gain.cancelScheduledValues(t);
+mestre.gain.setValueAtTime(mestre.gain.value, t);
+mestre.gain.linearRampToValueAtTime(0.0001, t + 0.35);
+fontes.forEach((o) => { try { o.stop(t + 0.4); } catch (e) { /* já parou */ } });
+},
+};
+}
+
 // Raridade da revelação, como os itens do Dota: sobe com a gravidade da culpa (mesmos níveis dos cartazes)
 const RARIDADES = [['Raro', '#4b69ff'], ['Mítico', '#8847ff'], ['Lendário', '#d32ce6'], ['Imortal', '#e4ae39'], ['Arcana', '#ade55c']];
 // o nome que aparece na revelação do culpado, na mesma escala dos cartazes
@@ -6330,9 +6502,11 @@ document.body.append(ov);
 let fim = false;
 let quadro = 0;
 const relogios = [];
+let alarmeTocando = null;
 const terminar = () => {
 if (fim) return;
 fim = true;
+if (alarmeTocando) alarmeTocando.parar();
 cancelAnimationFrame(quadro);
 relogios.forEach(clearTimeout);
 ov.classList.add('saindo');
@@ -6363,9 +6537,16 @@ nome.textContent = finais.map((p) => p.nome).join(' e ');
 nome.setAttribute('aria-live', 'polite');
 selo.textContent = `★ ${nomeRaridade} ★`;
 cartas.forEach((c) => c.el.classList.toggle('vencedor', finais.includes(c.p)));
-if (som) som.brilho(raridade);
-const resta = (ABERTURA.fecha - ABERTURA.revela) / (tocando ? 1 : ABERTURA_SEM_SOM);
-relogios.push(setTimeout(() => { calarAudio(); terminar(); }, reduz ? 900 : resta * 1000));
+// a partir do B.O. toca o alarme do nível; no Tribunal ele entra no lugar do "plim" do áudio
+const alarme = vitoria ? null : alarmeDoNivel(raridade, tocando);
+if (alarme) {
+alarmeTocando = alarme;
+ov.classList.add(raridade >= 4 ? 'alarme-nuclear' : 'alarme-policia');
+if (raridade >= 4 && audio) { audio.pause(); audio = null; }
+}
+if (som && !(alarme && raridade >= 4)) som.brilho(raridade);
+const resta = Math.max((ABERTURA.fecha - ABERTURA.revela) / (tocando ? 1 : ABERTURA_SEM_SOM), alarme ? alarme.dur + 0.3 : 0);
+relogios.push(setTimeout(() => { calarAudio(); terminar(); }, reduz && !alarme ? 900 : resta * 1000));
 };
 
 if (reduz) {
@@ -10613,6 +10794,12 @@ iniciar();
 <style>
 /* ---------- abertura estilo baú do Dota: cartas lado a lado girando no próprio eixo ---------- */
 .revelacao.bau{gap:10px;--raridade:#e4ae39}
+.revelacao.bau.alarme-policia::after,.revelacao.bau.alarme-nuclear::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0}
+.revelacao.bau.alarme-policia::after{animation:giroflex 0.55s steps(1) infinite}
+.revelacao.bau.alarme-nuclear::after{animation:alerta-nuclear 4.7s ease-in-out infinite}
+@keyframes giroflex{0%{box-shadow:inset 0 0 120px 10px rgba(229,40,40,0.55)}50%{box-shadow:inset 0 0 120px 10px rgba(40,90,255,0.55)}}
+@keyframes alerta-nuclear{0%,100%{background:rgba(180,0,0,0.05)}45%,65%{background:rgba(200,10,0,0.32)}}
+@media (prefers-reduced-motion: reduce){.revelacao.bau.alarme-policia::after,.revelacao.bau.alarme-nuclear::after{animation:none;box-shadow:inset 0 0 100px 6px rgba(229,40,40,0.4)}}
 .bau-palco{position:relative;width:min(760px,96vw);height:clamp(170px,30vw,230px);display:grid;place-items:center}
 .bau-fila{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,16px);perspective:900px}
 .bau-carta{flex:0 0 auto;width:clamp(58px,15vw,118px);transition:width .4s cubic-bezier(.4,0,.2,1) .12s,margin .4s .12s,opacity .3s,transform .35s cubic-bezier(.5,-.4,.6,1)}
