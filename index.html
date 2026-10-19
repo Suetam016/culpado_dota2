@@ -105,6 +105,92 @@
 </main>
 <p class="visitas-site" id="visitas-site" hidden></p>
 <style>
+/* ---------- documentos da culpa (procura-se, B.O., Interpol, Haia) ---------- */
+.veredito.doc-bo,.veredito.doc-interpol,.veredito.doc-haia{display:block;padding:0;border-radius:6px;overflow:hidden;isolation:isolate}
+.doc-campo{display:flex;flex-direction:column;gap:1px;min-width:0}
+.doc-campo span{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.doc-campo b{font-weight:600;overflow-wrap:anywhere}
+.acusado-de{color:var(--parch-ink);font-size:.98rem;line-height:1.35}
+.acusado-de span{font-family:var(--font-display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.82rem;color:var(--cera)}
+/* B.O. */
+.doc-bo{background:repeating-linear-gradient(0deg,transparent 0 27px,rgba(29,63,120,.06) 27px 28px),#f5f2e9;color:#1c2333;border:1px solid #b9b3a3;box-shadow:0 10px 24px -12px rgba(0,0,0,.5)}
+.doc-bo .bo-cab{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 18px;background:#1d3f78;color:#f5f2e9}
+.doc-bo .bo-cab p{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.doc-bo .bo-dp{font-weight:800;font-size:14px !important}
+.doc-bo .bo-num{text-align:right;display:flex;flex-direction:column}
+.doc-bo .bo-num b{font-size:15px;text-transform:uppercase;letter-spacing:.06em}
+.doc-bo .bo-num span{font-family:ui-monospace,"Courier New",monospace;font-size:13px;color:#d9e3f5}
+.doc-bo .bo-linha{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid #b9b3a3}
+.doc-bo .bo-linha .doc-campo,.doc-bo .bo-campos .doc-campo{padding:7px 12px;border-right:1px solid #cfc8b6;border-bottom:1px solid #cfc8b6}
+.doc-bo .doc-campo b{font-family:ui-monospace,"Courier New",monospace;font-size:14px;color:#0f1a2e}
+.doc-bo .bo-autor{display:grid;grid-template-columns:auto 1fr;border-bottom:1px solid #b9b3a3}
+.doc-bo .bo-foto{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px;border-right:1px solid #cfc8b6}
+.doc-bo .bo-foto .retrato.grande{width:96px;height:120px;border:1px solid #8c8676;filter:grayscale(.7) contrast(1.1)}
+.doc-bo .bo-foto small{font-size:10px;color:#6b6656;text-transform:uppercase;letter-spacing:.1em}
+.doc-bo .bo-campos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start}
+.doc-bo .doc-campo.largo{grid-column:span 2}.doc-bo .doc-campo.inteiro{grid-column:1/-1}
+.doc-bo .bo-historico{padding:12px 18px}
+.doc-bo .bo-historico>span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#1d3f78}
+.doc-bo .bo-historico p{margin:6px 0 0;font-family:ui-monospace,"Courier New",monospace;font-size:14px;line-height:1.6;color:#1c2333}
+.doc-bo .bo-rodape{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 18px 16px;font-family:ui-monospace,"Courier New",monospace;font-size:12.5px;color:#4a4a48}
+.doc-bo .bo-carimbo{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:#1d3f78;border:3px double #1d3f78;border-radius:6px;padding:2px 12px;transform:rotate(-8deg);opacity:.75;mix-blend-mode:multiply}
+@media (max-width:640px){.doc-bo .bo-cab{grid-template-columns:auto 1fr}.doc-bo .bo-num{grid-column:1/-1;text-align:left}.doc-bo .bo-linha{grid-template-columns:repeat(2,1fr)}.doc-bo .bo-autor{grid-template-columns:1fr}.doc-bo .bo-foto{border-right:0;border-bottom:1px solid #cfc8b6}.doc-bo .bo-campos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Interpol */
+.doc-interpol{background:radial-gradient(120% 90% at 100% 0%,#1d3a73,transparent 60%),linear-gradient(180deg,#0e1f45,#0a1630);color:#e8ecf5;border:1px solid #2b4a8a;box-shadow:0 14px 30px -14px rgba(0,0,0,.7)}
+.doc-interpol .ip-cab{display:flex;align-items:center;gap:12px;padding:14px 20px 10px}
+.doc-interpol .ip-cab b{display:block;font-size:22px;letter-spacing:.3em;font-weight:900}
+.doc-interpol .ip-cab span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#a9b8d8}
+.doc-interpol .ip-faixa{background:#c8102e;color:#fff;font-weight:900;letter-spacing:.22em;text-transform:uppercase;font-size:13px;padding:6px 20px}
+.doc-interpol .ip-titulo{margin:16px 20px 0;font:900 clamp(2rem,6vw,3.4rem)/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.doc-interpol .ip-sub{margin:4px 20px 0;color:#a9b8d8;font-size:14px}
+.doc-interpol .ip-reu{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;margin:16px 20px 0;padding-top:16px;border-top:1px solid #2b4a8a}
+.doc-interpol .ip-foto{display:flex;flex-direction:column;align-items:center;gap:6px}
+.doc-interpol .ip-foto .retrato.grande{width:120px;height:120px;border:3px solid #e8ecf5;box-shadow:0 0 0 1px #0a1630,0 8px 18px rgba(0,0,0,.5)}
+.doc-interpol .ip-foto small{font-size:12px;color:#a9b8d8}
+.doc-interpol h3{color:#fff;font-size:clamp(1.5rem,4vw,2.2rem)}
+.doc-interpol .ip-alcunha{margin:2px 0 8px;color:#ffb3bf;font-style:italic}
+.doc-interpol .ip-campos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 14px;padding:10px 12px;background:rgba(232,236,245,.06);border:1px solid #2b4a8a;border-radius:6px}
+.doc-interpol .doc-campo.inteiro{grid-column:1/-1}
+.doc-interpol .ip-acusacoes{margin-top:10px}
+.doc-interpol .ip-acusacoes>span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#ff8a9c;font-weight:800}
+.doc-interpol .ip-acusacoes ul{margin:4px 0 0 18px;display:grid;gap:4px}
+.doc-interpol .ip-acusacoes li b{display:block}
+.doc-interpol .ip-acusacoes li small{color:#a9b8d8;font-size:12.5px}
+.doc-interpol .ip-info{margin-top:8px;color:#d6deef}
+.doc-interpol .ip-alerta{margin:18px 0 0;padding:10px 20px;background:rgba(200,16,46,.18);border-top:1px solid #c8102e;color:#ffd5dc;font-weight:700;font-size:14px}
+@media (max-width:640px){.doc-interpol .ip-reu{grid-template-columns:1fr}.doc-interpol .ip-campos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Tribunal Penal Internacional */
+.doc-haia{background:radial-gradient(90% 70% at 50% 0%,rgba(201,166,64,.16),transparent 70%),linear-gradient(180deg,#14110c,#0a0907);color:#efe6d6;border:1px solid #6b5a2a;box-shadow:0 0 0 1px #000,0 0 40px rgba(201,166,64,.12),0 18px 34px -14px rgba(0,0,0,.8);position:relative}
+.doc-haia::before{content:"";position:absolute;inset:8px;border:1px solid rgba(201,166,64,.45);border-radius:3px;pointer-events:none}
+.doc-haia .tpi-cab{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 20px 6px;text-align:center}
+.doc-haia .tpi-cab b{display:block;font-family:var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:#c9a640;font-size:15px}
+.doc-haia .tpi-cab span{font-size:12px;color:#a8987a;letter-spacing:.1em;text-transform:uppercase}
+.doc-haia .tpi-titulo{text-align:center;margin:8px 20px 0;font:900 clamp(2rem,6.5vw,3.6rem)/1 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:#f3e7c4;text-shadow:0 0 24px rgba(201,166,64,.35)}
+.doc-haia .tpi-caso{text-align:center;margin:6px 20px 0;color:#c9a640;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.doc-haia .tpi-reu{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;margin:18px 28px 0;padding-top:18px;border-top:1px solid rgba(201,166,64,.35)}
+.doc-haia .tpi-foto{position:relative;align-self:start}
+.doc-haia .tpi-foto .retrato.grande{width:128px;height:128px;border:2px solid #c9a640;filter:grayscale(.4) contrast(1.1);box-shadow:0 0 0 4px rgba(201,166,64,.15)}
+.doc-haia .tpi-foto .tpi-tag{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);background:#8e1b14;color:#f3e7c4;font-weight:900;letter-spacing:.2em;text-transform:uppercase;font-size:11px;padding:2px 10px;border-radius:2px}
+.doc-haia h3{color:#f3e7c4;font-size:clamp(1.5rem,4vw,2.3rem)}
+.doc-haia .tpi-alcunha{margin:4px 0 10px;color:#a8987a;font-style:italic}
+.doc-haia .tpi-acusacoes{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.doc-haia .tpi-acusacoes li{display:grid;gap:1px;padding-left:12px;border-left:2px solid #8e1b14}
+.doc-haia .tpi-n{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#c9a640}
+.doc-haia .tpi-acusacoes b{color:#f3e7c4}
+.doc-haia .tpi-acusacoes small{color:#8f826b;font-size:12px}
+.doc-haia .tpi-recompensa{margin-top:10px;color:#c9a640;font-weight:700}
+.doc-haia .tpi-fundamento{margin:16px 28px 0;color:#d8ccb3;font-size:15px}
+.doc-haia .tpi-fundamento span{color:#c9a640;font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.12em}
+.doc-haia .tpi-rodape{position:relative;margin:16px 28px 0;padding:12px 90px 22px 0;border-top:1px solid rgba(201,166,64,.35);color:#a8987a;font-size:14px}
+.doc-haia .tpi-rodape p:first-child{color:#f3e7c4;font-weight:700}
+.doc-haia .tpi-assina{font-style:italic}
+.doc-haia .tpi-lacre{position:absolute;right:0;top:8px;width:68px;height:68px;display:grid;place-items:center;font-size:28px;border-radius:47% 53% 50% 48%/52% 46% 54% 48%;background:radial-gradient(circle at 35% 30%,#c23a2c,#8e1b14 55%,#4a0b07);color:#f3d9c9;box-shadow:inset 0 -3px 6px #0006,0 4px 10px #000a}
+@media (max-width:640px){.doc-haia .tpi-reu{grid-template-columns:1fr;margin-inline:18px}.doc-haia .tpi-fundamento,.doc-haia .tpi-rodape{margin-inline:18px}}
+@media (prefers-reduced-motion:no-preference){.veredito[data-gravidade="4"]{animation:haia-pulsa 3.2s ease-in-out infinite}}
+@keyframes haia-pulsa{50%{box-shadow:0 0 0 1px #000,0 0 60px rgba(201,166,64,.28),0 18px 34px -14px rgba(0,0,0,.8)}}
+</style>
+
+<style>
 .progresso{margin-top:14px;padding:14px 16px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);transition:opacity .4s}
 .progresso.prog-sumindo{opacity:0}
 .prog-cab{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap}
@@ -5351,9 +5437,14 @@ sub: dupla ? 'Heróis da partida · mérito dividido' : 'Herói da partida', rot
 }
 const cs = culpados(r);
 const dif = cs.length > 1 ? Math.round(cs[0].fatia * 100) - Math.round(cs[1].fatia * 100) : 0;
+// o cartaz compartilhado acompanha o documento da página (procura-se, B.O., Interpol, Haia)
+const nivel = gravidadeDaCulpa(cs[0]);
+const plural = cs.length > 1;
+const titulos = [plural ? 'Procuram-se' : 'Procura-se', 'Boletim de Ocorrência', plural ? 'Procurados · Interpol' : 'Procurado · Interpol', 'Mandado de Prisão'];
+const subs = ['por infrações menores contra o próprio time', 'registrado na delegacia do Ancient', 'difusão vermelha: crimes contra o próprio time', 'Tribunal Penal Internacional · crimes contra a humanidade'];
 return {
-vitoria, placar, titulo: cs.length > 1 ? 'Procuram-se' : 'Procura-se', selo: cs.length > 1 ? 'Culpados' : 'Culpado',
-sub: cs.length > 1 ? `por crimes contra o time · dividido, ${dif === 0 ? 'empate' : `${dif} ${dif === 1 ? 'ponto' : 'pontos'} de diferença`}` : 'por crimes contra o próprio time',
+vitoria, placar, titulo: titulos[nivel], selo: plural ? 'Culpados' : 'Culpado',
+sub: plural ? `${subs[nivel]} · dividido, ${dif === 0 ? 'empate' : `${dif} ${dif === 1 ? 'ponto' : 'pontos'} de diferença`}` : subs[nivel],
 rotulo: 'da culpa do time',
 pessoas: cs.map((v) => ({ v, numero: pct(v.fatia), frase: v.diagnostico || (v.ficha && v.ficha.zoeira) || '', classe: v.ficha ? v.ficha.classe : '', recompensa: p.venceu ? 0 : ouroEntregue(r, v.jogador) })),
 };
@@ -8854,6 +8945,222 @@ return h('div', { class: 'mini-wrap' }, svg,
 h('ul', { class: 'mini-attrs' }, [...f.atributos].sort((a, b) => b.valor - a.valor).slice(0, 3).map((a) => h('li', { title: a.explica }, h('span', {}, a.nome), h('b', {}, a.valor)))));
 }
 
+// ---------- O documento da culpa: o visual sobe com a gravidade ----------
+// procura-se (infração menor) → boletim de ocorrência → Interpol (difusão vermelha) → Tribunal Penal Internacional.
+// Gravidade = metade a fatia da culpa, metade o tamanho da culpa em ouro (calibrado em 131 derrotas dos amigos:
+// ~30% / 27% / 28% / 14%). Os crimes saem do que a pessoa fez de fato (componentes da culpa); o nome do crime,
+// a alcunha e os detalhes são sorteados com semente na partida, então o mesmo link mostra sempre o mesmo documento.
+const GRAVIDADE_CORTES = [0.30, 0.45, 0.62];
+
+function gravidadeDaCulpa(v) {
+const lim = (x) => Math.max(0, Math.min(1, x));
+const g = 0.5 * lim((v.fatia - 0.22) / 0.16) + 0.5 * lim((v.score - 80) / 110);
+return GRAVIDADE_CORTES.filter((c) => g >= c).length;
+}
+
+function sorteador(semente) {
+let a = 0;
+for (const ch of String(semente)) a = (Math.imul(a ^ ch.charCodeAt(0), 2654435761) + 0x9e3779b9) | 0;
+const prox = () => {
+a = (a + 0x6d2b79f5) | 0;
+let t = Math.imul(a ^ (a >>> 15), 1 | a);
+t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+return { um: (xs) => xs[Math.floor(prox() * xs.length)], num: (a_, b) => a_ + Math.floor(prox() * (b - a_ + 1)) };
+}
+
+const CRIMES = {
+mortes: ['Doação ilegal de ouro ao inimigo', 'Patrocínio não declarado ao time adversário', 'Tráfico de ouro pela fronteira do rio', 'Suicídio tático reincidente', 'Lavagem de dinheiro na fonte deles'],
+rota: ['Abandono de rota', 'Estelionato na fase de rotas', 'Perda culposa de lane', 'Entrega da T1 sem resistência'],
+rotacoes: ['Omissão de socorro às outras rotas', 'Deixar o mid deles passear sem passaporte'],
+snowball: ['Criação ilegal de monstro', 'Financiamento do carry inimigo', 'Alimentar animal selvagem'],
+pickoff: ['Andar sozinho em área de risco', 'Turismo em território inimigo sem visto', 'Passeio desacompanhado pela selva'],
+throw: ['Devolução do jogo ganho com juros', 'Desvio de vantagem', 'Throw doloso, com intenção de perder'],
+objetivos: ['Assistir torre cair da tela cinza', 'Omissão na defesa do patrimônio público', 'Dano ao patrimônio por ausência'],
+ausencia: ['Ausência em luta coletiva', 'Presença só em espírito', 'Abandono de incapaz (o suporte)'],
+farm: ['Vadiagem', 'Farm de suporte em cargo de core', 'Improbidade administrativa do farm'],
+dano: ['Agressão com força de folha caindo', 'Lesão corporal levíssima', 'Porte de dano inofensivo'],
+visao: ['Cegueira dolosa', 'Sonegação de wards', 'Jogar o mapa no escuro'],
+participacao: ['Falta de participação nos abates', 'Turismo durante as lutas'],
+};
+const CRIMES_DO_NIVEL = [
+['Furto de last hit', 'Porte ilegal de Tango', 'Ping sem justa causa', 'Comprar Clarity e não usar'],
+['Perturbação do sossego no chat de voz', 'Desacato ao capitão do draft', 'Falsidade ideológica no pick'],
+['Formação de quadrilha com o carry inimigo', 'Fuga internacional pelo rio', 'Contrabando de Divine Rapier'],
+['Genocídio de creeps aliados', 'Crime de guerra contra o próprio Ancient', 'Violação da Convenção de Genebra do Roshan', 'Terrorismo contra o próprio MMR'],
+];
+const ALCUNHAS = ['O Patrocinador', 'Mão de Alface', 'O Fantasma da Lane', 'Doador Universal', 'O Turista', 'Rei do Feed', 'Buyback Nunca',
+'O Cego do Rio', 'Courier Humano', 'O Arquiteto da Derrota', 'Pé Frio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza'];
+const PARADEIROS = ['visto pela última vez na selva deles, sem ward', 'avistado farmando enquanto a base caía', 'localizado na fonte, esperando o respawn',
+'flagrado no rio sem visão e sem plano', 'escondido atrás da T3 com o TP no cooldown'];
+const RECOMPENSAS_LEVES = ['2 Tangos e um Clarity', 'uma Healing Salve usada pela metade', 'um Iron Branch e um abraço', 'um Observer que ninguém plantou'];
+const PENAS = ['banimento perpétuo do pick de carry', 'suporte 5 por 30 dias, sem direito a farm', 'comprar todas as wards até o fim da temporada',
+'assistir ao próprio replay em câmera lenta', 'prestação de serviços comunitários: stackar camps'];
+const ESCRIVAES = ['Escrivão Kunkka', 'Delegada Lina', 'Investigador Slardar', 'Delegado Axe', 'Escrivã Crystal Maiden'];
+
+function acusacoesDe(v, nivel, rnd) {
+const usadas = new Set();
+const lista = (v.pesou && v.pesou.length ? v.pesou : v.componentes.filter((c) => c.pontos > 0).slice(0, 2)).map((c) => {
+const xs = (CRIMES[c.key] || []).filter((x) => !usadas.has(x));
+const crime = xs.length ? rnd.um(xs) : c.label;
+usadas.add(crime);
+return { crime, evidencia: c.evidencia || c.label };
+});
+if (lista.length < 3 || nivel >= 3) lista.push({ crime: rnd.um(CRIMES_DO_NIVEL[nivel]), evidencia: null });
+return lista.slice(0, nivel >= 3 ? 4 : 3);
+}
+
+function fichaDoReu(v, r, nivel) {
+const p = v.jogador;
+const rnd = sorteador(`${r.partida.id}-${p.idx}`);
+const local = { safe: 'Rota segura', mid: 'Rota do meio', off: 'Offlane' }[p.rota && p.rota.tipo] || 'Selva e arredores';
+return {
+p, v, rnd, local,
+acusacoes: acusacoesDe(v, nivel, rnd),
+alcunha: rnd.um(ALCUNHAS),
+paradeiro: rnd.um(PARADEIROS),
+entregue: ouroEntregue(r, p),
+kda: `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`,
+};
+}
+
+const dataDaPartida = (r) => (r.partida.inicio ? new Date(r.partida.inicio * 1000) : new Date());
+const campo = (rotulo, valor, classe) => h('div', { class: `doc-campo${classe ? ` ${classe}` : ''}` }, h('span', {}, rotulo), h('b', {}, valor));
+
+function documentoDaCulpa(cs, r) {
+const nivel = gravidadeDaCulpa(cs[0]);
+const fichas = cs.map((v) => fichaDoReu(v, r, nivel));
+const doc = [docProcuraSe, docBoletim, docInterpol, docHaia][nivel](fichas, r);
+doc.dataset.gravidade = String(nivel + 1);
+return doc;
+}
+
+function docProcuraSe(fichas, r) {
+const dividido = fichas.length > 1;
+const cs = fichas.map((f) => f.v);
+const diferenca = dividido ? Math.round(cs[0].fatia * 100) - Math.round(cs[1].fatia * 100) : 0;
+const reu = (f) => h('div', { class: 'reu' },
+h('span', { class: 'moldura' }, retrato(f.p.heroi, true)),
+h('div', { class: 'quem-e' },
+h('p', { class: 'eyebrow' }, `${pct(f.v.fatia)} da culpa do time`),
+h('h3', {}, f.p.nome),
+h('p', { class: 'heroi' }, `${f.p.heroi.nome} · pos ${f.p.posicao} · ${f.kda}`),
+h('p', { class: 'acusado-de' }, h('span', {}, 'Acusado de: '), f.acusacoes.map((a) => a.crime).join(' · ')),
+h('p', { class: 'recompensa' }, h('span', { class: 'moeda', 'aria-hidden': 'true' }),
+h('strong', {}, `Recompensa: ${f.entregue > 0 ? `${fmtK(f.entregue)} de ouro` : f.rnd.um(RECOMPENSAS_LEVES)}`),
+f.entregue > 0 ? h('small', {}, ` (o que ele entregou ao inimigo) ou ${f.rnd.um(RECOMPENSAS_LEVES)}`) : null),
+f.v.diagnostico ? h('p', { class: 'frase' }, f.v.diagnostico) : null));
+return h('article', { class: `cartao veredito pergaminho doc-procura${dividido ? ' dividido' : ''}` },
+h('span', { class: 'carimbo', 'aria-hidden': 'true' }, dividido ? 'Culpados' : 'Culpado'),
+h('div', { class: 'cartaz-cab' },
+h('h2', { class: 'cartaz-titulo' }, dividido ? 'Procuram-se' : 'Procura-se'),
+h('p', { class: 'eyebrow cartaz-sub' }, 'por infrações menores contra o próprio time',
+dividido ? ` · veredito dividido, ${diferenca === 0 ? 'empate' : `${diferenca} ${diferenca === 1 ? 'ponto' : 'pontos'} de diferença`}` : '')),
+h('div', { class: 'reus' }, fichas.map(reu)));
+}
+
+function docBoletim(fichas, r) {
+const rnd = sorteador(`bo-${r.partida.id}`);
+const quando = dataDaPartida(r);
+const vitimas = r.nos.filter((p) => !fichas.some((f) => f.p === p)).map((p) => p.nome).join(', ');
+const brasao = s('svg', { viewBox: '0 0 40 46', width: 40, height: 46, 'aria-hidden': 'true' },
+s('path', { d: 'M20 2 L37 8 V22 C37 34 29 41 20 44 C11 41 3 34 3 22 V8 Z', fill: '#1d3f78', stroke: '#c9a640', 'stroke-width': 2 }),
+s('path', { d: 'M20 12 l3.2 6.6 7.2 1 -5.2 5 1.3 7.2 -6.5 -3.4 -6.5 3.4 1.3 -7.2 -5.2 -5 7.2 -1 z', fill: '#c9a640' }));
+const autor = (f, i) => h('div', { class: 'bo-autor' },
+h('div', { class: 'bo-foto' }, retrato(f.p.heroi, true), h('small', {}, 'foto 3x4')),
+h('div', { class: 'bo-campos' },
+campo(fichas.length > 1 ? `Autor ${i + 1}` : 'Autor', f.p.nome, 'largo'),
+campo('Herói', f.p.heroi.nome),
+campo('Posição', `pos ${f.p.posicao}`),
+campo('KDA', f.kda),
+campo('Culpa', pct(f.v.fatia)),
+campo('Ouro entregue', f.entregue > 0 ? fmtK(f.entregue) : '—'),
+campo('Local do fato', f.local, 'largo'),
+campo('Natureza', f.acusacoes.map((a, k) => `Art. ${f.rnd.num(121, 359)} — ${a.crime}`).join('; '), 'inteiro')));
+const historico = fichas.map((f) => [
+`Compareceram a esta Delegacia as vítimas (${vitimas || 'o resto do time'}) noticiando que o autor ${f.p.nome}, utilizando-se do herói ${f.p.heroi.nome},`,
+f.acusacoes.filter((a) => a.evidencia).map((a) => a.evidencia.replace(/\.$/, '')).join('; ') + '.',
+f.v.diagnostico ? `Consta ainda: ${f.v.diagnostico}` : '',
+'Nada mais havendo, encerra-se o presente.',
+].filter(Boolean).join(' '));
+return h('article', { class: `cartao veredito doc-bo${fichas.length > 1 ? ' dividido' : ''}` },
+h('header', { class: 'bo-cab' },
+h('span', { class: 'bo-brasao' }, brasao),
+h('div', {}, h('p', {}, 'Secretaria da Segurança Pública do Ancient'), h('p', { class: 'bo-dp' }, `Polícia Civil · ${rnd.num(1, 99)}ª DP dos ${ladoNome(r.partida.ladoRadiant)}`)),
+h('div', { class: 'bo-num' }, h('b', {}, 'Boletim de Ocorrência'), h('span', {}, `Nº ${r.partida.id}/${quando.getFullYear()}`))),
+h('div', { class: 'bo-linha' },
+campo('Data do fato', quando.toLocaleDateString('pt-BR')),
+campo('Hora', quando.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })),
+campo('Duração', mmss(r.partida.duracao)),
+campo('Placar', `${r.partida.placarNos} × ${r.partida.placarEles}`)),
+fichas.map(autor),
+h('div', { class: 'bo-historico' }, h('span', {}, 'Histórico'), historico.map((t) => h('p', {}, t))),
+h('footer', { class: 'bo-rodape' },
+h('span', {}, `${rnd.um(ESCRIVAES)}, de plantão`),
+h('span', { class: 'bo-carimbo', 'aria-hidden': 'true' }, 'Registrado')));
+}
+
+function docInterpol(fichas, r) {
+const globo = s('svg', { viewBox: '0 0 48 48', width: 44, height: 44, 'aria-hidden': 'true' },
+s('circle', { cx: 24, cy: 24, r: 20, fill: 'none', stroke: '#e8ecf5', 'stroke-width': 2 }),
+s('ellipse', { cx: 24, cy: 24, rx: 9, ry: 20, fill: 'none', stroke: '#e8ecf5', 'stroke-width': 1.5 }),
+s('path', { d: 'M4 24 H44 M7 14 H41 M7 34 H41', stroke: '#e8ecf5', 'stroke-width': 1.5 }),
+s('path', { d: 'M24 1 L27 8 H21 Z M24 47 L27 40 H21 Z', fill: '#e8ecf5' }));
+const ficha = (f) => h('div', { class: 'ip-reu' },
+h('div', { class: 'ip-foto' }, retrato(f.p.heroi, true), h('small', {}, f.p.heroi.nome)),
+h('div', { class: 'ip-dados' },
+h('h3', {}, f.p.nome),
+h('p', { class: 'ip-alcunha' }, `vulgo “${f.alcunha}”`),
+h('div', { class: 'ip-campos' },
+campo('Nacionalidade', ladoNome(r.partida.ladoRadiant)),
+campo('Culpa', pct(f.v.fatia)),
+campo('KDA', f.kda),
+campo('Ouro entregue', f.entregue > 0 ? fmtK(f.entregue) : '—'),
+campo('Último paradeiro', f.paradeiro, 'inteiro')),
+h('div', { class: 'ip-acusacoes' }, h('span', {}, 'Acusações'),
+h('ul', {}, f.acusacoes.map((a) => h('li', {}, h('b', {}, a.crime), a.evidencia ? h('small', {}, a.evidencia) : null)))),
+f.v.diagnostico ? h('p', { class: 'ip-info' }, f.v.diagnostico) : null));
+return h('article', { class: `cartao veredito doc-interpol${fichas.length > 1 ? ' dividido' : ''}` },
+h('header', { class: 'ip-cab' }, h('span', { class: 'ip-globo' }, globo),
+h('div', {}, h('b', {}, 'INTERPOL'), h('span', {}, 'Organização Internacional de Polícia do Ancient'))),
+h('div', { class: 'ip-faixa' }, 'Difusão vermelha · Red notice'),
+h('h2', { class: 'ip-titulo' }, fichas.length > 1 ? 'Procurados' : 'Procurado'),
+h('p', { class: 'ip-sub' }, 'por crimes contra o próprio time em várias rotas'),
+fichas.map(ficha),
+h('p', { class: 'ip-alerta' }, '⚠ Considerado perigoso para o próprio time. Se avistado, não passe o farm e avise o capitão.'));
+}
+
+function docHaia(fichas, r) {
+const rnd = sorteador(`haia-${r.partida.id}`);
+const romano = ['I', 'II', 'III', 'IV', 'V'];
+const selo = s('svg', { viewBox: '0 0 64 64', width: 58, height: 58, 'aria-hidden': 'true' },
+s('circle', { cx: 32, cy: 32, r: 29, fill: 'none', stroke: '#c9a640', 'stroke-width': 2 }),
+s('circle', { cx: 32, cy: 32, r: 24, fill: 'none', stroke: '#c9a640', 'stroke-width': 1, 'stroke-dasharray': '2 3' }),
+s('path', { d: 'M32 14 V46 M22 46 H42 M18 22 H46 M18 22 L13 33 H23 Z M46 22 L41 33 H51 Z', fill: 'none', stroke: '#c9a640', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+const reu = (f) => h('div', { class: 'tpi-reu' },
+h('div', { class: 'tpi-foto' }, retrato(f.p.heroi, true), h('span', { class: 'tpi-tag' }, 'Réu')),
+h('div', { class: 'tpi-dados' },
+h('h3', {}, f.p.nome),
+h('p', { class: 'tpi-alcunha' }, `também conhecido como “${f.alcunha}” · ${f.p.heroi.nome} · ${pct(f.v.fatia)} da culpa`),
+h('ol', { class: 'tpi-acusacoes' }, f.acusacoes.map((a, k) => h('li', {},
+h('span', { class: 'tpi-n' }, `Acusação ${romano[k]}`),
+h('b', {}, k === 0 ? `Crime contra a humanidade: ${a.crime.toLowerCase()}` : a.crime),
+h('small', {}, a.evidencia ? `${a.evidencia} · ` : '', `Estatuto de Roma do Ancient, art. ${rnd.num(5, 8)}º, §${rnd.num(1, 3)}`)))),
+f.entregue > 0 ? h('p', { class: 'tpi-recompensa' }, `Recompensa: um Aegis + ${fmtK(f.entregue)} de ouro (o que ele entregou ao inimigo)`) : null));
+return h('article', { class: `cartao veredito doc-haia${fichas.length > 1 ? ' dividido' : ''}` },
+h('header', { class: 'tpi-cab' }, h('span', { class: 'tpi-selo' }, selo),
+h('div', {}, h('b', {}, 'Tribunal Penal Internacional'), h('span', {}, 'Haia · Câmara de Julgamento do Ancient'))),
+h('h2', { class: 'tpi-titulo' }, 'Mandado de prisão'),
+h('p', { class: 'tpi-caso' }, `Caso nº ICC-${String(r.partida.id).slice(-6)} · Situação nos ${ladoNome(r.partida.ladoRadiant)}`),
+fichas.map(reu),
+fichas[0].v.diagnostico ? h('p', { class: 'tpi-fundamento' }, h('span', {}, 'Fundamentação: '), fichas[0].v.diagnostico) : null,
+h('footer', { class: 'tpi-rodape' },
+h('p', {}, `Pena sugerida: ${rnd.um(PENAS)}.`),
+h('p', { class: 'tpi-assina' }, 'A Câmara decide, por unanimidade, expedir o presente mandado.'),
+h('span', { class: 'tpi-lacre', 'aria-hidden': 'true' }, '⚖')));
+}
+
 function cartaoVeredito(cs, r) {
 const derrota = !r.partida.venceu;
 const dividido = cs.length > 1;
@@ -8877,13 +9184,7 @@ return h('article', { class: `cartao veredito elo${dividido ? ' dividido' : ''}`
 h('p', { class: 'eyebrow veredito-titulo' }, 'Elo mais fraco'),
 h('div', { class: 'reus' }, cs.map(reu)));
 }
-return h('article', { class: `cartao veredito pergaminho${dividido ? ' dividido' : ''}` },
-h('span', { class: 'carimbo', 'aria-hidden': 'true' }, dividido ? 'Culpados' : 'Culpado'),
-h('div', { class: 'cartaz-cab' },
-h('h2', { class: 'cartaz-titulo' }, dividido ? 'Procuram-se' : 'Procura-se'),
-h('p', { class: 'eyebrow cartaz-sub' }, 'por crimes contra o próprio time',
-dividido ? ` · veredito dividido, ${diferenca === 0 ? 'empate' : `${diferenca} ${diferenca === 1 ? 'ponto' : 'pontos'} de diferença`}` : '')),
-h('div', { class: 'reus' }, cs.map(reu)));
+return documentoDaCulpa(cs, r);
 }
 
 
