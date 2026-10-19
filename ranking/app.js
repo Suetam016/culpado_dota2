@@ -967,6 +967,7 @@ function aplicarPeriodo() {
   renderizarComposicoes();
   renderizarMeta();
   renderizarElo();
+  renderizarTimeFechado();
 }
 
 /* Mesma conta do parceiros.py, só que sobre as partidas do período (parceiros.jogos: um registro por lado de partida
@@ -1202,6 +1203,151 @@ let estadoAtt = null;
 const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json', { cache: 'no-cache' })
   .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
   .catch(() => ''));
+
+/* ---------- Time fechado: raio-x das partidas com os 5 do grupo do mesmo lado ----------
+ * parceiros.timeFechado (parceiros.py): heróis dos dois lados, ouro aos 10/20/30, maior vantagem e maior
+ * desvantagem, abates, torres, roshans e lanes. Aqui cruza com os traços (sinergias e alertas) dos dois times. */
+
+const VIRADA = 5000;         // vantagem de ouro que conta como "jogo na mão"
+const MIN_JOGOS_LEITURA = 3; // amostra mínima de cada lado para uma comparação virar diagnóstico
+
+function renderizarTimeFechado() {
+  const alvo = $('fechado-conteudo');
+  const desde = desdePeriodo();
+  const jogos = ((parceirosBase && parceirosBase.timeFechado) || []).filter(g => g.t >= desde)
+    .map(g => ({ ...g, sinNos: sinergiasDoTime(g.nos.map(x => x[1]).filter(Boolean)), sinEles: sinergiasDoTime(g.eles.filter(Boolean)) }));
+  if (!jogos.length) {
+    alvo.innerHTML = `<p class="carregando">${parceirosBase && parceirosBase.timeFechado ? 'Nenhuma partida com os 5 juntos nesse período.' : 'O raio-x aparece depois da próxima atualização do ranking.'}</p>`;
+    return;
+  }
+  const pct = (v, n) => (n ? Math.round((100 * v) / n) : 0);
+  const vit = jogos.filter(g => g.v), der = jogos.filter(g => !g.v);
+  const media = (xs, f) => { const v = xs.map(f).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const mil = x => (x == null ? '—' : `${x > 0 ? '+' : ''}${(x / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`);
+  const min = s => (s == null ? '—' : `${Math.round(s / 60)} min`);
+
+  // sinergias (nossas e deles): win rate com e sem
+  const comparar = (lado) => {
+    const ids = [...new Set(jogos.flatMap(g => g[lado].lista.map(s => s.id)))];
+    return ids.map(id => {
+      const ativo = g => (g[lado].lista.find(s => s.id === id) || {}).nivel > 0;
+      const com = jogos.filter(ativo), sem = jogos.filter(g => !ativo(g));
+      const s = jogos[0][lado].lista.find(x => x.id === id);
+      return { id, icone: s.icone, nome: s.nome, com: com.length, vCom: com.filter(g => g.v).length, sem: sem.length, vSem: sem.filter(g => g.v).length };
+    }).filter(x => x.com > 0).map(x => ({ ...x, delta: pct(x.vCom, x.com) - pct(x.vSem, x.sem) }));
+  };
+  const nossas = comparar('sinNos').sort((a, b) => b.delta - a.delta);
+  const delas = comparar('sinEles').sort((a, b) => pct(a.vCom, a.com) - pct(b.vCom, b.com));
+
+  // alertas: quanto aparecem nas derrotas e nas vitórias
+  const alertas = [...new Set(jogos.flatMap(g => g.sinNos.alertas))].map(a => ({
+    texto: a, d: der.filter(g => g.sinNos.alertas.includes(a)).length, v: vit.filter(g => g.sinNos.alertas.includes(a)).length,
+  })).sort((x, y) => (pct(y.d, der.length) - pct(y.v, vit.length)) - (pct(x.d, der.length) - pct(x.v, vit.length)));
+
+  // fases do jogo
+  const jogadas = der.filter(g => g.maior != null && g.maior >= VIRADA);
+  const viradas = vit.filter(g => g.menor != null && g.menor <= -VIRADA);
+  const faixas = [['Até 30 min', g => g.dur < 1800], ['30 a 45 min', g => g.dur >= 1800 && g.dur < 2700], ['Mais de 45 min', g => g.dur >= 2700]]
+    .map(([nome, f]) => { const xs = jogos.filter(g => g.dur != null && f(g)); return { nome, n: xs.length, v: xs.filter(g => g.v).length }; });
+  const lanesDe = g => (g.lanes && g.lanes.length ? g.lanes.filter(x => x > 0).length - g.lanes.filter(x => x < 0).length : null);
+
+  // quem morre nas derrotas
+  const contas = [...new Set(jogos.flatMap(g => g.nos.map(x => x[0])))];
+  const mortes = contas.map(c => {
+    const nas = xs => media(xs.filter(g => g.nos.some(x => x[0] === c)), g => g.nos.find(x => x[0] === c)[4]);
+    return { conta: c, d: nas(der), v: nas(vit) };
+  }).filter(x => x.d != null).sort((a, b) => b.d - a.d);
+
+  // diagnóstico: o que falta e onde pecamos, do mais forte pro mais fraco
+  const leituras = [];
+  nossas.filter(x => x.com >= MIN_JOGOS_LEITURA && x.sem >= MIN_JOGOS_LEITURA && x.delta >= 15).forEach(x => leituras.push({ peso: x.delta,
+    txt: `<b>Falta ${x.icone} ${esc(x.nome)}</b>: com ela vocês ganham ${pct(x.vCom, x.com)}% (${x.vCom}/${x.com}); sem, ${pct(x.vSem, x.sem)}% (${x.vSem}/${x.sem}). Só montaram em ${x.com} de ${jogos.length} jogos.` }));
+  nossas.filter(x => x.com >= MIN_JOGOS_LEITURA && x.sem >= MIN_JOGOS_LEITURA && x.delta <= -15).forEach(x => leituras.push({ peso: -x.delta * 0.8,
+    txt: `<b>${x.icone} ${esc(x.nome)} não tá rendendo</b>: com ela ${pct(x.vCom, x.com)}% (${x.vCom}/${x.com}), sem ela ${pct(x.vSem, x.sem)}%.` }));
+  alertas.filter(a => a.d >= 2 && pct(a.d, der.length) - pct(a.v, vit.length) >= 20).forEach(a => leituras.push({ peso: pct(a.d, der.length) - pct(a.v, vit.length),
+    txt: `<b>Onde pecam: ${esc(a.texto)}</b>. Apareceu em ${a.d} das ${der.length} derrotas (${pct(a.d, der.length)}%) e só em ${a.v} das ${vit.length} vitórias.` }));
+  delas.filter(x => x.com >= MIN_JOGOS_LEITURA && pct(x.vCom, x.com) <= 35).forEach(x => leituras.push({ peso: 50 - pct(x.vCom, x.com),
+    txt: `<b>Sofrem contra ${x.icone} ${esc(x.nome)} deles</b>: ${x.vCom}/${x.com} (${pct(x.vCom, x.com)}%). Vale draftar resposta.` }));
+  const ouro10D = media(der, g => g.ouro && g.ouro['10']);
+  if (ouro10D != null && ouro10D <= -1000) leituras.push({ peso: Math.min(60, -ouro10D / 50),
+    txt: `<b>O começo tá perdendo jogo</b>: nas derrotas vocês chegam aos 10 min com ${mil(ouro10D)} de ouro. Nas vitórias, ${mil(media(vit, g => g.ouro && g.ouro['10']))}.` });
+  if (jogadas.length >= 2) leituras.push({ peso: 20 + 10 * jogadas.length,
+    txt: `<b>Jogaram fora ${jogadas.length} partida${jogadas.length === 1 ? '' : 's'}</b> que chegaram a ter ${mil(VIRADA)} ou mais. Fechar o jogo cedo (Roshan, torre com vantagem) vale ouro.` });
+  const tarde = faixas[2];
+  if (tarde.n >= MIN_JOGOS_LEITURA && pct(tarde.v, tarde.n) <= 35) leituras.push({ peso: 50 - pct(tarde.v, tarde.n),
+    txt: `<b>Jogo longo é do outro time</b>: passando de 45 min vocês ganham ${tarde.v} de ${tarde.n}. Falta carry de late ou plano pra fechar antes.` });
+  if (mortes.length && mortes[0].d >= 8 && mortes[0].d >= (mortes[0].v ?? 0) + 2) leituras.push({ peso: mortes[0].d * 3,
+    txt: `<b>${esc(nomeJogador(mortes[0].conta))} morre ${mortes[0].d.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} vezes em média nas derrotas</b> (${(mortes[0].v ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} nas vitórias).` });
+  leituras.sort((a, b) => b.peso - a.peso);
+
+  const barra = (v, n) => `<span class="tf-barra"><i style="width:${pct(v, n)}%"></i></span>`;
+  const linhaSin = x => `<div class="tf-sin">
+      <span class="tf-sin-nome">${x.icone} ${esc(x.nome)}</span>
+      <span class="tf-sin-num ${pct(x.vCom, x.com) > 50 ? 'bom' : pct(x.vCom, x.com) < 50 ? 'ruim' : ''}">com: ${x.vCom}/${x.com} · ${pct(x.vCom, x.com)}%</span>${barra(x.vCom, x.com)}
+      <span class="tf-sin-sem">sem: ${x.vSem}/${x.sem}${x.sem ? ` · ${pct(x.vSem, x.sem)}%` : ''}</span>
+    </div>`;
+  const icones = s => s.lista.filter(x => x.nivel).map(x => `<span class="traco" title="${esc(x.nome)}">${x.icone}</span>`).join('');
+  const heroiMini = id => (id ? heroi(id, 'heroi heroi-mini') : '');
+
+  const ficha = g => `
+    <article class="tf-jogo ${g.v ? 'tf-v' : 'tf-d'}">
+      <div class="tf-jogo-cab">
+        <b class="${g.v ? 'bom' : 'ruim'}">${g.v ? 'Vitória' : 'Derrota'}</b>
+        <span>${data(g.t * 1000)} · ${min(g.dur)}${g.ouro && g.ouro['10'] != null ? ` · ouro aos 10: <span class="${g.ouro['10'] >= 0 ? 'bom' : 'ruim'}">${mil(g.ouro['10'])}</span>` : ''}${g.ouro && g.ouro['20'] != null ? ` · aos 20: <span class="${g.ouro['20'] >= 0 ? 'bom' : 'ruim'}">${mil(g.ouro['20'])}</span>` : ''}</span>
+        <a href="../#${g.id}" title="Julgar essa partida">⚖️ julgar</a>
+      </div>
+      <div class="tf-times">
+        <div class="tf-lado">${[...g.nos].sort((a, b) => (a[2] || 9) - (b[2] || 9)).map(x => `
+          <div class="tf-heroi">${heroiMini(x[1])}<small>${esc(nomeJogador(x[0]))}</small><small class="tf-kda">${x[3] ?? '?'}/${x[4] ?? '?'}/${x[5] ?? '?'}</small></div>`).join('')}</div>
+        <span class="tf-vs">vs</span>
+        <div class="tf-lado tf-eles">${g.eles.map(h => `<div class="tf-heroi">${heroiMini(h)}</div>`).join('')}</div>
+      </div>
+      <div class="tf-rodape">
+        <span>Nós: ${icones(g.sinNos) || '—'}</span>
+        <span>Eles: ${icones(g.sinEles) || '—'}</span>
+        ${g.lanes && g.lanes.length ? `<span>Lanes: ${g.lanes.map(x => (x > 0 ? '✔' : x < 0 ? '✖' : '=')).join(' ')}</span>` : ''}
+        ${g.v && g.menor != null && g.menor <= -VIRADA ? `<span class="tf-selo bom">🔄 virada (${mil(g.menor)})</span>` : ''}
+        ${!g.v && g.maior != null && g.maior >= VIRADA ? `<span class="tf-selo ruim">💸 jogaram fora (${mil(g.maior)})</span>` : ''}
+        ${g.sinNos.alertas.length ? `<span class="ruim" title="${esc(g.sinNos.alertas.join('\n'))}">⚠️ ${g.sinNos.alertas.length} alerta${g.sinNos.alertas.length === 1 ? '' : 's'}</span>` : ''}
+      </div>
+    </article>`;
+
+  alvo.innerHTML = `
+    <div class="tf-placar">
+      <div><b>${jogos.length}</b><span>partidas com os 5</span></div>
+      <div><b class="${vit.length > der.length ? 'bom' : vit.length < der.length ? 'ruim' : ''}">${pct(vit.length, jogos.length)}%</b><span>${vit.length}V · ${der.length}D</span></div>
+      <div><b>${mil(media(jogos, g => g.ouro && g.ouro['10']))}</b><span>ouro médio aos 10 min</span></div>
+      <div><b>${(media(jogos, lanesDe) ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' })}</b><span>saldo de lanes por jogo</span></div>
+      <div><b class="bom">${viradas.length}</b><span>viradas</span></div>
+      <div><b class="ruim">${jogadas.length}</b><span>jogaram fora</span></div>
+    </div>
+
+    <article class="cartao tf-diagnostico">
+      <div class="cartao-titulo">🩺 O que falta e onde vocês pecam</div>
+      ${leituras.length ? `<ol>${leituras.slice(0, 6).map(l => `<li>${l.txt}</li>`).join('')}</ol>`
+        : `<p class="cartao-sub">Ainda sem padrão claro${jogos.length < 10 ? ': poucas partidas nesse período' : ''}. Cada comparação precisa de pelo menos ${MIN_JOGOS_LEITURA} jogos de cada lado.</p>`}
+    </article>
+
+    <div class="cartoes">
+      <article class="cartao"><div class="bloco-titulo">Nossas sinergias: com e sem</div>
+        ${nossas.map(linhaSin).join('') || '<p class="cartao-sub">—</p>'}</article>
+      <article class="cartao"><div class="bloco-titulo">Contra as sinergias deles</div>
+        ${delas.map(linhaSin).join('') || '<p class="cartao-sub">—</p>'}</article>
+      <article class="cartao"><div class="bloco-titulo">Alertas do draft</div>
+        ${alertas.length ? alertas.map(a => `<div class="tf-alerta"><span>${esc(a.texto)}</span>
+          <small>em ${a.d}/${der.length} derrotas · ${a.v}/${vit.length} vitórias</small></div>`).join('') : '<p class="cartao-sub">Nenhum alerta nesses drafts. 👏</p>'}</article>
+      <article class="cartao"><div class="bloco-titulo">Por duração</div>
+        ${faixas.map(f => `<div class="tf-sin"><span class="tf-sin-nome">⏳ ${f.nome}</span>
+          <span class="tf-sin-num ${pct(f.v, f.n) > 50 ? 'bom' : pct(f.v, f.n) < 50 ? 'ruim' : ''}">${f.v}/${f.n}${f.n ? ` · ${pct(f.v, f.n)}%` : ''}</span>${barra(f.v, f.n)}</div>`).join('')}
+        <div class="bloco-titulo">Mortes por partida</div>
+        ${mortes.map(m => `<div class="tf-sin"><span class="tf-sin-nome">${esc(nomeJogador(m.conta))}</span>
+          <span class="tf-sin-num">derrota: ${m.d.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} · vitória: ${(m.v ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</span></div>`).join('')}
+      </article>
+    </div>
+
+    <div class="secao-titulo"><h2>Histórico das composições</h2><p>Mais recente primeiro. Os ícones são as sinergias que cada time ativou.</p></div>
+    <div class="tf-lista">${[...jogos].reverse().map(ficha).join('')}</div>`;
+}
 
 /* ---------- Visitas (contador no Worker: código aleatório por navegador, sem nome nem IP) ---------- */
 

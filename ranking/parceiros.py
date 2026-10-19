@@ -76,6 +76,32 @@ def resumir(contagens, minimo, rotulo):
     return itens
 
 
+def ficha_time_fechado(match, radiant, doLado):
+    """Resumo de uma partida de time fechado (os 5 do lado são amigos), do ponto de vista do grupo."""
+    sinal = 1 if radiant else -1
+    vant = [sinal * v for v in (match.get('radiant_gold_adv') or [])]
+    eles = [p for p in match['players'] if p.get('isRadiant') != radiant]
+    soma = lambda ps, k: sum(p.get(k) or 0 for p in ps)
+    lanes = {}
+    for p in doLado:
+        lane, res = lane_de(match, p)
+        if lane and res is not None:
+            lanes[lane] = res
+    return {
+        'id': match.get('match_id'), 't': match['start_time'], 'v': int(match.get('radiant_win') == radiant),
+        'dur': match.get('duration'),
+        'nos': [[str(p['account_id']), p.get('hero_id') or 0, p.get('position_est') or 0,
+                 p.get('kills'), p.get('deaths'), p.get('assists'), p.get('gold_per_min')] for p in doLado],
+        'eles': [p.get('hero_id') or 0 for p in eles],
+        'ouro': {str(m): vant[m] for m in (10, 20, 30) if len(vant) > m},
+        'maior': max(vant) if vant else None, 'menor': min(vant) if vant else None,
+        'abates': [soma(doLado, 'kills'), soma(eles, 'kills')],
+        'torres': [soma(doLado, 'towers_killed'), soma(eles, 'towers_killed')] if any('towers_killed' in p for p in doLado) else None,
+        'roshans': [soma(doLado, 'roshans_killed'), soma(eles, 'roshans_killed')] if any('roshans_killed' in p for p in doLado) else None,
+        'lanes': sorted(lanes.values(), reverse=True),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--dados', required=True, help='pasta com o branch "dados" (tem partidas/)')
@@ -102,6 +128,7 @@ def main():
     inicio_mais_antigo = None
     # cada lado de partida com 1+ amigo: a página recalcula tudo isso para o período escolhido
     jogos = []
+    time_fechado = []  # partidas com 5 amigos do mesmo lado: ficha completa para o raio-x da página
     medalhas = {}  # conta -> (início, rank_tier) da partida mais nova: o OpenDota grava a medalha atual do jogador
 
     def partidas():
@@ -135,6 +162,9 @@ def main():
                 for p in doLado:
                     if p.get('rank_tier'):
                         medalhas[str(p['account_id'])] = max(medalhas.get(str(p['account_id']), (0, 0)), (match['start_time'], p['rank_tier']))
+            if len(doLado) == 5:
+                time_fechado.append(ficha_time_fechado(match, radiant, doLado))
+                usados.update(p['hero_id'] for p in match['players'] if p.get('hero_id'))
             for p in doLado:
                 if p.get('hero_id'):
                     chave = (p['hero_id'], p.get('position_est') or 0)
@@ -228,6 +258,7 @@ def main():
         'nomes': {str(k): v for k, v in amigos.items()},
         'jogos': sorted(jogos, key=lambda x: x['t']),
         'medalhas': {c: m[1] for c, m in medalhas.items()},
+        'timeFechado': sorted(time_fechado, key=lambda x: x['t']),
     }, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f'{destino}: {len(saida)} duplas, {len(composicoes)} composições, {lidas} partidas lidas')
 

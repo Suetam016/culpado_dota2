@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
   <header class="topo">
@@ -46,6 +46,9 @@
       </button>
       <button class="aba" data-aba="composicoes" role="tab" aria-selected="false">
         <span class="aba-icone" aria-hidden="true">🛡️</span><span class="aba-nome">Times e picks</span><span class="aba-sub">Monte o time de hoje</span><span class="aba-novo">Novo</span>
+      </button>
+      <button class="aba" data-aba="fechado" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">🏟️</span><span class="aba-nome">Time fechado</span><span class="aba-sub">Raio-x dos 5 juntos</span><span class="aba-novo">Novo</span>
       </button>
       <button class="aba" data-aba="elo" role="tab" aria-selected="false">
         <span class="aba-icone" aria-hidden="true">📈</span><span class="aba-nome">Corrida de elo</span><span class="aba-sub">Quem tá subindo</span><span class="aba-novo">Novo</span>
@@ -114,6 +117,14 @@
       <div class="cartoes" id="lista-composicoes"></div>
     </section>
 
+    <section class="aba-conteudo" id="aba-fechado">
+      <div class="secao-titulo">
+        <h2>Time fechado</h2>
+        <p>Só as partidas com os 5 do grupo do mesmo lado: o que dá certo, o que falta e o histórico de cada composição.</p>
+      </div>
+      <div id="fechado-conteudo"></div>
+    </section>
+
     <section class="aba-conteudo" id="aba-elo">
       <div class="secao-titulo">
         <h2>Corrida de elo</h2>
@@ -164,6 +175,6 @@
   </form>
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
-  <script src="app.js?v=17"></script>
+  <script src="app.js?v=18"></script>
 </body>
 </html>
