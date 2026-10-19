@@ -9808,98 +9808,329 @@ dividido ? ` · veredito dividido, ${diferenca === 0 ? 'empate' : `${diferenca} 
 h('div', { class: 'reus' }, fichas.map(reu)));
 }
 
-// O histórico do B.O. contado como um boletim de verdade: a vítima comparece e relata, a perícia confirma com os
-// números da partida, uma testemunha da selva depõe, o autor dá a versão dele e o escrivão encerra. Tudo sai do placar.
+// O histórico do B.O. contado como um boletim de verdade: a vítima comparece e relata, uma testemunha da selva depõe,
+// o autor dá a versão dele e o escrivão encerra. Tudo sai do placar. Com dois culpados, vira uma história só, da dupla.
 const NOMES_ROTA = { safe: 'rota segura', mid: 'rota do meio', off: 'offlane' };
-function historiaDoBO(f, r, rnd) {
+const FECHOS_BO = ['Nada mais havendo, encerra-se o presente.', 'Lavrado o presente, segue para as providências cabíveis no próximo draft.',
+'Foi orientado a não se aproximar do pick de carry.', 'O autor não quis se manifestar e deu ready na próxima.', 'Encaminhe-se à Delegacia do MMR para as providências.',
+'O presente foi lido e achado conforme por todos, menos pelo autor.', 'Registre-se. Arquive-se no replay.', 'As partes foram orientadas a não fazer duo até segunda ordem.',
+'Nada mais disse nem lhe foi perguntado, porque já tinha dado ready na próxima.', 'Expedida guia para exame de corpo de delito no MMR.'];
+const REACOES_DESCULPA = ['As vítimas negam.', 'A perícia não confirmou.', 'Não foi encontrada qualquer prova disso no replay.', 'A alegação foi recebida com risos na Delegacia.',
+'O escrivão anotou e suspirou.', 'O replay mostra o contrário.', 'A versão foi considerada fantasiosa.', 'Nenhuma testemunha corroborou.', 'O ping dele no momento era 32.'];
+const DESCULPAS_BO = ['estava com lag', 'o time não seguiu o ping dele', 'o herói deles estava roubado no patch', 'estava indo buscar a runa', 'o fone tinha caído',
+'ninguém comprou ward', 'era o plano desde o draft', 'o mouse estava falhando', 'estava “criando espaço”', 'o carry dele não farmou direito', 'o cachorro pulou no teclado',
+'o sol batia no monitor', 'estava testando uma build nova', 'foi o suporte que puxou a luta', 'a internet da vizinha caiu', 'o Smoke era de outro', 'estava esperando o BKB',
+'achou que o inimigo estava com pouca vida', 'tinha certeza de que tinha TP', 'o mid prometeu rotação e não veio', 'foi baitado pelo próprio time', 'o jogo deu um travadinha',
+'a mãe chamou para jantar', 'o herói deles “é quebrado, todo mundo sabe”', 'estava jogando no notebook do primo', 'não era ele, era o irmão', 'o draft já estava perdido',
+'jogou para o time e o time não jogou para ele'];
+
+const HEROINAS = new Set(['Lina', 'Luna', 'Mirana', 'Drow Ranger', 'Crystal Maiden', 'Windranger', 'Templar Assassin', 'Phantom Assassin', 'Vengeful Spirit',
+'Queen of Pain', 'Medusa', 'Naga Siren', 'Enchantress', 'Death Prophet', 'Broodmother', 'Spectre', 'Winter Wyvern', 'Dark Willow', 'Marci', 'Snapfire',
+'Hoodwink', 'Dawnbreaker', 'Muerta', 'Legion Commander', 'Lanaya']);
+// "o Lifestealer" / "a Lina", com as contrações (ao/à, do/da, pelo/pela)
+function artigosDe(nome) {
+if (!nome) return { m: 'o time adversário', M: 'O time adversário', aoM: 'ao time adversário', doM: 'do time adversário', peloM: 'pelo time adversário' };
+const f = HEROINAS.has(nome);
+return { m: `${f ? 'a' : 'o'} ${nome}`, M: `${f ? 'A' : 'O'} ${nome}`, aoM: `${f ? 'à' : 'ao'} ${nome}`, doM: `${f ? 'da' : 'do'} ${nome}`, peloM: `${f ? 'pela' : 'pelo'} ${nome}` };
+}
+// "A, B e C", sem quebrar com nome que tem vírgula
+const listaE = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} e ${xs[xs.length - 1]}` : xs.join(''));
+
+// tudo que as frases precisam saber de um autor
+function contextoDoBO(f, r) {
 const p = f.p;
 const d = p.raw.deaths || 0;
-const min = Math.max(1, Math.round((r.partida.duracao || 0) / 60));
-const rota = (p.rota && NOMES_ROTA[p.rota.tipo]) || 'selva';
 const suporte = p.posicao >= 4;
-// vítima: quem dividia a rota com o autor; senão, o core que mais farmou
 const parceiro = r.nos.find((q) => q !== p && q.rota && p.rota && p.rota.lane != null && q.rota.lane === p.rota.lane);
 const vitima = parceiro || [...r.nos].filter((q) => q !== p).sort((a, b) => (b.raw.net_worth || 0) - (a.raw.net_worth || 0))[0];
-const relacao = !parceiro ? 'colega de time' : suporte && vitima.posicao <= 3 ? 'suporte' : !suporte && vitima.posicao >= 4 ? 'core' : 'parceiro de rota';
-// quem mais matou o autor
 const kb = Object.entries(p.raw.killed_by || {}).filter(([k]) => k.startsWith('npc_dota_hero_')).sort((a, b) => b[1] - a[1])[0];
 const matadorP = kb ? r.eles.find((e) => e.heroi.npc === kb[0]) : null;
-const matador = matadorP ? matadorP.heroi.nome : 'o time adversário';
-const nMatador = kb ? kb[1] : d;
-const w = (p.raw.obs_placed || 0) + (p.raw.sen_placed || 0);
-const dl = p.raw.deaths_log || [];
-const quando = dataDaPartida(r);
-const horaFato = new Date(quando.getTime() + ((dl[0] && Number(dl[0].time) > 0 ? Number(dl[0].time) : 300) * 1000));
-const hh = horaFato.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 const chaves = (f.v.pesou && f.v.pesou.length ? f.v.pesou : f.v.componentes.filter((c) => c.pontos > 0)).map((c) => c.key);
 const k1 = chaves[0] || 'mortes';
-const k2 = chaves.find((k) => k !== k1);
+const dl = p.raw.deaths_log || [];
+return {
+f, p, d, suporte, vitima, parceiro: Boolean(parceiro), matadorP,
+rota: (p.rota && NOMES_ROTA[p.rota.tipo]) || 'selva',
+relacao: !parceiro ? 'colega de time' : suporte && vitima.posicao <= 3 ? 'suporte' : !suporte && vitima.posicao >= 4 ? 'core' : 'parceiro de rota',
+matador: matadorP ? matadorP.heroi.nome : 'o time adversário',
+...artigosDe(matadorP ? matadorP.heroi.nome : null),
+nMatador: kb ? kb[1] : d,
+w: (p.raw.obs_placed || 0) + (p.raw.sen_placed || 0),
+min: Math.max(1, Math.round((r.partida.duracao || 0) / 60)),
+t1: dl[0] && Number(dl[0].time) > 0 ? Number(dl[0].time) : 300,
+k1, k2: chaves.find((k) => k !== k1),
+};
+}
 
-const FATOS = {
-mortes: [`entregou-se ao inimigo por ${d} vezes, ${nMatador > 1 ? `sendo ${nMatador} delas para o ${matador}` : 'sem qualquer resistência'}`,
-`passou a morrer de forma reiterada (${d} vezes), abastecendo o caixa do time adversário`],
-rota: [suporte ? 'se jogou repetidas vezes na frente dos creeps inimigos, deixando a rota sem proteção' : 'perdeu a rota de forma vexatória, cedendo farm e experiência ao inimigo',
-'abandonou a vítima à própria sorte na rota, onde ela passou a apanhar sozinha'],
-rotacoes: ['deixou o mid inimigo sair da rota sem dar qualquer aviso, permitindo que ele circulasse livremente pelo mapa'],
-snowball: [`alimentou reiteradamente o ${matador}, que, segundo a vítima, "começou pequeno e terminou do tamanho do Roshan"`,
-`forneceu ouro e experiência ao ${matador} até que este se tornasse incontrolável`],
-pickoff: [`foi flagrado andando sozinho em área sem visão, sendo capturado ${nMatador > 1 ? `${nMatador} vezes pelo ${matador}` : 'mais de uma vez'}`,
-'insistiu em passear desacompanhado pela selva inimiga, sem ward e sem plano'],
-throw: ['passou a morrer em sequência com o jogo ganho, devolvendo ao inimigo toda a vantagem acumulada pelo time'],
-objetivos: ['encontrava-se morto no exato momento em que as torres do time foram derrubadas'],
-ausencia: ['não compareceu às lutas do time, sendo avistado farmando enquanto os companheiros eram atacados'],
-farm: [`terminou a partida com ${p.raw.gold_per_min} de ouro por minuto, valor considerado incompatível com o cargo que ocupava`],
-dano: [`causou ${fmtK(p.raw.hero_damage || 0)} de dano em heróis em ${min} minutos, dano classificado pela perícia como "cosmético"`],
-visao: [`plantou apenas ${w} ${w === 1 ? 'ward' : 'wards'} em ${min} minutos, mantendo o mapa às escuras`],
-participacao: ['participou de poucos abates, preferindo acompanhar as lutas de longe'],
+// o que o autor fez (oração que cabe depois de "o autor ...")
+const FATOS_BO = {
+mortes: [(c) => `entregou-se ao inimigo por ${c.d} vezes${c.nMatador > 1 ? `, sendo ${c.nMatador} delas para ${c.m}` : ''}`,
+(c) => `passou a morrer de forma reiterada (${c.d} vezes), abastecendo o caixa do time adversário`,
+(c) => `fez ${c.d} doações não declaradas ao inimigo, na forma de mortes`,
+(c) => `compareceu à fonte por ${c.d} vezes, todas sem ter sido convidado`,
+(c) => `morreu ${c.d} vezes, configurando, nos termos da lei, reincidência específica`],
+rota: [(c) => (c.suporte ? 'se jogou repetidas vezes na frente dos creeps inimigos, deixando a rota sem proteção' : 'perdeu a rota de forma vexatória, cedendo farm e experiência ao inimigo'),
+() => 'abandonou a vítima à própria sorte na rota, onde ela passou a apanhar sozinha',
+(c) => `entregou a ${c.rota} sem resistência, junto com a T1 e a dignidade da vítima`,
+() => 'foi dominado na rota desde o primeiro creep, sem esboçar reação'],
+rotacoes: [() => 'deixou o mid inimigo sair da rota sem dar qualquer aviso, permitindo que ele circulasse livremente pelo mapa',
+() => 'não pingou o MIA nem uma vez sequer, enquanto o mid deles visitava todas as rotas',
+() => 'concedeu passaporte diplomático ao mid inimigo'],
+snowball: [(c) => `alimentou reiteradamente ${c.m}, que, segundo a vítima, "começou pequeno e terminou do tamanho do Roshan"`,
+(c) => `forneceu ouro e experiência ${c.aoM} até que este se tornasse incontrolável`,
+(c) => `financiou a carreira ${c.doM} do primeiro item ao último`],
+pickoff: [(c) => `foi flagrado andando sozinho em área sem visão, sendo capturado ${c.nMatador > 1 ? `${c.nMatador} vezes ${c.peloM}` : 'mais de uma vez'}`,
+() => 'insistiu em passear desacompanhado pela selva inimiga, sem ward e sem plano',
+() => 'fez trilha solo pela selva inimiga como quem passeia no parque'],
+throw: [() => 'passou a morrer em sequência com o jogo ganho, devolvendo ao inimigo toda a vantagem acumulada pelo time',
+() => 'devolveu a vantagem do time com juros e correção monetária',
+() => 'transformou uma vitória encaminhada numa derrota, sozinho e em poucos minutos'],
+objetivos: [() => 'encontrava-se morto no exato momento em que as torres do time foram derrubadas',
+() => 'assistiu da tela cinza à queda das torres e dos quartéis'],
+ausencia: [() => 'não compareceu às lutas do time, sendo avistado farmando enquanto os companheiros eram atacados',
+() => 'esteve ausente de todas as lutas que importavam, sempre com uma desculpa na selva'],
+farm: [(c) => `terminou a partida com ${c.p.raw.gold_per_min} de ouro por minuto, valor considerado incompatível com o cargo que ocupava`,
+(c) => `farmou ${c.p.raw.last_hits || 0} creeps em ${c.min} minutos, desperdiçando dinheiro público`],
+dano: [(c) => `causou ${fmtK(c.p.raw.hero_damage || 0)} de dano em heróis em ${c.min} minutos, dano classificado pela perícia como "cosmético"`,
+() => 'agrediu os inimigos com a força de um travesseiro'],
+visao: [(c) => `plantou apenas ${c.w} ${c.w === 1 ? 'ward' : 'wards'} em ${c.min} minutos, mantendo o mapa às escuras`,
+() => 'sonegou wards ao time durante toda a partida'],
+participacao: [() => 'participou de poucos abates, preferindo acompanhar as lutas de longe',
+() => 'assistiu às lutas do time como quem assiste a um jogo pela TV'],
 };
-const desabafo = {
-mortes: [suporte && relacao === 'suporte' ? `Eu tava farmando quieto e meu suporte se matou ${d} vezes na minha frente. Foi horrível.` : `Toda vez que eu olhava o placar tinha mais uma morte dele. ${d}, senhor. ${d}.`,
-`Eu já nem olhava mais o mapa, só ouvia o anúncio de morte e sabia quem era.`,
-`Ele morreu tanto que o ${matador} começou a esperar ele no mesmo lugar.`, 'Teve uma hora que eu mutei o anúncio de morte. Não aguentava mais.',
-`Eu contei. ${d} vezes. Eu contei todas.`],
-rota: [suporte ? 'Ele vinha, levava dois hits de creep e morria. Eu fiquei sozinho com dois deles a lane inteira.' : 'Eu fui ajudar três vezes. Nas três ele já tinha morrido quando eu cheguei.'],
-rotacoes: ['O mid deles passou por mim tantas vezes que eu já cumprimentava.'],
-snowball: [`Eu lembro do ${matador} com bota marrom. Depois disso eu só lembro de apanhar.`],
-pickoff: ['A gente marcava pra juntar e ele ia sozinho pra selva deles. Sozinho!'],
-throw: ['A gente tava indo pro Ancient deles. Eu juro que a gente tava indo pro Ancient deles.', 'Tinha Aegis, tinha vantagem, tinha tudo. Ele foi lá e deu tudo de volta.',
-'A gente já estava digitando “gg ez”. Apagamos.'],
-objetivos: ['A torre caindo e ele de tela cinza. Toda vez.'],
-ausencia: ['Eu chamei pra luta, dei ping, escrevi no chat. Ele tava na selva.'],
-farm: ['Eu sou suporte e terminei com item mais caro que ele.'],
-dano: ['Eu achei que ele estava curando os inimigos.'],
-visao: ['Eu perguntei da ward. Ele disse que estava "guardando".'],
-participacao: ['Na tela de fim de jogo foi a primeira vez que eu vi o nome dele.'],
+
+// o desabafo da vítima, entre aspas
+const DESABAFOS_BO = {
+mortes: [(c) => (c.relacao === 'suporte' ? `Eu tava farmando quieto e meu suporte se matou ${c.d} vezes na minha frente. Foi horrível.` : `Toda vez que eu olhava o placar tinha mais uma morte dele. ${c.d}, senhor. ${c.d}.`),
+() => 'Eu já nem olhava mais o mapa, só ouvia o anúncio de morte e sabia quem era.',
+(c) => `Ele morreu tanto que ${c.m} começou a esperar ele no mesmo lugar.`,
+() => 'Teve uma hora que eu mutei o anúncio de morte. Não aguentava mais.',
+(c) => `Eu contei. ${c.d} vezes. Eu contei todas.`,
+() => 'A tela dele ficou mais tempo cinza que colorida.',
+(c) => `${c.M} terminou o jogo com item de 6 mil. Metade foi presente dele.`,
+() => 'Eu comprei TP pra ir ajudar e quando cheguei ele já estava morto. De novo.',
+() => 'Ele dizia “vem, vem, tá fácil” e morria antes de eu chegar.',
+() => 'Eu cheguei a pedir pra ele ficar parado na base. Ele não ficou.',
+(c) => `Na sexta morte eu parei de reclamar. Na ${c.d > 6 ? `${c.d}ª` : 'última'}, eu chorei.`],
+rota: [(c) => (c.suporte ? 'Ele vinha, levava dois hits de creep e morria. Eu fiquei sozinho com dois deles a lane inteira.' : 'Eu fui ajudar três vezes. Nas três ele já tinha morrido quando eu cheguei.'),
+() => 'Eu errei last hit de nervoso. Ele errou de propósito, eu acho.',
+() => 'A lane acabou aos 6 minutos. Pra gente.',
+() => 'Eu pedi pra ele puxar o camp. Ele puxou o camp em cima de mim.',
+() => 'Ele brigou com o creep inimigo e perdeu.',
+() => 'Quando eu vi, a T1 tinha caído e ele estava na fonte comprando Tango.',
+() => 'Eu tive que farmar a selva aos 5 minutos. Eu sou carry, senhor.'],
+rotacoes: [() => 'O mid deles passou por mim tantas vezes que eu já cumprimentava.', () => 'Ninguém pingou nada. O mid deles apareceu do nada. Três vezes.',
+() => 'Eu perguntei “cadê o mid?”. Ele respondeu quando eu já estava morto.', () => 'O mid deles conhecia a minha lane melhor que eu.',
+() => 'Ele viu o mid sair e achou que era problema de outra pessoa.'],
+snowball: [(c) => `Eu lembro ${c.doM} com bota marrom. Depois disso eu só lembro de apanhar.`, (c) => `${c.M} entrou na luta e o time sumiu. Literalmente.`,
+(c) => `Quem criou esse monstro foi ele. Eu vi ${c.m} nascer.`, (c) => `Aos 20 minutos ${c.m} já batia na gente com um hit.`,
+() => 'Eu dei ping no inimigo farmado. Ele deu mais ouro pro inimigo farmado.'],
+pickoff: [() => 'A gente marcava pra juntar e ele ia sozinho pra selva deles. Sozinho!', () => 'Ele sumia do mapa e aparecia no placar de mortes.',
+() => 'Eu falei “não vai”. Ele foi.', () => 'Toda vez que eu olhava o minimapa, ele estava num lugar onde ninguém deveria estar.',
+() => 'Ele farmava a selva deles como se fosse dele. Não era.', () => 'Ele saía de Smoke sozinho. Eu nem sabia que dava.'],
+throw: [() => 'A gente tava indo pro Ancient deles. Eu juro que a gente tava indo pro Ancient deles.', () => 'Tinha Aegis, tinha vantagem, tinha tudo. Ele foi lá e deu tudo de volta.',
+() => 'A gente já estava digitando “gg ez”. Apagamos.', () => 'Dez mil de vantagem, senhor. Dez mil.', () => 'Era só esperar o Roshan. Ele não esperou.',
+() => 'Eu já estava pensando no próximo jogo. O próximo jogo veio mais cedo.'],
+objetivos: [() => 'A torre caindo e ele de tela cinza. Toda vez.', () => 'Defendi a base sozinho, olhando pra tela cinza dele.',
+() => 'O quartel caiu e o respawn dele dizia 58 segundos.', () => 'Eu gritava “defende!”. Ele estava morto. Sempre.'],
+ausencia: [() => 'Eu chamei pra luta, dei ping, escrevi no chat. Ele tava na selva.', () => 'A luta acabou e ele apareceu perguntando o que tinha acontecido.',
+() => 'Ele chegou na luta pra ver o placar.', () => 'Morremos os quatro. Ele estava com o camp grande quase limpo.',
+() => 'Eu vi ele no minimapa farmando enquanto eu morria. Acenei.'],
+farm: [() => 'Eu sou suporte e terminei com item mais caro que ele.', () => 'Ele passou vinte minutos e não completou um item.',
+() => 'Eu deixei a lane inteira pra ele. Ele errou metade dos creeps.', () => 'O inventário dele parecia o meu. E eu sou suporte 5.'],
+dano: [() => 'Eu achei que ele estava curando os inimigos.', () => 'Eu vi ele bater no inimigo. O inimigo não percebeu.',
+() => 'O dano dele na tela final era menor que o do meu suporte.', () => 'Ele dava skill e a vida do inimigo nem mexia.'],
+visao: [() => 'Eu perguntei da ward. Ele disse que estava “guardando”.', () => 'O mapa ficou preto o jogo inteiro. Parecia madrugada.',
+() => 'Ele tinha duas wards no inventário quando o Ancient caiu.', () => 'A gente morreu em todo lugar sem visão. Que era o mapa todo.'],
+participacao: [() => 'Na tela de fim de jogo foi a primeira vez que eu vi o nome dele.', () => 'Ele estava no time. Eu acho.',
+() => 'Ele participou da luta só no chat.', () => 'Eu procurei ele nas lutas. Achei no camp.'],
 };
-const TESTEMUNHAS = {
-mortes: [['o Courier do time', 'Eu levava os itens e quando chegava ele já tinha morrido. Voltei com tudo três vezes.'],
-['a fonte do time', 'Ele passou mais tempo aqui do que eu gostaria.']],
-rota: [['um creep melee da rota, sobrevivente', 'Ele ficou atrás de mim o tempo todo. Eu sou um creep, senhor.'],
-['a Torre T1 da rota (in memoriam)', 'Fiz o que pude. Ele não.']],
-rotacoes: [['a Runa de Poder do rio', 'O mid deles passou por mim umas cinco vezes. Ninguém do outro time apareceu.']],
-snowball: [['Roshan, ouvido em seu covil', `Até eu fiquei com medo do ${matador}.`]],
-pickoff: [['um Kobold do camp pequeno, que pediu para não ser identificado', 'Vi ele passar sozinho três vezes. Na quarta eu nem olhei mais.'],
-['o Centauro do camp grande', 'Passou por aqui sem ward, sem smoke e sem ninguém. Morreu logo depois do meu camp.']],
-throw: [['o Ancient inimigo', 'Eu já estava me despedindo da família.']],
-objetivos: [['a Torre T2 (in memoriam)', 'Eu chamei por ele. Ele estava esperando o respawn.']],
-ausencia: [['um Ogro do camp médio', 'Enquanto a luta acontecia no rio, ele estava aqui me farmando. Três vezes.']],
-farm: [['um creep ranged da rota', 'Passei a rota inteira na frente dele. Morri de velhice.']],
-dano: [['o herói inimigo atingido', 'Senti um leve formigamento.']],
-visao: [['um Observer Ward, encontrado intacto no inventário do autor', '(a testemunha permaneceu em silêncio, como passou a partida inteira)']],
-participacao: [['a Runa de Bounty do rio', 'Ele pegou a runa e sumiu. Só vi de novo na tela de derrota.']],
+
+// quem viu tudo: [quem, o que disse]
+const TESTEMUNHAS_BO = {
+mortes: [() => ['o Courier do time', 'Eu levava os itens e quando chegava ele já tinha morrido. Voltei com tudo três vezes.'],
+() => ['a fonte do time', 'Ele passou mais tempo aqui do que eu gostaria.'],
+(c) => ['o anunciador do jogo', `Eu falei o nome dele ${c.d} vezes. Estou rouco.`],
+() => ['o botão de buyback', 'Ele olhava pra mim, mas nunca tinha ouro.'],
+() => ['um Tango esquecido na bolsa do autor', 'Morri junto com ele várias vezes. Nunca fui usado.'],
+(c) => ['o placar', `Eu marquei ${c.d} na coluna de mortes dele e quase pedi ajuda.`]],
+rota: [() => ['um creep melee da rota, sobrevivente', 'Ele ficou atrás de mim o tempo todo. Eu sou um creep, senhor.'],
+() => ['a Torre T1 da rota (in memoriam)', 'Fiz o que pude. Ele não.'], () => ['um creep ranged inimigo', 'Foi a lane mais fácil da minha vida.'],
+() => ['o camp pequeno ao lado da rota', 'Ninguém me puxou. Fiquei lá o jogo inteiro, sozinho.'],
+() => ['a Runa de Sabedoria', 'Ninguém do time dele apareceu. O offlaner deles pegou e ainda riu.']],
+rotacoes: [() => ['a Runa de Poder do rio', 'O mid deles passou por mim umas cinco vezes. Ninguém do outro time apareceu.'],
+() => ['o Lotus Pool', 'O mid deles passou por aqui, pegou o lótus e foi direto pra rota de vocês. Ninguém avisou.'],
+() => ['uma Sentry Ward inimiga', 'Eu vi o mid deles indo. Vocês não, porque não tinham ward.']],
+snowball: [(c) => ['Roshan, ouvido em seu covil', `Até eu fiquei com medo ${c.doM}.`],
+(c) => ['a loja secreta', `${c.M} vinha aqui toda hora com o bolso cheio. Dinheiro dele, ouro de vocês.`],
+(c) => ['o Tormentor', `${c.M} me matou sozinho aos 18 minutos. Não é normal.`]],
+pickoff: [() => ['um Kobold do camp pequeno, que pediu para não ser identificado', 'Vi ele passar sozinho três vezes. Na quarta eu nem olhei mais.'],
+() => ['o Centauro do camp grande', 'Passou por aqui sem ward, sem smoke e sem ninguém. Morreu logo depois do meu camp.'],
+() => ['um Lobo do camp médio', 'Uivei avisando. Ele não entendeu.'], () => ['um Sátiro do camp grande', 'Ele chegou a me farmar antes de morrer. Pelo menos isso.'],
+() => ['a árvore atrás da qual o inimigo estava escondido', 'Eu escondi o inimigo. Ele não olhou.'],
+() => ['um Ogro do camp médio', 'Ele parou pra me bater no caminho. Foi aí que pegaram ele.']],
+throw: [() => ['o Ancient inimigo', 'Eu já estava me despedindo da família.'], () => ['a Aegis', 'Eu estava no inventário de vocês. Fiquei lá, sem uso, até o fim.'],
+() => ['a T3 inimiga, com 200 de vida', 'Eu sobrevivi. Graças a ele.'], () => ['o Roshan', 'Vocês me mataram e perderam mesmo assim. Fiquei ofendido.']],
+objetivos: [() => ['a Torre T2 (in memoriam)', 'Eu chamei por ele. Ele estava esperando o respawn.'], () => ['o Quartel de ataque (in memoriam)', 'Ninguém veio. Ninguém.'],
+() => ['os glifos do time', 'Usaram a gente num desespero só. Ele estava morto.']],
+ausencia: [() => ['um Ogro do camp médio', 'Enquanto a luta acontecia no rio, ele estava aqui me farmando. Três vezes.'],
+() => ['o Ancient do time', 'Ele chegou depois de mim, e eu fui destruído.'], () => ['um camp antigo', 'Ele estava me farmando na hora da luta. Até eu achei estranho.'],
+() => ['o TP Scroll do autor', 'Fiquei no cooldown nenhum. Ele nunca me usou para ir à luta.']],
+farm: [() => ['um creep ranged da rota', 'Passei a rota inteira na frente dele. Morri de velhice.'], () => ['a loja', 'Ele passou aqui duas vezes. Comprou Tango.'],
+() => ['o Battle Fury que ele nunca completou', 'Eu existia só na cabeça dele.']],
+dano: [() => ['o herói inimigo atingido', 'Senti um leve formigamento.'], () => ['a Black King Bar inimiga', 'Nem precisei ser usada.'],
+() => ['a barra de vida do inimigo', 'Eu não mexi. Nem um pouquinho.']],
+visao: [() => ['um Observer Ward, encontrado intacto no inventário do autor', '(a testemunha permaneceu em silêncio, como passou a partida inteira)'],
+() => ['o penhasco do rio', 'Ninguém subiu aqui com ward o jogo inteiro. Eu sou o lugar mais óbvio do mapa.'],
+() => ['uma Dust of Appearance', 'Nunca fui comprada.']],
+participacao: [() => ['a Runa de Bounty do rio', 'Ele pegou a runa e sumiu. Só vi de novo na tela de derrota.'],
+() => ['o placar de abates', 'O nome dele quase não aparece aqui.'], () => ['o Smoke of Deceit do time', 'Fui usado pelos outros quatro. Ele estava longe.']],
 };
-const DESCULPAS = ['estava com lag', 'o time não seguiu o ping dele', 'o herói deles estava roubado no patch', 'estava indo buscar a runa',
-'o fone tinha caído', 'ninguém comprou ward', 'era o plano desde o draft', 'o mouse estava falhando', 'estava “criando espaço”', 'o carry dele não farmou direito'];
-const fato = (k) => rnd.um(FATOS[k] || FATOS.mortes);
+
+// a dupla agindo junto
+const DESABAFOS_DUPLA = [(a, b) => `Quando um parava de morrer, o outro começava.`,
+(a, b) => `Eu não sabia pra quem olhar. O ${a.p.heroi.nome} morria na ${a.rota} e o ${b.p.heroi.nome} morria na ${b.rota}.`,
+(a, b) => `Pareciam combinados. Revezavam a fonte.`, (a, b) => `O ${a.p.heroi.nome} começou e o ${b.p.heroi.nome} terminou o serviço.`,
+() => 'Eram dois. Dois, senhor. Eu só tinha um TP.', () => 'Um entregava a lane, o outro entregava a luta. Tinha divisão de tarefas.',
+(a, b) => `${a.M} e ${b.m} agradecem até hoje.`, () => 'Parecia que estavam jogando em dupla contra a gente.',
+() => 'Eu dei ping nos dois. Os dois ignoraram. Ao mesmo tempo.'];
+const TESTEMUNHAS_DUPLA = [(a, b) => ['o Courier do time', `Eu carregava item pros dois. Os dois morriam antes de eu chegar.`],
+(a, b) => ['a fonte do time', `Eles se encontravam aqui toda hora. Pareciam amigos de infância.`],
+(a, b) => ['Roshan, ouvido em seu covil', `Vi o ${a.p.heroi.nome} passar morrendo e, logo depois, o ${b.p.heroi.nome}. Achei que era uma procissão.`],
+Object.assign(() => ['um Kobold do camp pequeno', 'Vi os dois passarem. Separados. Os dois morreram. Separados.'], { separados: true }),
+Object.assign((a) => ['um creep melee da rota', `Os dois na ${a.rota} e mesmo assim a gente ganhou a lane. A gente é creep.`], { juntos: true }),
+Object.assign(() => ['a Torre T1 da rota (in memoriam)', 'Eram dois pra me defender. Caí aos 9 minutos.'], { juntos: true }),
+() => ['o anunciador do jogo', 'Eu revezava o nome dos dois. Às vezes errava, mas não fazia diferença.'],
+() => ['o placar', 'Os dois disputavam a coluna de mortes. Foi parelho.']];
+
+// o tipo de culpado (para enquadrar a história) e o que as vítimas dizem dele
+function arquetipoDoBO(c) {
+const k = c.k1;
+const p = c.p;
+if (k === 'throw') return 'throw';
+if (c.suporte && (['visao', 'ausencia', 'participacao'].includes(k) || (c.w <= 4 && (p.raw.assists || 0) < 10))) return 'suporteOmisso';
+if (c.suporte && ['mortes', 'pickoff', 'snowball', 'rota'].includes(k)) return 'suporteFeeder';
+if (p.posicao === 1 && ['ausencia', 'participacao', 'farm', 'dano', 'objetivos'].includes(k)) return 'carryOmisso';
+if (p.posicao === 2 && ['rotacoes', 'rota', 'farm', 'dano'].includes(k)) return 'midSumido';
+if (p.posicao === 3 && ['rota', 'ausencia', 'participacao'].includes(k)) return 'offOmisso';
+if (c.d >= 10 || ['mortes', 'snowball', 'pickoff'].includes(k)) return 'feeder';
+return 'geral';
+}
+const ENQUADRAMENTOS_BO = {
+suporteOmisso: [(c) => `Apurou-se que o autor, embora escalado como suporte (pos ${c.p.posicao}), não exerceu nenhuma das funções do cargo: ${c.w} ${c.w === 1 ? 'ward plantada' : 'wards plantadas'}, ${c.p.raw.camps_stacked || 0} stacks e ${c.p.raw.assists || 0} assistências.`,
+() => 'Trata-se, segundo a autoridade, de caso típico de suporte decorativo: ocupava o slot, mas não o cargo.',
+(c) => `A perícia constatou que o inventário do autor tinha mais itens de farm que de suporte, o que não condiz com a pos ${c.p.posicao}.`,
+() => 'Testemunhas descrevem o autor como “um quinto jogador em regime de home office”.'],
+suporteFeeder: [(c) => `Apurou-se que o autor, suporte do time, morreu ${c.d} vezes, deixando seu core desprotegido na maior parte da partida.`,
+(c) => `Segundo os autos, cada morte do autor custava ao core uma lane inteira de farm. Foram ${c.d}.`,
+() => 'A autoridade ressalta que o suporte deve proteger o core, e não o contrário, como se viu.',
+(c) => `O autor alimentou ${c.m} com a regularidade de um entregador de aplicativo.`],
+carryOmisso: [(c) => `Apurou-se que o autor, carry do time, terminou com ${c.p.raw.gold_per_min} de GPM e ${c.p.raw.kills || 0} abates, permanecendo omisso nos momentos decisivos.`,
+() => 'Trata-se de carry que, segundo as vítimas, “carregou apenas a si mesmo, e mal”.',
+() => 'A perícia aponta que o time entregou ao autor os recursos de um carry e recebeu em troca a presença de um figurante.',
+(c) => `O autor teve ${c.min} minutos para aparecer no jogo. Não apareceu.`],
+midSumido: [() => 'Apurou-se que o autor, responsável pelo meio do mapa, perdeu o controle da rota e das runas, e o mid inimigo passou a ditar o ritmo da partida.',
+() => 'Segundo os autos, o mid inimigo visitou todas as rotas; o autor não visitou nenhuma.',
+(c) => `O autor terminou com ${c.p.raw.kills || 0} abates e ${c.d} mortes jogando de mid, posição que exige, no mínimo, presença.`],
+offOmisso: [() => 'Apurou-se que o autor, escalado para a offlane, não ofereceu qualquer resistência ao carry inimigo, que farmou em paz.',
+() => 'Trata-se de offlaner que, segundo as vítimas, “não incomodou nem a si mesmo”.',
+() => 'A função do autor era atrapalhar o carry deles. Atrapalhou o próprio time.'],
+feeder: [(c) => `Apurou-se que o autor manteve, ao longo de ${c.min} minutos, rotina regular de mortes, na proporção de uma a cada ${Math.max(1, Math.round(c.min / Math.max(1, c.d)))} minutos.`,
+(c) => `Segundo a perícia, as mortes do autor renderam ao inimigo ${fmtK(Math.max(0, c.f.entregue))} de ouro, valor suficiente para uma Daedalus e troco.`,
+() => 'O autor é conhecido na região como “o patrocinador”.',
+(c) => `${c.M} declarou informalmente que considera o autor seu “principal fornecedor”.`],
+throw: [() => 'Apurou-se que o time estava em vantagem quando o autor passou a tomar decisões individuais que reverteram o placar.',
+() => 'Segundo os autos, o jogo estava ganho. Estava.',
+() => 'A autoridade registra que a derrota não foi consequência do draft, e sim de ações posteriores e deliberadas do autor.'],
+geral: [() => 'Apurou-se que a conduta do autor contribuiu de forma decisiva para o resultado da partida.',
+() => 'Os fatos foram confirmados pela perícia no replay.'],
+};
+
+// cenário da dupla
+function cenarioDaDupla(a, b) {
+const mesmaRota = a.p.rota && b.p.rota && a.p.rota.lane != null && a.p.rota.lane === b.p.rota.lane;
+if (mesmaRota && a.suporte !== b.suporte) return 'coreESuporte';
+if (mesmaRota) return 'mesmaRota';
+if (a.suporte && b.suporte) return 'doisSuportes';
+if (!a.suporte && !b.suporte) return 'doisCores';
+return 'separados';
+}
+const ENQUADRAMENTOS_DUPLA = {
+coreESuporte: [(a, b) => { const [co, su] = a.suporte ? [b, a] : [a, b]; return `Os autores dividiam a ${co.rota}: ${co.p.nome} como core e ${su.p.nome} como seu suporte. Segundo apurado, a rota afundou com os dois a bordo, cada um culpando o outro desde o primeiro minuto.`; },
+(a, b) => { const [co, su] = a.suporte ? [b, a] : [a, b]; return `${su.p.nome} deveria proteger ${co.p.nome}; ${co.p.nome} deveria farmar. Nenhuma das duas coisas aconteceu.`; },
+() => 'Trata-se de dupla de rota em que o core e o suporte, em vez de se ajudarem, revezaram-se nas mortes.'],
+mesmaRota: [(a) => `Os autores dividiam a ${a.rota}, que, segundo testemunhas, foi perdida “em regime de coautoria”.`,
+() => 'Os dois estavam na mesma rota e conseguiram perdê-la juntos, o que, segundo a autoridade, exige coordenação.'],
+doisSuportes: [() => 'Os autores, ambos suportes, deixaram os cores do time sem visão, sem proteção e sem esperança.',
+(a, b) => `Somadas, as wards dos dois suportes chegaram a ${a.w + b.w}. A perícia considerou o número “simbólico”.`,
+() => 'Segundo apurado, a dupla de suporte agiu como se o mapa fosse responsabilidade de outra pessoa.'],
+doisCores: [(a, b) => `Os autores, ambos cores, receberam o farm do time e devolveram ${a.d + b.d} mortes somadas.`,
+() => 'O time investiu em dois cores. O investimento não teve retorno.',
+() => 'Segundo apurado, os dois cores disputaram quem afundava mais. Empate técnico.'],
+separados: [() => 'Os autores atuaram em frentes diferentes do mapa, o que, segundo a autoridade, ampliou o alcance do prejuízo.',
+() => 'Um cuidava de perder um lado do mapa; o outro, do outro lado. Cobertura completa.'],
+};
+const AGRAVANTES_DUPLA = [(a, b) => (a.matadorP && a.matadorP === b.matadorP ? `Ambos tinham o mesmo “cliente”: ${a.m}, que matou ${a.p.nome} ${a.nMatador} vezes e ${b.p.nome} ${b.nMatador}.` : null),
+(a, b) => (a.k1 === b.k1 ? 'A perícia observou o mesmo modus operandi nos dois autores.' : null),
+(a, b) => (Math.abs(a.d - b.d) <= 1 && a.d >= 5 ? `Os dois terminaram com praticamente o mesmo número de mortes (${a.d} e ${b.d}), o que sugere combinação prévia.` : null)];
+
+const DESABAFOS_ARQUETIPO = {
+suporteOmisso: [() => 'Eu sou carry e tive que comprar a ward. Eu, senhor.', () => 'Ele era suporte só na tela de seleção.',
+() => 'Eu pedi stack. Ele perguntou o que era stack.', () => 'Eu olhava pro lado na lane e não tinha ninguém. Ele estava “rotacionando”.',
+() => 'O suporte deles parecia ter três braços. O nosso, nenhum.', () => 'Ele pegou o farm da minha lane. Ele era o suporte.'],
+suporteFeeder: [() => 'Eu tava farmando quieto e meu suporte se matou na minha frente. De novo. E de novo.',
+() => 'Cada vez que ele morria, o offlaner deles vinha me bater. Ele morreu muito.', () => 'Ele dava o primeiro hit no herói deles e morria. Era a estratégia, aparentemente.',
+() => 'Eu só queria um suporte vivo. Era só isso.'],
+carryOmisso: [() => 'Demos tudo pra ele. Farm, espaço, a selva. Ele apareceu aos 40 minutos com item de 20.',
+() => 'Ele era o carry. Quem carregou fui eu, e eu sou suporte 5.', () => 'Ele dizia “só mais um item”. Foram cinco “só mais um item”.',
+() => 'A gente brigava 4 contra 5 e ele estava na selva. Sempre na selva.'],
+midSumido: [() => 'O mid deles estava em todo lugar. O nosso, em lugar nenhum.', () => 'Eu perguntei se ele ia rotacionar. Ele perguntou o que era rotacionar.',
+() => 'Ele perdeu a runa dos 6, a dos 8 e a do 10. A gente perdeu o resto.'],
+offOmisso: [() => 'O carry deles farmou como se estivesse no modo demonstração.', () => 'Ele ficou na offlane parado, olhando. Como um poste.',
+() => 'O carry deles terminou com 10 de last hit por minuto. Obrigado, offlaner.'],
+feeder: [() => 'Eu parei de contar na décima.', () => 'O inimigo já sabia onde ele ia aparecer. Eu também.', () => 'Ele morria e escrevia “?” no chat. A gente que devia escrever.'],
+throw: [() => 'Eu vi a vitória. Eu toquei nela. Ele levou embora.', () => 'Tinha tudo pra ganhar. Tinha.'],
+};
+
+function historiaDoBO(fichas, r) {
+const cs = fichas.map((f) => contextoDoBO(f, r));
+const rnd = fichas[0].rnd;
+const um = (xs, ...a) => rnd.um(xs)(...a);
+const fato = (c, k) => um(FATOS_BO[k] || FATOS_BO.mortes, c);
+const hora = (c) => new Date(dataDaPartida(r).getTime() + c.t1 * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+const quem = (q) => `${q.nome} (${q.heroi.nome}, pos ${q.posicao})`;
+const abertura = rnd.um(['Comparece a esta Delegacia', 'Apresentou-se espontaneamente nesta Unidade', 'Compareceu, visivelmente abalado(a), a esta Delegacia',
+'Compareceu a esta Distrital, ainda na tela de derrota,', 'Apresentou-se nesta Delegacia, com o headset ainda no pescoço,']);
+const desculpa = () => `${rnd.um(DESCULPAS_BO)}. ${rnd.um(REACOES_DESCULPA)}`;
 const paras = [];
-paras.push(`${rnd.um(['Comparece a esta Delegacia', 'Apresentou-se espontaneamente nesta Unidade', 'Compareceu, visivelmente abalado(a), a esta Delegacia'])} ${vitima ? `${vitima.nome} (${vitima.heroi.nome}, pos ${vitima.posicao})` : 'o resto do time'}, na qualidade de vítima, relatando que, por volta das ${hh}, encontrava-se na ${rota} quando seu ${relacao} ${p.nome}, utilizando-se do herói ${p.heroi.nome}, ${fato(k1)}.`
-+ ` Nas palavras da vítima: “${rnd.um(desabafo[k1] || desabafo.mortes)}”`);
-if (k2) paras.push(`Relata ainda que o autor ${fato(k2)}.`);
-const [quem, disse] = rnd.um(TESTEMUNHAS[k1] || TESTEMUNHAS.mortes);
-paras.push(`Arrolado como testemunha, ${quem} declarou: “${disse}”`);
-if (f.entregue > 0) paras.push(`O prejuízo foi estimado em ${fmtK(f.entregue)} de ouro, entregue ao time adversário${matadorP ? `, em especial ao ${matador}` : ''}.`);
-paras.push(`Ouvido, o autor alegou que ${rnd.um(DESCULPAS)}. ${rnd.um(['As vítimas negam.', 'A perícia não confirmou.', 'Não foi encontrada qualquer prova disso no replay.', 'A alegação foi recebida com risos na Delegacia.'])}`
-+ ` ${rnd.um(FECHO_BO.filter((x) => !x.includes('alegou')))}`);
+if (cs.length === 1) {
+const [c] = cs;
+paras.push(`${abertura} ${c.vitima ? quem(c.vitima) : 'o resto do time'}, na qualidade de vítima, relatando que, por volta das ${hora(c)}, encontrava-se na ${c.rota} quando seu ${c.relacao} ${c.p.nome}, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}.`
++ ` Nas palavras da vítima: “${um([...(DESABAFOS_BO[c.k1] || DESABAFOS_BO.mortes), ...(DESABAFOS_ARQUETIPO[arquetipoDoBO(c)] || [])], c)}”`);
+paras.push(um(ENQUADRAMENTOS_BO[arquetipoDoBO(c)], c));
+if (c.k2) paras.push(`Relata ainda que o autor ${fato(c, c.k2)}. ${rnd.um(['Acrescenta: ', 'E desabafa: ', 'Em tom de revolta, completa: '])}“${um(DESABAFOS_BO[c.k2] || DESABAFOS_BO.mortes, c)}”`);
+const [t, disse] = um(TESTEMUNHAS_BO[c.k1] || TESTEMUNHAS_BO.mortes, c);
+paras.push(`Arrolado(a) como testemunha, ${t} declarou: “${disse}”`);
+if (c.f.entregue > 0) paras.push(`O prejuízo foi estimado em ${fmtK(c.f.entregue)} de ouro, entregue ao time adversário${c.matadorP ? `, em especial ${c.aoM}` : ''}.`);
+paras.push(`Ouvido, o autor alegou que ${desculpa()} ${rnd.um(FECHOS_BO)}`);
+return paras;
+}
+// dupla: uma história só, com a divisão de tarefas
+const [a, b] = cs;
+const vitimas = r.nos.filter((q) => q !== a.p && q !== b.p);
+const cenario = cenarioDaDupla(a, b);
+const juntos = cenario === 'coreESuporte' || cenario === 'mesmaRota';
+const vit = vitimas.length ? listaE(vitimas.map((q) => q.nome)) : 'o resto do time';
+paras.push(`${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome} (${a.p.heroi.nome}) e ${b.p.nome} (${b.p.heroi.nome}) passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
+paras.push([um(ENQUADRAMENTOS_DUPLA[cenario], a, b), ...AGRAVANTES_DUPLA.map((g) => g(a, b)).filter(Boolean).slice(0, 1)].join(' '));
+paras.push(`Nas palavras de ${vitimas.length ? rnd.um(vitimas).nome : 'uma das vítimas'}: “${um(DESABAFOS_DUPLA, a, b)}”`);
+const extra = [a.k2 ? `${a.p.nome} ${fato(a, a.k2)}` : null, b.k2 ? `${b.p.nome} ${fato(b, b.k2)}` : null].filter(Boolean);
+if (extra.length) paras.push(`Consta ainda que ${extra.join(', e que ')}.`);
+const [t, disse] = um(TESTEMUNHAS_DUPLA.filter((x) => (juntos ? !x.separados : !x.juntos)), a, b);
+paras.push(`Arrolado(a) como testemunha, ${t} declarou: “${disse}”`);
+const total = Math.max(0, a.f.entregue) + Math.max(0, b.f.entregue);
+if (total > 0) paras.push(`O prejuízo somado foi estimado em ${fmtK(total)} de ouro (${a.p.nome}: ${fmtK(Math.max(0, a.f.entregue))}; ${b.p.nome}: ${fmtK(Math.max(0, b.f.entregue))}).`);
+paras.push(`Ouvidos separadamente, os autores apresentaram versões conflitantes: ${a.p.nome} alegou que ${rnd.um(DESCULPAS_BO)}; ${b.p.nome}, que ${rnd.um(DESCULPAS_BO)}. ${rnd.um(['Um culpou o outro.', 'Cada um culpou o outro.', 'Ambos culparam o suporte.', 'Nenhuma das versões se sustenta no replay.'])} ${rnd.um(FECHOS_BO)}`);
 return paras;
 }
 
@@ -9920,7 +10151,7 @@ campo('Culpa', pct(f.v.fatia)),
 campo('Ouro entregue', f.entregue > 0 ? fmtK(f.entregue) : '—'),
 campo('Local do fato', f.local, 'largo'),
 campo('Natureza', f.acusacoes.map((a) => (/^Art\. /.test(a.crime) ? a.crime : `Art. ${f.rnd.num(121, 359)} — ${a.crime}`)).join('; '), 'inteiro')));
-const historico = fichas.map((f) => historiaDoBO(f, r, f.rnd));
+const historico = historiaDoBO(fichas, r);
 return h('article', { class: `cartao veredito doc-bo${fichas.length > 1 ? ' dividido' : ''}` },
 h('header', { class: 'bo-cab' },
 h('span', { class: 'bo-brasao' }, brasao),
@@ -9932,7 +10163,7 @@ campo('Hora', quando.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-d
 campo('Duração', mmss(r.partida.duracao)),
 campo('Placar', `${r.partida.placarNos} × ${r.partida.placarEles}`)),
 fichas.map(autor),
-h('div', { class: 'bo-historico' }, h('span', {}, 'Histórico'), historico.map((ps, i) => [fichas.length > 1 ? h('p', {}, h('b', {}, `Autor ${i + 1}: ${fichas[i].p.nome}`)) : null, ps.map((t) => h('p', {}, t))])),
+h('div', { class: 'bo-historico' }, h('span', {}, 'Histórico'), historico.map((t) => h('p', {}, t))),
 h('footer', { class: 'bo-rodape' },
 h('span', {}, `${rnd.um(ESCRIVAES)}, de plantão`),
 h('span', { class: 'bo-carimbo', 'aria-hidden': 'true' }, 'Registrado')));
