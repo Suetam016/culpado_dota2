@@ -1127,7 +1127,6 @@ const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json
  * Dados: parceiros.timeFechado (parceiros.py). */
 
 const VIRADA = 5000;          // vantagem de ouro que conta como "jogo na mão"
-const MIN_JOGOS_LEITURA = 3;  // um marcador só vira diagnóstico com pelo menos isso de jogos
 const MORTES_DEMAIS = 12;
 const TIPOS_MARCADOR = { jogo: 'O jogo', draft: 'Nosso draft', inimigo: 'O time deles', pessoa: 'Gente' };
 let filtroFechado = null;
@@ -1156,6 +1155,161 @@ function marcadoresDe(g) {
   return ms;
 }
 
+/* Gráficos do time fechado: mapa dos marcadores (frequência × win rate), grade "contra a comp deles, o que
+ * funciona" e o ouro jogo a jogo. Tocar numa bolha filtra igual aos marcadores (data-marcador). */
+const CORES_TIPO = { jogo: '#e8b04a', draft: '#4f9dff', inimigo: '#e5533d', pessoa: '#c38bf0' };
+const FREQUENTE = 25; // % dos jogos a partir do qual um marcador é "frequente"
+const pctDe = (v, n) => (n ? Math.round((100 * v) / n) : 0);
+
+function graficoMarcadores(marcadores, total, wrGeral) {
+  const xs = marcadores.filter(m => !m.resultado && m.n >= 2).map(m => ({ ...m, f: (100 * m.n) / total, wr: pctDe(m.v, m.n) }));
+  if (xs.length < 3) return '';
+  const W = 760, H = 420, M = { e: 46, d: 20, c: 40, b: 42 };
+  const maxF = Math.min(100, Math.ceil((Math.max(...xs.map(m => m.f)) + 6) / 10) * 10);
+  const corteX = Math.min(FREQUENTE, maxF / 2);
+  const px = f => M.e + (f / maxF) * (W - M.e - M.d);
+  const py = wr => M.c + (1 - wr / 100) * (H - M.c - M.b);
+  const raio = n => 8 + Math.sqrt(n) * 3.4;
+  // bolhas no mesmo lugar se afastam um pouco
+  const ocupado = new Map();
+  xs.sort((a, b) => b.n - a.n).forEach(m => {
+    const k = `${Math.round(px(m.f) / 14)}|${Math.round(py(m.wr) / 14)}`;
+    const i = ocupado.get(k) || 0;
+    ocupado.set(k, i + 1);
+    m.cx = px(m.f) + (i ? Math.cos(i * 2.1) * 16 : 0);
+    m.cy = py(m.wr) + (i ? Math.sin(i * 2.1) * 16 : 0);
+  });
+  // nomes só nas bolhas que mais dizem algo (longe da média e com mais jogos), sem encavalar um no outro
+  const interesse = m => Math.abs(m.wr - wrGeral) * Math.sqrt(m.n);
+  const caixas = [];
+  [...xs].sort((a, b) => interesse(b) - interesse(a)).forEach(m => {
+    if (caixas.length >= 12 && filtroFechado !== m.id) return;
+    const larg = m.nome.length * 6.6 + 4, alt = 15;
+    const dir = m.cx > W * 0.72 ? -1 : 1;
+    const x1 = dir > 0 ? m.cx + raio(m.n) + 4 : m.cx - raio(m.n) - 4 - larg;
+    const caixa = { x1, x2: x1 + larg, y1: m.cy - alt / 2, y2: m.cy + alt / 2 };
+    const bate = caixas.some(c => caixa.x1 < c.x2 && caixa.x2 > c.x1 && caixa.y1 < c.y2 && caixa.y2 > c.y1)
+      || xs.some(o => o !== m && o.cx + raio(o.n) > caixa.x1 && o.cx - raio(o.n) < caixa.x2 && o.cy + raio(o.n) > caixa.y1 && o.cy - raio(o.n) < caixa.y2);
+    if (!bate || filtroFechado === m.id) { caixas.push(caixa); m.rotulo = dir; }
+  });
+  const quad = (x1, y1, x2, y2, cls) => `<rect class="${cls}" x="${x1}" y="${y1}" width="${x2 - x1}" height="${y2 - y1}"/>`;
+  const xc = px(corteX), yc = py(wrGeral);
+  const filtro = filtroFechado;
+  const bolha = m => {
+    const ladoDir = m.rotulo === -1;
+    const ativo = filtro === m.id;
+    return `<g class="tf-bolha${ativo ? ' ativa' : ''}${filtro && !ativo ? ' apagada' : ''}" data-marcador="${esc(m.id)}" tabindex="0" role="button">
+      <title>${esc(m.nome)}: ${m.v}V ${m.n - m.v}D (${m.wr}%) · aparece em ${Math.round(m.f)}% dos jogos</title>
+      <circle cx="${m.cx.toFixed(1)}" cy="${m.cy.toFixed(1)}" r="${raio(m.n).toFixed(1)}" style="fill:${CORES_TIPO[m.tipo]}"/>
+      <text class="tf-bolha-ic" x="${m.cx.toFixed(1)}" y="${(m.cy + 5).toFixed(1)}" text-anchor="middle">${m.icone}</text>
+      ${m.rotulo ? `<text class="tf-bolha-nome" x="${(m.cx + (ladoDir ? -1 : 1) * (raio(m.n) + 5)).toFixed(1)}" y="${(m.cy + 4).toFixed(1)}" text-anchor="${ladoDir ? 'end' : 'start'}">${esc(m.nome)}</text>` : ''}
+    </g>`;
+  };
+  const ticksY = [0, 25, 50, 75, 100];
+  const ticksX = []; for (let f = 0; f <= maxF; f += maxF > 50 ? 20 : 10) ticksX.push(f);
+  // leitura: o que corrigir e o que usar mais (mínimo de jogos pra não ser sorte)
+  const vicios = xs.filter(m => m.f >= corteX && m.wr < wrGeral - 10 && m.n >= 3).sort((a, b) => a.wr - b.wr).slice(0, 3);
+  const armas = xs.filter(m => m.f < corteX && m.wr > wrGeral + 10 && m.n >= 2).sort((a, b) => b.wr - a.wr).slice(0, 3);
+  const cara = xs.filter(m => m.f >= corteX && m.wr > wrGeral + 10 && m.n >= 3).sort((a, b) => b.wr - a.wr).slice(0, 2);
+  const botao = m => `<button type="button" data-marcador="${esc(m.id)}">${m.icone} ${esc(m.nome)} <small>${m.v}/${m.n}</small></button>`;
+  return `<article class="cartao tf-grafico">
+    <div class="tf-graf-cab"><h3>Mapa dos marcadores</h3>
+      <div class="tf-legenda">${Object.entries(TIPOS_MARCADOR).map(([t, n]) => `<span><i style="background:${CORES_TIPO[t]}"></i>${n}</span>`).join('')}</div></div>
+    <div class="tf-svg-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cada marcador: quantas vezes aparece e quanto vocês ganham quando ele aparece">
+      ${quad(xc, M.c, W - M.d, yc, 'q-cara')}${quad(xc, yc, W - M.d, H - M.b, 'q-vicio')}${quad(M.e, M.c, xc, yc, 'q-arma')}
+      ${ticksY.map(t => `<line class="tf-eixo-l" x1="${M.e}" x2="${W - M.d}" y1="${py(t)}" y2="${py(t)}"/><text class="tf-eixo" x="${M.e - 8}" y="${py(t) + 4}" text-anchor="end">${t}%</text>`).join('')}
+      ${ticksX.map(t => `<text class="tf-eixo" x="${px(t)}" y="${H - M.b + 18}" text-anchor="middle">${t}%</text>`).join('')}
+      <text class="tf-eixo-t" x="${(M.e + W - M.d) / 2}" y="${H - 6}" text-anchor="middle">em quantos jogos aparece →</text>
+      <text class="tf-eixo-t" x="14" y="${(M.c + H - M.b) / 2}" text-anchor="middle" transform="rotate(-90 14 ${(M.c + H - M.b) / 2})">win rate quando aparece →</text>
+      <line class="tf-media" x1="${M.e}" x2="${W - M.d}" y1="${yc}" y2="${yc}"/>
+      <text class="tf-media-t" x="${W - M.d - 4}" y="${yc - 6}" text-anchor="end">média de vocês: ${wrGeral}%</text>
+      <line class="tf-corte" x1="${xc}" x2="${xc}" y1="${M.c}" y2="${H - M.b}"/>
+      <text class="tf-quad-t bom" x="${W - M.d - 8}" y="${M.c - 10}" text-anchor="end">A cara do time</text>
+      <text class="tf-quad-t ruim" x="${W - M.d - 8}" y="${H - M.b - 10}" text-anchor="end">Vício: corrigir</text>
+      <text class="tf-quad-t bom" x="${M.e + 8}" y="${M.c - 10}">Arma pouco usada</text>
+      <text class="tf-quad-t" x="${M.e + 8}" y="${H - M.b - 10}">Raro e perde</text>
+      ${xs.map(bolha).join('')}
+    </svg></div>
+    <div class="tf-leituras">
+      ${vicios.length ? `<p class="ruim"><b>Corrigir:</b> ${vicios.map(botao).join('')}</p>` : ''}
+      ${armas.length ? `<p class="bom"><b>Usar mais:</b> ${armas.map(botao).join('')}</p>` : ''}
+      ${cara.length ? `<p class="bom"><b>Já é a cara de vocês:</b> ${cara.map(botao).join('')}</p>` : ''}
+    </div>
+  </article>`;
+}
+
+function gradeRespostas(todos) {
+  const ativo = (sin, id) => ((sin.lista.find(s => s.id === id) || {}).nivel || 0) > 0;
+  const info = {};
+  todos.forEach(g => [...g.sinNos.lista, ...g.sinEles.lista].forEach(s => { info[s.id] = s; }));
+  const contar = (lado, id) => todos.filter(g => ativo(g[lado], id)).length;
+  const eixo = lado => [...new Set(todos.flatMap(g => g[lado].lista.filter(s => s.nivel).map(s => s.id)))]
+    // o que aparece em quase todo jogo (ex.: uma linha de frente) não separa nada: fica de fora
+    .map(id => ({ id, n: contar(lado, id) })).filter(x => x.n >= 3 && x.n <= todos.length - 3).sort((a, b) => b.n - a.n).slice(0, 8);
+  const linhas = eixo('sinEles'), colunas = eixo('sinNos');
+  if (linhas.length < 2 || colunas.length < 2) return '';
+  const cor = (wr, n) => {
+    const forca = Math.min(1, Math.abs(wr - 50) / 40) * Math.min(1, n / 3);
+    return `background:color-mix(in srgb, ${wr >= 50 ? 'var(--good)' : 'var(--bad)'} ${Math.round(10 + forca * 60)}%, var(--surface))`;
+  };
+  const corpo = linhas.map(l => {
+    const daLinha = todos.filter(g => ativo(g.sinEles, l.id));
+    const vL = daLinha.filter(g => g.v).length;
+    const casas = colunas.map(c => {
+      const xs = daLinha.filter(g => ativo(g.sinNos, c.id));
+      return { c, n: xs.length, v: xs.filter(g => g.v).length };
+    });
+    const melhor = casas.filter(x => x.n >= 2 && pctDe(x.v, x.n) > pctDe(vL, daLinha.length)).sort((a, b) => pctDe(b.v, b.n) - pctDe(a.v, a.n) || b.n - a.n)[0];
+    return `<tr><th scope="row"><span>${info[l.id].icone} ${esc(info[l.id].nome)}</span><small>${vL}/${daLinha.length} · ${pctDe(vL, daLinha.length)}%</small></th>
+      ${casas.map(x => (x.n ? `<td style="${cor(pctDe(x.v, x.n), x.n)}" class="${x === melhor ? 'tf-melhor' : ''}${x.n < 2 ? ' tf-pouco' : ''}" title="Contra ${esc(info[l.id].nome)} deles, com ${esc(info[x.c.id].nome)}: ${x.v} vitórias em ${x.n}">
+        ${x === melhor ? '<i>★</i>' : ''}<b>${pctDe(x.v, x.n)}%</b><small>${x.v}/${x.n}</small></td>` : '<td class="tf-vazio">—</td>')).join('')}</tr>`;
+  }).join('');
+  return `<article class="cartao tf-grafico">
+    <div class="tf-graf-cab"><h3>Contra cada comp deles, o que funciona</h3></div>
+    <p class="tf-graf-sub">Linha: o que o time deles tinha. Coluna: o que vocês tinham. ★ = a melhor resposta (2+ jogos, acima do geral daquela linha).</p>
+    <div class="tf-grade-wrap"><table class="tf-grade">
+      <thead><tr><th class="tf-canto"><span>Deles ↓ · Vocês →</span></th>${colunas.map(c => `<th scope="col"><span class="tf-col-ic">${info[c.id].icone}</span><span>${esc(info[c.id].nome)}</span></th>`).join('')}</tr></thead>
+      <tbody>${corpo}</tbody>
+    </table></div>
+  </article>`;
+}
+
+function graficoOuro(todos, destaque) {
+  const W = 760, H = 300, M = { e: 46, d: 18, c: 16, b: 30 };
+  const MIN = [0, 10, 20, 30];
+  const lim = 16000;
+  const px = m => M.e + (m / 30) * (W - M.e - M.d);
+  const py = o => M.c + (1 - (Math.max(-lim, Math.min(lim, o)) + lim) / (2 * lim)) * (H - M.c - M.b);
+  const pontos = g => MIN.map(m => [m, m === 0 ? 0 : g.ouro && g.ouro[String(m)]]).filter(([, o]) => o != null);
+  const caminho = ps => ps.map(([m, o], i) => `${i ? 'L' : 'M'}${px(m).toFixed(1)},${py(o).toFixed(1)}`).join('');
+  const comOuro = todos.filter(g => pontos(g).length >= 2);
+  if (comOuro.length < 3) return '';
+  const media = xs => MIN.map(m => {
+    const vs = xs.map(g => (m === 0 ? 0 : g.ouro && g.ouro[String(m)])).filter(o => o != null);
+    return vs.length >= 2 ? [m, vs.reduce((a, b) => a + b, 0) / vs.length] : null;
+  }).filter(Boolean);
+  const mV = media(comOuro.filter(g => g.v)), mD = media(comOuro.filter(g => !g.v));
+  const k = o => `${o > 0 ? '+' : o < 0 ? '−' : ''}${(Math.abs(o) / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`;
+  const linha = g => {
+    const cls = destaque ? (destaque.has(g.id) ? ' dest' : ' apag') : '';
+    return `<path class="tf-jogo-l ${g.v ? 'v' : 'd'}${cls}" d="${caminho(pontos(g))}"><title>${g.v ? 'Vitória' : 'Derrota'} · ${data(g.t * 1000)} · ${pontos(g).slice(1).map(([m, o]) => `${m}': ${k(o)}`).join(' · ')}</title></path>`;
+  };
+  const em = (ms, m) => (ms.find(x => x[0] === m) || [])[1];
+  return `<article class="cartao tf-grafico">
+    <div class="tf-graf-cab"><h3>O ouro jogo a jogo</h3>
+      <div class="tf-legenda"><span><i style="background:var(--good)"></i>vitórias</span><span><i style="background:var(--bad)"></i>derrotas</span><span>linha grossa = média</span></div></div>
+    <div class="tf-svg-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vantagem de ouro aos 10, 20 e 30 minutos em cada jogo">
+      ${[-15000, -10000, -5000, 0, 5000, 10000, 15000].map(o => `<line class="${o ? 'tf-eixo-l' : 'tf-zero'}" x1="${M.e}" x2="${W - M.d}" y1="${py(o)}" y2="${py(o)}"/><text class="tf-eixo" x="${M.e - 8}" y="${py(o) + 4}" text-anchor="end">${o ? k(o) : '0'}</text>`).join('')}
+      ${MIN.map(m => `<text class="tf-eixo" x="${px(m)}" y="${H - 8}" text-anchor="middle">${m ? `${m} min` : 'início'}</text>`).join('')}
+      <text class="tf-media-t" x="${M.e + 6}" y="${M.c + 12}">na frente ↑</text>
+      <text class="tf-media-t" x="${M.e + 6}" y="${H - M.b - 6}">atrás ↓</text>
+      ${comOuro.map(linha).join('')}
+      <path class="tf-media-v" d="${caminho(mV)}"/><path class="tf-media-d" d="${caminho(mD)}"/>
+    </svg></div>
+    <p class="tf-graf-sub">Média aos 10 min: vitórias <b class="bom">${em(mV, 10) != null ? k(em(mV, 10)) : '—'}</b>, derrotas <b class="ruim">${em(mD, 10) != null ? k(em(mD, 10)) : '—'}</b> · aos 20 min: vitórias <b class="bom">${em(mV, 20) != null ? k(em(mV, 20)) : '—'}</b>, derrotas <b class="ruim">${em(mD, 20) != null ? k(em(mD, 20)) : '—'}</b>.</p>
+  </article>`;
+}
+
 function renderizarTimeFechado() {
   const alvo = $('fechado-conteudo');
   const desde = desdePeriodo();
@@ -1182,14 +1336,6 @@ function renderizarTimeFechado() {
   const jogos = filtroFechado ? todos.filter(g => g.marcadores.some(m => m.id === filtroFechado)) : todos;
   const vit = todos.filter(g => g.v).length;
   const wrGeral = pct(vit, todos.length);
-
-  // diagnóstico: os marcadores que mais derrubam e os que mais ajudam (contra a média de vocês)
-  // virada, jogaram fora e atropelo já dizem o resultado: não entram como causa
-  const confiaveis = marcadores.filter(m => m.n >= MIN_JOGOS_LEITURA && !m.resultado);
-  const piores = confiaveis.filter(m => pct(m.v, m.n) <= wrGeral - 15).sort((a, b) => pct(a.v, a.n) - pct(b.v, b.n) || b.n - a.n).slice(0, 3);
-  const melhores = confiaveis.filter(m => pct(m.v, m.n) >= wrGeral + 15).sort((a, b) => pct(b.v, b.n) - pct(a.v, a.n) || b.n - a.n).slice(0, 2);
-  const frase = (m, bom) => `<li class="${bom ? 'bom' : 'ruim'}"><button type="button" data-marcador="${esc(m.id)}">${m.icone} ${esc(m.nome)}</button>
-    ${bom ? 'dá certo' : 'pesa contra'}: <b>${m.v} vitória${m.v === 1 ? '' : 's'} em ${m.n}</b> (${pct(m.v, m.n)}%, a média de vocês é ${wrGeral}%).</li>`;
 
   const chip = m => `<button type="button" class="tf-marcador tm-${m.tipo}${filtroFechado === m.id ? ' ativo' : ''}" data-marcador="${esc(m.id)}" title="${esc(m.desc)}">
       <span>${m.icone}</span>${esc(m.nome)}${m.n != null ? `<small class="${pct(m.v, m.n) > 55 ? 'bom' : pct(m.v, m.n) < 45 ? 'ruim' : ''}">${m.v}V ${m.n - m.v}D</small>` : ''}</button>`;
@@ -1229,12 +1375,13 @@ function renderizarTimeFechado() {
       <div class="tf-forma" title="Últimos ${Math.min(15, todos.length)} jogos, do mais antigo pro mais novo">${forma}</div>
     </div>
 
-    ${piores.length || melhores.length ? `<article class="cartao tf-diagnostico">
-      <div class="cartao-titulo">🩺 O que mais pesa nos jogos de vocês</div>
-      <ul>${piores.map(m => frase(m, false)).join('')}${melhores.map(m => frase(m, true)).join('')}</ul>
-      <p class="cartao-sub">Toque num marcador pra ver só os jogos em que ele aparece.</p>
-    </article>` : ''}
+    <div class="tf-graficos">
+      ${graficoMarcadores(marcadores, todos.length, wrGeral)}
+      ${gradeRespostas(todos)}
+      ${graficoOuro(todos, filtroFechado ? new Set(jogos.map(g => g.id)) : null)}
+    </div>
 
+    <div class="secao-titulo"><h2>Marcadores</h2><p>Toque num pra ver só os jogos em que ele aparece.</p></div>
     <div class="tf-filtros">${grupos}</div>
 
     <div class="tf-lista-cab">
@@ -1248,9 +1395,14 @@ function renderizarTimeFechado() {
     alvo.addEventListener('click', e => {
       const b = e.target.closest('[data-marcador]');
       if (!b) return;
+      const doGrafico = Boolean(b.closest('svg'));
       filtroFechado = b.dataset.marcador && b.dataset.marcador !== filtroFechado ? b.dataset.marcador : null;
       renderizarTimeFechado();
-      $('fechado-conteudo').querySelector('.tf-lista-cab').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // tocar numa bolha deixa a tela no gráfico (o destaque aparece no ouro jogo a jogo); nas tags, desce pra lista
+      if (!doGrafico) $('fechado-conteudo').querySelector('.tf-lista-cab').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    alvo.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('g[data-marcador]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
     });
   }
 }
