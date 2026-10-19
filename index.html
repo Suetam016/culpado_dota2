@@ -208,7 +208,7 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .doc-bo .bo-carimbo{font-family:var(--font-display);font-weight:900;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:#1d3f78;border:3px double #1d3f78;border-radius:6px;padding:2px 12px;transform:rotate(-8deg);opacity:.75;mix-blend-mode:multiply}
 @media (max-width:640px){.doc-bo .bo-cab{grid-template-columns:auto 1fr}.doc-bo .bo-num{grid-column:1/-1;text-align:left}.doc-bo .bo-linha{grid-template-columns:repeat(2,1fr)}.doc-bo .bo-autor{grid-template-columns:1fr}.doc-bo .bo-foto{border-right:0;border-bottom:1px solid #cfc8b6}.doc-bo .bo-campos{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Interpol */
-.doc-interpol{background:radial-gradient(120% 90% at 100% 0%,#1d3a73,transparent 60%),linear-gradient(180deg,#0e1f45,#0a1630);color:#e8ecf5;border:1px solid #2b4a8a;box-shadow:0 14px 30px -14px rgba(0,0,0,.7)}
+.doc-interpol{background:radial-gradient(120% 90% at 100% 0%,#1d3a73,transparent 60%),linear-gradient(180deg,#0e1f45,#0a1630)!important;color:#e8ecf5;border:1px solid #2b4a8a;box-shadow:0 14px 30px -14px rgba(0,0,0,.7)}
 .doc-interpol .ip-cab{display:flex;align-items:center;gap:12px;padding:14px 20px 10px}
 .doc-interpol .ip-cab b{display:block;font-size:22px;letter-spacing:.3em;font-weight:900}
 .doc-interpol .ip-cab span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#a9b8d8}
@@ -232,7 +232,7 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .doc-interpol .ip-alerta{margin:18px 0 0;padding:10px 20px;background:rgba(200,16,46,.18);border-top:1px solid #c8102e;color:#ffd5dc;font-weight:700;font-size:14px}
 @media (max-width:640px){.doc-interpol .ip-reu{grid-template-columns:1fr}.doc-interpol .ip-campos{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Tribunal Penal Internacional */
-.doc-haia{background:radial-gradient(90% 70% at 50% 0%,rgba(201,166,64,.16),transparent 70%),linear-gradient(180deg,#14110c,#0a0907);color:#efe6d6;border:1px solid #6b5a2a;box-shadow:0 0 0 1px #000,0 0 40px rgba(201,166,64,.12),0 18px 34px -14px rgba(0,0,0,.8);position:relative}
+.doc-haia{background:radial-gradient(90% 70% at 50% 0%,rgba(201,166,64,.16),transparent 70%),linear-gradient(180deg,#14110c,#0a0907)!important;color:#efe6d6;border:1px solid #6b5a2a;box-shadow:0 0 0 1px #000,0 0 40px rgba(201,166,64,.12),0 18px 34px -14px rgba(0,0,0,.8);position:relative}
 .doc-haia::before{content:"";position:absolute;inset:8px;border:1px solid rgba(201,166,64,.45);border-radius:3px;pointer-events:none}
 .doc-haia .tpi-cab{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 20px 6px;text-align:center}
 .doc-haia .tpi-cab b{display:block;font-family:var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:#c9a640;font-size:15px}
@@ -252,6 +252,8 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .doc-haia .tpi-acusacoes small{color:#8f826b;font-size:12px}
 .doc-haia .tpi-recompensa{margin-top:10px;color:#c9a640;font-weight:700}
 .doc-haia .tpi-fundamento{margin:16px 28px 0;color:#d8ccb3;font-size:15px}
+.doc-haia .tpi-depoimento{margin:18px 28px 0;padding:14px 18px;border-left:3px solid #c9a640;background:rgba(201,166,64,.07)}.doc-haia .tpi-depoimento p{margin:0;font:italic 600 clamp(1.05rem,2.6vw,1.35rem)/1.4 Georgia,serif;color:#f1e6cc}.doc-haia .tpi-depoimento i{font:400 13px/1 system-ui,sans-serif;color:#a99a7c;font-style:normal}.doc-haia .tpi-depoimento footer{margin-top:8px;color:#c9a640;font-weight:700;font-size:13px;letter-spacing:.04em}.doc-haia .tpi-depoimento small{color:#8a7d64;font-weight:400}
+@media (max-width:640px){.doc-haia .tpi-depoimento{margin-inline:18px}}
 .doc-haia .tpi-fundamento span{color:#c9a640;font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.12em}
 .doc-haia .tpi-rodape{position:relative;margin:16px 28px 0;padding:12px 90px 22px 0;border-top:1px solid rgba(201,166,64,.35);color:#a8987a;font-size:14px}
 .doc-haia .tpi-rodape p:first-child{color:#f3e7c4;font-weight:700}
@@ -10300,6 +10302,54 @@ fichas.map(ficha),
 h('p', { class: 'ip-alerta' }, sorteador(`ip-${r.partida.id}`).um(ALERTAS_INTERPOL)));
 }
 
+// Haia: um depoimento só, curto e pesado, de alguém que viu o replay e não se recuperou. A rubrica entre colchetes
+// é a anotação do escrivão. Paródia: nada disso foi dito de verdade.
+const GABE = ['Gabe Newell', 'presidente da Valve'];
+const ICEFROG = ['IceFrog', 'criador e guardião do equilíbrio do Dota'];
+const DENDI = ['Dendi', 'lenda do Pudge e campeão do primeiro TI'];
+const MIRACLE = ['Miracle-', 'campeão do TI7'];
+const NOTAIL = ['N0tail', 'bicampeão do TI'];
+const TOPSON = ['Topson', 'bicampeão do TI'];
+const PUPPEY = ['Puppey', 'capitão campeão do primeiro TI'];
+const BULLDOG = ['AdmiralBulldog', 'lenda do Lone Druid'];
+const GORGC = ['Gorgc', 'streamer'];
+const GALVAO = ['Galvão Bueno', 'narrando o replay'];
+const ABALADOS = [
+[GABE, () => 'Eu não criei esse jogo para isso.'], [GABE, () => 'Em trinta anos de Valve, eu nunca vi nada parecido.'],
+[GABE, () => 'Eu vou precisar repensar os meus princípios.'], [GABE, (c) => `Eu assisti às ${c.d} mortes no replay. Adiei o Half-Life 3 de novo.`],
+[GABE, () => 'Isso não é Dota. Eu sei o que é Dota. Isso não é.'], [GABE, () => 'Pela primeira vez, eu considerei desligar os servidores.'],
+[GABE, () => 'Mandei o replay para a equipe de balanceamento. Dois pediram demissão.'],
+[GABE, (c) => `${fmtK(Math.max(0, c.f.entregue))} de ouro entregue ao inimigo. Eu fiz esse jogo para unir as pessoas.`],
+[GABE, () => 'Vou rever o acordo de usuário. Tem que existir uma cláusula pra isso.'],
+[ICEFROG, () => 'Não existe patch pra isso.'], [ICEFROG, (c) => `Vou nerfar ${c.p.heroi.nome}. Não porque está forte, mas por respeito às vítimas.`],
+[ICEFROG, () => 'Vinte anos balanceando esse jogo e eu não sei o que mudar. O problema não está no jogo.'],
+[ICEFROG, () => 'Escrevi as notas do próximo patch. Só tem uma linha, e é sobre ele.'],
+[DENDI, () => 'Eu dancei no palco do TI. Hoje eu não tenho vontade de dançar.'], [DENDI, (c) => `Eu já morri muito jogando de Pudge. Nunca ${c.d} vezes.`],
+[DENDI, () => 'Eu sempre digo que o Dota é diversão. Hoje eu não sei mais.'],
+[MIRACLE, () => 'Eu tenho o MMR mais alto que já existiu. Não sei jogar desse jeito nem se eu tentar.'], [MIRACLE, () => 'Eu assisti duas vezes pra ter certeza. Tive.'],
+[MIRACLE, (c) => `${c.p.raw.gold_per_min || 0} de GPM. Eu faço isso aos 5 minutos.`],
+[NOTAIL, () => 'Eu sempre defendi o time acima de tudo. Esse time não teve chance.'], [NOTAIL, () => 'Eu ganhei dois TIs. Hoje eu perdi a fé.'],
+[TOPSON, () => 'Me chamam de imprevisível. Isso aqui eu nunca teria inventado.'], [TOPSON, () => 'Eu jogo diferente. Ele joga contra o próprio time.'],
+[PUPPEY, () => 'Vinte anos de draft. Nenhum draft salva isso.'], [PUPPEY, () => 'Eu já capitaneei muita gente. Esse eu deixava no banco.'],
+[BULLDOG, () => 'Eu ficava 40 minutos dando split push e era criticado. Isso aqui é pior.'], [BULLDOG, () => 'Nem o urso do Lone Druid aguentou assistir.'],
+[GORGC, () => 'Eu tomei tilt só de ver o replay.'], [GORGC, () => 'Isso foi a coisa mais pesada que eu já vi na stream. E eu já vi muita coisa.'],
+[GALVAO, (c) => `Haja coração, amigo! ${c.d} mortes! É de doer, é de doer!`], [GALVAO, () => 'Acabou! Acabou! É derrota! E eu não acredito no que eu vi!'],
+[GALVAO, (c) => `Olha ele de novo! De novo! Pra ${c.m}! Que fase, amigo, que fase!`], [GALVAO, () => 'Pode isso, Arnaldo? A regra é clara: não pode!'],
+];
+const ABALADOS_DUPLA = [[GABE, () => 'Um eu ainda entendo. Dois no mesmo time, na mesma partida...'],
+[GABE, () => 'Eles se conheciam antes do jogo? Isso foi planejado?'], [ICEFROG, () => 'Eu dou nerf num herói. Não tenho como dar nerf numa amizade.'],
+[PUPPEY, () => 'Eu já tive duplas que ganharam TI. Essa dupla perde até o lobby.'], [DENDI, () => 'Dois de uma vez? Até eu fiquei triste.'],
+[GALVAO, () => 'São dois! São dois, amigo! Uma dupla de fazer chorar!']];
+const RUBRICAS = ['[pausa longa]', '[voz embargada]', '[o depoente pediu um copo d’água]', '[silêncio na sala]', '[o depoente desligou a câmera por alguns minutos]',
+'[olhando para o chão]', '[o depoimento foi interrompido duas vezes]', '[a sessão foi suspensa por dez minutos em seguida]'];
+function depoimentoHaia(fichas, r, rnd) {
+const c = contextoDoBO(fichas[0], r);
+const [[quem, cargo], fala] = rnd.um(fichas.length > 1 && rnd.num(0, 1) ? ABALADOS_DUPLA : ABALADOS);
+return h('blockquote', { class: 'tpi-depoimento' },
+h('p', {}, `“${fala(c)}” `, h('i', {}, rnd.um(RUBRICAS))),
+h('footer', {}, `${quem}, ${cargo}`, h('small', {}, ' · depoimento fictício')));
+}
+
 function docHaia(fichas, r) {
 const rnd = sorteador(`haia-${r.partida.id}`);
 const romano = ['I', 'II', 'III', 'IV', 'V'];
@@ -10323,7 +10373,7 @@ h('div', {}, h('b', {}, 'Tribunal Penal Internacional'), h('span', {}, 'Haia · 
 h('h2', { class: 'tpi-titulo' }, 'Crimes contra a humanidade'),
 h('p', { class: 'tpi-caso' }, `Mandado de prisão · caso nº ICC-${String(r.partida.id).slice(-6)} · Situação nos ${ladoNome(r.partida.ladoRadiant)}`),
 fichas.map(reu),
-fichas[0].v.diagnostico ? h('p', { class: 'tpi-fundamento' }, h('span', {}, 'Fundamentação: '), fichas[0].v.diagnostico) : null,
+depoimentoHaia(fichas, r, rnd),
 h('footer', { class: 'tpi-rodape' },
 h('p', {}, `Pena sugerida: ${rnd.um(PENAS)}.`),
 h('p', { class: 'tpi-assina' }, rnd.um(DECISOES_HAIA)),
