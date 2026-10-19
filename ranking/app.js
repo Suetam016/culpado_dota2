@@ -41,7 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   montarFeedback();
 
   const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
-  [ranking, parceiros, insights, meta] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL)]);
+  [ranking, parceiros, insights, meta, estadoAtt] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking()]);
+  // o GitHub Pages pode levar minutos para publicar o ranking novo: se o repositório já tem um mais novo, usa ele
+  if (estadoAtt && estadoAtt.atualizadoEm && (!ranking || Date.parse(estadoAtt.atualizadoEm) > Date.parse(ranking.atualizadoEm))) {
+    const url = await urlDoCoach();
+    const [r2, p2] = await Promise.all([pegar(`${url}/ranking/arquivo/ranking`), pegar(`${url}/ranking/arquivo/parceiros`)]);
+    if (r2 && r2.historicos) ranking = r2;
+    if (p2 && p2.pares) parceiros = p2;
+  }
 
   if (!ranking || !ranking.historicos) {
     $('carregando').textContent = 'Não deu pra carregar o ranking. Tente recarregar.';
@@ -635,14 +642,22 @@ function renderizarReddit() {
 /* ---------- Worker do coach (feedback e botão de atualizar) ---------- */
 
 let coachPromessa = null;
+let estadoAtt = null;
 const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json', { cache: 'no-cache' })
   .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
   .catch(() => ''));
 
 /* ---------- Atualizar agora (no máximo a cada 30 min; a regra vale no Worker) ---------- */
 
+// estado lido direto do repositório pelo Worker (sem o cache do GitHub Pages)
+async function estadoDoRanking() {
+  const url = await urlDoCoach();
+  if (!url) return null;
+  return fetch(`${url}/ranking`, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+}
+
 const INTERVALO_ATT_MIN = 30;
-const ESPERA_ROBO_MS = 12 * 60_000;
+const ESPERA_ROBO_MS = 15 * 60_000;
 let timerAtt = 0;
 
 function relativo(iso) {
@@ -659,6 +674,8 @@ function montarAtualizacao() {
   const pintarData = () => {
     $('att-data').textContent = dataHora(ranking.atualizadoEm);
     $('att-rel').textContent = relativo(ranking.atualizadoEm);
+    const n = ranking.semAnalise || 0;
+    $('att-pendentes').textContent = n ? `${n === 1 ? '1 partida recente ainda espera' : `${n} partidas recentes ainda esperam`} a análise do replay na OpenDota e ${n === 1 ? 'entra' : 'entram'} numa próxima atualização.` : '';
   };
   const travarAte = (liberaEm) => {
     clearInterval(timerAtt);
@@ -671,33 +688,36 @@ function montarAtualizacao() {
     tick();
     timerAtt = setInterval(tick, 30_000);
   };
+  let conferir = null;
   const esperarRobo = (desde) => {
     clearInterval(timerAtt);
     botao.disabled = true;
     status.textContent = 'Atualizando… o robô leva uns 3 minutos. A página recarrega sozinha.';
-    const antes = ranking.atualizadoEm;
+    const antes = Date.parse(ranking.atualizadoEm) || 0;
     const inicio = Date.now();
-    timerAtt = setInterval(async () => {
-      const novo = await fetch(RANKING_URL, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
-      if (novo && novo.atualizadoEm && novo.atualizadoEm !== antes && Date.parse(novo.atualizadoEm) >= Date.parse(desde || 0) - 60_000) {
-        clearInterval(timerAtt);
+    conferir = async () => {
+      // pergunta ao Worker (lê o repositório na hora); sem Worker, olha a cópia do site
+      const est = await estadoDoRanking();
+      const novo = est || await fetch(RANKING_URL, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+      const t = novo && Date.parse(novo.atualizadoEm);
+      if (t && t > antes && t >= Date.parse(desde || 0) - 60_000) {
+        clearInterval(timerAtt); conferir = null;
         status.textContent = 'Pronto! Recarregando…';
-        setTimeout(() => location.reload(), 800);
+        setTimeout(() => location.reload(), 600);
       } else if (Date.now() - inicio > ESPERA_ROBO_MS) {
-        clearInterval(timerAtt);
+        clearInterval(timerAtt); conferir = null;
         status.textContent = 'O robô está demorando mais que o normal. Recarregue a página daqui a pouco.';
       }
-    }, 20_000);
+    };
+    timerAtt = setInterval(conferir, 15_000);
   };
+  // celular com a tela apagada ou aba em segundo plano congela o timer: confere assim que a página volta
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && conferir) conferir(); });
 
   pintarData();
   const localLibera = new Date(Date.parse(ranking.atualizadoEm) + INTERVALO_ATT_MIN * 60_000).toISOString();
-  urlDoCoach().then(async url => {
-    if (!url) { travarAte(localLibera); return; }
-    const est = await fetch(`${url}/ranking`, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
-    if (est && est.atualizando) esperarRobo(est.pedidoEm);
-    else travarAte(est && est.liberaEm ? est.liberaEm : localLibera);
-  });
+  if (estadoAtt && estadoAtt.atualizando) esperarRobo(estadoAtt.pedidoEm);
+  else travarAte(estadoAtt && estadoAtt.liberaEm ? estadoAtt.liberaEm : localLibera);
 
   botao.addEventListener('click', async () => {
     botao.disabled = true;

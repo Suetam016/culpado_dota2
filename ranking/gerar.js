@@ -195,6 +195,7 @@ async function main() {
   fs.mkdirSync(path.dirname(saida), { recursive: true });
   fs.writeFileSync(saida, JSON.stringify({
     atualizadoEm: new Date().toISOString(),
+    semAnalise: semReplay, // partidas recentes sem a análise do replay no OpenDota: entram numa próxima rodada
     ranking,
     historicos,
   }, null, 2), 'utf8');

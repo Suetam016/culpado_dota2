@@ -744,7 +744,7 @@ const caminhoMapa = {
 };
 // Ranking dos amigos: o Worker só ESCREVE ranking/pedido (o push dispara o robô ranking.yml) e só LÊ esse arquivo
 // e amigos/ranking.json (para saber quando foi a última atualização).
-const caminhoRanking = { pedido: 'ranking/pedido', ranking: 'amigos/ranking.json' };
+const caminhoRanking = { pedido: 'ranking/pedido', ranking: 'amigos/ranking.json', parceiros: 'amigos/parceiros.json' };
 
 async function github(env, metodo, caminho, corpo, accept = 'application/vnd.github+json') {
   // orçamento por instância: a cota de 5000/h é da conta do dono (dividida com o gh e os outros tokens dele)
@@ -962,6 +962,7 @@ async function pedirMapa(req, env, origem) {
 // porque fica no próprio repositório, não na memória do Worker.
 //   GET /ranking  -> {atualizadoEm, pedidoEm, liberaEm, podeAtualizar, atualizando}
 //   POST /ranking -> {estado:'pedido', pedidoEm, liberaEm} ou 429 {erro:'cedo', liberaEm, minutos}
+//   GET /ranking/arquivo/(ranking|parceiros) -> o próprio amigos/<nome>.json do repositório (sem esperar o GitHub Pages)
 const RANKING_INTERVALO_MIN = 30;
 const RANKING_RODANDO_MS = 15 * 60_000; // pedido mais novo que o ranking e com menos que isto: o robô ainda está rodando
 let cacheRanking = { ate: 0, dados: null };
@@ -1015,6 +1016,17 @@ async function rotaRanking(req, env, origem) {
     console.log('ranking: falhou', e && e.codigo, String(e && e.message).slice(0, 200));
     if (e && e.codigo === 'orcamento') return respostaOrcamento(resp);
     return resp(502, { erro: e && e.codigo === 'token' ? 'token' : 'github', msg: 'O robô do ranking não respondeu agora. Tente de novo em um minuto.' });
+  }
+}
+
+async function arquivoRanking(env, origem, nome) {
+  try {
+    const r = await github(env, 'GET', caminhoRanking[nome], null, 'application/vnd.github.raw+json');
+    if (r.status !== 200) { descartar(r); return json(r.status === 404 ? 404 : 502, { erro: 'github' }, origem, env); }
+    return new Response(r.body, { status: 200, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...cors(origem, env) } });
+  } catch (e) {
+    if (e && e.codigo === 'orcamento') return respostaOrcamento((st, d, ex) => json(st, d, origem, env, ex));
+    return json(502, { erro: 'github' }, origem, env);
   }
 }
 
@@ -1116,6 +1128,12 @@ export default {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
       if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: MSG_MAPA.desligado }, origem, env);
       return req.method === 'POST' ? pedirMapa(req, env, origem) : consultarMapa(req, env, origem, rotaMapa[1], Boolean(rotaMapa[2]));
+    }
+    const rotaArq = caminho.match(/^\/ranking\/arquivo\/(ranking|parceiros)$/);
+    if (rotaArq && req.method === 'GET') {
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!tokenGithub(env)) return json(503, { erro: 'desligado' }, origem, env);
+      return arquivoRanking(env, origem, rotaArq[1]);
     }
     if (caminho === '/ranking' && (req.method === 'GET' || req.method === 'POST')) {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);

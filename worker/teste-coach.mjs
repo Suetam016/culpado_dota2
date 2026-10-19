@@ -1098,3 +1098,15 @@ test('ranking: GET diz quando atualizou, quando libera e se o robô ainda está 
   assert.equal(j.podeAtualizar, false);
   assert.equal(j.sha, undefined);
 });
+
+test('ranking: GET /ranking/arquivo/<nome> entrega o arquivo do repositório e só esses dois nomes', async () => {
+  const repo = githubFalso({ arquivos: { 'amigos/ranking.json': rankingJson('2026-10-19T06:15:29Z'), 'amigos/parceiros.json': { content: '{"pares":[]}', sha: 'x' } } });
+  let r = await worker.fetch(pedido(null, { caminho: '/ranking/arquivo/ranking', metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).atualizadoEm, '2026-10-19T06:15:29Z');
+  r = await worker.fetch(pedido(null, { caminho: '/ranking/arquivo/parceiros', metodo: 'GET' }), ENV_MAPA);
+  assert.deepEqual(await r.json(), { pares: [] });
+  r = await worker.fetch(pedido(null, { caminho: '/ranking/arquivo/..%2Fconfig', metodo: 'GET' }), ENV_MAPA);
+  assert.equal(r.status, 404);
+  assert.ok(repo.chamadas.every((c) => ['amigos/ranking.json', 'amigos/parceiros.json'].includes(c.caminho)));
+});
