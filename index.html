@@ -6157,113 +6157,271 @@ buffersSom[chave].then((buf) => { buffersSom[chave] = buf; tocar(buf); });
 
 
 
-function tambores(duracao) {
-if (!somLigado() || !audioCtx || audioCtx.state !== 'running') return () => {};
+// Sons da abertura (estilo baú do Dota, sintetizados aqui): cliques da roleta, um vento a cada eliminado e um brilho
+// subindo no final, mais aceso quanto mais rara (grave) a culpa. Só toca se o som está ligado e o navegador já deixou
+// tocar áudio (alguém clicou na página).
+function somDoBau() {
+if (!somLigado()) return null;
 const vol = volumeMapa();
-if (vol === 0) return () => {};
-const ac = audioCtx;
-const ruido = ac.createBuffer(1, ac.sampleRate * 0.25, ac.sampleRate);
-const d = ruido.getChannelData(0);
-for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-const agora = ac.currentTime + 0.05;
+if (!vol) return null;
+let ac = audioCtx;
+if (!ac && navigator.userActivation && navigator.userActivation.hasBeenActive) { try { ac = contextoAudio(); } catch (e) { return null; } }
+if (!ac) return null;
+if (ac.state === 'suspended') ac.resume().catch(() => {});
 const mestre = ac.createGain();
-mestre.gain.value = vol; // respeita o volume escolhido no replay
+mestre.gain.value = vol;
 mestre.connect(ac.destination);
-
-let t = 0;
-while (t < duracao) {
-const prog = t / duracao;
-const fonte = ac.createBufferSource();
-fonte.buffer = ruido;
-const filtro = ac.createBiquadFilter();
-filtro.type = 'bandpass';
-filtro.frequency.value = 1800 + prog * 600;
-filtro.Q.value = 0.8;
+const ruido = (seg) => {
+const b = ac.createBuffer(1, Math.max(1, Math.floor(ac.sampleRate * seg)), ac.sampleRate);
+const d = b.getChannelData(0);
+for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+return b;
+};
+const curto = ruido(0.05);
+const longo = ruido(0.6);
+const nota = (freq, t0, dur, ganho, tipo = 'sine') => {
+const o = ac.createOscillator();
+o.type = tipo;
+o.frequency.setValueAtTime(freq, t0);
 const g = ac.createGain();
-const v = 0.15 + prog * 0.55;
-g.gain.setValueAtTime(v, agora + t);
-g.gain.exponentialRampToValueAtTime(0.001, agora + t + 0.09);
-fonte.connect(filtro).connect(g).connect(mestre);
-fonte.start(agora + t);
-fonte.stop(agora + t + 0.12);
-t += 0.11 - prog * 0.065;
-}
-return () => {
-
-const ac2 = audioCtx;
-const t0 = ac2.currentTime;
-const prato = ac2.createBufferSource();
-const longo = ac2.createBuffer(1, ac2.sampleRate * 1.6, ac2.sampleRate);
-const dl = longo.getChannelData(0);
-for (let i = 0; i < dl.length; i++) dl[i] = Math.random() * 2 - 1;
-prato.buffer = longo;
-const hp = ac2.createBiquadFilter();
+g.gain.setValueAtTime(0.0001, t0);
+g.gain.exponentialRampToValueAtTime(ganho, t0 + 0.015);
+g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+o.connect(g).connect(mestre);
+o.start(t0);
+o.stop(t0 + dur + 0.05);
+};
+return {
+// clique da roleta: mais agudo quanto mais rápida
+tique(rapidez = 0.5) {
+const t0 = ac.currentTime + 0.005;
+const f = ac.createBufferSource();
+f.buffer = curto;
+const bp = ac.createBiquadFilter();
+bp.type = 'bandpass';
+bp.frequency.value = 2600 + rapidez * 1600;
+bp.Q.value = 3;
+const g = ac.createGain();
+g.gain.setValueAtTime(0.32, t0);
+g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.035);
+f.connect(bp).connect(g).connect(mestre);
+f.start(t0);
+nota(1100 + rapidez * 500, t0, 0.04, 0.05, 'triangle');
+},
+// eliminado: vento curto descendo e um baque abafado
+vento() {
+const t0 = ac.currentTime + 0.01;
+const f = ac.createBufferSource();
+f.buffer = longo;
+const bp = ac.createBiquadFilter();
+bp.type = 'bandpass';
+bp.Q.value = 1.2;
+bp.frequency.setValueAtTime(2400, t0);
+bp.frequency.exponentialRampToValueAtTime(380, t0 + 0.4);
+const g = ac.createGain();
+g.gain.setValueAtTime(0.0001, t0);
+g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.06);
+g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.45);
+f.connect(bp).connect(g).connect(mestre);
+f.start(t0);
+f.stop(t0 + 0.5);
+const o = ac.createOscillator();
+o.frequency.setValueAtTime(160, t0);
+o.frequency.exponentialRampToValueAtTime(55, t0 + 0.25);
+const go = ac.createGain();
+go.gain.setValueAtTime(0.3, t0);
+go.gain.exponentialRampToValueAtTime(0.001, t0 + 0.3);
+o.connect(go).connect(mestre);
+o.start(t0);
+o.stop(t0 + 0.32);
+},
+// revelação: baque grave + arpejo subindo; raridade 0..4 decide quantas notas e o brilho no topo
+brilho(raridade) {
+const t0 = ac.currentTime + 0.02;
+const o = ac.createOscillator();
+o.frequency.setValueAtTime(120, t0);
+o.frequency.exponentialRampToValueAtTime(38, t0 + 0.5);
+const go = ac.createGain();
+go.gain.setValueAtTime(0.8, t0);
+go.gain.exponentialRampToValueAtTime(0.001, t0 + 0.7);
+o.connect(go).connect(mestre);
+o.start(t0);
+o.stop(t0 + 0.75);
+const escala = [523.25, 659.25, 783.99, 987.77, 1046.5, 1318.5, 1568, 2093];
+const n = 3 + raridade;
+for (let i = 0; i < n; i++) nota(escala[i], t0 + 0.08 + i * 0.075, 1.1 - i * 0.06, 0.12, i % 2 ? 'triangle' : 'sine');
+if (raridade >= 2) {
+const f = ac.createBufferSource();
+f.buffer = longo;
+const hp = ac.createBiquadFilter();
 hp.type = 'highpass';
-hp.frequency.value = 5000;
-const gp = ac2.createGain();
-gp.gain.setValueAtTime(0.6, t0);
-gp.gain.exponentialRampToValueAtTime(0.001, t0 + 1.5);
-prato.connect(hp).connect(gp).connect(mestre);
-prato.start(t0);
-const osc = ac2.createOscillator();
-osc.frequency.setValueAtTime(110, t0);
-osc.frequency.exponentialRampToValueAtTime(40, t0 + 0.4);
-const go = ac2.createGain();
-go.gain.setValueAtTime(0.9, t0);
-go.gain.exponentialRampToValueAtTime(0.001, t0 + 0.6);
-osc.connect(go).connect(mestre);
-osc.start(t0);
-osc.stop(t0 + 0.7);
+hp.frequency.value = 6000 + raridade * 800;
+const g = ac.createGain();
+g.gain.setValueAtTime(0.0001, t0 + 0.1);
+g.gain.exponentialRampToValueAtTime(0.06 + raridade * 0.03, t0 + 0.25);
+g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.75);
+f.connect(hp).connect(g).connect(mestre);
+f.start(t0 + 0.1);
+f.stop(t0 + 0.8);
+}
+},
 };
 }
 
+// Raridade da revelação, como os itens do Dota: sobe com a gravidade da culpa (mesmos níveis dos cartazes)
+const RARIDADES = [['Raro', '#4b69ff'], ['Mítico', '#8847ff'], ['Lendário', '#d32ce6'], ['Imortal', '#e4ae39'], ['Arcana', '#ade55c']];
+
+// A abertura: os 5 rostos rodam num carrossel (avatar da Steam para os amigos, herói para o resto) e saem um a um,
+// do menos culpado (ou do que menos carregou, na vitória) para o mais, até sobrar quem o tribunal escolheu.
 function revelar(r) {
 return new Promise((resolve) => {
-const vitoria = r.partida.venceu && r.craques && r.craques.length;
+const vitoria = Boolean(r.partida.venceu && r.craques && r.craques.length);
 const cs = vitoria ? craquesDe(r) : culpados(r);
+const finais = cs.map((v) => v.jogador);
 const reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const suspeitos = r.vereditos.map((v) => v.jogador);
-const rosto = h('div', { class: 'rev-rosto' });
-const nome = h('p', { class: 'rev-nome' }, '');
-const titulo = h('p', { class: 'rev-titulo' }, r.partida.venceu ? 'Vitória! Quem carregou?' : r.partida.parseado ? 'O tribunal está reunido' : 'Veredito preliminar');
-const pular = h('button', { class: 'rev-pular', type: 'button' }, 'Pular');
-const ov = h('div', { class: 'revelacao', role: 'dialog', 'aria-label': 'Revelação do culpado' }, titulo, rosto, nome, pular);
-document.body.append(ov);
-let fim = false;
-const terminar = () => { if (fim) return; fim = true; ov.classList.add('saindo'); setTimeout(() => { ov.remove(); resolve(); }, 450); };
-pular.addEventListener('click', terminar);
-const dur = reduz ? 0.3 : 2.4;
-const bater = tambores(dur);
-let k = 0;
-const mostrar = (p, final) => {
-rosto.textContent = '';
-rosto.append(retrato(p.heroi, true));
-nome.textContent = final ? cs.map((v) => v.jogador.nome).join(' e ') : p.nome;
-rosto.classList.toggle('final', final);
+const raridade = vitoria ? 3 : cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
+const [nomeRaridade, corRaridade] = RARIDADES[raridade];
+carregarPerfis(); // os avatares chegam enquanto a roleta gira
+const peso = (p) => {
+if (vitoria) { const c = (r.craques || []).find((x) => x.jogador === p); return c ? c.fatia : 0; }
+const v = r.vereditos.find((x) => x.jogador === p);
+return v ? v.fatia : 0;
 };
-const inicio = performance.now();
-const ciclo = () => {
+const jogadores = r.vereditos.map((v) => v.jogador);
+const ordemSaida = jogadores.filter((p) => !finais.includes(p)).sort((a, b) => peso(a) - peso(b));
+
+const titulo = h('p', { class: 'rev-titulo' }, r.partida.venceu ? 'Vitória! Quem carregou?' : r.partida.parseado ? 'O tribunal está reunido' : 'Veredito preliminar');
+const anel = h('div', { class: 'bau-anel' });
+const raios = h('div', { class: 'bau-raios', 'aria-hidden': 'true' });
+const palco = h('div', { class: 'bau-palco', 'aria-hidden': 'true' }, raios, anel);
+const nome = h('p', { class: 'rev-nome' }, '');
+const selo = h('p', { class: 'bau-raridade' }, '');
+const pular = h('button', { class: 'rev-pular', type: 'button' }, 'Pular');
+const ov = h('div', { class: 'revelacao bau', role: 'dialog', 'aria-label': 'Revelação do culpado', style: `--raridade:${corRaridade}` },
+titulo, palco, nome, selo, pular);
+const cartas = jogadores.map((p, i) => {
+const dentro = h('div', { class: 'bau-carta-dentro' }, fotoDe(p, true), h('span', { class: 'bau-x', 'aria-hidden': 'true' }, '✕'));
+const el_ = h('div', { class: 'bau-carta' }, dentro);
+anel.append(el_);
+return { p, i, el: el_, dentro, vivo: true, off: (2 * Math.PI * i) / jogadores.length, ant: null };
+});
+document.body.append(ov);
+
+let fim = false;
+let quadro = 0;
+const relogios = [];
+const terminar = () => {
 if (fim) return;
-const passou = (performance.now() - inicio) / 1000;
-if (passou < dur) {
-mostrar(suspeitos[k++ % suspeitos.length], false);
-setTimeout(ciclo, Math.max(60, 260 - passou * 90));
+fim = true;
+cancelAnimationFrame(quadro);
+relogios.forEach(clearTimeout);
+ov.classList.add('saindo');
+setTimeout(() => { ov.remove(); resolve(); }, 450);
+};
+pular.addEventListener('click', terminar);
+const som = somDoBau();
+
+const mostrarFinal = () => {
+ov.classList.add('bateu', 'revelado');
+ov.classList.toggle('vitoria', vitoria);
+titulo.textContent = vitoria ? (cs.length > 1 ? 'Craques da partida!' : 'Craque da partida!') : cs.length > 1 ? 'Culpados!' : 'Culpado!';
+nome.textContent = finais.map((p) => p.nome).join(' e ');
+nome.setAttribute('aria-live', 'polite');
+selo.textContent = `★ ${nomeRaridade}`;
+cartas.forEach((c) => c.dentro.classList.toggle('vencedor', finais.includes(c.p)));
+if (som) som.brilho(raridade);
+relogios.push(setTimeout(terminar, reduz ? 900 : 1700));
+};
+
+if (reduz) {
+// sem movimento: só os escolhidos, de frente
+cartas.forEach((c) => {
+if (!finais.includes(c.p)) { c.el.hidden = true; return; }
+const k = finais.indexOf(c.p);
+c.el.style.transform = `translate(-50%, -50%) translateX(${finais.length > 1 ? (k ? 70 : -70) : 0}px)`;
+c.el.style.zIndex = '10';
+});
+mostrarFinal();
 return;
 }
-bater();
-mostrar(cs[0].jogador, true);
-titulo.textContent = vitoria ? (cs.length > 1 ? 'Craques da partida!' : 'Craque da partida!') : cs.length > 1 ? 'Culpados!' : 'Culpado!';
-ov.classList.add('bateu');
-ov.classList.toggle('vitoria', Boolean(vitoria));
-if (cs.length > 1) rosto.append(retrato(cs[1].jogador.heroi, true));
-setTimeout(terminar, reduz ? 600 : 1900);
-};
-ciclo();
-});
+
+// linha do tempo (segundos)
+const ELIM_INI = 1.4;
+const ELIM_PASSO = 0.7;
+const ultimaElim = ELIM_INI + ELIM_PASSO * Math.max(0, ordemSaida.length - 1);
+const T_APROX = ultimaElim + 0.45; // começa a parar
+const D_APROX = 1.1;
+const W_MAX = 11; // rad/s
+const W_MIN = 3.2;
+const raio = () => Math.min(210, palco.clientWidth * 0.36);
+const t0 = performance.now();
+let antes = t0;
+let rot = 0;
+let proxElim = 0;
+let aprox = null;
+const doisFinais = finais.length > 1;
+const norm = (a) => { a %= 2 * Math.PI; if (a > Math.PI) a -= 2 * Math.PI; if (a < -Math.PI) a += 2 * Math.PI; return a; };
+
+const passo = (agora) => {
+if (fim) return;
+const t = (agora - t0) / 1000;
+const dt = Math.min(0.05, (agora - antes) / 1000);
+antes = agora;
+
+// eliminações, do menos culpado para o mais
+while (proxElim < ordemSaida.length && t >= ELIM_INI + proxElim * ELIM_PASSO) {
+const c = cartas.find((x) => x.p === ordemSaida[proxElim]);
+c.vivo = false;
+c.dentro.classList.add('fora');
+if (som) som.vento();
+proxElim++;
 }
 
+// giro: acelera, desacelera e para com o escolhido de frente
+if (t < T_APROX) {
+const w = t < 0.5 ? W_MAX * (t / 0.5) : W_MAX - (W_MAX - W_MIN) * Math.min(1, (t - 0.5) / Math.max(0.1, T_APROX - 0.5));
+rot += w * dt;
+} else {
+if (!aprox) {
+const delta = (W_MIN * D_APROX) / 3; // ease-out cúbico começando na velocidade atual
+const base = rot + delta;
+const alvo = Math.round(base / (2 * Math.PI)) * 2 * Math.PI;
+aprox = { de: rot, alvo: alvo < rot + 0.6 ? alvo + 2 * Math.PI : alvo };
+}
+const s_ = Math.min(1, (t - T_APROX) / D_APROX);
+rot = aprox.de + (aprox.alvo - aprox.de) * (1 - (1 - s_) ** 3);
+}
 
+// os vivos se redistribuem pelo anel; no fim, dois culpados ficam lado a lado na frente
+const vivos = cartas.filter((c) => c.vivo);
+vivos.forEach((c, k) => {
+const alvoOff = vivos.length === 2 && doisFinais && proxElim >= ordemSaida.length ? (k ? 0.42 : -0.42) : (2 * Math.PI * k) / vivos.length;
+c.off += norm(alvoOff - c.off) * Math.min(1, dt * 6);
+});
 
+const R = raio();
+let frente = null;
+cartas.forEach((c) => {
+const a = norm(rot + c.off);
+if (c.vivo) {
+// passou pela frente: clique
+if (c.ant != null && c.ant < 0 && a >= 0 && a < 1.2 && som && t < T_APROX + D_APROX * 0.85) som.tique(Math.min(1, (t < T_APROX ? 1 : 0.4)));
+c.ant = a;
+if (!frente || Math.abs(a) < Math.abs(frente.a)) frente = { c, a };
+}
+const prof = (Math.cos(a) + 1) / 2;
+c.el.style.transform = `translate(-50%, -50%) translateX(${(Math.sin(a) * R).toFixed(1)}px) scale(${(0.55 + 0.45 * prof).toFixed(3)})`;
+c.el.style.zIndex = String(Math.round(prof * 100));
+c.el.style.setProperty('--prof', prof.toFixed(3));
+});
+if (frente && t < T_APROX + D_APROX) nome.textContent = frente.c.p.nome;
+
+if (t >= T_APROX + D_APROX) { mostrarFinal(); return; }
+quadro = requestAnimationFrame(passo);
+};
+quadro = requestAnimationFrame(passo);
+});
+}
 
 
 
@@ -10185,5 +10343,32 @@ iniciar();
 
 </script>
 
+<style>
+/* ---------- abertura estilo baú do Dota ---------- */
+.revelacao.bau{gap:10px;--raridade:#e4ae39}
+.bau-palco{position:relative;width:min(680px,94vw);height:clamp(190px,34vw,250px)}
+.bau-anel{position:absolute;inset:0}
+.bau-carta{position:absolute;left:50%;top:50%;will-change:transform;--prof:1}
+.bau-carta-dentro{position:relative;transition:transform .45s cubic-bezier(.2,.9,.3,1.3),opacity .45s,filter .45s;filter:brightness(calc(.45 + .55 * var(--prof)))}
+.bau .bau-carta .retrato.grande{width:clamp(84px,17vw,124px);height:clamp(84px,17vw,124px);border-radius:14px;font-size:2rem;box-shadow:0 0 0 3px #2a2f3a,0 10px 24px rgba(0,0,0,.6);background:#1b1f27;color:#ddd}
+.bau .bau-carta .retrato img{width:100%;height:100%;object-fit:cover}
+.bau-x{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(2.6rem,7vw,4rem);font-weight:900;color:#e5533d;text-shadow:0 2px 8px #000;opacity:0;transform:scale(1.6);transition:opacity .2s,transform .25s}
+.bau-carta-dentro.fora{opacity:0;transform:translateY(46px) rotate(-14deg) scale(.7);filter:grayscale(1) brightness(.5);transition-delay:.18s}
+.bau-carta-dentro.fora .bau-x{opacity:1;transform:scale(1);transition-delay:0s}
+.bau-carta-dentro.vencedor{transform:scale(1.32);filter:none}
+.bau-carta-dentro.vencedor .retrato.grande{box-shadow:0 0 0 4px var(--raridade),0 0 34px var(--raridade),0 0 90px color-mix(in srgb,var(--raridade) 55%,transparent);animation:estalo .35s ease}
+.bau-raios{position:absolute;left:50%;top:50%;width:min(520px,90vw);aspect-ratio:1;transform:translate(-50%,-50%) scale(.2);border-radius:50%;opacity:0;pointer-events:none;
+background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--raridade) 70%,transparent) 0 6deg,transparent 6deg 18deg);
+-webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%);transition:opacity .4s,transform .6s cubic-bezier(.2,.9,.3,1)}
+.bau.revelado .bau-raios{opacity:1;transform:translate(-50%,-50%) scale(1);animation:bau-gira 6s linear infinite}
+@keyframes bau-gira{to{transform:translate(-50%,-50%) scale(1) rotate(360deg)}}
+.bau-palco::before{content:"";position:absolute;left:50%;top:50%;width:2px;height:118%;transform:translate(-50%,-50%);background:linear-gradient(transparent,rgba(227,180,72,.6),transparent);pointer-events:none;z-index:200;transition:opacity .3s}
+.bau.revelado .bau-palco::before{opacity:0}
+.bau-raridade{min-height:1.4em;font-family:var(--font-display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--raridade);text-shadow:0 0 18px var(--raridade);opacity:0;transform:translateY(6px);transition:opacity .35s .15s,transform .35s .15s}
+.bau.revelado .bau-raridade{opacity:1;transform:none}
+.bau.revelado .rev-titulo{color:var(--raridade)}
+.bau .rev-nome{min-height:1.5em;text-align:center;padding:0 16px}
+@media (prefers-reduced-motion:reduce){.bau.revelado .bau-raios{animation:none}.bau-carta-dentro,.bau-raios{transition:none}}
+</style>
 </body>
 </html>
