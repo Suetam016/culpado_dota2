@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-10-19T06:47:56Z",
+ "atualizadoEm": "2026-10-19T15:45:18Z",
  "desde": "2025-10-24",
- "partidasLidas": 431,
+ "partidasLidas": 435,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -807,8 +807,8 @@
      "venceu": false,
      "heroiA": 76,
      "heroiB": 107,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 3
     },
     {
      "matchId": 9051821402,
@@ -1576,8 +1576,8 @@
      "venceu": false,
      "heroiA": 107,
      "heroiB": 86,
-     "posA": null,
-     "posB": null
+     "posA": 3,
+     "posB": 4
     },
     {
      "matchId": 9051821402,
@@ -1969,8 +1969,8 @@
      "venceu": false,
      "heroiA": 76,
      "heroiB": 86,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 4
     },
     {
      "matchId": 9051821402,
@@ -5478,15 +5478,15 @@
      "herois": {
       "77621319": {
        "heroi": 76,
-       "pos": null
+       "pos": 2
       },
       "81918076": {
        "heroi": 107,
-       "pos": null
+       "pos": 3
       },
       "241782761": {
        "heroi": 86,
-       "pos": null
+       "pos": 4
       }
      }
     },
@@ -8979,6 +8979,18 @@
     "vitorias": 4
    },
    {
+    "heroi": 54,
+    "pos": 1,
+    "jogos": 5,
+    "vitorias": 4
+   },
+   {
+    "heroi": 1,
+    "pos": 1,
+    "jogos": 5,
+    "vitorias": 4
+   },
+   {
     "heroi": 12,
     "pos": 1,
     "jogos": 5,
@@ -9003,12 +9015,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 54,
-    "pos": 1,
-    "jogos": 4,
-    "vitorias": 4
-   },
-   {
     "heroi": 76,
     "pos": 2,
     "jogos": 4,
@@ -9016,12 +9022,6 @@
    },
    {
     "heroi": 48,
-    "pos": 1,
-    "jogos": 4,
-    "vitorias": 3
-   },
-   {
-    "heroi": 1,
     "pos": 1,
     "jogos": 4,
     "vitorias": 3
@@ -9151,6 +9151,12 @@
     "pos": 3,
     "jogos": 2,
     "vitorias": 1
+   },
+   {
+    "heroi": 86,
+    "pos": 4,
+    "jogos": 2,
+    "vitorias": 0
    },
    {
     "heroi": 23,
@@ -9317,12 +9323,6 @@
    {
     "heroi": 59,
     "pos": 2,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 86,
-    "pos": 4,
     "jogos": 1,
     "vitorias": 0
    },
@@ -9505,12 +9505,6 @@
     "pos": 2,
     "jogos": 1,
     "vitorias": 0
-   },
-   {
-    "heroi": 86,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
    }
   ],
   "81918076": [
@@ -9523,7 +9517,7 @@
    {
     "heroi": 107,
     "pos": 3,
-    "jogos": 34,
+    "jogos": 35,
     "vitorias": 17
    },
    {
@@ -9645,32 +9639,26 @@
     "pos": 5,
     "jogos": 1,
     "vitorias": 0
-   },
-   {
-    "heroi": 107,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
    }
   ],
   "1000265186": [
    {
     "heroi": 74,
     "pos": 2,
-    "jogos": 42,
-    "vitorias": 29
+    "jogos": 43,
+    "vitorias": 30
+   },
+   {
+    "heroi": 34,
+    "pos": 2,
+    "jogos": 8,
+    "vitorias": 2
    },
    {
     "heroi": 25,
     "pos": 2,
     "jogos": 7,
     "vitorias": 6
-   },
-   {
-    "heroi": 34,
-    "pos": 2,
-    "jogos": 7,
-    "vitorias": 2
    },
    {
     "heroi": 91,
@@ -10501,6 +10489,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 76,
+    "pos": 2,
+    "jogos": 2,
+    "vitorias": 1
+   },
+   {
     "heroi": 44,
     "pos": 1,
     "jogos": 2,
@@ -10563,12 +10557,6 @@
    {
     "heroi": 85,
     "pos": 3,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 76,
-    "pos": 2,
     "jogos": 1,
     "vitorias": 1
    },
@@ -10641,12 +10629,6 @@
    {
     "heroi": 8,
     "pos": 1,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 76,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -19332,23 +19314,23 @@
     [
      "77621319",
      76,
-     0,
-     null,
-     null
+     2,
+     2,
+     1
     ],
     [
      "81918076",
      107,
-     0,
-     null,
-     null
+     3,
+     1,
+     -1
     ],
     [
      "241782761",
      86,
-     0,
-     null,
-     null
+     4,
+     1,
+     -1
     ]
    ]
   },
@@ -19437,6 +19419,66 @@
      1,
      3,
      -1
+    ]
+   ]
+  },
+  {
+   "id": 9052036181,
+   "t": 1792389442,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9052073153,
+   "t": 1792393257,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9052193379,
+   "t": 1792403302,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     1,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9052239495,
+   "t": 1792406493,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     54,
+     1,
+     1,
+     0
     ]
    ]
   }
