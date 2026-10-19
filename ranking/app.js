@@ -1122,13 +1122,12 @@ const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json
   .catch(() => ''));
 
 /* ---------- Time fechado: as partidas com os 5 do grupo do mesmo lado ----------
- * Cada partida ganha marcadores (o que aconteceu nela: virada, começo ruim, draft sem iniciação, alguém que morreu
- * muito, o que o inimigo tinha...). Os marcadores viram o resumo e o filtro: tocar num mostra só os jogos com ele.
+ * Cada partida ganha marcadores (o que aconteceu nela: virada, começo ruim, draft sem iniciação, o que o inimigo
+ * tinha...). Nada de marcador por pessoa: a aba é pra melhorar o time, não pra apontar dedo. Os marcadores viram o resumo e o filtro: tocar num mostra só os jogos com ele.
  * Dados: parceiros.timeFechado (parceiros.py). */
 
 const VIRADA = 5000;          // vantagem de ouro que conta como "jogo na mão"
-const MORTES_DEMAIS = 12;
-const TIPOS_MARCADOR = { jogo: 'O jogo', draft: 'Nosso draft', inimigo: 'O time deles', pessoa: 'Gente' };
+const TIPOS_MARCADOR = { jogo: 'O jogo', draft: 'Nosso draft', inimigo: 'O time deles' };
 let filtroFechado = null;
 
 function marcadoresDe(g) {
@@ -1151,13 +1150,12 @@ function marcadoresDe(g) {
   g.sinNos.lista.filter(s => s.nivel >= 2 || (s.id === 'babysit' && s.nivel)).forEach(s => add(`nos:${s.id}`, 'draft', s.icone, s.nome, s.desc));
   g.sinEles.lista.filter(s => s.nivel >= 2 || (['push', 'bkb', 'invis'].includes(s.id) && s.nivel)).forEach(s =>
     add(`eles:${s.id}`, 'inimigo', s.icone, `Inimigo: ${s.nome}`, `O time deles tinha ${s.nome.toLowerCase()} (${s.desc.toLowerCase()})`));
-  g.nos.filter(x => (x[4] || 0) >= MORTES_DEMAIS).forEach(x => add(`mortes:${x[0]}`, 'pessoa', '💀', `${nomeJogador(x[0])} morreu ${MORTES_DEMAIS}+`, `${nomeJogador(x[0])} morreu ${x[4]} vezes`));
   return ms;
 }
 
 /* Gráficos do time fechado: mapa dos marcadores (frequência × win rate), grade "contra a comp deles, o que
- * funciona" e o ouro jogo a jogo. Tocar numa bolha filtra igual aos marcadores (data-marcador). */
-const CORES_TIPO = { jogo: '#e8b04a', draft: '#4f9dff', inimigo: '#e5533d', pessoa: '#c38bf0' };
+ * funciona". Tocar numa bolha filtra igual aos marcadores (data-marcador). */
+const CORES_TIPO = { jogo: '#e8b04a', draft: '#4f9dff', inimigo: '#e5533d' };
 const FREQUENTE = 25; // % dos jogos a partir do qual um marcador é "frequente"
 const pctDe = (v, n) => (n ? Math.round((100 * v) / n) : 0);
 
@@ -1199,7 +1197,7 @@ function graficoMarcadores(marcadores, total, wrGeral) {
     const ladoDir = m.rotulo === -1;
     const ativo = filtro === m.id;
     return `<g class="tf-bolha${ativo ? ' ativa' : ''}${filtro && !ativo ? ' apagada' : ''}" data-marcador="${esc(m.id)}" tabindex="0" role="button">
-      <title>${esc(m.nome)}: ${m.v}V ${m.n - m.v}D (${m.wr}%) · aparece em ${Math.round(m.f)}% dos jogos</title>
+      <title>${esc(m.nome)}: ${m.v}V ${m.n - m.v}D (${m.wr}%) · aparece em ${Math.round(m.f)}% dos jogos. ${esc(textoExplicado(m))}</title>
       <circle cx="${m.cx.toFixed(1)}" cy="${m.cy.toFixed(1)}" r="${raio(m.n).toFixed(1)}" style="fill:${CORES_TIPO[m.tipo]}"/>
       <text class="tf-bolha-ic" x="${m.cx.toFixed(1)}" y="${(m.cy + 5).toFixed(1)}" text-anchor="middle">${m.icone}</text>
       ${m.rotulo ? `<text class="tf-bolha-nome" x="${(m.cx + (ladoDir ? -1 : 1) * (raio(m.n) + 5)).toFixed(1)}" y="${(m.cy + 4).toFixed(1)}" text-anchor="${ladoDir ? 'end' : 'start'}">${esc(m.nome)}</text>` : ''}
@@ -1230,12 +1228,58 @@ function graficoMarcadores(marcadores, total, wrGeral) {
       <text class="tf-quad-t" x="${M.e + 8}" y="${H - M.b - 10}">Raro e perde</text>
       ${xs.map(bolha).join('')}
     </svg></div>
+    ${filtro && xs.some(m => m.id === filtro) ? (() => {
+      const m = xs.find(x => x.id === filtro);
+      return `<div class="tf-selecionado"><b>${m.icone} ${esc(m.nome)}</b> <span>${m.v}V ${m.n - m.v}D (${m.wr}%) · aparece em ${Math.round(m.f)}% dos jogos</span>
+        <p>${esc(textoExplicado(m))}</p><button type="button" data-marcador="">✕ limpar</button></div>`;
+    })() : '<p class="tf-dica">Toque numa bolha pra ver o que ela significa e os jogos dela.</p>'}
     <div class="tf-leituras">
       ${vicios.length ? `<p class="ruim"><b>Corrigir:</b> ${vicios.map(botao).join('')}</p>` : ''}
       ${armas.length ? `<p class="bom"><b>Usar mais:</b> ${armas.map(botao).join('')}</p>` : ''}
       ${cara.length ? `<p class="bom"><b>Já é a cara de vocês:</b> ${cara.map(botao).join('')}</p>` : ''}
     </div>
   </article>`;
+}
+
+// cabecinha do herói como no minimapa do Dota
+function iconeHeroi(id, classe = 'ico') {
+  const h = parceiros && parceiros.herois && parceiros.herois[id];
+  if (!h || !h[0]) return `<span class="${classe} ico-falta" title="${esc(h ? h[1] : '?')}">${esc((h ? h[1] : '?').slice(0, 2))}</span>`;
+  const sigla = esc(h[1].split(/[\s-]+/).map(x => x[0]).join('').slice(0, 2));
+  // sem a imagem, vira uma bolinha com a sigla (o nome fica no title)
+  return `<img class="${classe}" src="${HEROI_IMG}icons/${h[0]}.png" alt="${esc(h[1])}" title="${esc(h[1])}" data-sigla="${sigla}" loading="lazy" width="24" height="24"
+    onerror="this.replaceWith(Object.assign(document.createElement('span'), { className: this.className + ' ico-falta', textContent: this.dataset.sigla, title: this.alt }))">`;
+}
+
+let casaFechado = null; // "linha|coluna" da grade (coluna "*" = a linha toda)
+
+function jogosDaCasa(todos, casa) {
+  if (!casa) return null;
+  const [l, c] = casa.split('|');
+  const ativo = (sin, id) => ((sin.lista.find(x => x.id === id) || {}).nivel || 0) > 0;
+  return todos.filter(g => ativo(g.sinEles, l) && (c === '*' || ativo(g.sinNos, c)));
+}
+
+function painelDaCasa(todos, casa, info) {
+  const xs = jogosDaCasa(todos, casa);
+  if (!xs) return `<aside class="tf-casa-painel vazio"><p>Toque numa casa da grade pra ver os jogos dela: os heróis de vocês contra os deles.</p></aside>`;
+  const [l, c] = casa.split('|');
+  const v = xs.filter(g => g.v).length;
+  const jogo = g => `<li class="${g.v ? 'v' : 'd'}">
+      <span class="tf-casa-res">${g.v ? 'V' : 'D'}</span>
+      <span class="tf-icos">${[...g.nos].sort((a, b) => (a[2] || 9) - (b[2] || 9)).map(x => (x[1] ? iconeHeroi(x[1]) : '')).join('')}</span>
+      <span class="tf-casa-vs">×</span>
+      <span class="tf-icos eles">${g.eles.map(h => (h ? iconeHeroi(h) : '')).join('')}</span>
+      <a href="../#${g.id}" title="Julgar essa partida · ${data(g.t * 1000)}">${data(g.t * 1000)}</a>
+    </li>`;
+  return `<aside class="tf-casa-painel">
+    <div class="tf-casa-cab">
+      <b>${info[l].icone} ${esc(info[l].nome)} deles${c === '*' ? '' : ` × ${info[c].icone} ${esc(info[c].nome)} de vocês`}</b>
+      <button type="button" data-casa="" aria-label="Fechar">✕</button>
+    </div>
+    <p class="tf-casa-placar"><span class="${v * 2 > xs.length ? 'bom' : v * 2 < xs.length ? 'ruim' : ''}">${v}V · ${xs.length - v}D</span> em ${xs.length} jogo${xs.length === 1 ? '' : 's'} · vocês à esquerda, eles à direita</p>
+    <ul class="tf-casa-jogos">${[...xs].reverse().map(jogo).join('')}</ul>
+  </aside>`;
 }
 
 function gradeRespostas(todos) {
@@ -1248,6 +1292,10 @@ function gradeRespostas(todos) {
     .map(id => ({ id, n: contar(lado, id) })).filter(x => x.n >= 3 && x.n <= todos.length - 3).sort((a, b) => b.n - a.n).slice(0, 8);
   const linhas = eixo('sinEles'), colunas = eixo('sinNos');
   if (linhas.length < 2 || colunas.length < 2) return '';
+  if (casaFechado) {
+    const [l, c] = casaFechado.split('|');
+    if (!linhas.some(x => x.id === l) || (c !== '*' && !colunas.some(x => x.id === c))) casaFechado = null;
+  }
   const cor = (wr, n) => {
     const forca = Math.min(1, Math.abs(wr - 50) / 40) * Math.min(1, n / 3);
     return `background:color-mix(in srgb, ${wr >= 50 ? 'var(--good)' : 'var(--bad)'} ${Math.round(10 + forca * 60)}%, var(--surface))`;
@@ -1260,54 +1308,95 @@ function gradeRespostas(todos) {
       return { c, n: xs.length, v: xs.filter(g => g.v).length };
     });
     const melhor = casas.filter(x => x.n >= 2 && pctDe(x.v, x.n) > pctDe(vL, daLinha.length)).sort((a, b) => pctDe(b.v, b.n) - pctDe(a.v, a.n) || b.n - a.n)[0];
-    return `<tr><th scope="row"><span>${info[l.id].icone} ${esc(info[l.id].nome)}</span><small>${vL}/${daLinha.length} · ${pctDe(vL, daLinha.length)}%</small></th>
-      ${casas.map(x => (x.n ? `<td style="${cor(pctDe(x.v, x.n), x.n)}" class="${x === melhor ? 'tf-melhor' : ''}${x.n < 2 ? ' tf-pouco' : ''}" title="Contra ${esc(info[l.id].nome)} deles, com ${esc(info[x.c.id].nome)}: ${x.v} vitórias em ${x.n}">
+    return `<tr><th scope="row" data-casa="${l.id}|*" tabindex="0" role="button" class="${casaFechado === `${l.id}|*` ? 'tf-casa-ativa' : ''}" title="${esc(textoExplicado({ id: `eles:${l.id}`, desc: '' }))} Toque pra ver todos os jogos contra essa comp."><span>${info[l.id].icone} ${esc(info[l.id].nome)}</span><small>${vL}/${daLinha.length} · ${pctDe(vL, daLinha.length)}%</small></th>
+      ${casas.map(x => (x.n ? `<td style="${cor(pctDe(x.v, x.n), x.n)}" data-casa="${l.id}|${x.c.id}" tabindex="0" role="button" class="${x === melhor ? 'tf-melhor' : ''}${x.n < 2 ? ' tf-pouco' : ''}${casaFechado === `${l.id}|${x.c.id}` ? ' tf-casa-ativa' : ''}" title="Contra ${esc(info[l.id].nome)} deles, com ${esc(info[x.c.id].nome)}: ${x.v} vitórias em ${x.n}">
         ${x === melhor ? '<i>★</i>' : ''}<b>${pctDe(x.v, x.n)}%</b><small>${x.v}/${x.n}</small></td>` : '<td class="tf-vazio">—</td>')).join('')}</tr>`;
   }).join('');
   return `<article class="cartao tf-grafico">
     <div class="tf-graf-cab"><h3>Contra cada comp deles, o que funciona</h3></div>
-    <p class="tf-graf-sub">Linha: o que o time deles tinha. Coluna: o que vocês tinham. ★ = a melhor resposta (2+ jogos, acima do geral daquela linha).</p>
+    <p class="tf-graf-sub">Linha: o que o time deles tinha. Coluna: o que vocês tinham. ★ = a melhor resposta (2+ jogos, acima do geral daquela linha). Toque numa casa pra ver os jogos; o que cada nome significa está em “O que significa cada marcador”.</p>
+    <div class="tf-grade-e-jogos">
     <div class="tf-grade-wrap"><table class="tf-grade">
-      <thead><tr><th class="tf-canto"><span>Deles ↓ · Vocês →</span></th>${colunas.map(c => `<th scope="col"><span class="tf-col-ic">${info[c.id].icone}</span><span>${esc(info[c.id].nome)}</span></th>`).join('')}</tr></thead>
+      <thead><tr><th class="tf-canto"><span>Deles ↓ · Vocês →</span></th>${colunas.map(c => `<th scope="col" title="${esc(textoExplicado({ id: `nos:${c.id}`, desc: '' }))}"><span class="tf-col-ic">${info[c.id].icone}</span><span>${esc(info[c.id].nome)}</span></th>`).join('')}</tr></thead>
       <tbody>${corpo}</tbody>
     </table></div>
+    ${painelDaCasa(todos, casaFechado, info)}
+    </div>
   </article>`;
 }
 
-function graficoOuro(todos, destaque) {
-  const W = 760, H = 300, M = { e: 46, d: 18, c: 16, b: 30 };
-  const MIN = [0, 10, 20, 30];
-  const lim = 16000;
-  const px = m => M.e + (m / 30) * (W - M.e - M.d);
-  const py = o => M.c + (1 - (Math.max(-lim, Math.min(lim, o)) + lim) / (2 * lim)) * (H - M.c - M.b);
-  const pontos = g => MIN.map(m => [m, m === 0 ? 0 : g.ouro && g.ouro[String(m)]]).filter(([, o]) => o != null);
-  const caminho = ps => ps.map(([m, o], i) => `${i ? 'L' : 'M'}${px(m).toFixed(1)},${py(o).toFixed(1)}`).join('');
-  const comOuro = todos.filter(g => pontos(g).length >= 2);
-  if (comOuro.length < 3) return '';
-  const media = xs => MIN.map(m => {
-    const vs = xs.map(g => (m === 0 ? 0 : g.ouro && g.ouro[String(m)])).filter(o => o != null);
-    return vs.length >= 2 ? [m, vs.reduce((a, b) => a + b, 0) / vs.length] : null;
-  }).filter(Boolean);
-  const mV = media(comOuro.filter(g => g.v)), mD = media(comOuro.filter(g => !g.v));
-  const k = o => `${o > 0 ? '+' : o < 0 ? '−' : ''}${(Math.abs(o) / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`;
-  const linha = g => {
-    const cls = destaque ? (destaque.has(g.id) ? ' dest' : ' apag') : '';
-    return `<path class="tf-jogo-l ${g.v ? 'v' : 'd'}${cls}" d="${caminho(pontos(g))}"><title>${g.v ? 'Vitória' : 'Derrota'} · ${data(g.t * 1000)} · ${pontos(g).slice(1).map(([m, o]) => `${m}': ${k(o)}`).join(' · ')}</title></path>`;
-  };
-  const em = (ms, m) => (ms.find(x => x[0] === m) || [])[1];
-  return `<article class="cartao tf-grafico">
-    <div class="tf-graf-cab"><h3>O ouro jogo a jogo</h3>
-      <div class="tf-legenda"><span><i style="background:var(--good)"></i>vitórias</span><span><i style="background:var(--bad)"></i>derrotas</span><span>linha grossa = média</span></div></div>
-    <div class="tf-svg-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vantagem de ouro aos 10, 20 e 30 minutos em cada jogo">
-      ${[-15000, -10000, -5000, 0, 5000, 10000, 15000].map(o => `<line class="${o ? 'tf-eixo-l' : 'tf-zero'}" x1="${M.e}" x2="${W - M.d}" y1="${py(o)}" y2="${py(o)}"/><text class="tf-eixo" x="${M.e - 8}" y="${py(o) + 4}" text-anchor="end">${o ? k(o) : '0'}</text>`).join('')}
-      ${MIN.map(m => `<text class="tf-eixo" x="${px(m)}" y="${H - 8}" text-anchor="middle">${m ? `${m} min` : 'início'}</text>`).join('')}
-      <text class="tf-media-t" x="${M.e + 6}" y="${M.c + 12}">na frente ↑</text>
-      <text class="tf-media-t" x="${M.e + 6}" y="${H - M.b - 6}">atrás ↓</text>
-      ${comOuro.map(linha).join('')}
-      <path class="tf-media-v" d="${caminho(mV)}"/><path class="tf-media-d" d="${caminho(mD)}"/>
-    </svg></div>
-    <p class="tf-graf-sub">Média aos 10 min: vitórias <b class="bom">${em(mV, 10) != null ? k(em(mV, 10)) : '—'}</b>, derrotas <b class="ruim">${em(mD, 10) != null ? k(em(mD, 10)) : '—'}</b> · aos 20 min: vitórias <b class="bom">${em(mV, 20) != null ? k(em(mV, 20)) : '—'}</b>, derrotas <b class="ruim">${em(mD, 20) != null ? k(em(mD, 20)) : '—'}</b>.</p>
-  </article>`;
+/* O que significa cada marcador, em português claro, com exemplos de heróis (herois-tracos.js). */
+const ALERTAS_EXPLICADOS = [
+  [/linha de frente/i, ['frente'], 'O time não tinha ninguém de linha de frente: herói que aguenta pancada e entra primeiro na luta.'],
+  [/controle/i, ['controle'], 'Ninguém com stun, hex ou silêncio confiável pra segurar um alvo enquanto o time mata.'],
+  [/abrir a luta/i, ['iniciacao'], 'Ninguém que abre a luta de longe (blink, salto, carga). Aí o time depende de pegar alguém sozinho ou de esperar o outro time errar.'],
+  [/sem babá/i, ['baba'], 'O time tinha um carry que só fica forte no fim do jogo, mas nenhum suporte de proteção (cura, salvar, escudo) pra cuidar dele até lá.'],
+  [/dois carries/i, ['late'], 'Dois heróis que precisam de muito farm pra funcionar: um acaba atrasando o outro.', 'Carries de late'],
+  [/dano físico/i, ['dps', 'push'], 'Pouco herói que bate forte no auto-ataque ou derruba torre rápido: o jogo trava na hora de fechar.'],
+];
+let nomesPorSlug = null;
+
+function exemplosDoTraco(ids, quantos = 4) {
+  if (!nomesPorSlug) {
+    nomesPorSlug = {};
+    Object.values((parceirosBase && parceirosBase.herois) || {}).forEach(([slug, nome]) => { if (slug) nomesPorSlug[slug] = nome; });
+  }
+  const nomes = [];
+  ids.forEach(id => {
+    const t = TRACOS[id];
+    if (!t) return;
+    t.herois.split(' ').filter(sl => nomesPorSlug[sl]).slice(0, Math.ceil(quantos / ids.length)).forEach(sl => nomes.push(nomesPorSlug[sl]));
+  });
+  return nomes;
+}
+
+// marcador (ou id de sinergia "nos:x"/"eles:x") -> { texto, exemplos }
+function explicarMarcador(m) {
+  const [lado, chave] = m.id.includes(':') ? [m.id.slice(0, m.id.indexOf(':')), m.id.slice(m.id.indexOf(':') + 1)] : [null, m.id];
+  if (lado === 'alerta') {
+    const a = ALERTAS_EXPLICADOS.find(([re]) => re.test(chave));
+    return a ? { texto: a[2], exemplos: exemplosDoTraco(a[1]), rotulo: a[3] || 'Quem resolve' } : { texto: m.desc, exemplos: [] };
+  }
+  if (lado === 'nos' || lado === 'eles') {
+    const deles = lado === 'eles';
+    if (chave === 'babysit') {
+      return { texto: `${deles ? 'O time deles tinha' : 'O time tinha'} um carry que fica forte no fim do jogo junto com um suporte de proteção (cura, salvar, escudo) pra segurar ele vivo até lá.`,
+        exemplos: exemplosDoTraco(['late', 'baba']) };
+    }
+    const sin = HeroisTracos.SINERGIAS.find(x => x.id === chave);
+    const t = TRACOS[chave];
+    if (!t) return { texto: m.desc, exemplos: [] };
+    const min = sin ? sin.niveis[0] : 2;
+    return {
+      texto: `${deles ? 'O time deles tinha' : 'O time tinha'} ${min === 1 ? 'pelo menos 1 herói' : `${min} ou mais heróis`} de ${t.nome.toLowerCase()}: ${t.desc.charAt(0).toLowerCase() + t.desc.slice(1)}.`,
+      exemplos: exemplosDoTraco([chave]),
+    };
+  }
+  return { texto: m.desc ? `${m.desc}.` : '', exemplos: [] };
+}
+
+function textoExplicado(m) {
+  const e = explicarMarcador(m);
+  return `${e.texto}${e.exemplos.length ? ` ${e.rotulo || 'Ex.'}: ${e.exemplos.join(', ')}.` : ''}`;
+}
+
+function glossarioFechado(marcadores, idsSinergia) {
+  const jogo = marcadores.filter(m => m.tipo === 'jogo').sort((a, b) => a.nome.localeCompare(b.nome));
+  const alertas = marcadores.filter(m => m.id.startsWith('alerta:'));
+  const sinergias = [...new Set(idsSinergia)].map(id => {
+    const deUmLado = marcadores.find(m => m.id === `nos:${id}` || m.id === `eles:${id}`);
+    const t = id === 'babysit' ? { icone: '🍼🛡️' } : TRACOS[id] || {};
+    const nome = (HeroisTracos.SINERGIAS.find(x => x.id === id) || {}).nome || (id === 'babysit' ? 'Babysit' : id);
+    return { id: `nos:${id}`, icone: deUmLado ? deUmLado.icone : t.icone, nome, desc: '' };
+  }).sort((a, b) => a.nome.localeCompare(b.nome));
+  const item = m => `<li><span class="tf-gl-ic">${m.icone}</span><div><b>${esc(m.nome.replace(/^Inimigo: /, ''))}</b><p>${esc(textoExplicado(m))}</p></div></li>`;
+  const bloco = (titulo, xs, nota) => (xs.length ? `<div class="tf-gl-bloco"><h4>${titulo}</h4>${nota ? `<p class="tf-gl-nota">${nota}</p>` : ''}<ul>${xs.map(item).join('')}</ul></div>` : '');
+  return `<details class="cartao tf-glossario">
+    <summary>ⓘ O que significa cada marcador</summary>
+    ${bloco('Como foi o jogo', jogo)}
+    ${bloco('Sinergias de time', sinergias, 'Contam os heróis de cada time. Quando é do outro time, aparece como “Inimigo: …”.')}
+    ${bloco('Alertas do draft', alertas.map(m => ({ ...m, nome: m.nome })), 'Coisas que faltaram no draft de vocês.')}
+  </details>`;
 }
 
 function renderizarTimeFechado() {
@@ -1337,7 +1426,7 @@ function renderizarTimeFechado() {
   const vit = todos.filter(g => g.v).length;
   const wrGeral = pct(vit, todos.length);
 
-  const chip = m => `<button type="button" class="tf-marcador tm-${m.tipo}${filtroFechado === m.id ? ' ativo' : ''}" data-marcador="${esc(m.id)}" title="${esc(m.desc)}">
+  const chip = m => `<button type="button" class="tf-marcador tm-${m.tipo}${filtroFechado === m.id ? ' ativo' : ''}" data-marcador="${esc(m.id)}" title="${esc(textoExplicado(m))}">
       <span>${m.icone}</span>${esc(m.nome)}${m.n != null ? `<small class="${pct(m.v, m.n) > 55 ? 'bom' : pct(m.v, m.n) < 45 ? 'ruim' : ''}">${m.v}V ${m.n - m.v}D</small>` : ''}</button>`;
   const grupos = Object.entries(TIPOS_MARCADOR).map(([tipo, nome]) => {
     const xs = marcadores.filter(m => m.tipo === tipo).sort((a, b) => b.n - a.n);
@@ -1355,7 +1444,7 @@ function renderizarTimeFechado() {
       <div class="tf-meio">
         <div class="tf-times">
           <div class="tf-lado">${[...g.nos].sort((a, b) => (a[2] || 9) - (b[2] || 9)).map(x => `
-            <div class="tf-heroi">${x[1] ? heroi(x[1], 'heroi heroi-mini') : ''}<small>${esc(nomeJogador(x[0]))}</small><small class="tf-kda">${x[3] ?? '?'}/${x[4] ?? '?'}/${x[5] ?? '?'}</small></div>`).join('')}</div>
+            <div class="tf-heroi">${x[1] ? heroi(x[1], 'heroi heroi-mini') : ''}<small>${esc(nomeJogador(x[0]))}</small></div>`).join('')}</div>
           <span class="tf-vs">vs</span>
           <div class="tf-lado tf-eles">${g.eles.map(h => `<div class="tf-heroi">${h ? heroi(h, 'heroi heroi-mini') : ''}</div>`).join('')}</div>
         </div>
@@ -1376,16 +1465,16 @@ function renderizarTimeFechado() {
     </div>
 
     <div class="tf-graficos">
-      ${graficoMarcadores(marcadores, todos.length, wrGeral)}
       ${gradeRespostas(todos)}
-      ${graficoOuro(todos, filtroFechado ? new Set(jogos.map(g => g.id)) : null)}
+      ${graficoMarcadores(marcadores, todos.length, wrGeral)}
+      ${glossarioFechado(marcadores, todos.flatMap(g => [...g.sinNos.lista, ...g.sinEles.lista].filter(x => x.nivel).map(x => x.id)))}
     </div>
 
     <div class="secao-titulo"><h2>Marcadores</h2><p>Toque num pra ver só os jogos em que ele aparece.</p></div>
     <div class="tf-filtros">${grupos}</div>
 
     <div class="tf-lista-cab">
-      ${mF ? `<span>Jogos com <b>${mF.icone} ${esc(mF.nome)}</b>: ${vF}V · ${jogos.length - vF}D (${pct(vF, jogos.length)}%)</span>
+      ${mF ? `<span>Jogos com <b>${mF.icone} ${esc(mF.nome)}</b>: ${vF}V · ${jogos.length - vF}D (${pct(vF, jogos.length)}%)<small class="tf-explica">${esc(textoExplicado(mF))}</small></span>
         <button type="button" class="chip" data-marcador="">✕ Ver todos</button>` : `<span>Todos os ${todos.length} jogos, do mais novo pro mais antigo</span>`}
     </div>
     <div class="tf-lista">${[...jogos].reverse().map(ficha).join('')}</div>`;
@@ -1393,6 +1482,14 @@ function renderizarTimeFechado() {
   if (!alvo.dataset.ouvindo) {
     alvo.dataset.ouvindo = '1';
     alvo.addEventListener('click', e => {
+      const casa = e.target.closest('[data-casa]');
+      if (casa) {
+        casaFechado = casa.dataset.casa && casa.dataset.casa !== casaFechado ? casa.dataset.casa : null;
+        renderizarTimeFechado();
+        const painel = $('fechado-conteudo').querySelector('.tf-casa-painel');
+        if (casaFechado && painel && painel.getBoundingClientRect().top > innerHeight - 120) painel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
       const b = e.target.closest('[data-marcador]');
       if (!b) return;
       const doGrafico = Boolean(b.closest('svg'));
@@ -1402,7 +1499,7 @@ function renderizarTimeFechado() {
       if (!doGrafico) $('fechado-conteudo').querySelector('.tf-lista-cab').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     alvo.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('g[data-marcador]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('g[data-marcador], [data-casa][role="button"]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
     });
   }
 }

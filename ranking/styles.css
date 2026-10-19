@@ -803,3 +803,67 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 
 .tf-svg-wrap { overflow-x: auto; scrollbar-width: thin; }
 @media (max-width: 640px) { .tf-svg-wrap svg { min-width: 640px; } }
+.tf-dica { color: var(--muted); font-size: 13px; margin-top: 6px; }
+.tf-selecionado { position: relative; margin-top: 8px; padding: 10px 90px 10px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--gold); }
+.tf-selecionado b { font-size: 15px; }
+.tf-selecionado span { color: var(--muted); font-family: var(--font-mono); font-size: 12.5px; margin-left: 6px; }
+.tf-selecionado p { margin-top: 4px; color: var(--ink-2); font-size: 14px; }
+.tf-selecionado button { position: absolute; top: 8px; right: 8px; font: inherit; font-size: 12px; padding: 2px 10px; border-radius: 999px; cursor: pointer; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); }
+.tf-explica { display: block; color: var(--ink-2); font-size: 13px; margin-top: 2px; }
+.tf-glossario summary { cursor: pointer; font-weight: 800; color: var(--gold-2); list-style: none; }
+.tf-glossario summary::-webkit-details-marker { display: none; }
+.tf-glossario summary::after { content: " ▾"; color: var(--muted); }
+.tf-glossario[open] summary::after { content: " ▴"; }
+.tf-gl-bloco { margin-top: 14px; }
+.tf-gl-bloco h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.tf-gl-nota { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.tf-gl-bloco ul { list-style: none; margin-top: 6px; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+.tf-gl-bloco li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); }
+.tf-gl-ic { font-size: 18px; line-height: 1.2; flex: none; min-width: 24px; text-align: center; }
+.tf-gl-bloco b { font-size: 14px; }
+.tf-gl-bloco li p { color: var(--ink-2); font-size: 13px; line-height: 1.4; margin-top: 2px; }
+/* grade com os jogos ao lado */
+.tf-grade-e-jogos { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; margin-top: 10px; }
+.tf-grade-e-jogos .tf-grade-wrap { margin-top: 0; flex: 0 1 auto; max-width: 100%; }
+.tf-grade td[data-casa], .tf-grade th[data-casa] { cursor: pointer; transition: transform .12s, box-shadow .12s; }
+.tf-grade td[data-casa]:hover { transform: scale(1.06); box-shadow: 0 0 0 2px var(--gold-2); z-index: 1; }
+.tf-grade th[data-casa]:hover span { color: var(--gold-2); }
+.tf-grade .tf-casa-ativa { box-shadow: 0 0 0 3px var(--gold-2) !important; }
+.tf-grade th.tf-casa-ativa { border-radius: 6px; }
+.tf-casa-painel { flex: 1 1 300px; min-width: min(100%, 300px); background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 10px; padding: 10px 12px; }
+.tf-casa-painel.vazio { color: var(--muted); font-size: 13.5px; display: grid; place-items: center; min-height: 120px; text-align: center; border-style: dashed; }
+.tf-casa-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.tf-casa-cab b { font-size: 14px; }
+.tf-casa-cab button { font: inherit; font-size: 13px; background: none; border: 0; color: var(--muted); cursor: pointer; }
+.tf-casa-placar { color: var(--muted); font-size: 12.5px; margin: 2px 0 8px; }
+.tf-casa-placar span { font-family: var(--font-mono); font-weight: 700; }
+.tf-casa-jogos { list-style: none; display: grid; gap: 4px; max-height: 420px; overflow-y: auto; scrollbar-width: thin; }
+.tf-casa-jogos li { display: flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 6px; background: var(--surface); border-left: 3px solid var(--good); }
+.tf-casa-jogos li.d { border-left-color: var(--bad); }
+.tf-casa-res { font-family: var(--font-display); font-weight: 900; width: 14px; text-align: center; font-size: 13px; }
+.tf-casa-jogos li.v .tf-casa-res { color: var(--good-ink); } .tf-casa-jogos li.d .tf-casa-res { color: var(--bad-ink); }
+.tf-icos { display: inline-flex; gap: 2px; flex: none; }
+.tf-icos.eles { opacity: .7; }
+.ico { width: 24px; height: 24px; border-radius: 50%; display: inline-block; background: var(--surface-3); object-fit: cover; }
+.ico-falta { display: inline-grid; place-items: center; font-size: 9px; font-weight: 800; color: var(--ink-2); }
+.tf-casa-vs { color: var(--muted); font-size: 12px; }
+.tf-casa-jogos a { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.tf-casa-jogos a:hover { color: var(--gold-2); }
+/* grade mais compacta pra caber os jogos do lado */
+.tf-grade thead th { min-width: 58px; max-width: 76px; }
+.tf-grade td { min-width: 54px; padding: 5px 2px; }
+.tf-grade td b { font-size: 13px; }
+.tf-grade tbody th { max-width: 150px; white-space: normal; }
+@media (max-width: 640px) {
+  .ico { width: 20px; height: 20px; }
+  .tf-icos { gap: 1px; }
+  .tf-casa-jogos li { overflow-x: auto; scrollbar-width: none; gap: 4px; }
+  .tf-casa-jogos a { font-size: 10.5px; }
+}
+@media (min-width: 1000px) {
+  .tf-grade-e-jogos { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .tf-casa-painel { min-width: 0; align-self: stretch; }
+  .tf-casa-jogos { max-height: 360px; }
+  .tf-casa-jogos li { flex-wrap: wrap; row-gap: 3px; }
+  .ico { width: 21px; height: 21px; }
+}
