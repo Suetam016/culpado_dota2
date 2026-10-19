@@ -143,7 +143,7 @@ background:radial-gradient(120% 90% at 50% 45%,#f3dfae 0%,#e2c58b 55%,#c9a467 10
 .doc-wanted .retrato img{width:100%;height:100%;object-fit:cover;filter:sepia(.9) saturate(.75) contrast(1.05) brightness(.95)}
 .doc-wanted.dividido .retrato.grande{width:clamp(120px,16vw,170px);height:clamp(150px,21vw,215px)}
 .wt-nome{font:400 clamp(1.3rem,3.4vw,1.9rem)/1.1 "Rye","Cinzel",Georgia,serif;margin:6px 0 0;color:#4a2414;overflow-wrap:anywhere;max-width:240px}
-.wt-heroi{font:700 13px Georgia,serif;opacity:.8;margin:0}
+.wt-heroi{font:700 13px Georgia,serif;opacity:.8;margin:0}.wt-vulgo{font:italic 700 14px Georgia,serif;margin:0;color:#6a3418}.wt-gangue{font:400 clamp(1.4rem,4.4vw,2.3rem)/1.1 "Rye","Cinzel",Georgia,serif;color:#4a2414;margin:14px 0 0;letter-spacing:.03em}.wt-bloco{display:flex;flex-direction:column;gap:4px;max-width:300px}.wt-rot{font:400 1.05rem "Rye","Cinzel",Georgia,serif;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(74,36,20,.4);padding-bottom:2px}.wt-crimes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}.wt-crimes li::before{content:"✦ ";opacity:.7}.wt-xerife{font:700 13px Georgia,serif;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;color:#4a2414}
 .wt-valor{font:400 clamp(3rem,11vw,6.2rem)/1 "Rye","Cinzel",Georgia,serif;margin:8px 0 0;color:#4a2414;text-shadow:3px 3px 0 rgba(74,36,20,.3)}
 .wt-recompensa{font:400 clamp(1.8rem,6vw,3.4rem)/1 "Rye","Cinzel",Georgia,serif;text-transform:uppercase;margin:2px 0 4px;color:#4a2414;letter-spacing:.06em}
 .wt-nota{font:italic 13px Georgia,serif;opacity:.8;margin:0 0 12px}
@@ -9553,7 +9553,7 @@ const DECISOES_HAIA = ['A Câmara decide, por unanimidade, expedir o presente ma
 'A defesa pediu clemência alegando lag. Pedido negado. Expeça-se o mandado.'];
 const FAIXAS_WANTED = ['Vivo ou no respawn', 'Vivo ou morto (de preferência morto)', 'Vivo, morto ou na fonte', 'Vivo ou com a tela cinza', 'Vivo ou de Io',
 'Vivo ou sem bota'];
-const RODAPES_WANTED = ['Perigoso e sempre sem ward', 'Armado e sem TP na bolsa', 'Perigoso e com buyback no cooldown', 'Visto pela última vez farmando a jungle deles',
+const RODAPES_WANTED = ['Perigoso e sempre sem ward', 'Armado e sem TP na bolsa', 'Perigoso e com buyback no cooldown', 
 'Perigoso, desarmado e sem Smoke', 'Atira primeiro e morre depois', 'Não negocia, não recua, não ganha', 'Anda sozinho e não ouve ping',
 'Procurado em todos os servidores do Sul', 'Último visto na loja secreta sem ouro'];
 
@@ -9660,39 +9660,144 @@ s('circle', { cx: 50, cy: 50, r: 15, fill: 'none', stroke: '#e9dcbf', 'stroke-wi
 s('circle', { cx: 50, cy: 50, r: 9, fill: '#e9dcbf', 'fill-opacity': 0.25 }));
 };
 
+// O Wanted (primeiro nível) fala a língua do faroeste: cada tipo de culpa vira um crime de bangue-bangue com os números
+// da partida, o réu ganha alcunha de pistoleiro e sinais particulares tirados do placar. Com dois culpados, é um bando:
+// nome de gangue, uma história só e a recompensa pelos dois.
+const FAROESTE = {
+mortes: [(c) => `morrer ${c.d} vezes em duelos que ele mesmo desafiou`, (c) => `cair do cavalo ${c.d} vezes no meio da estrada`,
+(c) => `levar ${c.nMatador} tiros ${c.doM} sem nem sacar o revólver`, (c) => `visitar o cemitério da cidade ${c.d} vezes numa só tarde`,
+() => 'deixar o coveiro da cidade rico', (c) => `entregar o ouro aos bandidos da outra margem do rio ${c.d} vezes`,
+() => 'confundir a funerária com o saloon', (c) => `encomendar ${c.d} caixões no nome dele mesmo`],
+rota: [(c) => (c.suporte ? `abandonar o vaqueiro que devia escoltar na ${c.rota}` : `perder o rancho da ${c.rota} pros vizinhos no primeiro dia`),
+() => 'deixar roubarem o gado inteiro sem dar um tiro', () => 'vender as terras da família por um punhado de Tangos',
+() => 'perder a disputa pelo poço d’água ao meio-dia', () => 'entregar a cerca da fazenda (a T1) sem pedir recibo', () => 'fugir da própria plantação'],
+rotacoes: [() => 'deixar o pistoleiro do meio cavalgar livre pelo condado', () => 'não tocar o sino quando o bando inimigo passou pela cidade',
+() => 'dormir no posto de vigia', () => 'dar carona ao bandido do meio até as outras fazendas'],
+snowball: [(c) => `armar e alimentar ${c.m}, hoje o bandido mais temido do condado`, (c) => `vender munição ${c.aoM} fiado`,
+(c) => `criar ${c.m} desde potrinho`, (c) => `pagar as botas, o chapéu e o revólver ${c.doM}`],
+pickoff: [() => 'cavalgar sozinho pelo desfiladeiro sem escolta', () => 'atravessar o território inimigo à noite, sem lampião',
+() => 'cair na mesma emboscada no mesmo cânion, várias vezes', () => 'sair do forte sem avisar a cavalaria', () => 'ir buscar água no poço dos inimigos',
+() => 'acampar sozinho no território dos bandidos'],
+throw: [() => 'perder a diligência carregada de ouro a uma milha da cidade', () => 'apostar o rancho inteiro numa mão de pôquer já ganha',
+() => 'soltar o bandido que já estava amarrado', () => 'comemorar no saloon antes de o trem chegar à estação', () => 'descarregar o revólver pro alto com o inimigo na mira'],
+objetivos: [() => 'assistir do cemitério ao incêndio do forte', () => 'estar morto quando derrubaram a caixa-d’água da cidade',
+() => 'deixar o banco ser assaltado enquanto esperava o respawn', () => 'deixar queimarem o celeiro (o quartel)'],
+ausencia: [() => 'estar no saloon durante o tiroteio', () => 'chegar ao duelo depois do enterro', () => 'garimpar o rio enquanto a cidade pegava fogo',
+() => 'ficar escovando o cavalo durante a briga'],
+farm: [(c) => `garimpar o rio inteiro e sair com ${c.p.raw.gold_per_min} de ouro por minuto`, () => 'passar o dia na mina e voltar sem pepita',
+() => 'pastorear o gado e esquecer de vender', () => 'trabalhar a colheita inteira e não comprar nem uma bota'],
+dano: [() => 'atirar com balas de festim', () => 'duelar com pistola de água', (c) => `acertar ${fmtK(c.p.raw.hero_damage || 0)} de dano em ${c.min} minutos de tiroteio (uns arranhões)`,
+() => 'mirar no inimigo e acertar a placa do saloon'],
+visao: [(c) => `acender só ${c.w} ${c.w === 1 ? 'lampião' : 'lampiões'} em ${c.min} minutos de noite`, () => 'esconder os lampiões da cidade no alforje',
+() => 'deixar a cidade às escuras pra economizar querosene', () => 'tirar a sentinela da torre de vigia'],
+participacao: [() => 'assistir aos duelos da varanda do saloon', () => 'torcer pelos tiroteios de longe, de chapéu na mão', () => 'vender pipoca no duelo do próprio time'],
+};
+const ALCUNHAS_FAROESTE = ['Kid Tela Cinza', 'Billy Sem-Ward', 'Doc Feed', 'Jack Mão-Furada', 'Butch Buyback', 'Johnny Sem Bota', 'Wild Bill do Rio',
+'Calamity Courier', 'o Pistoleiro de Festim', 'o Fantasma do Desfiladeiro', 'Slim Tango', 'o Coveiro Amigo', 'Dinamite Sem Pólvora', 'o Cavaleiro Solitário (demais)',
+'Pé-de-Cemitério', 'Joe Patrocínio', 'Sundance Kid do Feed', 'o Xerife de Ninguém', 'Smokey Sem Smoke', 'o Forasteiro da Fonte', 'Jesse Sem Sorte',
+'Pistola Molhada', 'o Garimpeiro Falido', 'Rato do Rio', 'o Pregador da Derrota', 'Tex Tela Preta', 'o Peão do Inimigo', 'Mão Leve (pro lado errado)'];
+const PARADEIROS_FAROESTE = ['No saloon do rio, sem lampião', 'Sozinho no desfiladeiro da selva deles', 'No cemitério da cidade (de novo)', 'Cavalgando na direção errada',
+'Na loja de secos e molhados, sem um tostão', 'Esperando o respawn na porta da igreja', 'Garimpando o rio enquanto o forte caía', 'Fugindo a pé; o cavalo foi embora sozinho',
+'No curral do inimigo, contando o gado deles', 'Dormindo no estábulo durante o tiroteio', 'Na fila do coveiro', 'Pedindo fiado no saloon dos inimigos',
+'Atrás da caixa-d’água, achando que estava escondido', 'Na estação, esperando um trem que já tinha passado']
+// sinais particulares: o que o placar entrega
+const SINAIS_FAROESTE = [
+[(c) => c.d >= 8, () => 'reconhecível pela cor cinza da tela'], [(c) => c.suporte && c.w <= 3, () => 'anda sempre sem lampião'],
+[(c) => c.t1 < 180, () => 'costuma morrer antes de o galo cantar'], [(c) => (c.p.raw.buyback_count || 0) >= 2, (c) => `já pagou ${c.p.raw.buyback_count} fianças e voltou pro crime`],
+[(c) => !c.suporte && (c.p.raw.gold_per_min || 999) < 400, () => 'bolsos sempre vazios'], [(c) => (c.p.raw.kills || 0) >= 10, () => 'atira bem, mas perde a guerra'],
+[(c) => (c.p.raw.kills || 0) === 0, () => 'nunca sacou o revólver'], [(c) => c.min >= 50, () => 'não sabe terminar um duelo'],
+[(c) => c.nMatador >= 4, (c) => `tem medo ${c.doM} (com razão)`], [(c) => c.suporte && (c.p.raw.camps_stacked || 0) === 0, () => 'nunca empilhou um fardo de feno'],
+[() => true, () => 'cheira a Tango'], [() => true, () => 'usa chapéu dois números maior'], [() => true, () => 'responde a qualquer ping com “?”'],
+[() => true, () => 'sempre diz que o cavalo estava com lag']];
+const GANGUES = { pre: ['O Bando', 'A Gangue', 'A Quadrilha', 'Os Irmãos', 'A Dupla'],
+nome: ['da Tela Cinza', 'do Rio Sem Lampião', 'do Feed', 'da Fonte', 'do Buyback', 'da Lane Perdida', 'do Desfiladeiro', 'do Courier Roubado', 'do Tango Vencido',
+'da Torre Caída', 'do Ouro Fácil', 'do Cemitério', 'do Pôquer Perdido', 'da Diligência Vazia'] };
+const DUPLA_FAROESTE = {
+coreESuporte: ['Um segura o cavalo, o outro puxa o gatilho. Erram os dois.', 'Cavalgam na mesma estrada: um devia proteger, o outro devia enriquecer. Nenhum dos dois cumpriu.'],
+mesmaRota: ['Cavalgam juntos e caem juntos na mesma emboscada.', 'Dividem a mesma estrada e o mesmo caixão.'],
+doisSuportes: ['Dois guias que perderam o mapa da cidade.', 'Os dois batedores do comboio. O comboio não chegou.'],
+doisCores: ['Dois pistoleiros que nunca acertaram o mesmo alvo.', 'A cidade pagou dois pistoleiros. Recebeu dois enterros.'],
+separados: ['Atacam em duas frentes: um no leste, outro no oeste.', 'Nunca são vistos juntos, mas o estrago é sempre combinado.'],
+};
+
 function docWanted(fichas, r) {
 const dividido = fichas.length > 1;
 const rnd = sorteador(`wanted-${r.partida.id}`);
+const cs = fichas.map((f) => contextoDoBO(f, r));
 const total = fichas.reduce((s_, f) => s_ + Math.max(0, f.entregue), 0);
 const dolar = (x) => `$ ${Math.round(x / 10) * 10 >= 1000 ? (Math.round(x / 10) * 10).toLocaleString('pt-BR') : Math.round(x)}`;
-const coluna = (f) => h('div', { class: 'wt-col' },
-h('p', { class: 'wt-pontos', 'aria-hidden': 'true' }, '•  •  •'),
-h('p', {}, h('b', {}, 'Procurado por '), `${f.acusacoes.map((a) => a.crime.toLowerCase()).join(', ')}.`),
-h('p', {}, `${pct(f.v.fatia)} da culpa do time · ${f.kda}.`),
-ESTRELA_XERIFE());
-const quadro = (f) => h('div', { class: 'wt-reu' },
+const crimes = (c, n) => {
+const ks = [c.k1, c.k2, c.k1, 'mortes', 'pickoff'].filter((k) => k && FAROESTE[k]);
+const usados = new Set();
+const out = [];
+for (const k of ks) {
+const xs = FAROESTE[k].filter((x) => !usados.has(x));
+if (!xs.length) continue;
+const x = rnd.um(xs);
+usados.add(x);
+const txt = x(c);
+if (c.d && out.some((o) => o.includes(` ${c.d} `)) && txt.includes(` ${c.d} `)) continue; // um número de mortes por pôster basta
+out.push(txt);
+if (out.length >= n) break;
+}
+return out;
+};
+const sinais = (c, n) => {
+const xs = SINAIS_FAROESTE.filter(([t]) => { try { return t(c); } catch (e) { return false; } }).map(([, f]) => f(c));
+const fortes = xs.slice(0, Math.max(0, xs.length - 4));
+const pick = [...fortes.slice(0, n)];
+while (pick.length < n) { const x = rnd.um(xs); if (!pick.includes(x)) pick.push(x); else break; }
+return pick;
+};
+const alcunhas = cs.map(() => rnd.um(ALCUNHAS_FAROESTE));
+if (dividido && alcunhas[1] === alcunhas[0]) alcunhas[1] = ALCUNHAS_FAROESTE[(ALCUNHAS_FAROESTE.indexOf(alcunhas[0]) + 1) % ALCUNHAS_FAROESTE.length];
+const quadro = (f, i) => h('div', { class: 'wt-reu' },
 h('div', { class: 'wt-quadro' }, fotoDe(f.p, true)),
 h('p', { class: 'wt-nome' }, f.p.nome),
-h('p', { class: 'wt-heroi' }, `${f.p.heroi.nome} · pos ${f.p.posicao}`));
-const direita = dividido ? coluna(fichas[1]) : h('div', { class: 'wt-col' },
-h('p', { class: 'wt-pontos', 'aria-hidden': 'true' }, '•  •  •'),
-fichas[0].v.diagnostico ? h('p', {}, fichas[0].v.diagnostico) : h('p', {}, `Visto pela última vez como ${fichas[0].p.heroi.nome}.`),
+h('p', { class: 'wt-vulgo' }, `vulgo “${alcunhas[i]}”`),
+h('p', { class: 'wt-heroi' }, `${f.p.heroi.nome} · pos ${f.p.posicao} · ${pct(f.v.fatia)} da culpa`));
+const bloco = (titulo, ...itens) => h('div', { class: 'wt-bloco' }, h('p', { class: 'wt-rot' }, titulo), ...itens);
+let esquerda;
+let direita;
+let gangue = null;
+if (!dividido) {
+const [c] = cs;
+esquerda = h('div', { class: 'wt-col' }, bloco('Procurado por', h('ul', { class: 'wt-crimes' }, crimes(c, 3).map((x) => h('li', {}, `${x[0].toUpperCase()}${x.slice(1)}.`)))), ESTRELA_XERIFE());
+direita = h('div', { class: 'wt-col' },
+bloco('Visto pela última vez', h('p', {}, `${rnd.um(PARADEIROS_FAROESTE)}.`)),
+bloco('Sinais particulares', h('p', {}, `${sinais(c, 2).join('; ')}.`.replace(/^./, (x) => x.toUpperCase()))),
 ESTRELA_XERIFE());
+} else {
+const [a, b] = cs;
+const cen = cenarioDaDupla(a, b);
+gangue = `${rnd.um(GANGUES.pre)} ${rnd.um(GANGUES.nome)}`;
+const [ca] = crimes(a, 1);
+const [cb] = crimes(b, 1);
+const extra = [...crimes(a, 2).slice(1), ...crimes(b, 2).slice(1)];
+esquerda = h('div', { class: 'wt-col' }, bloco('Procurados por',
+h('p', {}, `Assaltar o próprio time em dupla: enquanto ${a.p.nome} se ocupava de ${ca}, ${b.p.nome} cuidava de ${cb}.`),
+extra.length ? h('p', {}, `Respondem ainda por ${listaE(extra)}.`) : null), ESTRELA_XERIFE());
+const mesmo = a.matadorP && a.matadorP === b.matadorP ? `Os dois foram baleados pelo mesmo pistoleiro: ${a.m}.` : null;
+direita = h('div', { class: 'wt-col' },
+bloco('Modus operandi', h('p', {}, rnd.um(DUPLA_FAROESTE[cen])), mesmo ? h('p', {}, mesmo) : null),
+bloco('Vistos pela última vez', h('p', {}, `${rnd.um(PARADEIROS_FAROESTE).replace('Sozinho', 'Sozinhos').replace('esperando', 'esperando').replace('achando que estava escondido', 'achando que estavam escondidos').replace('; o cavalo foi embora sozinho', '; os cavalos foram embora sozinhos')}.`)),
+ESTRELA_XERIFE());
+}
+const lado = ladoNome(r.partida.ladoRadiant);
 return h('article', { class: `cartao veredito doc-wanted${dividido ? ' dividido' : ''}` },
 h('h2', { class: 'wt-titulo' }, 'Wanted'),
 h('hr', { class: 'wt-linha' }),
 h('p', { class: 'wt-faixa' }, `★ ${rnd.um(FAIXAS_WANTED)} ★`),
-h('div', { class: 'wt-meio' },
-coluna(fichas[0]),
-h('div', { class: 'wt-centro' }, fichas.map(quadro)),
-direita),
+gangue ? h('p', { class: 'wt-gangue' }, gangue) : null,
+h('div', { class: 'wt-meio' }, esquerda, h('div', { class: 'wt-centro' }, fichas.map(quadro)), direita),
 total > 0 ? [
 h('p', { class: 'wt-valor' }, dolar(total)),
 h('p', { class: 'wt-recompensa' }, 'de recompensa'),
 h('p', { class: 'wt-nota' }, dividido
-? `o ouro que entregaram ao inimigo: ${fichas.map((f) => `${f.p.nome} ${fmtK(f.entregue)}`).join(' + ')}`
-: 'o ouro que ele entregou ao inimigo'),
+? `pelos dois, vivos ou mortos (de preferência separados). O ouro que entregaram aos bandidos de lá: ${fichas.map((f) => `${f.p.nome} ${fmtK(Math.max(0, f.entregue))}`).join(' + ')}`
+: `o ouro que ele entregou aos bandidos de lá${cs[0].matadorP ? `, a maior parte ${cs[0].aoM}` : ''}`),
 ] : h('p', { class: 'wt-recompensa' }, `Recompensa: ${rnd.um(RECOMPENSAS_LEVES)}`),
+h('p', { class: 'wt-xerife' }, `Informações ao Xerife do Condado dos ${lado}`),
 h('p', { class: 'wt-faixa wt-faixa-baixo' }, rnd.um(RODAPES_WANTED)));
 }
 
