@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-10-19T18:31:05.254Z",
-  "semAnalise": 1,
+  "atualizadoEm": "2026-10-19T22:23:06.243Z",
+  "semAnalise": 0,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -43,12 +43,12 @@
       "nome": "[Pau]DeCamelo",
       "culpados": 3,
       "craques": 5,
-      "partidas": 28,
-      "vitorias": 13,
-      "winRate": 46,
+      "partidas": 30,
+      "vitorias": 14,
+      "winRate": 47,
       "streak": "craque",
-      "mmrGanho": 325,
-      "mmrPerdido": 375
+      "mmrGanho": 350,
+      "mmrPerdido": 400
     },
     {
       "accountId": "26668150",
@@ -67,12 +67,12 @@
       "nome": "Suéter",
       "culpados": 2,
       "craques": 1,
-      "partidas": 25,
-      "vitorias": 10,
-      "winRate": 40,
+      "partidas": 27,
+      "vitorias": 11,
+      "winRate": 41,
       "streak": null,
-      "mmrGanho": 250,
-      "mmrPerdido": 375
+      "mmrGanho": 275,
+      "mmrPerdido": 400
     },
     {
       "accountId": "83300280",
@@ -458,6 +458,22 @@
         "lado": "radiant",
         "tipo": "vitoria",
         "inicio": 1792424153,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9052773335,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1792428762,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9052843810,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1792431537,
         "comStack": true,
         "ranqueada": true
       }
@@ -939,6 +955,22 @@
         "tipo": "derrota",
         "inicio": 1792406493,
         "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9052773335,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1792428762,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9052843810,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1792431537,
+        "comStack": true,
         "ranqueada": true
       }
     ],
