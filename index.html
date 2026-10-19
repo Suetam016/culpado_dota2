@@ -9939,6 +9939,26 @@ return { m: `${f ? 'a' : 'o'} ${nome}`, M: `${f ? 'A' : 'O'} ${nome}`, aoM: `${f
 // "A, B e C", sem quebrar com nome que tem vírgula
 const listaE = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} e ${xs[xs.length - 1]}` : xs.join(''));
 
+// vulgo do B.O.: apelido de bandido de manchete carioca, com Dota no meio. Metade das vezes vem do que a pessoa fez.
+const VULGOS_BO = ['Zé Pequeno Farm', 'Dadinho do Buyback', 'Beira-Rio do Feed', 'Nem da Fonte', 'Marcinho Sem Ward', 'Escadinha da T1', 'Tião Tela Cinza',
+'Neguinho da Selva', 'Juninho Sem Bota', 'Biel do Feed', 'Toinho Last-Hit', 'Russo do Mid', 'Gordinho do Roshan', 'Careca do Buyback', 'Fumaça (sem Smoke)',
+'Playboy do Farm', 'Paraíba da Jungle', 'Coringa do Pick', 'Lagartixa do Rio', 'Bigode do Tango', 'Pardal do Courier', 'Sapão do Bounty', 'Perninha do Blink',
+'Didi Deny', 'Capeta da Fonte', 'Maguinho do Mango', 'Bira Bait', 'Cabeção do Ping', 'Pezão da Lane', 'Tuca Teleporte', 'Mancha da Rota', 'Gugu da Runa',
+'Chiquinho Sem Stack', 'Tonhão do Tormentor', 'Xuxa do Smoke', 'Galego da Aegis', 'Baixinho do BKB', 'Bebezão da Lane', 'Pastor do Feed', 'Professor do Throw'];
+const VULGOS_POR_CULPA = {
+mortes: ['o Patrocinador', 'Delivery', 'Doador Universal', 'Tela Cinza', 'Zé do Respawn', 'Morre-Morre', 'Caixa Eletrônico'],
+rota: ['Pé de Lane', 'Despejado', 'Sem-Terra da Safe', 'Zé da T1'], rotacoes: ['Porteiro', 'Cego da Portaria', 'Zé Sem Ping'],
+snowball: ['Criador de Monstro', 'Personal do Inimigo', 'Nutricionista do Carry Deles'], pickoff: ['Andarilho', 'Turista', 'Zé Sozinho', 'Mochileiro da Selva'],
+throw: ['Devolve-Tudo', 'Mão Furada', 'Estorno', 'Zé do Throw'], objetivos: ['Defunto da Base', 'Zelador de Ruína'],
+ausencia: ['Sumido', 'Fantasma', 'Home Office', 'Zé Ninguém'], farm: ['Bolso Furado', 'Pobreza', 'Zé Liso'], dano: ['Mão de Alface', 'Soquinho', 'Festim'],
+visao: ['Apagão', 'Breu', 'Boca de Ward', 'Zé do Escuro'], participacao: ['Torcedor', 'Espectador', 'Zé Plateia'],
+};
+function vulgoDoBO(f, r) {
+const rnd = sorteador(`vulgo-${r.partida.id}-${f.p.idx}`);
+const k = ((f.v.pesou && f.v.pesou[0]) || {}).key;
+return VULGOS_POR_CULPA[k] && rnd.num(0, 1) ? rnd.um(VULGOS_POR_CULPA[k]) : rnd.um(VULGOS_BO);
+}
+
 // tudo que as frases precisam saber de um autor
 function contextoDoBO(f, r) {
 const p = f.p;
@@ -9952,7 +9972,7 @@ const chaves = (f.v.pesou && f.v.pesou.length ? f.v.pesou : f.v.componentes.filt
 const k1 = chaves[0] || 'mortes';
 const dl = p.raw.deaths_log || [];
 return {
-f, p, d, suporte, vitima, parceiro: Boolean(parceiro), matadorP,
+f, p, d, suporte, vitima, vulgo: f.vulgo || vulgoDoBO(f, r), parceiro: Boolean(parceiro), matadorP,
 rota: (p.rota && NOMES_ROTA[p.rota.tipo]) || 'selva',
 relacao: !parceiro ? 'colega de time' : suporte && vitima.posicao <= 3 ? 'suporte' : !suporte && vitima.posicao >= 4 ? 'core' : 'parceiro de rota',
 matador: matadorP ? matadorP.heroi.nome : 'o time adversário',
@@ -10140,7 +10160,7 @@ offOmisso: [() => 'Apurou-se que o autor, escalado para a offlane, não ofereceu
 () => 'A função do autor era atrapalhar o carry deles. Atrapalhou o próprio time.'],
 feeder: [(c) => `Apurou-se que o autor manteve, ao longo de ${c.min} minutos, rotina regular de mortes, na proporção de uma a cada ${Math.max(1, Math.round(c.min / Math.max(1, c.d)))} minutos.`,
 (c) => `Segundo a perícia, as mortes do autor renderam ao inimigo ${fmtK(Math.max(0, c.f.entregue))} de ouro, valor suficiente para uma Daedalus e troco.`,
-() => 'O autor é conhecido na região como “o patrocinador”.',
+(c) => `“${c.vulgo}” já é velho conhecido desta Delegacia, com passagens anteriores pelo mesmo crime.`,
 (c) => `${c.M} declarou informalmente que considera o autor seu “principal fornecedor”.`],
 throw: [() => 'Apurou-se que o time estava em vantagem quando o autor passou a tomar decisões individuais que reverteram o placar.',
 () => 'Segundo os autos, o jogo estava ganho. Estava.',
@@ -10208,7 +10228,7 @@ const desculpa = () => `${rnd.um(DESCULPAS_BO)}. ${rnd.um(REACOES_DESCULPA)}`;
 const paras = [];
 if (cs.length === 1) {
 const [c] = cs;
-paras.push(`${abertura} ${c.vitima ? quem(c.vitima) : 'o resto do time'}, na qualidade de vítima, relatando que, por volta das ${hora(c)}, encontrava-se na ${c.rota} quando seu ${c.relacao} ${c.p.nome}, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}.`
+paras.push(`${abertura} ${c.vitima ? quem(c.vitima) : 'o resto do time'}, na qualidade de vítima, relatando que, por volta das ${hora(c)}, encontrava-se na ${c.rota} quando seu ${c.relacao} ${c.p.nome}, vulgo “${c.vulgo}”, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}.`
 + ` Nas palavras da vítima: “${um([...(DESABAFOS_BO[c.k1] || DESABAFOS_BO.mortes), ...(DESABAFOS_ARQUETIPO[arquetipoDoBO(c)] || [])], c)}”`);
 paras.push(um(ENQUADRAMENTOS_BO[arquetipoDoBO(c)], c));
 if (c.k2) paras.push(`Relata ainda que o autor ${fato(c, c.k2)}. ${rnd.um(['Acrescenta: ', 'E desabafa: ', 'Em tom de revolta, completa: '])}“${um(DESABAFOS_BO[c.k2] || DESABAFOS_BO.mortes, c)}”`);
@@ -10224,7 +10244,7 @@ const vitimas = r.nos.filter((q) => q !== a.p && q !== b.p);
 const cenario = cenarioDaDupla(a, b);
 const juntos = cenario === 'coreESuporte' || cenario === 'mesmaRota';
 const vit = vitimas.length ? listaE(vitimas.map((q) => q.nome)) : 'o resto do time';
-paras.push(`${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome} (${a.p.heroi.nome}) e ${b.p.nome} (${b.p.heroi.nome}) passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
+paras.push(`${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
 paras.push([um(ENQUADRAMENTOS_DUPLA[cenario], a, b), ...AGRAVANTES_DUPLA.map((g) => g(a, b)).filter(Boolean).slice(0, 1)].join(' '));
 paras.push(`Nas palavras de ${vitimas.length ? rnd.um(vitimas).nome : 'uma das vítimas'}: “${um(DESABAFOS_DUPLA, a, b)}”`);
 const extra = [a.k2 ? `${a.p.nome} ${fato(a, a.k2)}` : null, b.k2 ? `${b.p.nome} ${fato(b, b.k2)}` : null].filter(Boolean);
@@ -10246,7 +10266,8 @@ s('path', { d: 'M20 12 l3.2 6.6 7.2 1 -5.2 5 1.3 7.2 -6.5 -3.4 -6.5 3.4 1.3 -7.2
 const autor = (f, i) => h('div', { class: 'bo-autor' },
 h('div', { class: 'bo-foto' }, fotoDe(f.p, true), h('small', {}, 'foto 3x4')),
 h('div', { class: 'bo-campos' },
-campo(fichas.length > 1 ? `Autor ${i + 1}` : 'Autor', f.p.nome, 'largo'),
+campo(fichas.length > 1 ? `Autor ${i + 1}` : 'Autor', f.p.nome),
+campo('Vulgo', f.vulgo),
 campo('Herói', f.p.heroi.nome),
 campo('Posição', `pos ${f.p.posicao}`),
 campo('KDA', f.kda),
@@ -10254,6 +10275,7 @@ campo('Culpa', pct(f.v.fatia)),
 campo('Ouro entregue', f.entregue > 0 ? fmtK(f.entregue) : '—'),
 campo('Local do fato', f.local, 'largo'),
 campo('Natureza', f.acusacoes.map((a) => (/^Art\. /.test(a.crime) ? a.crime : `Art. ${f.rnd.num(121, 359)} — ${a.crime}`)).join('; '), 'inteiro')));
+fichas.forEach((f, i) => { f.vulgo = vulgoDoBO(f, r); if (i && f.vulgo === fichas[0].vulgo) f.vulgo = VULGOS_BO[(VULGOS_BO.indexOf(f.vulgo) + 7) % VULGOS_BO.length]; });
 const historico = historiaDoBO(fichas, r);
 return h('article', { class: `cartao veredito doc-bo${fichas.length > 1 ? ' dividido' : ''}` },
 h('header', { class: 'bo-cab' },
