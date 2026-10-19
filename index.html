@@ -25,8 +25,8 @@
 <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&family=Rye&family=Anton&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500&family=Rye&family=Anton&display=swap"></noscript>
 <meta name="description" content="O tribunal das suas partidas de Dota 2: o culpado, os craques, o replay dos lances e um coach que responde.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Quem é o culpado? Dota 2">
@@ -104,6 +104,60 @@
   </section>
 </main>
 <p class="visitas-site" id="visitas-site" hidden></p>
+<style>
+/* ---------- Wanted (nível 1, faroeste) ---------- */
+.veredito.doc-wanted{display:block;position:relative;isolation:isolate;padding:34px clamp(16px,4vw,48px) 36px;border-radius:3px;color:#4a2414;text-align:center;
+background:radial-gradient(120% 90% at 50% 45%,#f3dfae 0%,#e2c58b 55%,#c9a467 100%),var(--tex-ruido);background-blend-mode:multiply;border:0;box-shadow:inset 0 0 60px rgba(110,60,20,.45),0 12px 26px -12px rgba(0,0,0,.6)}
+.doc-wanted::before{content:"";position:absolute;inset:14px;border:2px solid #5a2a14;border-radius:2px;pointer-events:none}
+.doc-wanted::after{content:"";position:absolute;inset:20px;border:1px solid rgba(90,42,20,.45);pointer-events:none}
+.wt-titulo{font:400 clamp(3.4rem,13vw,7.6rem)/.9 "Rye","Cinzel",Georgia,serif;letter-spacing:.04em;color:#4a2414;text-shadow:2px 2px 0 #c9a467,4px 4px 0 rgba(74,36,20,.35);margin:6px 0 0}
+.wt-linha{border:0;height:4px;margin:10px auto 14px;width:92%;background:#4a2414;box-shadow:0 6px 0 -4px #4a2414}
+.wt-faixa{display:inline-block;margin:0 auto;padding:4px 22px;background:#4a2414;color:#f1dcab;font:700 clamp(.95rem,2.6vw,1.45rem)/1.2 "Rye","Cinzel",Georgia,serif;letter-spacing:.06em;text-transform:uppercase;border-radius:2px;box-shadow:inset 0 0 0 2px #4a2414,inset 0 0 0 4px #e2c58b}
+.wt-meio{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(12px,3vw,30px);align-items:start;margin:22px 0 10px}
+.wt-col{display:flex;flex-direction:column;align-items:center;gap:8px;font:700 14.5px/1.45 Georgia,"Times New Roman",serif;color:#4a2414}
+.wt-col p{margin:0}
+.wt-pontos{letter-spacing:.4em;font-size:18px}
+.wt-estrela{color:#5a2a14;margin-top:10px;filter:drop-shadow(1px 1px 0 rgba(255,240,200,.4))}
+.wt-centro{display:flex;gap:18px;justify-content:center}
+.wt-reu{display:flex;flex-direction:column;align-items:center;gap:4px}
+.wt-quadro{padding:8px;border:3px solid #4a2414;box-shadow:inset 0 0 0 2px #e2c58b,inset 0 0 0 3px #4a2414;background:rgba(255,240,200,.25)}
+.doc-wanted .retrato.grande{width:clamp(150px,22vw,220px);height:clamp(190px,28vw,280px);border-radius:0;border:0;box-shadow:none;background:#c9a467;color:#4a2414;font-size:2.4rem}
+.doc-wanted .retrato img{width:100%;height:100%;object-fit:cover;filter:sepia(.9) saturate(.75) contrast(1.05) brightness(.95)}
+.doc-wanted.dividido .retrato.grande{width:clamp(120px,16vw,170px);height:clamp(150px,21vw,215px)}
+.wt-nome{font:400 clamp(1.3rem,3.4vw,1.9rem)/1.1 "Rye","Cinzel",Georgia,serif;margin:6px 0 0;color:#4a2414;overflow-wrap:anywhere;max-width:240px}
+.wt-heroi{font:700 13px Georgia,serif;opacity:.8;margin:0}
+.wt-valor{font:400 clamp(3rem,11vw,6.2rem)/1 "Rye","Cinzel",Georgia,serif;margin:8px 0 0;color:#4a2414;text-shadow:3px 3px 0 rgba(74,36,20,.3)}
+.wt-recompensa{font:400 clamp(1.8rem,6vw,3.4rem)/1 "Rye","Cinzel",Georgia,serif;text-transform:uppercase;margin:2px 0 4px;color:#4a2414;letter-spacing:.06em}
+.wt-nota{font:italic 13px Georgia,serif;opacity:.8;margin:0 0 12px}
+.wt-faixa-baixo{margin-top:6px;font-size:clamp(.8rem,2.2vw,1.15rem)}
+.doc-wanted .barra-compartilhar,.doc-wanted>*:last-child{position:relative;z-index:1}
+@media (max-width:640px){.wt-meio{grid-template-columns:1fr}.wt-centro{order:-1}.wt-col{font-size:14px}.wt-estrela{display:none}.doc-wanted.dividido .wt-centro{gap:10px}}
+/* ---------- Procurado pelo Tribunal Penal Internacional (nível 5) ---------- */
+.veredito.doc-tpi5{display:block;padding:28px clamp(14px,3vw,34px) 30px;border-radius:4px;color:#f2f2f2;text-align:center;border:1px solid #2a2a2a;
+background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 70%),var(--tex-ruido),#0d0d0e;box-shadow:0 18px 34px -14px rgba(0,0,0,.85)}
+.tp5-titulo{font:400 clamp(2.4rem,12vw,7.4rem)/.9 "Anton","Impact","Arial Narrow",sans-serif;overflow-wrap:anywhere;letter-spacing:.02em;color:#e3242b;text-transform:uppercase;margin:0}
+.tp5-sub{font:700 clamp(.85rem,2.4vw,1.25rem) "Anton","Impact",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#f2f2f2;margin:6px 0 22px}
+.tp5-grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,3vw,30px) clamp(10px,2.5vw,26px);max-width:760px;margin:0 auto}
+.tp5-casa{display:flex;flex-direction:column;align-items:center;min-width:0}
+.tp5-foto{position:relative;width:min(100%,150px);aspect-ratio:1/1}
+.tp5-foto::before{content:"";position:absolute;inset:-8px 18% 26% -8px;border:3px solid #e3242b;border-right:0;border-bottom:0;pointer-events:none}
+.tp5-foto::after{content:"";position:absolute;inset:-8px -8px 26% 70%;border:3px solid #e3242b;border-left:0;border-bottom:0;pointer-events:none}
+.doc-tpi5 .retrato.grande{width:100%;height:100%;border-radius:0;border:0;box-shadow:none;background:#222;color:#ddd;font-size:1.6rem}
+.doc-tpi5 .retrato img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.15) brightness(.95)}
+.tp5-origem{position:absolute;left:-6px;bottom:6px;font:600 11px/1 "Alegreya Sans",sans-serif;color:#ddd;text-shadow:0 1px 2px #000}
+.tp5-nome{margin-top:-2px;width:100%;background:#e3242b;color:#fff;font:400 clamp(.85rem,2.6vw,1.3rem)/1.25 "Anton","Impact",sans-serif;letter-spacing:.04em;text-transform:uppercase;padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1}
+.tp5-crimes{margin:6px 0 0;color:#b8b8b8;font-size:clamp(11px,2.3vw,13.5px);line-height:1.3}
+.tp5-reu .tp5-foto::before,.tp5-reu .tp5-foto::after{border-color:#fff}
+.tp5-reu .tp5-nome{background:#fff;color:#e3242b;white-space:normal;overflow-wrap:anywhere;font-size:clamp(.8rem,2.3vw,1.15rem)}
+.tp5-reu .tp5-crimes{color:#fff;font-weight:700}
+.tp5-rodape{margin:24px auto 0;max-width:640px;color:#cfcfcf;font-size:14px}
+@media (prefers-reduced-motion:no-preference){.tp5-reu .tp5-foto{animation:tp5-pulso 2.4s ease-in-out infinite}}
+@media (max-width:640px){.tp5-grade{gap:16px 10px}.tp5-foto::before{inset:-5px 18% 26% -5px;border-width:2px}.tp5-foto::after{inset:-5px -5px 26% 70%;border-width:2px}.tp5-origem{font-size:9.5px;left:-2px}}
+@keyframes tp5-pulso{50%{filter:drop-shadow(0 0 14px rgba(227,36,43,.65))}}
+/* foto do amigo: avatar da Steam no lugar do herói */
+.retrato.com-avatar img{width:100%;height:100%;object-fit:cover}
+</style>
+
 <style>
 /* ---------- documentos da culpa (procura-se, B.O., Interpol, Haia) ---------- */
 .veredito.doc-bo,.veredito.doc-interpol,.veredito.doc-haia{display:block;padding:0;border-radius:6px;overflow:hidden;isolation:isolate}
@@ -5380,7 +5434,7 @@ function cartaoCraques(r) {
 const cs = craquesDe(r);
 const vice = (r.craques || []).filter((v) => !cs.includes(v)).slice(0, 2);
 const craque = (v) => h('div', { class: 'reu craque' },
-h('span', { class: 'moldura' }, louro(false), retrato(v.jogador.heroi, true), louro(true)),
+h('span', { class: 'moldura' }, louro(false), fotoDe(v.jogador, true), louro(true)),
 h('div', { class: 'quem-e' },
 h('p', { class: 'eyebrow' }, `${pct(v.fatia)} do mérito da vitória`),
 h('h3', {}, v.jogador.nome),
@@ -5458,10 +5512,10 @@ sub: dupla ? 'Heróis da partida · mérito dividido' : 'Herói da partida', rot
 const cs = culpados(r);
 const dif = cs.length > 1 ? Math.round(cs[0].fatia * 100) - Math.round(cs[1].fatia * 100) : 0;
 // o cartaz compartilhado acompanha o documento da página (procura-se, B.O., Interpol, Haia)
-const nivel = gravidadeDaCulpa(cs[0]);
+const nivel = cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
 const plural = cs.length > 1;
-const titulos = [plural ? 'Procuram-se' : 'Procura-se', 'Boletim de Ocorrência', plural ? 'Criminosos internacionais' : 'Criminoso internacional', 'Crimes contra a humanidade'];
-const subs = ['por infrações menores contra o próprio time', 'registrado na delegacia do Ancient', 'procurado pela Interpol em todos os servidores', 'Tribunal Penal Internacional · mandado de prisão'];
+const titulos = ['Wanted', 'Boletim de Ocorrência', plural ? 'Criminosos internacionais' : 'Criminoso internacional', 'Crimes contra a humanidade', plural ? 'Procurados' : 'Procurado'];
+const subs = ['vivo ou no respawn', 'registrado na delegacia do Ancient', 'procurado pela Interpol em todos os servidores', 'Tribunal Penal Internacional · mandado de prisão', 'pelo Tribunal Penal Internacional'];
 return {
 vitoria, placar, titulo: titulos[nivel], selo: plural ? 'Culpados' : 'Culpado',
 sub: plural ? `${subs[nivel]} · dividido, ${dif === 0 ? 'empate' : `${dif} ${dif === 1 ? 'ponto' : 'pontos'} de diferença`}` : subs[nivel],
@@ -9048,10 +9102,139 @@ kda: `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`,
 const dataDaPartida = (r) => (r.partida.inicio ? new Date(r.partida.inicio * 1000) : new Date());
 const campo = (rotulo, valor, classe) => h('div', { class: `doc-campo${classe ? ` ${classe}` : ''}` }, h('span', {}, rotulo), h('b', {}, valor));
 
+// Foto do réu nos pôsteres: amigo do grupo aparece com o avatar da Steam (amigos/ranking.json, robô do ranking);
+// o resto, com o herói. O avatar só entra depois de carregar, então nunca fica buraco na moldura.
+let perfisAmigos = null;
+function carregarPerfis() {
+return perfisAmigos || (perfisAmigos = fetch('amigos/ranking.json', { cache: 'no-cache' })
+.then((r) => (r.ok ? r.json() : null)).then((j) => (j && j.perfis) || {}).catch(() => ({})));
+}
+function fotoDe(p, grande = true) {
+const box = retrato(p.heroi, grande);
+if (SO_EMBUTIDO || p.conta == null || !AMIGOS[p.conta]) return box;
+carregarPerfis().then((perfis) => {
+const av = perfis[String(p.conta)] && perfis[String(p.conta)].avatar;
+if (!av) return;
+const img = new Image();
+img.alt = '';
+img.addEventListener('load', () => {
+box.classList.remove('sem-img');
+box.className = box.className.replace(/\bsigla-\d\b/g, '');
+box.classList.add('com-avatar');
+box.title = `${p.nome} (${p.heroi.nome})`;
+box.replaceChildren(img);
+});
+img.src = av;
+});
+return box;
+}
+
+// herói pelo nome interno (para os vilões do pôster do Tribunal)
+function heroiPorSlug(slug) {
+const hs = (constantesEmbutidas || (constantesEmbutidas = expandirConstantes(EMBUTIDO.constantes))).heroes || {};
+const id = Object.keys(hs).find((k) => hs[k].name === `npc_dota_hero_${slug}`);
+const x = id ? hs[id] : {};
+return { id: Number(id) || 0, nome: x.localized_name || slug, npc: x.name || null, img: x.img || null };
+}
+
+const ESTRELA_XERIFE = () => {
+const pts = [];
+for (let i = 0; i < 12; i++) {
+const ang = -Math.PI / 2 + (i * Math.PI) / 6;
+const r_ = i % 2 ? 19 : 38;
+pts.push(`${(50 + r_ * Math.cos(ang)).toFixed(1)},${(50 + r_ * Math.sin(ang)).toFixed(1)}`);
+}
+const pontas = [0, 1, 2, 3, 4, 5].map((i) => {
+const ang = -Math.PI / 2 + (i * Math.PI) / 3;
+return s('circle', { cx: (50 + 40 * Math.cos(ang)).toFixed(1), cy: (50 + 40 * Math.sin(ang)).toFixed(1), r: 4.2, fill: 'currentColor' });
+});
+return s('svg', { viewBox: '0 0 100 100', width: 92, height: 92, class: 'wt-estrela', 'aria-hidden': 'true' },
+s('polygon', { points: pts.join(' '), fill: 'currentColor' }),
+...pontas,
+s('circle', { cx: 50, cy: 50, r: 15, fill: 'none', stroke: '#e9dcbf', 'stroke-width': 2 }),
+s('circle', { cx: 50, cy: 50, r: 9, fill: '#e9dcbf', 'fill-opacity': 0.25 }));
+};
+const FAIXAS_WANTED = ['Vivo ou no respawn', 'Vivo ou morto (de preferência morto)', 'Vivo, morto ou na fonte'];
+const RODAPES_WANTED = ['Perigoso e sempre sem ward', 'Armado e sem TP na bolsa', 'Perigoso e com buyback no cooldown', 'Visto pela última vez farmando a jungle deles'];
+
+function docWanted(fichas, r) {
+const dividido = fichas.length > 1;
+const rnd = sorteador(`wanted-${r.partida.id}`);
+const total = fichas.reduce((s_, f) => s_ + Math.max(0, f.entregue), 0);
+const dolar = (x) => `$ ${Math.round(x / 10) * 10 >= 1000 ? (Math.round(x / 10) * 10).toLocaleString('pt-BR') : Math.round(x)}`;
+const coluna = (f) => h('div', { class: 'wt-col' },
+h('p', { class: 'wt-pontos', 'aria-hidden': 'true' }, '•  •  •'),
+h('p', {}, h('b', {}, 'Procurado por '), `${f.acusacoes.map((a) => a.crime.toLowerCase()).join(', ')}.`),
+h('p', {}, `${pct(f.v.fatia)} da culpa do time · ${f.kda}.`),
+ESTRELA_XERIFE());
+const quadro = (f) => h('div', { class: 'wt-reu' },
+h('div', { class: 'wt-quadro' }, fotoDe(f.p, true)),
+h('p', { class: 'wt-nome' }, f.p.nome),
+h('p', { class: 'wt-heroi' }, `${f.p.heroi.nome} · pos ${f.p.posicao}`));
+const direita = dividido ? coluna(fichas[1]) : h('div', { class: 'wt-col' },
+h('p', { class: 'wt-pontos', 'aria-hidden': 'true' }, '•  •  •'),
+fichas[0].v.diagnostico ? h('p', {}, fichas[0].v.diagnostico) : h('p', {}, `Visto pela última vez como ${fichas[0].p.heroi.nome}.`),
+ESTRELA_XERIFE());
+return h('article', { class: `cartao veredito doc-wanted${dividido ? ' dividido' : ''}` },
+h('h2', { class: 'wt-titulo' }, 'Wanted'),
+h('hr', { class: 'wt-linha' }),
+h('p', { class: 'wt-faixa' }, `★ ${rnd.um(FAIXAS_WANTED)} ★`),
+h('div', { class: 'wt-meio' },
+coluna(fichas[0]),
+h('div', { class: 'wt-centro' }, fichas.map(quadro)),
+direita),
+total > 0 ? [
+h('p', { class: 'wt-valor' }, dolar(total)),
+h('p', { class: 'wt-recompensa' }, 'de recompensa'),
+h('p', { class: 'wt-nota' }, dividido
+? `o ouro que entregaram ao inimigo: ${fichas.map((f) => `${f.p.nome} ${fmtK(f.entregue)}`).join(' + ')}`
+: 'o ouro que ele entregou ao inimigo'),
+] : h('p', { class: 'wt-recompensa' }, `Recompensa: ${rnd.um(RECOMPENSAS_LEVES)}`),
+h('p', { class: 'wt-faixa wt-faixa-baixo' }, rnd.um(RODAPES_WANTED)));
+}
+
+// O pôster do topo: quando a culpa passa de CULPA_PROCURADO_TPI (no histórico, ~6% das derrotas com culpa de 40%+)
+const CULPA_PROCURADO_TPI = 0.40;
+const VILOES = [
+['doom_bringer', 'Doom', 'Inferno', ['Silenciamento em massa', 'Incêndio criminoso']],
+['pudge', 'Pudge', 'Açougue do Rio', ['Sequestro com gancho', 'Ocultação de cadáver']],
+['night_stalker', 'N. Stalker', 'Noite eterna', ['Terror noturno', 'Invasão de domicílio']],
+['nevermore', 'S. Fiend', 'Abismo', ['Coleta ilegal de almas', 'Réquiem sem alvará']],
+['life_stealer', 'Lifestealer', 'Presídio', ['Fuga de presídio', 'Canibalismo']],
+['bloodseeker', 'Bloodseeker', 'Vale de Sangue', ['Perseguição a feridos', 'Hemorragia em massa']],
+['riki', 'Riki', 'Lugar nenhum', ['Ataque pelas costas', 'Ocultação permanente']],
+['bane', 'Bane', 'Pesadelos', ['Tortura psicológica', 'Sequestro onírico']],
+['techies', 'Techies', 'Fábrica de bombas', ['Terrorismo', 'Minas em área civil']],
+['spectre', 'Spectre', 'Plano astral', ['Perseguição global', 'Assombração']],
+['axe', 'Axe', 'Exército vermelho', ['Lesão corporal gravíssima', 'Execução em público']],
+['faceless_void', 'F. Void', 'Fora do tempo', ['Sequestro do tempo', 'Cárcere privado']],
+];
+
+function docProcuradoTPI(fichas, r) {
+const rnd = sorteador(`tpi-${r.partida.id}`);
+const viloes = [...VILOES].map((v) => ({ v, k: rnd.num(0, 9999) })).sort((a, b) => a.k - b.k).map((x) => x.v);
+const casa = ({ foto, origem, nome, crimes, reu }) => h('div', { class: `tp5-casa${reu ? ' tp5-reu' : ''}` },
+h('div', { class: 'tp5-foto' }, foto, h('span', { class: 'tp5-origem' }, origem)),
+h('div', { class: 'tp5-nome' }, nome),
+h('p', { class: 'tp5-crimes' }, crimes.map((c, i) => [i ? h('br') : null, c])));
+const doReu = (f) => ({ reu: true, foto: fotoDe(f.p, true), origem: ladoNome(r.partida.ladoRadiant), nome: f.p.nome,
+crimes: f.acusacoes.slice(0, 2).map((a) => a.crime) });
+const doVilao = ([slug, nome, origem, crimes]) => ({ foto: retrato(heroiPorSlug(slug), true), origem, nome, crimes });
+const casas = viloes.slice(0, 8).map(doVilao);
+casas.splice(4, 0, doReu(fichas[0])); // o culpado no meio
+if (fichas[1]) casas.splice(1, 1, doReu(fichas[1]));
+return h('article', { class: `cartao veredito doc-tpi5${fichas.length > 1 ? ' dividido' : ''}` },
+h('h2', { class: 'tp5-titulo' }, fichas.length > 1 ? 'Procurados' : 'Procurado'),
+h('p', { class: 'tp5-sub' }, 'pelo Tribunal Penal Internacional'),
+h('div', { class: 'tp5-grade' }, casas.map(casa)),
+h('p', { class: 'tp5-rodape' }, `${pct(fichas[0].v.fatia)} da culpa do time${fichas[0].entregue > 0 ? ` · ${fmtK(fichas[0].entregue)} de ouro entregue ao inimigo` : ''}. ${fichas[0].v.diagnostico || ''}`));
+}
+
 function documentoDaCulpa(cs, r) {
-const nivel = gravidadeDaCulpa(cs[0]);
-const fichas = cs.map((v) => fichaDoReu(v, r, nivel));
-const doc = [docProcuraSe, docBoletim, docInterpol, docHaia][nivel](fichas, r);
+// acima do corte vira o pôster do Tribunal; as acusações seguem as do nível 4
+const nivel = cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
+const fichas = cs.map((v) => fichaDoReu(v, r, Math.min(nivel, 3)));
+const doc = [docWanted, docBoletim, docInterpol, docHaia, docProcuradoTPI][nivel](fichas, r);
 doc.dataset.gravidade = String(nivel + 1);
 return doc;
 }
@@ -9088,7 +9271,7 @@ const brasao = s('svg', { viewBox: '0 0 40 46', width: 40, height: 46, 'aria-hid
 s('path', { d: 'M20 2 L37 8 V22 C37 34 29 41 20 44 C11 41 3 34 3 22 V8 Z', fill: '#1d3f78', stroke: '#c9a640', 'stroke-width': 2 }),
 s('path', { d: 'M20 12 l3.2 6.6 7.2 1 -5.2 5 1.3 7.2 -6.5 -3.4 -6.5 3.4 1.3 -7.2 -5.2 -5 7.2 -1 z', fill: '#c9a640' }));
 const autor = (f, i) => h('div', { class: 'bo-autor' },
-h('div', { class: 'bo-foto' }, retrato(f.p.heroi, true), h('small', {}, 'foto 3x4')),
+h('div', { class: 'bo-foto' }, fotoDe(f.p, true), h('small', {}, 'foto 3x4')),
 h('div', { class: 'bo-campos' },
 campo(fichas.length > 1 ? `Autor ${i + 1}` : 'Autor', f.p.nome, 'largo'),
 campo('Herói', f.p.heroi.nome),
@@ -9128,7 +9311,7 @@ s('ellipse', { cx: 24, cy: 24, rx: 9, ry: 20, fill: 'none', stroke: '#e8ecf5', '
 s('path', { d: 'M4 24 H44 M7 14 H41 M7 34 H41', stroke: '#e8ecf5', 'stroke-width': 1.5 }),
 s('path', { d: 'M24 1 L27 8 H21 Z M24 47 L27 40 H21 Z', fill: '#e8ecf5' }));
 const ficha = (f) => h('div', { class: 'ip-reu' },
-h('div', { class: 'ip-foto' }, retrato(f.p.heroi, true), h('small', {}, f.p.heroi.nome)),
+h('div', { class: 'ip-foto' }, fotoDe(f.p, true), h('small', {}, f.p.heroi.nome)),
 h('div', { class: 'ip-dados' },
 h('h3', {}, f.p.nome),
 h('p', { class: 'ip-alcunha' }, `vulgo “${f.alcunha}”`),
@@ -9159,7 +9342,7 @@ s('circle', { cx: 32, cy: 32, r: 29, fill: 'none', stroke: '#c9a640', 'stroke-wi
 s('circle', { cx: 32, cy: 32, r: 24, fill: 'none', stroke: '#c9a640', 'stroke-width': 1, 'stroke-dasharray': '2 3' }),
 s('path', { d: 'M32 14 V46 M22 46 H42 M18 22 H46 M18 22 L13 33 H23 Z M46 22 L41 33 H51 Z', fill: 'none', stroke: '#c9a640', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
 const reu = (f) => h('div', { class: 'tpi-reu' },
-h('div', { class: 'tpi-foto' }, retrato(f.p.heroi, true), h('span', { class: 'tpi-tag' }, 'Réu')),
+h('div', { class: 'tpi-foto' }, fotoDe(f.p, true), h('span', { class: 'tpi-tag' }, 'Réu')),
 h('div', { class: 'tpi-dados' },
 h('h3', {}, f.p.nome),
 h('p', { class: 'tpi-alcunha' }, `também conhecido como “${f.alcunha}” · ${f.p.heroi.nome} · ${pct(f.v.fatia)} da culpa`),
@@ -9188,7 +9371,7 @@ const reu = (v) => {
 const p = v.jogador;
 const entregue = ouroEntregue(r, p);
 return h('div', { class: 'reu' },
-h('span', { class: 'moldura' }, retrato(p.heroi, true)),
+h('span', { class: 'moldura' }, fotoDe(p, true)),
 h('div', { class: 'quem-e' },
 h('p', { class: 'eyebrow' }, `${pct(v.fatia)} da culpa do time`),
 h('h3', {}, p.nome),
