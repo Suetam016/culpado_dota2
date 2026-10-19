@@ -10312,36 +10312,53 @@ const NOTAIL = ['N0tail', 'bicampeão do TI'];
 const TOPSON = ['Topson', 'bicampeão do TI'];
 const PUPPEY = ['Puppey', 'capitão campeão do primeiro TI'];
 const BULLDOG = ['AdmiralBulldog', 'lenda do Lone Druid'];
-const GORGC = ['Gorgc', 'streamer'];
+const YATORO = ['Yatoro', 'carry bicampeão do TI pela Team Spirit'];
 const GALVAO = ['Galvão Bueno', 'narrando o replay'];
+// o tom: gente que viu uma atrocidade e não se recuperou; a graça está no peso que dão a uma partida de Dota
 const ABALADOS = [
-[GABE, () => 'Eu não criei esse jogo para isso.'], [GABE, () => 'Em trinta anos de Valve, eu nunca vi nada parecido.'],
-[GABE, () => 'Eu vou precisar repensar os meus princípios.'], [GABE, (c) => `Eu assisti às ${c.d} mortes no replay. Adiei o Half-Life 3 de novo.`],
-[GABE, () => 'Isso não é Dota. Eu sei o que é Dota. Isso não é.'], [GABE, () => 'Pela primeira vez, eu considerei desligar os servidores.'],
-[GABE, () => 'Mandei o replay para a equipe de balanceamento. Dois pediram demissão.'],
-[GABE, (c) => `${fmtK(Math.max(0, c.f.entregue))} de ouro entregue ao inimigo. Eu fiz esse jogo para unir as pessoas.`],
-[GABE, () => 'Vou rever o acordo de usuário. Tem que existir uma cláusula pra isso.'],
-[ICEFROG, () => 'Não existe patch pra isso.'], [ICEFROG, (c) => `Vou nerfar ${c.p.heroi.nome}. Não porque está forte, mas por respeito às vítimas.`],
-[ICEFROG, () => 'Vinte anos balanceando esse jogo e eu não sei o que mudar. O problema não está no jogo.'],
-[ICEFROG, () => 'Escrevi as notas do próximo patch. Só tem uma linha, e é sobre ele.'],
-[DENDI, () => 'Eu dancei no palco do TI. Hoje eu não tenho vontade de dançar.'], [DENDI, (c) => `Eu já morri muito jogando de Pudge. Nunca ${c.d} vezes.`],
-[DENDI, () => 'Eu sempre digo que o Dota é diversão. Hoje eu não sei mais.'],
-[MIRACLE, () => 'Eu tenho o MMR mais alto que já existiu. Não sei jogar desse jeito nem se eu tentar.'], [MIRACLE, () => 'Eu assisti duas vezes pra ter certeza. Tive.'],
-[MIRACLE, (c) => `${c.p.raw.gold_per_min || 0} de GPM. Eu faço isso aos 5 minutos.`],
-[NOTAIL, () => 'Eu sempre defendi o time acima de tudo. Esse time não teve chance.'], [NOTAIL, () => 'Eu ganhei dois TIs. Hoje eu perdi a fé.'],
-[TOPSON, () => 'Me chamam de imprevisível. Isso aqui eu nunca teria inventado.'], [TOPSON, () => 'Eu jogo diferente. Ele joga contra o próprio time.'],
-[PUPPEY, () => 'Vinte anos de draft. Nenhum draft salva isso.'], [PUPPEY, () => 'Eu já capitaneei muita gente. Esse eu deixava no banco.'],
-[BULLDOG, () => 'Eu ficava 40 minutos dando split push e era criticado. Isso aqui é pior.'], [BULLDOG, () => 'Nem o urso do Lone Druid aguentou assistir.'],
-[GORGC, () => 'Eu tomei tilt só de ver o replay.'], [GORGC, () => 'Isso foi a coisa mais pesada que eu já vi na stream. E eu já vi muita coisa.'],
-[GALVAO, (c) => `Haja coração, amigo! ${c.d} mortes! É de doer, é de doer!`], [GALVAO, () => 'Acabou! Acabou! É derrota! E eu não acredito no que eu vi!'],
-[GALVAO, (c) => `Olha ele de novo! De novo! Pra ${c.m}! Que fase, amigo, que fase!`], [GALVAO, () => 'Pode isso, Arnaldo? A regra é clara: não pode!'],
+[GABE, () => 'Eu me sinto enojado. Eu fiz esse jogo pras pessoas se divertirem. Não pra isso.'],
+[GABE, () => 'Eu vi o replay uma vez. Não consigo ver de novo. Não consigo dormir.'],
+[GABE, () => 'Eu tenho filhos. Como é que eu explico isso pra eles?'],
+[GABE, (c) => `${c.d} mortes. Eu chorei na quarta. Na décima, eu parei de sentir qualquer coisa.`],
+[GABE, () => 'Existem coisas que não deveriam acontecer num servidor da Valve. Isso é uma delas.'],
+[GABE, () => 'Eu desliguei o monitor e fiquei no escuro. Pensando no que eu criei.'],
+[GABE, () => 'Tem dias que eu me arrependo de ter criado a Steam. Hoje é um deles.'],
+[GABE, () => 'Isso vai me assombrar pelo resto da vida.'],
+[ICEFROG, () => 'Eu passei vinte anos protegendo o equilíbrio desse jogo. Ele destruiu tudo em uma partida.'],
+[ICEFROG, () => 'Eu vi coisas nesse replay que nenhum patch pode desfazer.'],
+[ICEFROG, () => 'Que Deus tenha piedade do Ancient.'],
+[ICEFROG, (c) => `Ninguém deveria ver ${c.p.heroi.nome} sendo usado desse jeito. Ninguém.`],
+[DENDI, () => 'Eu era conhecido pelo meu sorriso. Eu perdi o meu sorriso.'],
+[DENDI, () => 'Eu vi o replay e passei mal. Duas vezes.'],
+[DENDI, () => 'Joguei de Pudge a vida inteira. Eu nunca vi tanta carne entregue de graça.'],
+[MIRACLE, () => 'Eu fechei o replay no minuto 12. Minhas mãos estavam tremendo.'],
+[MIRACLE, () => 'Eu já vi coisas horríveis em pub. Nada, nada perto disso.'],
+[NOTAIL, () => 'Eu sempre acreditei no ser humano. Hoje eu não acredito mais.'],
+[NOTAIL, () => 'Aquilo não foi uma partida. Foi um massacre.'],
+[TOPSON, () => 'Eu fiquei vinte minutos em silêncio. Depois eu chorei.'],
+[TOPSON, () => 'Eu já fiz coisas que ninguém entendia. Isso aqui eu me recuso a entender.'],
+[PUPPEY, () => 'Eu vi o que aconteceu com aquele time. Eu não desejo isso a ninguém.'],
+[PUPPEY, () => 'Vinte anos de Dota. Eu nunca me senti tão sujo assistindo a uma partida.'],
+[BULLDOG, () => 'Eu vi o urso do Lone Druid se recusar a lutar ao lado dele.'],
+[BULLDOG, () => 'Me xingaram por anos por não lutar. Me perdoem. Eu não sabia que existia isso.'],
+[YATORO, () => 'Eu sou carry. Eu sei o que é sofrer. Eu não sabia que dava pra sofrer assim.'],
+[YATORO, (c) => `Eu vi o ${c.p.heroi.nome}. Depois eu não quis ver mais nada.`],
+[YATORO, () => 'Ganhei dois TIs. Nenhum troféu apaga o que eu vi nesse replay.'],
+[GALVAO, (c) => `É uma tragédia, amigo! ${c.d} mortes! Cinquenta anos de narração e eu nunca vi nada igual!`],
+[GALVAO, () => 'Que vergonha, amigo! Que vergonha! Isso não é esporte, isso é crime!'],
+[GALVAO, () => 'Haja coração! Tira isso do ar! Tira isso do ar que não dá pra assistir!'],
+[GALVAO, () => 'Pode isso, Arnaldo? Não pode! Não pode e não devia nem existir!'],
 ];
-const ABALADOS_DUPLA = [[GABE, () => 'Um eu ainda entendo. Dois no mesmo time, na mesma partida...'],
-[GABE, () => 'Eles se conheciam antes do jogo? Isso foi planejado?'], [ICEFROG, () => 'Eu dou nerf num herói. Não tenho como dar nerf numa amizade.'],
-[PUPPEY, () => 'Eu já tive duplas que ganharam TI. Essa dupla perde até o lobby.'], [DENDI, () => 'Dois de uma vez? Até eu fiquei triste.'],
-[GALVAO, () => 'São dois! São dois, amigo! Uma dupla de fazer chorar!']];
+const ABALADOS_DUPLA = [[GABE, () => 'Um sozinho já seria uma tragédia. Dois, juntos, na mesma partida... eu não tenho palavras.'],
+[ICEFROG, () => 'Eles agiram juntos. Com método. Eu me sinto enojado.'],
+[NOTAIL, () => 'Eu acredito em amizade. Essa amizade não deveria existir.'],
+[DENDI, () => 'Dois no mesmo time. Eu rezo pelos outros três.'],
+[YATORO, () => 'Um já é pesado. Dois... eu precisei de uma semana longe do Dota.'],
+[PUPPEY, () => 'Eu já montei muitas duplas. Essa eu teria separado no lobby.'],
+[GALVAO, () => 'São dois! Dois, amigo! Que horror, que horror!']];
 const RUBRICAS = ['[pausa longa]', '[voz embargada]', '[o depoente pediu um copo d’água]', '[silêncio na sala]', '[o depoente desligou a câmera por alguns minutos]',
-'[olhando para o chão]', '[o depoimento foi interrompido duas vezes]', '[a sessão foi suspensa por dez minutos em seguida]'];
+'[olhando para o chão]', '[o depoimento foi interrompido duas vezes]', '[a sessão foi suspensa por dez minutos em seguida]', '[mãos trêmulas]',
+'[o depoente precisou ser amparado]', '[choro contido]', '[a plateia em silêncio absoluto]'];
 function depoimentoHaia(fichas, r, rnd) {
 const c = contextoDoBO(fichas[0], r);
 const [[quem, cargo], fala] = rnd.um(fichas.length > 1 && rnd.num(0, 1) ? ABALADOS_DUPLA : ABALADOS);
