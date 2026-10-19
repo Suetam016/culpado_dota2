@@ -64,6 +64,18 @@
     { id: 'anticura', niveis: [1], nome: 'Anti-cura' },
     { id: 'deteccao', niveis: [1], nome: 'Olho de águia' },
   ];
+  // Posições em que cada herói é jogado de verdade no pub/competitivo (1 carry, 2 mid, 3 offlane, 4 e 5 suporte),
+  // da mais comum para a menos. Serve pra não sugerir Legion de suporte 5 só porque ela tem controle.
+  const POSICOES = {
+    1: 'alchemist antimage arc_warden bloodseeker chaos_knight clinkz drow_ranger faceless_void gyrocopter juggernaut kez life_stealer luna lycan medusa meepo monkey_king morphling muerta naga_siren nevermore phantom_assassin phantom_lancer razor riki skeleton_king slark spectre sven terrorblade troll_warlord ursa weaver windrunner templar_assassin lone_druid huskar dragon_knight sniper tiny furion ember_spirit',
+    2: 'arc_warden batrider death_prophet dragon_knight ember_spirit huskar invoker kunkka leshrac lina meepo necrolyte nevermore obsidian_destroyer pangolier primal_beast puck pugna queenofpain razor sniper storm_spirit templar_assassin tinker tiny viper void_spirit zuus windrunner lone_druid broodmother shredder beastmaster magnataur muerta clinkz visage earth_spirit keeper_of_the_light kez monkey_king morphling alchemist snapfire',
+    3: 'abaddon abyssal_underlord axe batrider beastmaster brewmaster bristleback centaur dark_seer dawnbreaker doom_bringer enigma legion_commander mars magnataur night_stalker primal_beast sand_king slardar spirit_breaker tidehunter shredder viper visage venomancer razor broodmother death_prophet necrolyte omniknight pangolier kunkka earthshaker dragon_knight lycan furion phoenix pudge rattletrap chaos_knight tiny',
+    4: 'bane batrider rattletrap dark_willow earth_spirit earthshaker elder_titan furion grimstroke hoodwink jakiro lion marci mirana nyx_assassin pudge pugna rubick shadow_demon shadow_shaman skywrath_mage snapfire spirit_breaker techies tiny tusk venomancer windrunner bounty_hunter magnataur phoenix weaver enchantress largo ringmaster silencer treant ancient_apparition slardar zuus undying ogre_magi dazzle disruptor crystal_maiden lich witch_doctor wisp vengefulspirit winter_wyvern abaddon sand_king monkey_king riki keeper_of_the_light invoker lina',
+    5: 'oracle chen dazzle disruptor crystal_maiden lich witch_doctor warlock wisp vengefulspirit winter_wyvern omniknight abaddon bane jakiro shadow_demon treant elder_titan enchantress keeper_of_the_light pugna silencer ancient_apparition ogre_magi undying grimstroke lion shadow_shaman skywrath_mage techies snapfire ringmaster largo rubick venomancer zuus phoenix dark_willow visage',
+  };
+  const POS_DO_HEROI = {};
+  Object.entries(POSICOES).forEach(([pos, lista]) => lista.split(' ').forEach(h => { (POS_DO_HEROI[h] = POS_DO_HEROI[h] || []).push(Number(pos)); }));
+
   const PESO_TRACO = 0.15;   // por nível ativo
   const PESO_ALERTA = 0.3;
 
@@ -91,5 +103,5 @@
     return { lista, alertas, nota: lista.reduce((s, x) => s + x.nivel * PESO_TRACO, 0) - alertas.length * PESO_ALERTA };
   }
 
-  raiz.HeroisTracos = { TRACOS, SINERGIAS, PESO_TRACO, PESO_ALERTA, tracos: (slug) => DO_HEROI[slug] || [], sinergias };
+  raiz.HeroisTracos = { TRACOS, SINERGIAS, PESO_TRACO, PESO_ALERTA, tracos: (slug) => DO_HEROI[slug] || [], posicoes: (slug) => POS_DO_HEROI[slug] || [], sinergias };
 })(typeof window !== 'undefined' ? window : globalThis);

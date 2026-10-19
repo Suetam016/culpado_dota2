@@ -10483,7 +10483,7 @@ function carregarDraft() {
 if (draftDados) return draftDados;
 const script = () => (window.HeroisTracos ? Promise.resolve() : new Promise((ok, erro) => {
 const el_ = document.createElement('script');
-el_.src = 'herois-tracos.js?v=1';
+el_.src = 'herois-tracos.js?v=2';
 el_.onload = ok;
 el_.onerror = erro;
 document.head.append(el_);
@@ -10538,9 +10538,9 @@ const o = ordemDe(id);
 return o == null ? todosOcupados : new Set(draft.filter((x) => x.order < o).map((x) => x.hero_id));
 };
 
-// core ou suporte nessa partida: os 3 com mais ouro são os cores
+// core ou suporte nessa partida: a posição que o motor achou (rota + ouro); sem ela, os 3 com mais ouro são os cores
 const porOuro = [...r.nos].sort((a, b) => (b.raw.net_worth || b.raw.total_gold || 0) - (a.raw.net_worth || a.raw.total_gold || 0));
-const ehCore = (p) => porOuro.indexOf(p) < 3;
+const ehCore = (p) => (p.posicao ? p.posicao <= 3 : porOuro.indexOf(p) < 3);
 const time = r.nos.map((p) => slugDe(p.heroi.id));
 const sinTime = T.sinergias(time);
 const sinEles = T.sinergias(r.eles.map((p) => slugDe(p.heroi.id)));
@@ -10576,22 +10576,29 @@ if ((x === pior && x.nota <= DRAFT_PRECARIO) || x.nota <= -0.6) return ['precari
 return x.nota >= 0.2 ? ['solido', '👍 Pick sólido'] : ['ok', '😐 Pick ok'];
 };
 
-// sugestões para quem fez o pick precário: heróis que a pessoa já joga (proficiência) e uma ideia nova do meta
-const papelOk = (p, pos) => !pos || (ehCore(p) ? pos <= 3 : pos >= 4);
+// sugestões para quem fez o pick precário: heróis que a pessoa já joga (proficiência) e uma ideia nova do meta.
+// Só entra herói que é jogado de verdade na posição da pessoa (tabela do herois-tracos.js): nada de Legion de suporte 5.
+const canonico = (id, p) => {
+const ps = T.posicoes ? T.posicoes(slugDe(id)) : [];
+if (!ps.length) return false;
+return p.posicao ? ps.includes(p.posicao) : ps.some((x) => (ehCore(p) ? x <= 3 : x >= 4));
+};
+// do pool: o herói é dessa posição e a pessoa jogou ele na mesma função (core ou suporte)
+const papelOk = (p, e) => canonico(e.heroi, p) && (!e.pos || (ehCore(p) ? e.pos <= 3 : e.pos >= 4));
 const temTraco = (slug, ts) => T.tracos(slug).some((t) => ts.includes(t));
 const sugestoes = (x) => {
 const ocup = ocupadosAntes(x.p.heroi.id);
 const base = notaDe(x.p, x.i, x.p.heroi.id, false).nota;
 const doPool = (pool(x.p.conta) || [])
-.filter((e) => e.heroi !== x.p.heroi.id && !ocup.has(e.heroi) && papelOk(x.p, e.pos))
+.filter((e) => e.heroi !== x.p.heroi.id && !ocup.has(e.heroi) && papelOk(x.p, e))
 .reduce((acc, e) => (acc.some((y) => y.heroi === e.heroi) ? acc : [...acc, e]), [])
 .map((e) => ({ id: e.heroi, ...notaDe(x.p, x.i, e.heroi, false) }))
 .filter((c) => c.pr.jogos >= 2 && c.nota > base + 0.15)
 .sort((a, b) => b.nota - a.nota).slice(0, 3);
-const funcao = ehCore(x.p) ? ['dps', 'late', 'burst'] : ['baba', 'controle'];
+const funcao = ehCore(x.p) ? ['dps', 'late', 'burst', 'area', 'frente', 'iniciacao'] : ['baba', 'controle', 'pickoff', 'iniciacao', 'area'];
 const novas = Object.keys(herois).map(Number)
 .filter((id) => id && id !== x.p.heroi.id && !ocup.has(id) && !doPool.some((c) => c.id === id) && prof(x.p.conta, id).jogos === 0)
-.filter((id) => (metaWr(id) ?? 0) >= 51 && temTraco(slugDe(id), funcao))
+.filter((id) => (metaWr(id) ?? 0) >= 51 && canonico(id, x.p) && temTraco(slugDe(id), funcao))
 .map((id) => ({ id, ...notaDe(x.p, x.i, id, false) }))
 .filter((c) => c.nota > base + 0.15)
 .sort((a, b) => b.nota - a.nota).slice(0, 2);
@@ -10626,7 +10633,7 @@ x.c != null ? h('li', { class: sinal(x.partes.contra) }, `Contra os 5 deles: ${p
 return h('article', { class: `draft-pick draft-${cls}` },
 h('div', { class: 'draft-pick-cab' },
 h('span', { class: 'draft-img' }, retrato(x.p.heroi), powerUp(x.wr)),
-h('div', {}, h('b', {}, x.p.heroi.nome), h('small', {}, `${x.p.nome}${o != null ? ` · ${picks.indexOf(x) + 1}º pick do time` : ''} · ${ehCore(x.p) ? 'core' : 'suporte'}`),
+h('div', {}, h('b', {}, x.p.heroi.nome), h('small', {}, `${x.p.nome}${o != null ? ` · ${picks.indexOf(x) + 1}º pick do time` : ''} · ${x.p.posicao ? `pos ${x.p.posicao}` : ehCore(x.p) ? 'core' : 'suporte'}`),
 h('span', { class: 'draft-icones' }, icones(slugDe(x.p.heroi.id)))),
 h('span', { class: `draft-selo ${cls}` }, rotulo)),
 h('ul', { class: 'draft-motivos' }, linhas),
