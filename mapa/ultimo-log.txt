@@ -1426,3 +1426,14 @@ OK 9052073153
   3200 usos de skill/item de 4545 no combat log
 OK 9052036181
 2 mapas novos
+  conta 111257540: HTTP Error 500: Internal Server Error
+  conta 241782761: HTTP Error 500: Internal Server Error
+Fila: [9052652046]
+  replay http://replay201.valve.net/570/9052652046_1921426366.dem.bz2 -> HTTP 200 application/octet-stream 57865663 inicio=b'(\xb5/\xfd\x00`$"\x0f\x8e4\x1e'
+  9052652046: 189103 eventos; tipos [('actions', 78590), ('interval', 32640), ('DOTA_COMBATLOG_DAMAGE', 27282), ('DOTA_COMBATLOG_MODIFIER_ADD', 14028), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 13963), ('DOTA_COMBATLOG_XP', 4983), ('DOTA_COMBATLOG_HEAL', 4925), ('DOTA_COMBATLOG_DEATH', 4688)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Obsidian_Destroyer", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 76, "variant": 0, "facet_hero_id": 76, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_picku
+  exemplo de habilidade: {"time": -56, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_silencer", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  3265 registros de dano herói->herói
+  1871 usos de skill/item de 2812 no combat log
+OK 9052652046
+1 mapas novos
