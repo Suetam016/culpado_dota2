@@ -6,7 +6,7 @@ dupla, as combinações de posição (rota) e as duplas de heróis. Lê as parti
 
 Uso:
   git clone --branch dados --single-branch https://github.com/Suetam016/culpado_dota2 dados
-  python3 ranking/parceiros.py --dados dados [--dias 365]
+  python3 ranking/parceiros.py --dados dados [--recentes .recentes] [--dias 365]
 """
 
 import argparse
@@ -80,6 +80,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--dados', required=True, help='pasta com o branch "dados" (tem partidas/)')
     ap.add_argument('--dias', type=int, default=365, help='só partidas desse período (0 = todas)')
+    ap.add_argument('--recentes', help='pasta com <id>.json que o gerar.js acabou de baixar (entram as que a coleta ainda não tem)')
     args = ap.parse_args()
 
     amigos = {int(k): v for k, v in json.loads((RAIZ / 'amigos.json').read_text(encoding='utf-8')).items()}
@@ -103,12 +104,24 @@ def main():
     jogos = []
     medalhas = {}  # conta -> (início, rank_tier) da partida mais nova: o OpenDota grava a medalha atual do jogador
 
-    for arq in sorted(Path(args.dados, 'partidas').glob('*.json.gz')):
-        try:
-            match = json.loads(gzip.open(arq).read())
-        except Exception as e:
-            print(f'{arq.name}: ilegível ({e})', file=sys.stderr)
-            continue
+    def partidas():
+        vistas = {}
+        for arq in sorted(Path(args.dados, 'partidas').glob('*.json.gz')):
+            vistas[arq.name.split('.')[0]] = (arq, gzip.open)
+        if args.recentes and Path(args.recentes).is_dir():
+            for arq in sorted(Path(args.recentes).glob('*.json')):
+                mid = arq.stem
+                # a da coleta já vem analisada; a recente só entra se a coleta não tem a partida
+                if mid not in vistas:
+                    vistas[mid] = (arq, open)
+        for mid, (arq, abrir) in vistas.items():
+            try:
+                with abrir(arq, 'rb') as f:
+                    yield json.loads(f.read())
+            except Exception as e:
+                print(f'{arq.name}: ilegível ({e})', file=sys.stderr)
+
+    for match in partidas():
         if (match.get('start_time') or 0) < desde or not match.get('players'):
             continue
         lidas += 1

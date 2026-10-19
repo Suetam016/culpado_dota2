@@ -7,6 +7,8 @@ const path = require('path');
 const vm = require('vm');
 
 const RAIZ = path.resolve(__dirname, '..');
+// partidas baixadas aqui ficam para o parceiros.py (--recentes): o robô de coleta pode estar horas atrás
+const RECENTES = path.join(RAIZ, '.recentes');
 const API = 'https://api.opendota.com/api';
 const PARTIDAS_POR_AMIGO = 20;
 const PAUSA_MS = 1100;
@@ -142,6 +144,8 @@ async function main() {
         const detalhe = await pedir(`/matches/${mid}`);
         await sleep(PAUSA_MS);
         if (!detalhe || !Array.isArray(detalhe.players)) continue;
+        fs.mkdirSync(RECENTES, { recursive: true });
+        fs.writeFileSync(path.join(RECENTES, `${mid}.json`), JSON.stringify(detalhe));
         if (detalhe.version == null) { semReplay++; partidas.set(mid, null); continue; }
         partidas.set(mid, detalhe);
       }

@@ -48,7 +48,7 @@ jobs:
       - name: Parceiros (branch dados)
         id: parceiros
         continue-on-error: true
-        run: python ranking/parceiros.py --dados .dados
+        run: python ranking/parceiros.py --dados .dados --recentes .recentes
       - name: Salvar
         run: |
           git config user.name "github-actions[bot]"
