@@ -9663,39 +9663,35 @@ s('circle', { cx: 50, cy: 50, r: 9, fill: '#e9dcbf', 'fill-opacity': 0.25 }));
 // O Wanted (primeiro nível) fala a língua do faroeste: cada tipo de culpa vira um crime de bangue-bangue com os números
 // da partida, o réu ganha alcunha de pistoleiro e sinais particulares tirados do placar. Com dois culpados, é um bando:
 // nome de gangue, uma história só e a recompensa pelos dois.
+// cada crime diz o que aconteceu no jogo com todas as letras; o faroeste é o tempero, não o código
 const FAROESTE = {
-mortes: [(c) => `morrer ${c.d} vezes em duelos que ele mesmo desafiou`, (c) => `cair do cavalo ${c.d} vezes no meio da estrada`,
-(c) => `levar ${c.nMatador} tiros ${c.doM} sem nem sacar o revólver`, (c) => `visitar o cemitério da cidade ${c.d} vezes numa só tarde`,
-() => 'deixar o coveiro da cidade rico', (c) => `entregar o ouro aos bandidos da outra margem do rio ${c.d} vezes`,
-() => 'confundir a funerária com o saloon', (c) => `encomendar ${c.d} caixões no nome dele mesmo`],
-rota: [(c) => (c.suporte ? `abandonar o vaqueiro que devia escoltar na ${c.rota}` : `perder o rancho da ${c.rota} pros vizinhos no primeiro dia`),
-() => 'deixar roubarem o gado inteiro sem dar um tiro', () => 'vender as terras da família por um punhado de Tangos',
-() => 'perder a disputa pelo poço d’água ao meio-dia', () => 'entregar a cerca da fazenda (a T1) sem pedir recibo', () => 'fugir da própria plantação'],
-rotacoes: [() => 'deixar o pistoleiro do meio cavalgar livre pelo condado', () => 'não tocar o sino quando o bando inimigo passou pela cidade',
-() => 'dormir no posto de vigia', () => 'dar carona ao bandido do meio até as outras fazendas'],
-snowball: [(c) => `armar e alimentar ${c.m}, hoje o bandido mais temido do condado`, (c) => `vender munição ${c.aoM} fiado`,
-(c) => `criar ${c.m} desde potrinho`, (c) => `pagar as botas, o chapéu e o revólver ${c.doM}`],
-pickoff: [() => 'cavalgar sozinho pelo desfiladeiro sem escolta', () => 'atravessar o território inimigo à noite, sem lampião',
-() => 'cair na mesma emboscada no mesmo cânion, várias vezes', () => 'sair do forte sem avisar a cavalaria', () => 'ir buscar água no poço dos inimigos',
-() => 'acampar sozinho no território dos bandidos'],
-throw: [() => 'perder a diligência carregada de ouro a uma milha da cidade', () => 'apostar o rancho inteiro numa mão de pôquer já ganha',
-() => 'soltar o bandido que já estava amarrado', () => 'comemorar no saloon antes de o trem chegar à estação', () => 'descarregar o revólver pro alto com o inimigo na mira'],
-objetivos: [() => 'assistir do cemitério ao incêndio do forte', () => 'estar morto quando derrubaram a caixa-d’água da cidade',
-() => 'deixar o banco ser assaltado enquanto esperava o respawn', () => 'deixar queimarem o celeiro (o quartel)'],
-ausencia: [() => 'estar no saloon durante o tiroteio', () => 'chegar ao duelo depois do enterro', () => 'garimpar o rio enquanto a cidade pegava fogo',
-() => 'ficar escovando o cavalo durante a briga'],
-farm: [(c) => `garimpar o rio inteiro e sair com ${c.p.raw.gold_per_min} de ouro por minuto`, () => 'passar o dia na mina e voltar sem pepita',
-() => 'pastorear o gado e esquecer de vender', () => 'trabalhar a colheita inteira e não comprar nem uma bota'],
-dano: [() => 'atirar com balas de festim', () => 'duelar com pistola de água', (c) => `acertar ${fmtK(c.p.raw.hero_damage || 0)} de dano em ${c.min} minutos de tiroteio (uns arranhões)`,
-() => 'mirar no inimigo e acertar a placa do saloon'],
-visao: [(c) => `acender só ${c.w} ${c.w === 1 ? 'lampião' : 'lampiões'} em ${c.min} minutos de noite`, () => 'esconder os lampiões da cidade no alforje',
-() => 'deixar a cidade às escuras pra economizar querosene', () => 'tirar a sentinela da torre de vigia'],
-participacao: [() => 'assistir aos duelos da varanda do saloon', () => 'torcer pelos tiroteios de longe, de chapéu na mão', () => 'vender pipoca no duelo do próprio time'],
+mortes: [(c) => `morrer ${c.d} vezes em duelos que ele mesmo começou`, (c) => `levar ${c.nMatador} tiros ${c.doM} sem nem sacar o revólver`,
+(c) => `fazer o coveiro cavar ${c.d} covas pra ele numa partida só`, (c) => `entregar ${fmtK(Math.max(0, c.f.entregue))} de ouro aos bandidos de lá, uma morte de cada vez`,
+(c) => `passar mais tempo de tela cinza que em cima do cavalo (${c.d} mortes)`, (c) => `morrer ${c.d} vezes e ainda pedir pra ir pra luta`],
+rota: [(c) => (c.suporte ? `abandonar o carry que devia escoltar na ${c.rota}` : `perder a ${c.rota} no primeiro dia e deixar os vizinhos levarem o gado (os creeps)`),
+(c) => `entregar a T1 da ${c.rota} sem dar um tiro`, () => 'perder o duelo da lane ao meio-dia e não voltar mais',
+(c) => (c.suporte ? 'deixar o carry apanhando sozinho na lane enquanto morria pros creeps' : 'perder o last hit pro creep e a lane pro inimigo')],
+rotacoes: [() => 'não avisar que o mid deles saiu da rota, e ele cavalgou livre pelo mapa', () => 'deixar o mid inimigo visitar todas as lanes sem um ping sequer',
+() => 'dormir no posto de vigia enquanto o mid deles rodava o mapa'],
+snowball: [(c) => `alimentar ${c.m} até virar o bandido mais temido do mapa`, (c) => `pagar as botas e o revólver ${c.doM}, morrendo pra ele`,
+(c) => `criar ${c.m} desde potrinho, morte por morte`],
+pickoff: [() => 'andar sozinho na selva deles sem ward e cair na emboscada', (c) => `ser pego sozinho ${c.nMatador > 1 ? `${c.nMatador} vezes` : 'de novo'}, sempre no mesmo cânion`,
+() => 'sair do grupo sem avisar e voltar no caixão', () => 'farmar a selva dos inimigos como se fosse dele, sem lampião'],
+throw: [() => 'perder a diligência com o jogo ganho, a uma milha do Ancient deles', () => 'morrer em sequência com o time na frente e devolver a vantagem',
+() => 'apostar o jogo ganho numa luta que ninguém pediu', () => 'comemorar no saloon com o Ancient deles ainda de pé'],
+objetivos: [() => 'estar morto quando derrubaram as torres do time', () => 'assistir da tela cinza à queda dos quartéis', () => 'deixar o Roshan pros bandidos enquanto esperava o respawn'],
+ausencia: [() => 'estar farmando a selva durante os tiroteios do time', () => 'chegar à luta depois do enterro dos companheiros', () => 'ter TP na bolsa e não aparecer na briga'],
+farm: [(c) => `garimpar a lane inteira e sair com ${c.p.raw.gold_per_min} de ouro por minuto`, () => 'errar last hit como quem atira no escuro',
+(c) => `terminar ${c.min} minutos de jogo sem item de core`],
+dano: [(c) => `causar só ${fmtK(c.p.raw.hero_damage || 0)} de dano em herói em ${c.min} minutos, com balas de festim`, () => 'duelar com pistola de água (quase nenhum dano em herói)'],
+visao: [(c) => `acender só ${c.w} ${c.w === 1 ? 'lampião' : 'lampiões'} (wards) em ${c.min} minutos de jogo`, () => 'deixar o mapa às escuras pra economizar Observer'],
+participacao: [() => 'ficar de fora de quase todos os abates do time', () => 'assistir aos tiroteios do time da varanda do saloon'],
 };
-const ALCUNHAS_FAROESTE = ['Kid Tela Cinza', 'Billy Sem-Ward', 'Doc Feed', 'Jack Mão-Furada', 'Butch Buyback', 'Johnny Sem Bota', 'Wild Bill do Rio',
-'Calamity Courier', 'o Pistoleiro de Festim', 'o Fantasma do Desfiladeiro', 'Slim Tango', 'o Coveiro Amigo', 'Dinamite Sem Pólvora', 'o Cavaleiro Solitário (demais)',
-'Pé-de-Cemitério', 'Joe Patrocínio', 'Sundance Kid do Feed', 'o Xerife de Ninguém', 'Smokey Sem Smoke', 'o Forasteiro da Fonte', 'Jesse Sem Sorte',
-'Pistola Molhada', 'o Garimpeiro Falido', 'Rato do Rio', 'o Pregador da Derrota', 'Tex Tela Preta', 'o Peão do Inimigo', 'Mão Leve (pro lado errado)'];
+const ALCUNHAS_FAROESTE = ['Kid Tela Cinza', 'Billy Sem-Ward', 'Doutor Feed', 'Butch Buyback', 'Jesse Sem-TP', 'Johnny Sem Bota', 'Wild Bill do Rio',
+'Calamity Courier', 'Billy Bounty', 'Kid Respawn', 'Jack Last-Hit', 'Doutor Tela Preta', 'Joe Patrocínio', 'Jimmy Sem Stack', 'Johnny Sem Blink',
+'Butch Bait', 'Kid Clarity', 'Wild Bill Branch', 'Jack Aegis Perdida', 'Billy Sem BKB', 'Kid Mango', 'Calamity Creep', 'Tex Teleporte', 'Dutch Dust',
+'Johnny Jungle', 'Sundance Stack Zero', 'Kid Ping', 'Doutor Deny', 'Smokey Sem Smoke', 'Jesse Sem Sorte', 'Pistola Molhada', 'Kid Mão de Alface',
+'Billy Blink Errado', 'Butch Bottle Vazia', 'Doutor Divino (Rapier dropada)', 'Jack Juke Nenhum', 'Wild Bill Buyback Nunca', 'Kid Fonte'];
 const PARADEIROS_FAROESTE = ['No saloon do rio, sem lampião', 'Sozinho no desfiladeiro da selva deles', 'No cemitério da cidade (de novo)', 'Cavalgando na direção errada',
 'Na loja de secos e molhados, sem um tostão', 'Esperando o respawn na porta da igreja', 'Garimpando o rio enquanto o forte caía', 'Fugindo a pé; o cavalo foi embora sozinho',
 'No curral do inimigo, contando o gado deles', 'Dormindo no estábulo durante o tiroteio', 'Na fila do coveiro', 'Pedindo fiado no saloon dos inimigos',
@@ -9726,9 +9722,9 @@ const rnd = sorteador(`wanted-${r.partida.id}`);
 const cs = fichas.map((f) => contextoDoBO(f, r));
 const total = fichas.reduce((s_, f) => s_ + Math.max(0, f.entregue), 0);
 const dolar = (x) => `$ ${Math.round(x / 10) * 10 >= 1000 ? (Math.round(x / 10) * 10).toLocaleString('pt-BR') : Math.round(x)}`;
+const usados = new Set(); // a dupla não repete frase entre os dois
 const crimes = (c, n) => {
 const ks = [c.k1, c.k2, c.k1, 'mortes', 'pickoff'].filter((k) => k && FAROESTE[k]);
-const usados = new Set();
 const out = [];
 for (const k of ks) {
 const xs = FAROESTE[k].filter((x) => !usados.has(x));
