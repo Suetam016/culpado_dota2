@@ -1160,7 +1160,7 @@ const FREQUENTE = 25; // % dos jogos a partir do qual um marcador é "frequente"
 const pctDe = (v, n) => (n ? Math.round((100 * v) / n) : 0);
 
 function graficoMarcadores(marcadores, total, wrGeral) {
-  const xs = marcadores.filter(m => !m.resultado && m.n >= 2).map(m => ({ ...m, f: (100 * m.n) / total, wr: pctDe(m.v, m.n) }));
+  const xs = marcadores.filter(m => !m.resultado && m.tipo !== 'inimigo' && m.n >= 2).map(m => ({ ...m, f: (100 * m.n) / total, wr: pctDe(m.v, m.n) }));
   if (xs.length < 3) return '';
   const W = 760, H = 420, M = { e: 46, d: 20, c: 40, b: 42 };
   const maxF = Math.min(100, Math.ceil((Math.max(...xs.map(m => m.f)) + 6) / 10) * 10);
@@ -1212,7 +1212,7 @@ function graficoMarcadores(marcadores, total, wrGeral) {
   const botao = m => `<button type="button" data-marcador="${esc(m.id)}">${m.icone} ${esc(m.nome)} <small>${m.v}/${m.n}</small></button>`;
   return `<article class="cartao tf-grafico">
     <div class="tf-graf-cab"><h3>Mapa dos marcadores</h3>
-      <div class="tf-legenda">${Object.entries(TIPOS_MARCADOR).map(([t, n]) => `<span><i style="background:${CORES_TIPO[t]}"></i>${n}</span>`).join('')}</div></div>
+      <div class="tf-legenda">${Object.entries(TIPOS_MARCADOR).filter(([t]) => t !== 'inimigo').map(([t, n]) => `<span><i style="background:${CORES_TIPO[t]}"></i>${n}</span>`).join('')}</div></div>
     <div class="tf-svg-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cada marcador: quantas vezes aparece e quanto vocês ganham quando ele aparece">
       ${quad(xc, M.c, W - M.d, yc, 'q-cara')}${quad(xc, yc, W - M.d, H - M.b, 'q-vicio')}${quad(M.e, M.c, xc, yc, 'q-arma')}
       ${ticksY.map(t => `<line class="tf-eixo-l" x1="${M.e}" x2="${W - M.d}" y1="${py(t)}" y2="${py(t)}"/><text class="tf-eixo" x="${M.e - 8}" y="${py(t) + 4}" text-anchor="end">${t}%</text>`).join('')}
@@ -1257,7 +1257,7 @@ function jogosDaCasa(todos, casa) {
   if (!casa) return null;
   const [l, c] = casa.split('|');
   const ativo = (sin, id) => ((sin.lista.find(x => x.id === id) || {}).nivel || 0) > 0;
-  return todos.filter(g => ativo(g.sinEles, l) && (c === '*' || ativo(g.sinNos, c)));
+  return todos.filter(g => (l === '*' || ativo(g.sinEles, l)) && (c === '*' || ativo(g.sinNos, c)));
 }
 
 function painelDaCasa(todos, casa, info) {
@@ -1274,7 +1274,7 @@ function painelDaCasa(todos, casa, info) {
     </li>`;
   return `<aside class="tf-casa-painel">
     <div class="tf-casa-cab">
-      <b>${info[l].icone} ${esc(info[l].nome)} deles${c === '*' ? '' : ` × ${info[c].icone} ${esc(info[c].nome)} de vocês`}</b>
+      <b>${l === '*' ? `${info[c].icone} ${esc(info[c].nome)} de vocês` : `${info[l].icone} ${esc(info[l].nome)} deles${c === '*' ? '' : ` × ${info[c].icone} ${esc(info[c].nome)} de vocês`}`}</b>
       <button type="button" data-casa="" aria-label="Fechar">✕</button>
     </div>
     <p class="tf-casa-placar"><span class="${v * 2 > xs.length ? 'bom' : v * 2 < xs.length ? 'ruim' : ''}">${v}V · ${xs.length - v}D</span> em ${xs.length} jogo${xs.length === 1 ? '' : 's'} · vocês à esquerda, eles à direita</p>
@@ -1294,7 +1294,7 @@ function gradeRespostas(todos) {
   if (linhas.length < 2 || colunas.length < 2) return '';
   if (casaFechado) {
     const [l, c] = casaFechado.split('|');
-    if (!linhas.some(x => x.id === l) || (c !== '*' && !colunas.some(x => x.id === c))) casaFechado = null;
+    if ((l !== '*' && !linhas.some(x => x.id === l)) || (c !== '*' && !colunas.some(x => x.id === c))) casaFechado = null;
   }
   const cor = (wr, n) => {
     const forca = Math.min(1, Math.abs(wr - 50) / 40) * Math.min(1, n / 3);
@@ -1317,7 +1317,7 @@ function gradeRespostas(todos) {
     <p class="tf-graf-sub">Linha: o que o time deles tinha. Coluna: o que vocês tinham. ★ = a melhor resposta (2+ jogos, acima do geral daquela linha). Toque numa casa pra ver os jogos; o que cada nome significa está em “O que significa cada marcador”.</p>
     <div class="tf-grade-e-jogos">
     <div class="tf-grade-wrap"><table class="tf-grade">
-      <thead><tr><th class="tf-canto"><span>Deles ↓ · Vocês →</span></th>${colunas.map(c => `<th scope="col" title="${esc(textoExplicado({ id: `nos:${c.id}`, desc: '' }))}"><span class="tf-col-ic">${info[c.id].icone}</span><span>${esc(info[c.id].nome)}</span></th>`).join('')}</tr></thead>
+      <thead><tr><th class="tf-canto"><span>Deles ↓ · Vocês →</span></th>${colunas.map(c => `<th scope="col" data-casa="*|${c.id}" tabindex="0" role="button" class="${casaFechado === `*|${c.id}` ? 'tf-casa-ativa' : ''}" title="${esc(textoExplicado({ id: `nos:${c.id}`, desc: '' }))} Toque pra ver todos os jogos em que vocês tinham isso."><span class="tf-col-ic">${info[c.id].icone}</span><span>${esc(info[c.id].nome)}</span></th>`).join('')}</tr></thead>
       <tbody>${corpo}</tbody>
     </table></div>
     ${painelDaCasa(todos, casaFechado, info)}
