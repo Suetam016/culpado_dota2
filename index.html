@@ -10362,13 +10362,16 @@ const ABALADOS_DUPLA = [[GABE, () => 'Um sozinho já seria uma tragédia. Dois, 
 [DENDI, () => 'Dois no mesmo time. Eu rezo pelos outros três.'],
 [YATORO, () => 'Um já é pesado. Dois... eu precisei de uma semana longe do Dota.'],
 [GALVAO, () => 'São dois! Dois, amigo! Que horror, que horror!']];
+// como a pessoa está enquanto fala (vem antes da fala)
+const EMOCOES = ['[voz embargada]', '[mãos trêmulas]', '[choro contido]', '[olhando para o chão]', '[com a voz falhando]', '[sem conseguir encarar a câmera]',
+'[em voz baixa]', '[segurando as lágrimas]', '[visivelmente abalado]', '[respirando fundo]', '[ainda em choque]', '[a voz quase sumindo]'];
 function depoimentoHaia(fichas, r, rnd) {
 const c = contextoDoBO(fichas[0], r);
 const doCaso = ABALADOS.filter((x) => x[2] && (x[2] === c.k1 || x[2] === c.k2));
 const gerais = ABALADOS.filter((x) => !x[2]);
 const pool = fichas.length > 1 && rnd.num(0, 1) ? ABALADOS_DUPLA : doCaso.length && rnd.num(0, 2) ? doCaso : gerais;
 const [[quem, cargo], fala] = rnd.um(pool);
-return h('blockquote', { class: 'tpi-depoimento' }, h('p', {}, `“${fala(c)}”`), h('footer', {}, `${quem}, ${cargo}`));
+return h('blockquote', { class: 'tpi-depoimento' }, h('p', {}, h('i', {}, rnd.um(EMOCOES)), ' ', `“${fala(c)}”`), h('footer', {}, `${quem}, ${cargo}`));
 }
 
 function docHaia(fichas, r) {
