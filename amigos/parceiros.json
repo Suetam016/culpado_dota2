@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-10-19T06:20:51Z",
+ "atualizadoEm": "2026-10-19T06:26:39Z",
  "desde": "2025-10-24",
- "partidasLidas": 426,
+ "partidasLidas": 422,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,14 +11,14 @@
   },
   "241782761": {
    "nome": "[Pau]DeCamelo",
-   "jogos": 94,
-   "vitorias": 46,
-   "winRate": 49
+   "jogos": 90,
+   "vitorias": 45,
+   "winRate": 50
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 116,
-   "vitorias": 53,
+   "jogos": 112,
+   "vitorias": 52,
    "winRate": 46
   },
   "1000265186": {
@@ -41,15 +41,15 @@
   },
   "77621319": {
    "nome": "Jalim",
-   "jogos": 50,
-   "vitorias": 25,
+   "jogos": 48,
+   "vitorias": 24,
    "winRate": 50
   },
   "96286191": {
    "nome": "charlinho",
-   "jogos": 19,
-   "vitorias": 8,
-   "winRate": 42
+   "jogos": 15,
+   "vitorias": 7,
+   "winRate": 47
   },
   "83300280": {
    "nome": "ptn",
@@ -712,8 +712,8 @@
    "b": "81918076",
    "nomeA": "Jalim",
    "nomeB": "Suéter",
-   "jogos": 33,
-   "vitorias": 17,
+   "jogos": 31,
+   "vitorias": 16,
    "winRate": 52,
    "rotas": [
     {
@@ -802,24 +802,6 @@
    ],
    "partidas": [
     {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "heroiA": 5,
-     "heroiB": 87,
-     "posA": 5,
-     "posB": 4
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "heroiA": 81,
-     "heroiB": 86,
-     "posA": 1,
-     "posB": 4
-    },
-    {
      "matchId": 9051285470,
      "inicio": 1792340193,
      "venceu": true,
@@ -871,6 +853,24 @@
      "heroiA": 30,
      "heroiB": 86,
      "posA": 5,
+     "posB": 2
+    },
+    {
+     "matchId": 9047694715,
+     "inicio": 1792163786,
+     "venceu": true,
+     "heroiA": 5,
+     "heroiB": 107,
+     "posA": 4,
+     "posB": 2
+    },
+    {
+     "matchId": 9046952431,
+     "inicio": 1792114965,
+     "venceu": true,
+     "heroiA": 2,
+     "heroiB": 107,
+     "posA": 3,
      "posB": 2
     }
    ]
@@ -1421,6 +1421,195 @@
   },
   {
    "a": "81918076",
+   "b": "241782761",
+   "nomeA": "Suéter",
+   "nomeB": "[Pau]DeCamelo",
+   "jogos": 54,
+   "vitorias": 25,
+   "winRate": 46,
+   "rotas": [
+    {
+     "posA": 2,
+     "posB": 1,
+     "jogos": 4,
+     "vitorias": 3,
+     "winRate": 75
+    },
+    {
+     "posA": 3,
+     "posB": 2,
+     "jogos": 15,
+     "vitorias": 9,
+     "winRate": 60
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 10,
+     "vitorias": 5,
+     "winRate": 50
+    },
+    {
+     "posA": 2,
+     "posB": 3,
+     "jogos": 4,
+     "vitorias": 2,
+     "winRate": 50
+    },
+    {
+     "posA": 4,
+     "posB": 1,
+     "jogos": 2,
+     "vitorias": 1,
+     "winRate": 50
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "posA": 5,
+     "posB": 1,
+     "jogos": 4,
+     "vitorias": 1,
+     "winRate": 25
+    },
+    {
+     "posA": 2,
+     "posB": 4,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "herois": [
+    {
+     "heroiA": 107,
+     "heroiB": 43,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
+     "heroiA": 107,
+     "heroiB": 70,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
+     "heroiA": 107,
+     "heroiB": 95,
+     "jogos": 3,
+     "vitorias": 2,
+     "winRate": 67
+    }
+   ],
+   "heroisPiores": [
+    {
+     "heroiA": 107,
+     "heroiB": 93,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "heroiA": 107,
+     "heroiB": 47,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    },
+    {
+     "heroiA": 107,
+     "heroiB": 67,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "partidas": [
+    {
+     "matchId": 9051525934,
+     "inicio": 1792348863,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 70,
+     "posA": 3,
+     "posB": 1
+    },
+    {
+     "matchId": 9051396867,
+     "inicio": 1792344122,
+     "venceu": false,
+     "heroiA": 86,
+     "heroiB": 67,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9049718112,
+     "inicio": 1792261977,
+     "venceu": false,
+     "heroiA": 107,
+     "heroiB": 2,
+     "posA": 2,
+     "posB": 3
+    },
+    {
+     "matchId": 9047004166,
+     "inicio": 1792120681,
+     "venceu": false,
+     "heroiA": 121,
+     "heroiB": 43,
+     "posA": 5,
+     "posB": 2
+    },
+    {
+     "matchId": 9046982569,
+     "inicio": 1792118291,
+     "venceu": true,
+     "heroiA": 108,
+     "heroiB": 67,
+     "posA": 3,
+     "posB": 1
+    },
+    {
+     "matchId": 9046952431,
+     "inicio": 1792114965,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 37,
+     "posA": 2,
+     "posB": 4
+    },
+    {
+     "matchId": 9046923293,
+     "inicio": 1792111591,
+     "venceu": false,
+     "heroiA": 107,
+     "heroiB": 47,
+     "posA": 4,
+     "posB": 3
+    },
+    {
+     "matchId": 9042378073,
+     "inicio": 1791840824,
+     "venceu": false,
+     "heroiA": 107,
+     "heroiB": 67,
+     "posA": 2,
+     "posB": 1
+    }
+   ]
+  },
+  {
+   "a": "81918076",
    "b": "1000265186",
    "nomeA": "Suéter",
    "nomeB": "gustavoDotinhaPro",
@@ -1704,201 +1893,12 @@
    ]
   },
   {
-   "a": "81918076",
-   "b": "241782761",
-   "nomeA": "Suéter",
-   "nomeB": "[Pau]DeCamelo",
-   "jogos": 58,
-   "vitorias": 26,
-   "winRate": 45,
-   "rotas": [
-    {
-     "posA": 3,
-     "posB": 2,
-     "jogos": 15,
-     "vitorias": 9,
-     "winRate": 60
-    },
-    {
-     "posA": 2,
-     "posB": 1,
-     "jogos": 5,
-     "vitorias": 3,
-     "winRate": 60
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 10,
-     "vitorias": 5,
-     "winRate": 50
-    },
-    {
-     "posA": 2,
-     "posB": 3,
-     "jogos": 4,
-     "vitorias": 2,
-     "winRate": 50
-    },
-    {
-     "posA": 4,
-     "posB": 1,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 4,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 5,
-     "posB": 1,
-     "jogos": 4,
-     "vitorias": 1,
-     "winRate": 25
-    }
-   ],
-   "herois": [
-    {
-     "heroiA": 107,
-     "heroiB": 43,
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    },
-    {
-     "heroiA": 107,
-     "heroiB": 70,
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    },
-    {
-     "heroiA": 107,
-     "heroiB": 95,
-     "jogos": 3,
-     "vitorias": 2,
-     "winRate": 67
-    }
-   ],
-   "heroisPiores": [
-    {
-     "heroiA": 107,
-     "heroiB": 93,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "heroiA": 107,
-     "heroiB": 47,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "heroiA": 107,
-     "heroiB": 67,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "partidas": [
-    {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "heroiA": 87,
-     "heroiB": 22,
-     "posA": 4,
-     "posB": 2
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "heroiA": 86,
-     "heroiB": 7,
-     "posA": 4,
-     "posB": 2
-    },
-    {
-     "matchId": 9051739695,
-     "inicio": 1792359072,
-     "venceu": false,
-     "heroiA": 87,
-     "heroiB": 28,
-     "posA": 4,
-     "posB": 3
-    },
-    {
-     "matchId": 9051617064,
-     "inicio": 1792352532,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 12,
-     "posA": 2,
-     "posB": 1
-    },
-    {
-     "matchId": 9051525934,
-     "inicio": 1792348863,
-     "venceu": true,
-     "heroiA": 107,
-     "heroiB": 70,
-     "posA": 3,
-     "posB": 1
-    },
-    {
-     "matchId": 9051396867,
-     "inicio": 1792344122,
-     "venceu": false,
-     "heroiA": 86,
-     "heroiB": 67,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9049718112,
-     "inicio": 1792261977,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 2,
-     "posA": 2,
-     "posB": 3
-    },
-    {
-     "matchId": 9047004166,
-     "inicio": 1792120681,
-     "venceu": false,
-     "heroiA": 121,
-     "heroiB": 43,
-     "posA": 5,
-     "posB": 2
-    }
-   ]
-  },
-  {
    "a": "77621319",
    "b": "241782761",
    "nomeA": "Jalim",
    "nomeB": "[Pau]DeCamelo",
-   "jogos": 33,
-   "vitorias": 15,
+   "jogos": 31,
+   "vitorias": 14,
    "winRate": 45,
    "rotas": [
     {
@@ -1918,13 +1918,6 @@
     {
      "posA": 2,
      "posB": 1,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    },
-    {
-     "posA": 5,
-     "posB": 2,
      "jogos": 2,
      "vitorias": 1,
      "winRate": 50
@@ -1935,6 +1928,13 @@
      "jogos": 2,
      "vitorias": 1,
      "winRate": 50
+    },
+    {
+     "posA": 3,
+     "posB": 2,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
     }
    ],
    "rotasPiores": [
@@ -1963,24 +1963,6 @@
    "herois": [],
    "heroisPiores": [],
    "partidas": [
-    {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "heroiA": 5,
-     "heroiB": 22,
-     "posA": 5,
-     "posB": 2
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "heroiA": 81,
-     "heroiB": 7,
-     "posA": 1,
-     "posB": 2
-    },
     {
      "matchId": 9050152210,
      "inicio": 1792284786,
@@ -2032,6 +2014,149 @@
      "venceu": false,
      "heroiA": 5,
      "heroiB": 67,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9049718112,
+     "inicio": 1792261977,
+     "venceu": false,
+     "heroiA": 44,
+     "heroiB": 2,
+     "posA": 1,
+     "posB": 3
+    },
+    {
+     "matchId": 9046952431,
+     "inicio": 1792114965,
+     "venceu": true,
+     "heroiA": 2,
+     "heroiB": 37,
+     "posA": 3,
+     "posB": 4
+    }
+   ]
+  },
+  {
+   "a": "81918076",
+   "b": "96286191",
+   "nomeA": "Suéter",
+   "nomeB": "charlinho",
+   "jogos": 11,
+   "vitorias": 5,
+   "winRate": 45,
+   "rotas": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
+     "posA": 5,
+     "posB": 1,
+     "jogos": 4,
+     "vitorias": 2,
+     "winRate": 50
+    },
+    {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "herois": [],
+   "heroisPiores": [
+    {
+     "heroiA": 107,
+     "heroiB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "partidas": [
+    {
+     "matchId": 9051525934,
+     "inicio": 1792348863,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 26,
+     "posA": 3,
+     "posB": 5
+    },
+    {
+     "matchId": 9049718112,
+     "inicio": 1792261977,
+     "venceu": false,
+     "heroiA": 107,
+     "heroiB": 5,
+     "posA": 2,
+     "posB": 5
+    },
+    {
+     "matchId": 9049609392,
+     "inicio": 1792258192,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 87,
+     "posA": 2,
+     "posB": 5
+    },
+    {
+     "matchId": 9047036754,
+     "inicio": 1792124301,
+     "venceu": false,
+     "heroiA": 86,
+     "heroiB": 28,
+     "posA": 4,
+     "posB": 3
+    },
+    {
+     "matchId": 9047004166,
+     "inicio": 1792120681,
+     "venceu": false,
+     "heroiA": 121,
+     "heroiB": 54,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9046982569,
+     "inicio": 1792118291,
+     "venceu": true,
+     "heroiA": 108,
+     "heroiB": 5,
+     "posA": 3,
+     "posB": 5
+    },
+    {
+     "matchId": 9045631046,
+     "inicio": 1792038075,
+     "venceu": true,
+     "heroiA": 86,
+     "heroiB": 54,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9045600426,
+     "inicio": 1792034765,
+     "venceu": true,
+     "heroiA": 86,
+     "heroiB": 6,
      "posA": 5,
      "posB": 1
     }
@@ -2744,138 +2869,6 @@
    ]
   },
   {
-   "a": "81918076",
-   "b": "96286191",
-   "nomeA": "Suéter",
-   "nomeB": "charlinho",
-   "jogos": 15,
-   "vitorias": 6,
-   "winRate": 40,
-   "rotas": [
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    },
-    {
-     "posA": 5,
-     "posB": 1,
-     "jogos": 4,
-     "vitorias": 2,
-     "winRate": 50
-    },
-    {
-     "posA": 4,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    },
-    {
-     "posA": 2,
-     "posB": 5,
-     "jogos": 4,
-     "vitorias": 1,
-     "winRate": 25
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 2,
-     "posB": 5,
-     "jogos": 4,
-     "vitorias": 1,
-     "winRate": 25
-    }
-   ],
-   "herois": [],
-   "heroisPiores": [
-    {
-     "heroiA": 107,
-     "heroiB": 5,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    }
-   ],
-   "partidas": [
-    {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "heroiA": 87,
-     "heroiB": 6,
-     "posA": 4,
-     "posB": 1
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "heroiA": 86,
-     "heroiB": 87,
-     "posA": 4,
-     "posB": 5
-    },
-    {
-     "matchId": 9051739695,
-     "inicio": 1792359072,
-     "venceu": false,
-     "heroiA": 87,
-     "heroiB": 25,
-     "posA": 4,
-     "posB": 2
-    },
-    {
-     "matchId": 9051617064,
-     "inicio": 1792352532,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 26,
-     "posA": 2,
-     "posB": 5
-    },
-    {
-     "matchId": 9051525934,
-     "inicio": 1792348863,
-     "venceu": true,
-     "heroiA": 107,
-     "heroiB": 26,
-     "posA": 3,
-     "posB": 5
-    },
-    {
-     "matchId": 9049718112,
-     "inicio": 1792261977,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 5,
-     "posA": 2,
-     "posB": 5
-    },
-    {
-     "matchId": 9049609392,
-     "inicio": 1792258192,
-     "venceu": true,
-     "heroiA": 107,
-     "heroiB": 87,
-     "posA": 2,
-     "posB": 5
-    },
-    {
-     "matchId": 9047036754,
-     "inicio": 1792124301,
-     "venceu": false,
-     "heroiA": 86,
-     "heroiB": 28,
-     "posA": 4,
-     "posB": 3
-    }
-   ]
-  },
-  {
    "a": "26668150",
    "b": "111257540",
    "nomeA": "3rvinha",
@@ -3217,6 +3210,130 @@
    ]
   },
   {
+   "a": "96286191",
+   "b": "241782761",
+   "nomeA": "charlinho",
+   "nomeB": "[Pau]DeCamelo",
+   "jogos": 8,
+   "vitorias": 3,
+   "winRate": 38,
+   "rotas": [
+    {
+     "posA": 5,
+     "posB": 1,
+     "jogos": 3,
+     "vitorias": 3,
+     "winRate": 100
+    },
+    {
+     "posA": 5,
+     "posB": 2,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "posA": 5,
+     "posB": 3,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 5,
+     "posB": 3,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "posA": 5,
+     "posB": 2,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "herois": [],
+   "heroisPiores": [],
+   "partidas": [
+    {
+     "matchId": 9051525934,
+     "inicio": 1792348863,
+     "venceu": true,
+     "heroiA": 26,
+     "heroiB": 70,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9049718112,
+     "inicio": 1792261977,
+     "venceu": false,
+     "heroiA": 5,
+     "heroiB": 2,
+     "posA": 5,
+     "posB": 3
+    },
+    {
+     "matchId": 9047004166,
+     "inicio": 1792120681,
+     "venceu": false,
+     "heroiA": 54,
+     "heroiB": 43,
+     "posA": 1,
+     "posB": 2
+    },
+    {
+     "matchId": 9046982569,
+     "inicio": 1792118291,
+     "venceu": true,
+     "heroiA": 5,
+     "heroiB": 67,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9046883529,
+     "inicio": 1792106996,
+     "venceu": false,
+     "heroiA": 5,
+     "heroiB": 69,
+     "posA": 5,
+     "posB": 3
+    },
+    {
+     "matchId": 9046846243,
+     "inicio": 1792103290,
+     "venceu": false,
+     "heroiA": 5,
+     "heroiB": 15,
+     "posA": 5,
+     "posB": 2
+    },
+    {
+     "matchId": 9046815947,
+     "inicio": 1792100740,
+     "venceu": true,
+     "heroiA": 87,
+     "heroiB": 67,
+     "posA": 5,
+     "posB": 1
+    },
+    {
+     "matchId": 9013378209,
+     "inicio": 1790218244,
+     "venceu": false,
+     "heroiA": 5,
+     "heroiB": 75,
+     "posA": 5,
+     "posB": 2
+    }
+   ]
+  },
+  {
    "a": "111257540",
    "b": "1254464470",
    "nomeA": "Kuscomem",
@@ -3356,144 +3473,6 @@
    ]
   },
   {
-   "a": "96286191",
-   "b": "241782761",
-   "nomeA": "charlinho",
-   "nomeB": "[Pau]DeCamelo",
-   "jogos": 12,
-   "vitorias": 4,
-   "winRate": 33,
-   "rotas": [
-    {
-     "posA": 5,
-     "posB": 1,
-     "jogos": 4,
-     "vitorias": 3,
-     "winRate": 75
-    },
-    {
-     "posA": 5,
-     "posB": 2,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "posA": 5,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 1,
-     "posB": 2,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 1,
-     "posB": 2,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 5,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 5,
-     "posB": 2,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "herois": [],
-   "heroisPiores": [],
-   "partidas": [
-    {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "heroiA": 6,
-     "heroiB": 22,
-     "posA": 1,
-     "posB": 2
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "heroiA": 87,
-     "heroiB": 7,
-     "posA": 5,
-     "posB": 2
-    },
-    {
-     "matchId": 9051739695,
-     "inicio": 1792359072,
-     "venceu": false,
-     "heroiA": 25,
-     "heroiB": 28,
-     "posA": 2,
-     "posB": 3
-    },
-    {
-     "matchId": 9051617064,
-     "inicio": 1792352532,
-     "venceu": false,
-     "heroiA": 26,
-     "heroiB": 12,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9051525934,
-     "inicio": 1792348863,
-     "venceu": true,
-     "heroiA": 26,
-     "heroiB": 70,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9049718112,
-     "inicio": 1792261977,
-     "venceu": false,
-     "heroiA": 5,
-     "heroiB": 2,
-     "posA": 5,
-     "posB": 3
-    },
-    {
-     "matchId": 9047004166,
-     "inicio": 1792120681,
-     "venceu": false,
-     "heroiA": 54,
-     "heroiB": 43,
-     "posA": 1,
-     "posB": 2
-    },
-    {
-     "matchId": 9046982569,
-     "inicio": 1792118291,
-     "venceu": true,
-     "heroiA": 5,
-     "heroiB": 67,
-     "posA": 5,
-     "posB": 1
-    }
-   ]
-  },
-  {
    "a": "26668150",
    "b": "1254464470",
    "nomeA": "3rvinha",
@@ -3611,131 +3590,6 @@
    ]
   },
   {
-   "a": "77621319",
-   "b": "96286191",
-   "nomeA": "Jalim",
-   "nomeB": "charlinho",
-   "jogos": 9,
-   "vitorias": 3,
-   "winRate": 33,
-   "rotas": [
-    {
-     "posA": 1,
-     "posB": 5,
-     "jogos": 4,
-     "vitorias": 2,
-     "winRate": 50
-    },
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "herois": [],
-   "heroisPiores": [
-    {
-     "heroiA": 44,
-     "heroiB": 5,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "heroiA": 135,
-     "heroiB": 5,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    }
-   ],
-   "partidas": [
-    {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "heroiA": 5,
-     "heroiB": 6,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "heroiA": 81,
-     "heroiB": 87,
-     "posA": 1,
-     "posB": 5
-    },
-    {
-     "matchId": 9049718112,
-     "inicio": 1792261977,
-     "venceu": false,
-     "heroiA": 44,
-     "heroiB": 5,
-     "posA": 1,
-     "posB": 5
-    },
-    {
-     "matchId": 9049609392,
-     "inicio": 1792258192,
-     "venceu": true,
-     "heroiA": 93,
-     "heroiB": 87,
-     "posA": 1,
-     "posB": 5
-    },
-    {
-     "matchId": 9046883529,
-     "inicio": 1792106996,
-     "venceu": false,
-     "heroiA": 44,
-     "heroiB": 5,
-     "posA": 1,
-     "posB": 5
-    },
-    {
-     "matchId": 9046846243,
-     "inicio": 1792103290,
-     "venceu": false,
-     "heroiA": 135,
-     "heroiB": 5,
-     "posA": 3,
-     "posB": 5
-    },
-    {
-     "matchId": 9046815947,
-     "inicio": 1792100740,
-     "venceu": true,
-     "heroiA": 2,
-     "heroiB": 87,
-     "posA": 3,
-     "posB": 5
-    },
-    {
-     "matchId": 9045574799,
-     "inicio": 1792032025,
-     "venceu": false,
-     "heroiA": 135,
-     "heroiB": 5,
-     "posA": 3,
-     "posB": 5
-    }
-   ]
-  },
-  {
    "a": "26668150",
    "b": "241782761",
    "nomeA": "3rvinha",
@@ -3808,6 +3662,129 @@
      "heroiA": 97,
      "heroiB": 38,
      "posA": 5,
+     "posB": 1
+    }
+   ]
+  },
+  {
+   "a": "77621319",
+   "b": "96286191",
+   "nomeA": "Jalim",
+   "nomeB": "charlinho",
+   "jogos": 7,
+   "vitorias": 2,
+   "winRate": 29,
+   "rotas": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    },
+    {
+     "posA": 1,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 1,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    },
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "herois": [],
+   "heroisPiores": [
+    {
+     "heroiA": 44,
+     "heroiB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "heroiA": 135,
+     "heroiB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "partidas": [
+    {
+     "matchId": 9049718112,
+     "inicio": 1792261977,
+     "venceu": false,
+     "heroiA": 44,
+     "heroiB": 5,
+     "posA": 1,
+     "posB": 5
+    },
+    {
+     "matchId": 9049609392,
+     "inicio": 1792258192,
+     "venceu": true,
+     "heroiA": 93,
+     "heroiB": 87,
+     "posA": 1,
+     "posB": 5
+    },
+    {
+     "matchId": 9046883529,
+     "inicio": 1792106996,
+     "venceu": false,
+     "heroiA": 44,
+     "heroiB": 5,
+     "posA": 1,
+     "posB": 5
+    },
+    {
+     "matchId": 9046846243,
+     "inicio": 1792103290,
+     "venceu": false,
+     "heroiA": 135,
+     "heroiB": 5,
+     "posA": 3,
+     "posB": 5
+    },
+    {
+     "matchId": 9046815947,
+     "inicio": 1792100740,
+     "venceu": true,
+     "heroiA": 2,
+     "heroiB": 87,
+     "posA": 3,
+     "posB": 5
+    },
+    {
+     "matchId": 9045574799,
+     "inicio": 1792032025,
+     "venceu": false,
+     "heroiA": 135,
+     "heroiB": 5,
+     "posA": 3,
+     "posB": 5
+    },
+    {
+     "matchId": 8949932018,
+     "inicio": 1786928539,
+     "venceu": false,
+     "heroiA": 135,
+     "heroiB": 44,
+     "posA": 3,
      "posB": 1
     }
    ]
@@ -6174,6 +6151,101 @@
   },
   {
    "membros": [
+    "81918076",
+    "96286191",
+    "241782761"
+   ],
+   "herois": {
+    "81918076": [
+     {
+      "heroi": 107,
+      "jogos": 1,
+      "vitorias": 1,
+      "winRate": 100
+     },
+     {
+      "heroi": 88,
+      "jogos": 1,
+      "vitorias": 0,
+      "winRate": 0
+     }
+    ],
+    "96286191": [
+     {
+      "heroi": 26,
+      "jogos": 1,
+      "vitorias": 1,
+      "winRate": 100
+     },
+     {
+      "heroi": 5,
+      "jogos": 1,
+      "vitorias": 0,
+      "winRate": 0
+     }
+    ],
+    "241782761": [
+     {
+      "heroi": 70,
+      "jogos": 1,
+      "vitorias": 1,
+      "winRate": 100
+     },
+     {
+      "heroi": 75,
+      "jogos": 1,
+      "vitorias": 0,
+      "winRate": 0
+     }
+    ]
+   },
+   "jogos": 2,
+   "vitorias": 1,
+   "winRate": 50,
+   "formacoes": [],
+   "partidas": [
+    {
+     "matchId": 9051525934,
+     "inicio": 1792348863,
+     "venceu": true,
+     "herois": {
+      "81918076": {
+       "heroi": 107,
+       "pos": 3
+      },
+      "96286191": {
+       "heroi": 26,
+       "pos": 5
+      },
+      "241782761": {
+       "heroi": 70,
+       "pos": 1
+      }
+     }
+    },
+    {
+     "matchId": 9013378209,
+     "inicio": 1790218244,
+     "venceu": false,
+     "herois": {
+      "81918076": {
+       "heroi": 88,
+       "pos": 4
+      },
+      "96286191": {
+       "heroi": 5,
+       "pos": 5
+      },
+      "241782761": {
+       "heroi": 75,
+       "pos": 2
+      }
+     }
+    }
+   ]
+  },
+  {
+   "membros": [
     "26668150",
     "81918076",
     "83300280",
@@ -6561,124 +6633,6 @@
       "1254464470": {
        "heroi": 123,
        "pos": 4
-      }
-     }
-    }
-   ]
-  },
-  {
-   "membros": [
-    "77621319",
-    "81918076",
-    "96286191",
-    "241782761"
-   ],
-   "herois": {
-    "77621319": [
-     {
-      "heroi": 81,
-      "jogos": 1,
-      "vitorias": 1,
-      "winRate": 100
-     },
-     {
-      "heroi": 5,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "81918076": [
-     {
-      "heroi": 86,
-      "jogos": 1,
-      "vitorias": 1,
-      "winRate": 100
-     },
-     {
-      "heroi": 87,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "96286191": [
-     {
-      "heroi": 87,
-      "jogos": 1,
-      "vitorias": 1,
-      "winRate": 100
-     },
-     {
-      "heroi": 6,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "241782761": [
-     {
-      "heroi": 7,
-      "jogos": 1,
-      "vitorias": 1,
-      "winRate": 100
-     },
-     {
-      "heroi": 22,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ]
-   },
-   "jogos": 2,
-   "vitorias": 1,
-   "winRate": 50,
-   "formacoes": [],
-   "partidas": [
-    {
-     "matchId": 9051821402,
-     "inicio": 1792366233,
-     "venceu": false,
-     "herois": {
-      "77621319": {
-       "heroi": 5,
-       "pos": 5
-      },
-      "81918076": {
-       "heroi": 87,
-       "pos": 4
-      },
-      "96286191": {
-       "heroi": 6,
-       "pos": 1
-      },
-      "241782761": {
-       "heroi": 22,
-       "pos": 2
-      }
-     }
-    },
-    {
-     "matchId": 9051791878,
-     "inicio": 1792363333,
-     "venceu": true,
-     "herois": {
-      "77621319": {
-       "heroi": 81,
-       "pos": 1
-      },
-      "81918076": {
-       "heroi": 86,
-       "pos": 4
-      },
-      "96286191": {
-       "heroi": 87,
-       "pos": 5
-      },
-      "241782761": {
-       "heroi": 7,
-       "pos": 2
       }
      }
     }
@@ -7486,157 +7440,6 @@
       "1254464470": {
        "heroi": 123,
        "pos": 4
-      }
-     }
-    }
-   ]
-  },
-  {
-   "membros": [
-    "81918076",
-    "96286191",
-    "241782761"
-   ],
-   "herois": {
-    "81918076": [
-     {
-      "heroi": 107,
-      "jogos": 2,
-      "vitorias": 1,
-      "winRate": 50
-     },
-     {
-      "heroi": 88,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     },
-     {
-      "heroi": 87,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "96286191": [
-     {
-      "heroi": 26,
-      "jogos": 2,
-      "vitorias": 1,
-      "winRate": 50
-     },
-     {
-      "heroi": 5,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     },
-     {
-      "heroi": 25,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "241782761": [
-     {
-      "heroi": 70,
-      "jogos": 1,
-      "vitorias": 1,
-      "winRate": 100
-     },
-     {
-      "heroi": 75,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     },
-     {
-      "heroi": 12,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ]
-   },
-   "jogos": 4,
-   "vitorias": 1,
-   "winRate": 25,
-   "formacoes": [],
-   "partidas": [
-    {
-     "matchId": 9051739695,
-     "inicio": 1792359072,
-     "venceu": false,
-     "herois": {
-      "81918076": {
-       "heroi": 87,
-       "pos": 4
-      },
-      "96286191": {
-       "heroi": 25,
-       "pos": 2
-      },
-      "241782761": {
-       "heroi": 28,
-       "pos": 3
-      }
-     }
-    },
-    {
-     "matchId": 9051617064,
-     "inicio": 1792352532,
-     "venceu": false,
-     "herois": {
-      "81918076": {
-       "heroi": 107,
-       "pos": 2
-      },
-      "96286191": {
-       "heroi": 26,
-       "pos": 5
-      },
-      "241782761": {
-       "heroi": 12,
-       "pos": 1
-      }
-     }
-    },
-    {
-     "matchId": 9051525934,
-     "inicio": 1792348863,
-     "venceu": true,
-     "herois": {
-      "81918076": {
-       "heroi": 107,
-       "pos": 3
-      },
-      "96286191": {
-       "heroi": 26,
-       "pos": 5
-      },
-      "241782761": {
-       "heroi": 70,
-       "pos": 1
-      }
-     }
-    },
-    {
-     "matchId": 9013378209,
-     "inicio": 1790218244,
-     "venceu": false,
-     "herois": {
-      "81918076": {
-       "heroi": 88,
-       "pos": 4
-      },
-      "96286191": {
-       "heroi": 5,
-       "pos": 5
-      },
-      "241782761": {
-       "heroi": 75,
-       "pos": 2
       }
      }
     }
@@ -8960,12 +8763,6 @@
     "vitorias": 4
    },
    {
-    "heroi": 12,
-    "pos": 1,
-    "jogos": 5,
-    "vitorias": 3
-   },
-   {
     "heroi": 75,
     "pos": 2,
     "jogos": 5,
@@ -8986,6 +8783,12 @@
    {
     "heroi": 76,
     "pos": 2,
+    "jogos": 4,
+    "vitorias": 3
+   },
+   {
+    "heroi": 12,
+    "pos": 1,
     "jogos": 4,
     "vitorias": 3
    },
@@ -9272,12 +9075,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 7,
-    "pos": 2,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
     "heroi": 114,
     "pos": 2,
     "jogos": 1,
@@ -9474,25 +9271,13 @@
     "pos": 3,
     "jogos": 1,
     "vitorias": 0
-   },
-   {
-    "heroi": 28,
-    "pos": 3,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 22,
-    "pos": 2,
-    "jogos": 1,
-    "vitorias": 0
    }
   ],
   "81918076": [
    {
     "heroi": 107,
     "pos": 2,
-    "jogos": 43,
+    "jogos": 42,
     "vitorias": 19
    },
    {
@@ -9538,18 +9323,6 @@
     "vitorias": 3
    },
    {
-    "heroi": 87,
-    "pos": 4,
-    "jogos": 3,
-    "vitorias": 1
-   },
-   {
-    "heroi": 86,
-    "pos": 4,
-    "jogos": 2,
-    "vitorias": 1
-   },
-   {
     "heroi": 121,
     "pos": 4,
     "jogos": 2,
@@ -9560,6 +9333,12 @@
     "pos": 5,
     "jogos": 2,
     "vitorias": 0
+   },
+   {
+    "heroi": 87,
+    "pos": 4,
+    "jogos": 1,
+    "vitorias": 1
    },
    {
     "heroi": 155,
@@ -9618,6 +9397,12 @@
    {
     "heroi": 45,
     "pos": 5,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 86,
+    "pos": 4,
     "jogos": 1,
     "vitorias": 0
    }
@@ -10436,7 +10221,7 @@
    {
     "heroi": 5,
     "pos": 5,
-    "jogos": 6,
+    "jogos": 5,
     "vitorias": 2
    },
    {
@@ -10462,12 +10247,6 @@
     "pos": 3,
     "jogos": 4,
     "vitorias": 3
-   },
-   {
-    "heroi": 81,
-    "pos": 1,
-    "jogos": 2,
-    "vitorias": 1
    },
    {
     "heroi": 44,
@@ -10548,6 +10327,12 @@
     "vitorias": 0
    },
    {
+    "heroi": 81,
+    "pos": 1,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
     "heroi": 108,
     "pos": 3,
     "jogos": 1,
@@ -10624,14 +10409,8 @@
    {
     "heroi": 87,
     "pos": 5,
-    "jogos": 4,
-    "vitorias": 4
-   },
-   {
-    "heroi": 6,
-    "pos": 1,
-    "jogos": 2,
-    "vitorias": 1
+    "jogos": 3,
+    "vitorias": 3
    },
    {
     "heroi": 54,
@@ -10640,9 +10419,15 @@
     "vitorias": 1
    },
    {
+    "heroi": 6,
+    "pos": 1,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
     "heroi": 26,
     "pos": 5,
-    "jogos": 2,
+    "jogos": 1,
     "vitorias": 1
    },
    {
@@ -10654,12 +10439,6 @@
    {
     "heroi": 28,
     "pos": 3,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 25,
-    "pos": 2,
     "jogos": 1,
     "vitorias": 0
    }
@@ -11158,5 +10937,8014 @@
    "largo",
    "Largo"
   ]
+ },
+ "nomes": {
+  "81918076": "Suéter",
+  "241782761": "[Pau]DeCamelo",
+  "1254464470": "Conhecido do Baia",
+  "111257540": "Kuscomem",
+  "1000265186": "gustavoDotinhaPro",
+  "83300280": "ptn",
+  "96286191": "charlinho",
+  "77621319": "Jalim",
+  "26668150": "3rvinha"
+ },
+ "jogos": [
+  {
+   "id": 8526723109,
+   "t": 1761341379,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     45,
+     5,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     70,
+     1,
+     3,
+     1
+    ],
+    [
+     "81918076",
+     84,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8533234830,
+   "t": 1761700049,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     95,
+     1,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     45,
+     5,
+     1,
+     1
+    ],
+    [
+     "111257540",
+     49,
+     3,
+     3,
+     0
+    ],
+    [
+     "26668150",
+     52,
+     2,
+     2,
+     1
+    ],
+    [
+     "81918076",
+     87,
+     4,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8537551384,
+   "t": 1761957812,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     45,
+     5,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     30,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8550796384,
+   "t": 1762707991,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     64,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8573055052,
+   "t": 1763906779,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     102,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8573197707,
+   "t": 1763911183,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     114,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8615600209,
+   "t": 1766343719,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     45,
+     4,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     155,
+     5,
+     1,
+     -1
+    ],
+    [
+     "26668150",
+     80,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8615712149,
+   "t": 1766349418,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "1254464470",
+     45,
+     4,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     54,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8615771188,
+   "t": 1766353072,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "1254464470",
+     112,
+     4,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     135,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8615823323,
+   "t": 1766357047,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "1254464470",
+     102,
+     4,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     73,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8615866705,
+   "t": 1766361122,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "1254464470",
+     49,
+     4,
+     1,
+     -1
+    ],
+    [
+     "241782761",
+     114,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8615949628,
+   "t": 1766370022,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     52,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8616019342,
+   "t": 1766377172,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     49,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8616051254,
+   "t": 1766380382,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     63,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8616093137,
+   "t": 1766384315,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     95,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8646735666,
+   "t": 1768237790,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     21,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8659067489,
+   "t": 1769045733,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     98,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8664189901,
+   "t": 1769356059,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     85,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8664627697,
+   "t": 1769377489,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     103,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8665203430,
+   "t": 1769429409,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     49,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8665260329,
+   "t": 1769432089,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     76,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8665394656,
+   "t": 1769437764,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     105,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8665458287,
+   "t": 1769440415,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     73,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8665604357,
+   "t": 1769447120,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     85,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8683807972,
+   "t": 1770608840,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8684341908,
+   "t": 1770647215,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8684488322,
+   "t": 1770653605,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     81,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8689957986,
+   "t": 1771017924,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     50,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8690037999,
+   "t": 1771023994,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     55,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8702165438,
+   "t": 1771785090,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     103,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8702397858,
+   "t": 1771796270,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     59,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8703500972,
+   "t": 1771862844,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     10,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8705114050,
+   "t": 1771962719,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     10,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8719325902,
+   "t": 1772886170,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     86,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8719413698,
+   "t": 1772889929,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     12,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8719659344,
+   "t": 1772899576,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     52,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     31,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8720073583,
+   "t": 1772919265,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     48,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8720183908,
+   "t": 1772927809,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8720225101,
+   "t": 1772932134,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     68,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8720246474,
+   "t": 1772934379,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8720278495,
+   "t": 1772937474,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8721561376,
+   "t": 1773006461,
+   "v": 0,
+   "r": 0,
+   "j": [
+    [
+     "1254464470",
+     16,
+     5,
+     3,
+     0
+    ],
+    [
+     "81918076",
+     94,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8721660573,
+   "t": 1773015210,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     64,
+     5,
+     1,
+     0
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8731128539,
+   "t": 1773639834,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     56,
+     1,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     21,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8731738494,
+   "t": 1773676470,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     10,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8739306629,
+   "t": 1774179744,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8740171770,
+   "t": 1774223464,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     119,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8740239452,
+   "t": 1774231364,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     73,
+     1,
+     3,
+     1
+    ],
+    [
+     "111257540",
+     37,
+     3,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8740271102,
+   "t": 1774234859,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     81,
+     1,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     64,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8740300433,
+   "t": 1774238139,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     68,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     48,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8769480643,
+   "t": 1776040821,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     135,
+     3,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8769560464,
+   "t": 1776049801,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8770167907,
+   "t": 1776091356,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8772143570,
+   "t": 1776228709,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     43,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8787901592,
+   "t": 1777240706,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8824882088,
+   "t": 1779708097,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8825122381,
+   "t": 1779718687,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     23,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8838113292,
+   "t": 1780578240,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8843174985,
+   "t": 1780879375,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8845736489,
+   "t": 1781050758,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8851221966,
+   "t": 1781419225,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8853615954,
+   "t": 1781563407,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     68,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8859709928,
+   "t": 1781980453,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     1,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8861532087,
+   "t": 1782098699,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     83,
+     5,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     15,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8861984262,
+   "t": 1782133931,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     41,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8862557803,
+   "t": 1782162655,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8866679395,
+   "t": 1782443499,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     128,
+     4,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     30,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8869517209,
+   "t": 1782578488,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8870568393,
+   "t": 1782634383,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     45,
+     5,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     21,
+     1,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8873603757,
+   "t": 1782767545,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     32,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8880981212,
+   "t": 1783178627,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8883494024,
+   "t": 1783308592,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     81,
+     4,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8899697083,
+   "t": 1784226848,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8899779553,
+   "t": 1784230593,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8899890665,
+   "t": 1784236073,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     23,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8901772313,
+   "t": 1784353125,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     53,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8904627248,
+   "t": 1784493110,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     126,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8904676190,
+   "t": 1784496740,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     21,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8905617428,
+   "t": 1784560461,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     87,
+     5,
+     3,
+     1
+    ],
+    [
+     "1254464470",
+     45,
+     4,
+     1,
+     0
+    ],
+    [
+     "77621319",
+     9,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8907163495,
+   "t": 1784650341,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     47,
+     2,
+     2,
+     0
+    ],
+    [
+     "241782761",
+     42,
+     1,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     86,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8910820857,
+   "t": 1784869300,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8924069387,
+   "t": 1785590572,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8926883086,
+   "t": 1785722129,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     53,
+     4,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     38,
+     1,
+     1,
+     null
+    ],
+    [
+     "26668150",
+     97,
+     5,
+     3,
+     null
+    ],
+    [
+     "77621319",
+     63,
+     3,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     45,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8931577996,
+   "t": 1785991510,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8941918267,
+   "t": 1786537978,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     54,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8944265212,
+   "t": 1786655074,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8947266478,
+   "t": 1786810385,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8947663210,
+   "t": 1786825049,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     23,
+     3,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8949932018,
+   "t": 1786928539,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     5,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     27,
+     4,
+     3,
+     0
+    ],
+    [
+     "77621319",
+     135,
+     3,
+     3,
+     0
+    ],
+    [
+     "96286191",
+     44,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8956596838,
+   "t": 1787262160,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     36,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8973707875,
+   "t": 1788076455,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     11,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 8983796861,
+   "t": 1788610035,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     32,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 8984978461,
+   "t": 1788659000,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     14,
+     3,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 8996210460,
+   "t": 1789259870,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "26668150",
+     36,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     19,
+     1,
+     1,
+     0
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9002900554,
+   "t": 1789643875,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     3,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9006845943,
+   "t": 1789839377,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     31,
+     5,
+     3,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9006914487,
+   "t": 1789841807,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     27,
+     5,
+     1,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9012103514,
+   "t": 1790144628,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     14,
+     3,
+     3,
+     0
+    ],
+    [
+     "26668150",
+     100,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9013378209,
+   "t": 1790218244,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     88,
+     4,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     75,
+     2,
+     2,
+     -1
+    ],
+    [
+     "96286191",
+     5,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9014672055,
+   "t": 1790288325,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     35,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9019890114,
+   "t": 1790578585,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     12,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9020200358,
+   "t": 1790599160,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     36,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9020436865,
+   "t": 1790608127,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     48,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9023667865,
+   "t": 1790801274,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     36,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9023732806,
+   "t": 1790806229,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     53,
+     1,
+     1,
+     1
+    ],
+    [
+     "1000265186",
+     76,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9025075559,
+   "t": 1790887204,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     105,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9025140510,
+   "t": 1790891783,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     3,
+     4,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     31,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9025199866,
+   "t": 1790898044,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     112,
+     4,
+     1,
+     1
+    ],
+    [
+     "1000265186",
+     76,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9025235518,
+   "t": 1790902403,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     84,
+     3,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     6,
+     1,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     30,
+     4,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     68,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9025358446,
+   "t": 1790915284,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9025396636,
+   "t": 1790918944,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     67,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026028640,
+   "t": 1790953401,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     64,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026138931,
+   "t": 1790957529,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     93,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9026326789,
+   "t": 1790964605,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     21,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9026388988,
+   "t": 1790967054,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     22,
+     4,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9026502089,
+   "t": 1790971813,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     1,
+     2,
+     2,
+     1
+    ],
+    [
+     "111257540",
+     112,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9026572221,
+   "t": 1790975238,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     71,
+     1,
+     3,
+     0
+    ],
+    [
+     "111257540",
+     72,
+     5,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9026596019,
+   "t": 1790976569,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     32,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026675180,
+   "t": 1790982338,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     64,
+     5,
+     3,
+     1
+    ],
+    [
+     "111257540",
+     101,
+     4,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     35,
+     2,
+     2,
+     1
+    ],
+    [
+     "26668150",
+     12,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026711507,
+   "t": 1790985853,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     119,
+     4,
+     3,
+     0
+    ],
+    [
+     "111257540",
+     84,
+     5,
+     1,
+     -1
+    ],
+    [
+     "81918076",
+     108,
+     3,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     0
+    ],
+    [
+     "26668150",
+     91,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9026739684,
+   "t": 1790988968,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "26668150",
+     14,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     9,
+     5,
+     1,
+     1
+    ],
+    [
+     "77621319",
+     81,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026787406,
+   "t": 1790993883,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     95,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9026790954,
+   "t": 1790994248,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     101,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9026824237,
+   "t": 1790997383,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     48,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026867089,
+   "t": 1791001373,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     40,
+     5,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     41,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9026903485,
+   "t": 1791004564,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     83,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     79,
+     5,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9026938514,
+   "t": 1791007358,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     71,
+     5,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     104,
+     3,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9026988579,
+   "t": 1791010913,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9027031632,
+   "t": 1791013609,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9027074757,
+   "t": 1791016078,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     95,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9027126972,
+   "t": 1791018959,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     49,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9027162385,
+   "t": 1791020850,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     54,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9027195303,
+   "t": 1791022569,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9027232225,
+   "t": 1791024394,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     36,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9027264464,
+   "t": 1791025924,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9027523960,
+   "t": 1791036274,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     5,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     76,
+     4,
+     2,
+     -1
+    ],
+    [
+     "81918076",
+     108,
+     3,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9027608956,
+   "t": 1791039255,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     23,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9027712484,
+   "t": 1791042900,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     5,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     1,
+     1,
+     3,
+     0
+    ],
+    [
+     "83300280",
+     99,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9027886530,
+   "t": 1791049146,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9027984755,
+   "t": 1791052801,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     57,
+     4,
+     1,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9028093298,
+   "t": 1791057054,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     108,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     53,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9028148397,
+   "t": 1791059479,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     30,
+     4,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     68,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9028221953,
+   "t": 1791063044,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     87,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     36,
+     4,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9028288502,
+   "t": 1791067164,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     44,
+     1,
+     3,
+     1
+    ],
+    [
+     "77621319",
+     37,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9028305071,
+   "t": 1791068363,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     36,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9028349086,
+   "t": 1791072209,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     64,
+     5,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     7,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9028411947,
+   "t": 1791078574,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     99,
+     3,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9028450341,
+   "t": 1791082168,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     94,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9028495085,
+   "t": 1791086179,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     18,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9028624244,
+   "t": 1791096188,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     8,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9028675941,
+   "t": 1791099349,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     12,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9028745221,
+   "t": 1791103119,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9028847593,
+   "t": 1791108229,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     12,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9028899903,
+   "t": 1791110674,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029162299,
+   "t": 1791120785,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     28,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9029299863,
+   "t": 1791125306,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     44,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029550118,
+   "t": 1791133935,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     1,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9029575937,
+   "t": 1791134851,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     71,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029617638,
+   "t": 1791136420,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029670206,
+   "t": 1791138421,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     96,
+     3,
+     3,
+     1
+    ],
+    [
+     "111257540",
+     58,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029734662,
+   "t": 1791140975,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9029788426,
+   "t": 1791143335,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     14,
+     4,
+     3,
+     0
+    ],
+    [
+     "111257540",
+     5,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029795018,
+   "t": 1791143649,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     54,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9029879013,
+   "t": 1791148194,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     145,
+     1,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     0
+    ],
+    [
+     "111257540",
+     26,
+     5,
+     3,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     1,
+     0
+    ],
+    [
+     "1000265186",
+     129,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9029911106,
+   "t": 1791150385,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     60,
+     3,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029918013,
+   "t": 1791150899,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     36,
+     2,
+     2,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     1
+    ],
+    [
+     "111257540",
+     12,
+     1,
+     3,
+     0
+    ],
+    [
+     "1254464470",
+     27,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9029942379,
+   "t": 1791152869,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     8,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9029963095,
+   "t": 1791154814,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     53,
+     4,
+     3,
+     -1
+    ],
+    [
+     "77621319",
+     67,
+     1,
+     1,
+     0
+    ],
+    [
+     "1254464470",
+     31,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9029993523,
+   "t": 1791157999,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     86,
+     2,
+     2,
+     0
+    ],
+    [
+     "81918076",
+     108,
+     3,
+     3,
+     0
+    ],
+    [
+     "111257540",
+     128,
+     4,
+     3,
+     0
+    ],
+    [
+     "77621319",
+     54,
+     1,
+     1,
+     -1
+    ],
+    [
+     "1254464470",
+     5,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9030020825,
+   "t": 1791161099,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     6,
+     1,
+     3,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9030028849,
+   "t": 1791162019,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     35,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9030062053,
+   "t": 1791165684,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     45,
+     5,
+     1,
+     1
+    ],
+    [
+     "1000265186",
+     138,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9030084883,
+   "t": 1791168014,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     19,
+     1,
+     1,
+     -1
+    ],
+    [
+     "81918076",
+     87,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9030809206,
+   "t": 1791213275,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9030944692,
+   "t": 1791218450,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9031176712,
+   "t": 1791227931,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031236596,
+   "t": 1791230866,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9031413382,
+   "t": 1791246775,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     14,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9031421110,
+   "t": 1791247730,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     32,
+     1,
+     1,
+     0
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031438460,
+   "t": 1791249815,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     45,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9031441810,
+   "t": 1791250210,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     32,
+     1,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9031471788,
+   "t": 1791253475,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     44,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9031472251,
+   "t": 1791253525,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     67,
+     1,
+     1,
+     0
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031500305,
+   "t": 1791256465,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     32,
+     1,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9031500897,
+   "t": 1791256525,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     67,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031527575,
+   "t": 1791259420,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     33,
+     4,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031555261,
+   "t": 1791262410,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     55,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9031563039,
+   "t": 1791263205,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     26,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031576297,
+   "t": 1791264560,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     33,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9031606953,
+   "t": 1791267460,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     26,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9031645295,
+   "t": 1791270750,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     55,
+     3,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9031688634,
+   "t": 1791274105,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     40,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9031867907,
+   "t": 1791286015,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9031946129,
+   "t": 1791289912,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9032147867,
+   "t": 1791297996,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9032394894,
+   "t": 1791307446,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9032554658,
+   "t": 1791314111,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     121,
+     4,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9032672883,
+   "t": 1791320516,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9032713688,
+   "t": 1791323666,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "81918076",
+     107,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9032738776,
+   "t": 1791326010,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     64,
+     5,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "26668150",
+     93,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9032762820,
+   "t": 1791328620,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     5,
+     5,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "26668150",
+     19,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9032794825,
+   "t": 1791334015,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     5,
+     5,
+     3,
+     1
+    ],
+    [
+     "26668150",
+     95,
+     1,
+     3,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     37,
+     4,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9032832540,
+   "t": 1791338131,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "26668150",
+     8,
+     1,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     123,
+     3,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9034172305,
+   "t": 1791408203,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9034225718,
+   "t": 1791412443,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     75,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9034253293,
+   "t": 1791415488,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9034284936,
+   "t": 1791419227,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9034326986,
+   "t": 1791423716,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9034377373,
+   "t": 1791428936,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     55,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9034409408,
+   "t": 1791432211,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9035700180,
+   "t": 1791498345,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9035758434,
+   "t": 1791503759,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9035803895,
+   "t": 1791508325,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     104,
+     1,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9035844255,
+   "t": 1791512464,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     11,
+     1,
+     1,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9035882915,
+   "t": 1791516339,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     55,
+     3,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     121,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9035909987,
+   "t": 1791519129,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9035956555,
+   "t": 1791523700,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     85,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9036152527,
+   "t": 1791539090,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     12,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9036203612,
+   "t": 1791542216,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     39,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9036267057,
+   "t": 1791545521,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9036327444,
+   "t": 1791548195,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9036397666,
+   "t": 1791550955,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9036473961,
+   "t": 1791553650,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9036627330,
+   "t": 1791558746,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9036647094,
+   "t": 1791559371,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     75,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9036811214,
+   "t": 1791565102,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     68,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9037211845,
+   "t": 1791580867,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9037310993,
+   "t": 1791587436,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     76,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037347480,
+   "t": 1791590830,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     75,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037365937,
+   "t": 1791593480,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     71,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9037382289,
+   "t": 1791594879,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037417047,
+   "t": 1791598055,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     18,
+     1,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     30,
+     4,
+     3,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037421192,
+   "t": 1791598440,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     83,
+     4,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     131,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9037426521,
+   "t": 1791598925,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9037459533,
+   "t": 1791601845,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     53,
+     5,
+     1,
+     -1
+    ],
+    [
+     "241782761",
+     67,
+     1,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     5,
+     4,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9037481924,
+   "t": 1791603819,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     53,
+     5,
+     1,
+     -1
+    ],
+    [
+     "241782761",
+     44,
+     1,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     5,
+     4,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     55,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9037510237,
+   "t": 1791606220,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     1,
+     1,
+     3,
+     1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037552896,
+   "t": 1791609735,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     48,
+     1,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037612542,
+   "t": 1791614195,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ],
+    [
+     "81918076",
+     9,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037711110,
+   "t": 1791620285,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     95,
+     2,
+     2,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9037768913,
+   "t": 1791623415,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     68,
+     5,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9037879146,
+   "t": 1791628846,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     9,
+     5,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9037953862,
+   "t": 1791632072,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9038035832,
+   "t": 1791635152,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9038154182,
+   "t": 1791639120,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     43,
+     2,
+     2,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9038253207,
+   "t": 1791642147,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     76,
+     2,
+     2,
+     1
+    ],
+    [
+     "81918076",
+     87,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9038337261,
+   "t": 1791644683,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     30,
+     5,
+     3,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     36,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9038695842,
+   "t": 1791656191,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     71,
+     4,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9038783301,
+   "t": 1791659281,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     86,
+     4,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9038921356,
+   "t": 1791664421,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     22,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039007106,
+   "t": 1791668206,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "111257540",
+     19,
+     1,
+     1,
+     -1
+    ],
+    [
+     "241782761",
+     14,
+     3,
+     3,
+     1
+    ],
+    [
+     "77621319",
+     27,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039073425,
+   "t": 1791671935,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ],
+    [
+     "111257540",
+     53,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     95,
+     1,
+     1,
+     1
+    ],
+    [
+     "77621319",
+     5,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039109856,
+   "t": 1791674421,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     1
+    ],
+    [
+     "111257540",
+     48,
+     1,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039151585,
+   "t": 1791677820,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     9,
+     5,
+     1,
+     -1
+    ],
+    [
+     "241782761",
+     93,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039175989,
+   "t": 1791680041,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     108,
+     3,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     53,
+     4,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     75,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039209488,
+   "t": 1791683056,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     0
+    ],
+    [
+     "111257540",
+     88,
+     4,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     35,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039242123,
+   "t": 1791685746,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     53,
+     4,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     67,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9039302536,
+   "t": 1791690460,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ],
+    [
+     "111257540",
+     49,
+     3,
+     1,
+     -1
+    ],
+    [
+     "241782761",
+     51,
+     4,
+     1,
+     -1
+    ],
+    [
+     "77621319",
+     5,
+     5,
+     3,
+     0
+    ],
+    [
+     "1000265186",
+     12,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9039337054,
+   "t": 1791693111,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     9,
+     5,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     56,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039367119,
+   "t": 1791695271,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     121,
+     5,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     32,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039417589,
+   "t": 1791698556,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     121,
+     5,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     12,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039474642,
+   "t": 1791701870,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039534957,
+   "t": 1791704981,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     35,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9039583289,
+   "t": 1791707271,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039698304,
+   "t": 1791712372,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     70,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039764028,
+   "t": 1791715122,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     14,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9039865334,
+   "t": 1791718993,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     12,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9039971847,
+   "t": 1791722632,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     14,
+     4,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9040257540,
+   "t": 1791731328,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ],
+    [
+     "241782761",
+     10,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9040355041,
+   "t": 1791734463,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     70,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9040474096,
+   "t": 1791738495,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     123,
+     5,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     1,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9040531117,
+   "t": 1791740482,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     9,
+     4,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     43,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9040624156,
+   "t": 1791743822,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     9,
+     4,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     76,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9040720175,
+   "t": 1791747612,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9040764509,
+   "t": 1791749546,
+   "v": 1,
+   "r": 0,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     1
+    ],
+    [
+     "77621319",
+     25,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9040798377,
+   "t": 1791751182,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     4,
+     1,
+     -1
+    ],
+    [
+     "77621319",
+     69,
+     3,
+     1,
+     -1
+    ],
+    [
+     "1254464470",
+     9,
+     5,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     120,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     8,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9040879159,
+   "t": 1791756062,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     135,
+     3,
+     3,
+     -1
+    ],
+    [
+     "1254464470",
+     9,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     33,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9040913972,
+   "t": 1791758812,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     135,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9040983293,
+   "t": 1791765731,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1000265186",
+     12,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9041013052,
+   "t": 1791768866,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ],
+    [
+     "1000265186",
+     67,
+     1,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     30,
+     4,
+     3,
+     0
+    ],
+    [
+     "111257540",
+     53,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     2,
+     3,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9041050005,
+   "t": 1791772571,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     95,
+     1,
+     1,
+     0
+    ],
+    [
+     "1254464470",
+     31,
+     5,
+     1,
+     0
+    ],
+    [
+     "111257540",
+     53,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9041083124,
+   "t": 1791775866,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     85,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     30,
+     4,
+     1,
+     0
+    ],
+    [
+     "111257540",
+     105,
+     5,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     41,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9041118764,
+   "t": 1791779412,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     93,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     9,
+     4,
+     3,
+     0
+    ],
+    [
+     "111257540",
+     119,
+     5,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     4,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9041152574,
+   "t": 1791782766,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     87,
+     5,
+     3,
+     0
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9041181007,
+   "t": 1791785526,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     87,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     60,
+     1,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9041220467,
+   "t": 1791789087,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     108,
+     3,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     86,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9041286665,
+   "t": 1791794317,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     88,
+     4,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     37,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9041492824,
+   "t": 1791806482,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     25,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9041591667,
+   "t": 1791810452,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     45,
+     4,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9041712584,
+   "t": 1791814642,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9042109362,
+   "t": 1791828568,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     0
+    ],
+    [
+     "1254464470",
+     9,
+     5,
+     3,
+     1
+    ],
+    [
+     "111257540",
+     53,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042245404,
+   "t": 1791833909,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     45,
+     5,
+     1,
+     0
+    ],
+    [
+     "111257540",
+     98,
+     3,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     44,
+     1,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9042271277,
+   "t": 1791835054,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     6,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9042320122,
+   "t": 1791837464,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     30,
+     4,
+     1,
+     -1
+    ],
+    [
+     "111257540",
+     105,
+     5,
+     3,
+     0
+    ],
+    [
+     "1000265186",
+     94,
+     1,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     60,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9042378073,
+   "t": 1791840824,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     37,
+     5,
+     3,
+     -1
+    ],
+    [
+     "111257540",
+     21,
+     4,
+     1,
+     0
+    ],
+    [
+     "1000265186",
+     33,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     67,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9042426024,
+   "t": 1791844693,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     30,
+     5,
+     3,
+     0
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042462856,
+   "t": 1791848302,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042493356,
+   "t": 1791851596,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     121,
+     5,
+     3,
+     0
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042515483,
+   "t": 1791854042,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     101,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9042547503,
+   "t": 1791857417,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     28,
+     3,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     80,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042570218,
+   "t": 1791859726,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     29,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9042579325,
+   "t": 1791860622,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042605454,
+   "t": 1791863287,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9042638077,
+   "t": 1791866567,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     106,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042665545,
+   "t": 1791869357,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042698934,
+   "t": 1791872617,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     135,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042736280,
+   "t": 1791875922,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     22,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9042774755,
+   "t": 1791879006,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     8,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9042827417,
+   "t": 1791882933,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9042863325,
+   "t": 1791885427,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     17,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9043937023,
+   "t": 1791930818,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9043965447,
+   "t": 1791933558,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     13,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9043986939,
+   "t": 1791935743,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     -1
+    ],
+    [
+     "77621319",
+     9,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9043998466,
+   "t": 1791936898,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     47,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9044035283,
+   "t": 1791940623,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     8,
+     1,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9044052049,
+   "t": 1791942238,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     49,
+     2,
+     2,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9045387327,
+   "t": 1792013204,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     120,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9045442322,
+   "t": 1792017629,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     75,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9045468893,
+   "t": 1792020329,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     2,
+     3,
+     1,
+     0
+    ],
+    [
+     "1254464470",
+     123,
+     5,
+     3,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9045474851,
+   "t": 1792020914,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9045492744,
+   "t": 1792022924,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     2,
+     3,
+     1,
+     1
+    ],
+    [
+     "1254464470",
+     30,
+     4,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9045501790,
+   "t": 1792023940,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9045537420,
+   "t": 1792028000,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     1,
+     -1
+    ],
+    [
+     "1254464470",
+     30,
+     5,
+     3,
+     -1
+    ],
+    [
+     "77621319",
+     88,
+     4,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     44,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9045574799,
+   "t": 1792032025,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     1,
+     0
+    ],
+    [
+     "77621319",
+     135,
+     3,
+     1,
+     0
+    ],
+    [
+     "1000265186",
+     93,
+     1,
+     3,
+     0
+    ],
+    [
+     "96286191",
+     5,
+     5,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9045600426,
+   "t": 1792034765,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     5,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     -1
+    ],
+    [
+     "96286191",
+     6,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9045631046,
+   "t": 1792038075,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     5,
+     1,
+     1
+    ],
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     1
+    ],
+    [
+     "96286191",
+     54,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9045733032,
+   "t": 1792048645,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     18,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9045767812,
+   "t": 1792051675,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     91,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9045810885,
+   "t": 1792055125,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9046739263,
+   "t": 1792095857,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     86,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9046772820,
+   "t": 1792097790,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     86,
+     4,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9046815947,
+   "t": 1792100740,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     0
+    ],
+    [
+     "77621319",
+     2,
+     3,
+     3,
+     0
+    ],
+    [
+     "96286191",
+     87,
+     5,
+     1,
+     1
+    ],
+    [
+     "241782761",
+     67,
+     1,
+     1,
+     1
+    ],
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9046846243,
+   "t": 1792103290,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     37,
+     4,
+     1,
+     1
+    ],
+    [
+     "77621319",
+     135,
+     3,
+     1,
+     1
+    ],
+    [
+     "96286191",
+     5,
+     5,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     -1
+    ],
+    [
+     "1000265186",
+     91,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9046883529,
+   "t": 1792106996,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "96286191",
+     5,
+     5,
+     1,
+     -1
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ],
+    [
+     "241782761",
+     69,
+     3,
+     3,
+     1
+    ],
+    [
+     "77621319",
+     44,
+     1,
+     1,
+     -1
+    ],
+    [
+     "1254464470",
+     45,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9046923293,
+   "t": 1792111591,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     31,
+     5,
+     1,
+     0
+    ],
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     -1
+    ],
+    [
+     "241782761",
+     47,
+     3,
+     3,
+     -1
+    ],
+    [
+     "77621319",
+     1,
+     1,
+     1,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9046952431,
+   "t": 1792114965,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     123,
+     5,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     46,
+     1,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     37,
+     4,
+     1,
+     1
+    ],
+    [
+     "77621319",
+     2,
+     3,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9046982569,
+   "t": 1792118291,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     67,
+     1,
+     1,
+     -1
+    ],
+    [
+     "81918076",
+     108,
+     3,
+     3,
+     -1
+    ],
+    [
+     "96286191",
+     5,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9047004166,
+   "t": 1792120681,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     31,
+     4,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     97,
+     3,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     43,
+     2,
+     2,
+     -1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     -1
+    ],
+    [
+     "96286191",
+     54,
+     1,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9047036754,
+   "t": 1792124301,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     4,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     0
+    ],
+    [
+     "96286191",
+     28,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9047112053,
+   "t": 1792132331,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     76,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9047131308,
+   "t": 1792134186,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     25,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9047163589,
+   "t": 1792137051,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     91,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9047206855,
+   "t": 1792140562,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     55,
+     3,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9047239721,
+   "t": 1792143101,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     21,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9047288862,
+   "t": 1792146561,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     34,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9047694715,
+   "t": 1792163786,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     123,
+     5,
+     2,
+     1
+    ],
+    [
+     "83300280",
+     2,
+     3,
+     1,
+     1
+    ],
+    [
+     "77621319",
+     5,
+     4,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9047749731,
+   "t": 1792165701,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     -1
+    ],
+    [
+     "77621319",
+     30,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9048371137,
+   "t": 1792193180,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     22,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9048410839,
+   "t": 1792197155,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     43,
+     4,
+     3,
+     -1
+    ],
+    [
+     "1000265186",
+     98,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9048454587,
+   "t": 1792201545,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     108,
+     3,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     54,
+     1,
+     1,
+     -1
+    ],
+    [
+     "77621319",
+     5,
+     5,
+     1,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9048485852,
+   "t": 1792204466,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     71,
+     3,
+     3,
+     1
+    ],
+    [
+     "1000265186",
+     91,
+     1,
+     1,
+     0
+    ],
+    [
+     "77621319",
+     30,
+     5,
+     1,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9048562887,
+   "t": 1792211241,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     53,
+     5,
+     1,
+     1
+    ],
+    [
+     "83300280",
+     2,
+     3,
+     3,
+     -1
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "26668150",
+     91,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9048623182,
+   "t": 1792216201,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "26668150",
+     6,
+     1,
+     1,
+     1
+    ],
+    [
+     "83300280",
+     2,
+     3,
+     3,
+     0
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     3,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "111257540",
+     83,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9048688514,
+   "t": 1792220756,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     0
+    ],
+    [
+     "1254464470",
+     31,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9049609392,
+   "t": 1792258192,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "96286191",
+     87,
+     5,
+     3,
+     -1
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "77621319",
+     93,
+     1,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9049718112,
+   "t": 1792261977,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "96286191",
+     5,
+     5,
+     1,
+     0
+    ],
+    [
+     "81918076",
+     107,
+     2,
+     2,
+     -1
+    ],
+    [
+     "77621319",
+     44,
+     1,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     2,
+     3,
+     3,
+     0
+    ],
+    [
+     "1254464470",
+     20,
+     4,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9049801316,
+   "t": 1792264972,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     67,
+     1,
+     1,
+     0
+    ],
+    [
+     "1254464470",
+     123,
+     4,
+     null,
+     null
+    ],
+    [
+     "77621319",
+     5,
+     5,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9049801316,
+   "t": 1792264972,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     70,
+     1,
+     3,
+     1
+    ],
+    [
+     "111257540",
+     85,
+     3,
+     1,
+     0
+    ],
+    [
+     "96286191",
+     87,
+     5,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9049897055,
+   "t": 1792268658,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     85,
+     3,
+     1,
+     1
+    ],
+    [
+     "111257540",
+     37,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9049975309,
+   "t": 1792272136,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     2,
+     3,
+     1,
+     0
+    ],
+    [
+     "111257540",
+     101,
+     4,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9050048313,
+   "t": 1792276216,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     35,
+     2,
+     2,
+     0
+    ],
+    [
+     "77621319",
+     2,
+     3,
+     1,
+     1
+    ],
+    [
+     "111257540",
+     105,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050111010,
+   "t": 1792280921,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     70,
+     1,
+     3,
+     1
+    ],
+    [
+     "77621319",
+     76,
+     2,
+     2,
+     -1
+    ],
+    [
+     "111257540",
+     105,
+     5,
+     3,
+     1
+    ],
+    [
+     "83300280",
+     5,
+     4,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050152210,
+   "t": 1792284786,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "77621319",
+     8,
+     1,
+     1,
+     1
+    ],
+    [
+     "111257540",
+     105,
+     4,
+     3,
+     1
+    ],
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050312728,
+   "t": 1792298846,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050354238,
+   "t": 1792301971,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     53,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9050380686,
+   "t": 1792303816,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050430757,
+   "t": 1792306961,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     21,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050478638,
+   "t": 1792309707,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     71,
+     4,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050551179,
+   "t": 1792313308,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     107,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050607151,
+   "t": 1792315977,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     36,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050652499,
+   "t": 1792318056,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     47,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050654087,
+   "t": 1792318113,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     137,
+     3,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050708415,
+   "t": 1792320498,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     15,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050721626,
+   "t": 1792321056,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     40,
+     5,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050790993,
+   "t": 1792323793,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     21,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050811483,
+   "t": 1792324563,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     18,
+     1,
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9050921747,
+   "t": 1792328377,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
+     5,
+     1,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9050983024,
+   "t": 1792330373,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     49,
+     3,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9051066905,
+   "t": 1792333034,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     71,
+     4,
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9051285470,
+   "t": 1792340193,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "26668150",
+     74,
+     2,
+     2,
+     1
+    ],
+    [
+     "77621319",
+     5,
+     5,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9051293282,
+   "t": 1792340467,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     64,
+     4,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9051396867,
+   "t": 1792344122,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     5,
+     3,
+     0
+    ],
+    [
+     "241782761",
+     67,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9051525934,
+   "t": 1792348863,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     3,
+     3,
+     -1
+    ],
+    [
+     "241782761",
+     70,
+     1,
+     1,
+     -1
+    ],
+    [
+     "96286191",
+     26,
+     5,
+     1,
+     -1
+    ]
+   ]
+  }
+ ],
+ "medalhas": {
+  "1254464470": 52,
+  "241782761": 45,
+  "81918076": 53,
+  "1000265186": 64,
+  "111257540": 42,
+  "26668150": 51,
+  "77621319": 35,
+  "96286191": 33,
+  "83300280": 24
  }
 }

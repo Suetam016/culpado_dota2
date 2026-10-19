@@ -12,6 +12,7 @@ const MIN_JOGOS_GRUPO = 3;
 // A Valve não expõe o MMR de cada partida: ±25 por ranqueada é uma estimativa
 const MMR_POR_PARTIDA = 25;
 const TAMANHO_FORMA = 10;
+const PARTIDAS_JULGADAS = 20; // PARTIDAS_POR_AMIGO do gerar.js
 
 const POSICOES = { 1: 'Carry', 2: 'Mid', 3: 'Offlane', 4: 'Sup 4', 5: 'Sup 5' };
 
@@ -21,8 +22,16 @@ const VISOES = {
   solo: { filtro: h => h.comStack === false, desc: 'Só partidas sem outro amigo do lado.' },
 };
 
+// Período escolhido no slider: vale para todas as abas
+const PERIODOS = [
+  ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês'], ['3meses', 'Últimos 3 meses'], ['ano', 'Este ano'], ['tudo', 'Tudo'],
+];
+const CHAVE_PERIODO = 'ranking-periodo';
+
 let ranking = null;
 let parceiros = null;
+let parceirosBase = null;
+let periodo = 'tudo';
 let insights = null;
 let meta = null;
 let visao = 'geral';
@@ -39,6 +48,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }));
 
   montarFeedback();
+  montarPeriodo();
+  document.querySelectorAll('[data-ordem-elo]').forEach(b => b.addEventListener('click', () => {
+    ordemElo = b.dataset.ordemElo;
+    document.querySelectorAll('[data-ordem-elo]').forEach(x => x.classList.toggle('chip-ativo', x === b));
+    if (ranking) renderizarElo();
+  }));
 
   const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
   [ranking, parceiros, insights, meta, estadoAtt] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking()]);
@@ -58,10 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   $('atualizado-em').textContent = `Atualizado em ${dataHora(ranking.atualizadoEm)}`;
   montarAtualizacao();
 
-  renderizarRanking();
-  renderizarDuplas();
-  renderizarComposicoes();
-  renderizarMeta();
+  parceirosBase = parceiros;
+  aplicarPeriodo();
 
   const pelaUrl = () => {
     const aba = location.hash.slice(1);
@@ -92,6 +105,7 @@ function estatisticas(conta, nome, historico) {
   const eventos = historico
     .filter(h => !vistas.has(h.matchId) && vistas.add(h.matchId))
     .filter(VISOES[visao].filtro)
+    .filter(h => (h.inicio || 0) >= desdePeriodo())
     .sort((a, b) => (a.inicio || 0) - (b.inicio || 0));
   const venceu = h => h.tipo === 'vitoria' || h.tipo === 'craque';
   const vitorias = eventos.filter(venceu).length;
@@ -134,7 +148,7 @@ function renderizarRanking() {
   }[ordem];
   lista.sort(criterio);
 
-  $('ranking-desc').textContent = VISOES[visao].desc;
+  $('ranking-desc').textContent = `${VISOES[visao].desc} O robô julga as últimas ${PARTIDAS_JULGADAS} de cada um.`;
   const ol = $('lista-jogadores');
   ol.innerHTML = lista.length ? '' : '<li class="carregando">Sem partidas nesse recorte ainda.</li>';
 
@@ -200,8 +214,11 @@ function corWr(wr, jogos) {
 
 function renderizarDuplas() {
   const grade = $('grade-sinergia');
+  const select = $('filtro-jogador');
   if (!parceiros || !parceiros.pares || !parceiros.pares.length) {
-    grade.outerHTML = '<p class="carregando">Sem dados de duplas ainda.</p>';
+    grade.innerHTML = '';
+    select.length = 1;
+    $('lista-duplas').innerHTML = `<p class="carregando">${parceiros && parceiros.jogos ? 'Nenhuma dupla jogou junto nesse período.' : 'Sem dados de duplas ainda.'}</p>`;
     return;
   }
 
@@ -217,16 +234,21 @@ function renderizarDuplas() {
         title="${esc(nomeJogador(a))} + ${esc(nomeJogador(b))}: ${p.vitorias}V em ${p.jogos}">${p.winRate}%<small>${p.jogos}j</small></td>`;
     }).join('')}</tr>`).join('')}</tbody>`;
 
-  grade.addEventListener('click', e => {
-    const casa = e.target.closest('td[data-a]');
-    if (!casa) return;
-    $('filtro-jogador').value = casa.dataset.a;
-    renderizarListaDuplas(casa.dataset.b);
-  });
+  if (!grade.dataset.ouvindo) {
+    grade.dataset.ouvindo = '1';
+    grade.addEventListener('click', e => {
+      const casa = e.target.closest('td[data-a]');
+      if (!casa) return;
+      $('filtro-jogador').value = casa.dataset.a;
+      renderizarListaDuplas(casa.dataset.b);
+    });
+    select.addEventListener('change', () => renderizarListaDuplas());
+  }
 
-  const select = $('filtro-jogador');
+  const antes = select.value;
+  select.length = 1;
   contas.forEach(c => select.add(new Option(nomeJogador(c), c)));
-  select.addEventListener('change', () => renderizarListaDuplas());
+  select.value = contas.includes(antes) ? antes : '';
   renderizarListaDuplas();
 }
 
@@ -238,6 +260,7 @@ function inverterPar(p) {
     rotas: p.rotas.map(troca), rotasPiores: p.rotasPiores.map(troca),
     herois: p.herois.map(troca), heroisPiores: p.heroisPiores.map(troca),
     partidas: (p.partidas || []).map(troca),
+    lanes: p.lanes && { ...p.lanes, rotas: p.lanes.rotas.map(troca) },
   };
 }
 
@@ -268,6 +291,7 @@ function cartaoDupla(p, destaque) {
         <div class="par par-${m.venceu ? 'v' : 'd'}" title="${m.venceu ? 'Vitória' : 'Derrota'} · ${data(m.inicio * 1000)} · ${esc(nomeHeroi(m.heroiA))} + ${esc(nomeHeroi(m.heroiB))}">
           <div class="par-herois">${heroi(m.heroiA)}${heroi(m.heroiB)}</div>
           <div class="legenda-par"><span>${POSICOES[m.posA] || '?'}</span><span>${m.venceu ? 'V' : 'D'}</span><span>${POSICOES[m.posB] || '?'}</span></div>
+          ${m.lane == null ? '' : `<div class="par-lane par-lane-${m.lane > 0 ? 'v' : m.lane < 0 ? 'd' : 'e'}" title="Na mesma lane: ${m.lane > 0 ? 'ganharam' : m.lane < 0 ? 'perderam' : 'empataram'} a lane">lane ${m.lane > 0 ? '✔' : m.lane < 0 ? '✖' : '='}</div>`}
         </div>`).join('')}</div>`
     : '<div class="lane"><span class="lane-vazia">Sem heróis registrados.</span></div>';
 
@@ -280,6 +304,16 @@ function cartaoDupla(p, destaque) {
 
   const rota = (r, classe) => `<span class="rota ${classe}">${nomeA} <b>${POSICOES[r.posA] || r.posA}</b> + ${nomeB} <b>${POSICOES[r.posB] || r.posB}</b> · ${r.winRate}% em ${r.jogos}</span>`;
   const rotasBoas = p.rotas.filter(r => r.winRate > 50).slice(0, 3);
+  const l = p.lanes;
+  const lanes = l && l.jogos ? `<div class="bloco-titulo">Duo lane · ouro + XP aos ${MINUTO_LANE} min</div>
+    <div class="duo-lane">
+      <div class="duo-lane-num"><b class="${l.ganhas > l.perdidas ? 'bom' : l.ganhas < l.perdidas ? 'ruim' : ''}">${l.ganhas}/${l.jogos}</b><span>lanes ganhas</span></div>
+      <div class="duo-lane-barra" title="${l.ganhas} ganhas · ${l.empates} empatadas · ${l.perdidas} perdidas">
+        <div class="dl-v" style="flex:${l.ganhas}"></div><div class="dl-e" style="flex:${l.empates}"></div><div class="dl-d" style="flex:${l.perdidas}"></div>
+      </div>
+      <div class="duo-lane-legenda"><span class="bom">${l.ganhas} ganha${l.ganhas === 1 ? '' : 's'}</span><span>${l.empates} empate${l.empates === 1 ? '' : 's'}</span><span class="ruim">${l.perdidas} perdida${l.perdidas === 1 ? '' : 's'}</span></div>
+      ${l.rotas.length ? `<div class="duo-lane-rotas">${l.rotas.slice(0, 3).map(r => `<span class="rota ${r.ganhas > r.perdidas ? 'rota-boa' : r.ganhas < r.perdidas ? 'rota-ruim' : ''}">${nomeA} <b>${POSICOES[r.posA] || '?'}</b> + ${nomeB} <b>${POSICOES[r.posB] || '?'}</b> · ${r.ganhas}/${r.jogos} lanes</span>`).join('')}</div>` : ''}
+    </div>` : `<div class="bloco-titulo">Duo lane</div><p class="cartao-sub">Não caíram na mesma lane ${periodo === 'tudo' ? 'nas partidas guardadas' : 'nesse período'}.</p>`;
 
   div.innerHTML = `
     <div class="cartao-topo">
@@ -289,7 +323,8 @@ function cartaoDupla(p, destaque) {
       </div>
       <div class="wr-grande ${p.winRate > 50 ? 'bom' : p.winRate < 50 ? 'ruim' : ''}">${p.winRate}%</div>
     </div>
-    <div class="bloco-titulo">Na lane · últimas partidas juntos</div>
+    ${lanes}
+    <div class="bloco-titulo">Últimas partidas juntos</div>
     ${lane}
     ${p.herois.length || p.heroisPiores.length ? `<div class="bloco-titulo">Sinergias de heróis</div>
       <div class="sinergias">${p.herois.map(h => sinergia(h, true)).join('')}${p.heroisPiores.map(h => sinergia(h, false)).join('')}</div>` : ''}
@@ -304,6 +339,7 @@ function renderizarComposicoes() {
   montarSugestao();
   renderizarPool();
   const lista = $('lista-composicoes');
+  lista.innerHTML = '';
   const grupos = (parceiros && parceiros.composicoes) || [];
   if (!grupos.length) {
     lista.innerHTML = '<p class="carregando">Ainda não tem partida com 3 ou mais amigos do mesmo lado.</p>';
@@ -431,7 +467,10 @@ function montarSugestao() {
   if (!parceiros || !parceiros.pool) { $('time-sugerido').innerHTML = '<p class="carregando">Sem histórico de heróis ainda.</p>'; return; }
   const total = c => ((parceiros.pool || {})[c] || []).reduce((s, x) => s + x.jogos, 0);
   const contas = Object.keys(parceiros.pool).sort((a, b) => total(b) - total(a));
-  escolhidos = new Set(contas.slice(0, MAX_TIME));
+  // trocar de período mantém quem já foi marcado
+  escolhidos = escolhidos ? new Set([...escolhidos].filter(c => contas.includes(c))) : new Set(contas.slice(0, MAX_TIME));
+  box.innerHTML = '';
+  if (!contas.length) { $('time-sugerido').innerHTML = '<p class="carregando">Ninguém jogou nesse período.</p>'; return; }
 
   const aviso = document.createElement('p');
   aviso.className = 'escolha-aviso';
@@ -496,6 +535,7 @@ function renderizarSugestao() {
 
 function renderizarPool() {
   const alvo = $('pool-jogadores');
+  alvo.innerHTML = '';
   if (!parceiros || !parceiros.pool) return;
   const total = c => parceiros.pool[c].reduce((s, x) => s + x.jogos, 0);
   Object.keys(parceiros.pool).sort((a, b) => total(b) - total(a)).forEach(c => {
@@ -557,6 +597,7 @@ function renderizarMeta() {
   } else {
     desc.textContent = `${meta.patch ? `Patch ${meta.patch} · ` : ''}partidas de ${meta.faixa} na OpenDota · atualizado em ${dataHora(meta.atualizadoEm)}. ` +
       'Os heróis que mais ganham agora, com a build mais comprada e quem de vocês já joga.';
+    $('meta-fortes').innerHTML = '';
     meta.fortes.forEach((x, i) => $('meta-fortes').append(cartaoHeroiMeta(x, i)));
 
     if (meta.subindo && meta.subindo.length) {
@@ -598,7 +639,7 @@ function cartaoHeroiMeta(x, i) {
         <div class="fase"><span>${nome}</span><div>${build[k].map(iconeItem).join('')}</div></div>`).join('')}</div>` : ''}
     ${grupo.length ? `<div class="no-grupo">Quem de vocês joga: ${grupo.map(g =>
       `<span class="${g.vitorias / g.jogos > 0.5 ? 'bom' : g.vitorias / g.jogos < 0.5 ? 'ruim' : ''}">${esc(nomeJogador(g.conta))} ${g.vitorias}/${g.jogos}</span>`).join(' · ')}</div>`
-      : '<div class="no-grupo">Ninguém do grupo jogou ainda. Bora testar?</div>'}`;
+      : `<div class="no-grupo">Ninguém do grupo jogou ${periodo === 'tudo' ? 'ainda' : 'nesse período'}. Bora testar?</div>`}`;
   return card;
 }
 
@@ -609,6 +650,8 @@ function renderizarReddit() {
     return;
   }
   desc.textContent = `Os comentários mais votados da semana no r/DotA2, coletados em ${dataHora(insights.atualizadoEm)}.`;
+  $('reddit-meta').innerHTML = '';
+  $('meta-topicos').innerHTML = '';
 
   const herois = parceiros && parceiros.herois;
   const nomeH = id => (herois && herois[id] ? herois[id][1] : (meta && [...(meta.fortes || []), ...(meta.populares || [])].find(x => x.id === id) || {}).nome) || `#${id}`;
@@ -637,6 +680,295 @@ function renderizarReddit() {
       ${t.insights.map(comentario).join('')}`;
     $('meta-topicos').append(div);
   });
+}
+
+/* ---------- Período (slider de todas as abas) ---------- */
+
+const MINUTO_LANE = 10; // MINUTO_LANE do parceiros.py
+
+// início do período em segundos (hora local; semana começa na segunda)
+function desdePeriodo(chave = periodo) {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  if (chave === 'hoje') return d / 1000;
+  if (chave === 'semana') { d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d / 1000; }
+  if (chave === 'mes') { d.setDate(1); return d / 1000; }
+  if (chave === '3meses') { d.setMonth(d.getMonth() - 3); return d / 1000; }
+  if (chave === 'ano') { d.setMonth(0, 1); return d / 1000; }
+  return 0;
+}
+
+function montarPeriodo() {
+  try {
+    const salvo = localStorage.getItem(CHAVE_PERIODO);
+    if (PERIODOS.some(([k]) => k === salvo)) periodo = salvo;
+  } catch (e) { /* sem localStorage: fica "tudo" */ }
+  const slider = $('periodo');
+  slider.max = PERIODOS.length - 1;
+  slider.value = PERIODOS.findIndex(([k]) => k === periodo);
+  $('periodo-marcas').innerHTML = PERIODOS.map(([k, nome], i) =>
+    `<button type="button" data-i="${i}">${nome}</button>`).join('');
+  const escolher = i => {
+    slider.value = i;
+    periodo = PERIODOS[i][0];
+    try { localStorage.setItem(CHAVE_PERIODO, periodo); } catch (e) { /* ok */ }
+    if (ranking) aplicarPeriodo();
+    else pintarPeriodo();
+  };
+  slider.addEventListener('input', () => escolher(+slider.value));
+  $('periodo-marcas').addEventListener('click', e => {
+    const b = e.target.closest('button[data-i]');
+    if (b) escolher(+b.dataset.i);
+  });
+  pintarPeriodo();
+}
+
+function pintarPeriodo() {
+  const i = PERIODOS.findIndex(([k]) => k === periodo);
+  $('periodo-nome').textContent = PERIODOS[i][1];
+  $('periodo').style.setProperty('--p', `${(100 * i) / (PERIODOS.length - 1)}%`);
+  $('periodo').setAttribute('aria-valuetext', PERIODOS[i][1]);
+  document.querySelectorAll('#periodo-marcas button').forEach((b, k) => b.classList.toggle('ativo', k === i));
+  if (!parceirosBase) return;
+  const desde = desdePeriodo();
+  const jogos = (parceirosBase.jogos || []).filter(g => g.t >= desde).length;
+  const julgadas = new Set(Object.values(ranking.historicos).flat().filter(h => (h.inicio || 0) >= desde).map(h => h.matchId)).size;
+  $('periodo-info').textContent = periodo === 'tudo'
+    ? `${julgadas} partidas julgadas · ${jogos} partidas guardadas${parceirosBase.desde ? ` desde ${new Date(parceirosBase.desde + 'T12:00:00').toLocaleDateString('pt-BR')}` : ''}`
+    : `${desde ? `desde ${data(desde * 1000)} · ` : ''}${julgadas} partidas julgadas · ${jogos} guardadas`;
+}
+
+function aplicarPeriodo() {
+  parceiros = parceirosBase && parceirosBase.jogos ? agregar(parceirosBase, desdePeriodo()) : parceirosBase;
+  pintarPeriodo();
+  renderizarRanking();
+  renderizarDuplas();
+  renderizarComposicoes();
+  renderizarMeta();
+  renderizarElo();
+}
+
+/* Mesma conta do parceiros.py, só que sobre as partidas do período (parceiros.jogos: um registro por lado de partida
+ * com amigo; j = [conta, herói, posição, rota física, resultado da lane]). */
+const MIN_JOGOS_ROTA = 2;
+const MIN_JOGOS_HEROIS = 2;
+const TOP = 5;
+const MIN_JOGOS_FORMACAO = 2;
+const PARTIDAS_POR_GRUPO = 8;
+
+const wrDe = (v, j) => (j ? Math.round((100 * v) / j) : 0);
+function resumir(contagens, minimo, rotulo) {
+  return [...contagens].filter(([, [j]]) => j >= minimo)
+    .map(([k, [j, v]]) => ({ ...rotulo(k), jogos: j, vitorias: v, winRate: wrDe(v, j) }))
+    .sort((a, b) => b.winRate - a.winRate || b.jogos - a.jogos);
+}
+const somar = (mapa, chave, venceu) => {
+  const x = mapa.get(chave) || [0, 0];
+  x[0]++; x[1] += venceu;
+  mapa.set(chave, x);
+};
+
+function agregar(base, desde) {
+  const nomes = base.nomes || {};
+  const pares = new Map();
+  const grupos = new Map();
+  const pool = new Map();
+  const individuais = new Map();
+  for (const g of base.jogos) {
+    if (g.t < desde) continue;
+    const venceu = g.v;
+    for (const [c, h, pos] of g.j) if (h) somar(pool.get(c) || pool.set(c, new Map()).get(c), `${h}|${pos}`, venceu);
+    if (g.j.length < 2) continue;
+    const doLado = [...g.j].sort((a, b) => Number(a[0]) - Number(b[0]));
+    doLado.forEach(([c]) => somar(individuais, c, venceu));
+    if (doLado.length >= 3) {
+      const chave = doLado.map(x => x[0]).join(',');
+      const gr = grupos.get(chave) || grupos.set(chave, { jogos: 0, vitorias: 0, formacoes: new Map(), herois: {}, partidas: [] }).get(chave);
+      gr.jogos++; gr.vitorias += venceu;
+      if (doLado.every(x => x[2])) somar(gr.formacoes, doLado.map(x => x[2]).join(','), venceu);
+      doLado.forEach(([c, h]) => { if (h) somar(gr.herois[c] = gr.herois[c] || new Map(), h, venceu); });
+      gr.partidas.push({ matchId: g.id, inicio: g.t, venceu: !!venceu,
+        herois: Object.fromEntries(doLado.map(([c, h, pos]) => [c, { heroi: h || null, pos: pos || null }])) });
+    }
+    for (let i = 0; i < doLado.length; i++) for (let k = i + 1; k < doLado.length; k++) {
+      const [ca, ha, pa, la, ra] = doLado[i], [cb, hb, pb, lb] = doLado[k];
+      const chave = `${ca}|${cb}`;
+      const par = pares.get(chave) || pares.set(chave, { a: ca, b: cb, jogos: 0, vitorias: 0, rotas: new Map(), herois: new Map(), partidas: [],
+        lanes: { jogos: 0, ganhas: 0, empates: 0, perdidas: 0, rotas: new Map() } }).get(chave);
+      par.jogos++; par.vitorias += venceu;
+      if (pa && pb) somar(par.rotas, `${pa}|${pb}`, venceu);
+      // duo lane: os dois na mesma rota física e a lane teve resultado
+      const lane = la && la === lb && ra != null ? ra : null;
+      if (lane != null) {
+        const l = par.lanes;
+        l.jogos++;
+        l[lane > 0 ? 'ganhas' : lane < 0 ? 'perdidas' : 'empates']++;
+        const r = l.rotas.get(`${pa}|${pb}`) || l.rotas.set(`${pa}|${pb}`, { posA: pa, posB: pb, jogos: 0, ganhas: 0, perdidas: 0 }).get(`${pa}|${pb}`);
+        r.jogos++;
+        if (lane > 0) r.ganhas++;
+        if (lane < 0) r.perdidas++;
+      }
+      if (ha && hb) {
+        somar(par.herois, `${ha}|${hb}`, venceu);
+        par.partidas.push({ matchId: g.id, inicio: g.t, venceu: !!venceu, heroiA: ha, heroiB: hb, posA: pa || null, posB: pb || null, lane });
+      }
+    }
+  }
+
+  const doPar = k => k.split('|').map(Number);
+  const listaPares = [...pares.values()].map(par => {
+    const rotas = resumir(par.rotas, MIN_JOGOS_ROTA, k => { const [posA, posB] = doPar(k); return { posA, posB }; });
+    const duplas = resumir(par.herois, MIN_JOGOS_HEROIS, k => { const [heroiA, heroiB] = doPar(k); return { heroiA, heroiB }; });
+    return {
+      a: par.a, b: par.b, nomeA: nomes[par.a] || par.a, nomeB: nomes[par.b] || par.b,
+      jogos: par.jogos, vitorias: par.vitorias, winRate: wrDe(par.vitorias, par.jogos),
+      rotas: rotas.slice(0, TOP),
+      rotasPiores: [...rotas].reverse().filter(r => r.winRate < 50).slice(0, 3),
+      herois: duplas.filter(h => h.winRate > 50).slice(0, TOP),
+      heroisPiores: [...duplas].reverse().filter(h => h.winRate < 50).slice(0, 3),
+      partidas: par.partidas.sort((x, y) => y.inicio - x.inicio).slice(0, PARTIDAS_POR_GRUPO),
+      lanes: { ...par.lanes, rotas: [...par.lanes.rotas.values()].sort((x, y) => y.jogos - x.jogos || y.ganhas - x.ganhas) },
+    };
+  }).sort((x, y) => y.winRate - x.winRate || y.jogos - x.jogos);
+
+  const composicoes = [...grupos].map(([chave, gr]) => {
+    const membros = chave.split(',');
+    return {
+      membros,
+      herois: Object.fromEntries(membros.map(c => [c, resumir(gr.herois[c] || new Map(), 1, k => ({ heroi: Number(k) })).slice(0, 3)])),
+      jogos: gr.jogos, vitorias: gr.vitorias, winRate: wrDe(gr.vitorias, gr.jogos),
+      formacoes: resumir(gr.formacoes, MIN_JOGOS_FORMACAO, k => {
+        const ps = k.split(',').map(Number);
+        return { posicoes: Object.fromEntries(membros.map((c, i) => [c, ps[i]])) };
+      }).slice(0, 3),
+      partidas: gr.partidas.sort((x, y) => y.inicio - x.inicio).slice(0, PARTIDAS_POR_GRUPO),
+    };
+  }).sort((x, y) => y.winRate - x.winRate || y.jogos - x.jogos);
+
+  return {
+    ...base,
+    jogadores: Object.fromEntries([...individuais].map(([c, [j, v]]) => [c, { nome: nomes[c] || c, jogos: j, vitorias: v, winRate: wrDe(v, j) }])),
+    pares: listaPares,
+    composicoes,
+    pool: Object.fromEntries([...pool].map(([c, hs]) => [c, [...hs].map(([k, [j, v]]) => {
+      const [heroi, pos] = doPar(k);
+      return { heroi, pos, jogos: j, vitorias: v };
+    }).sort((x, y) => y.jogos - x.jogos || y.vitorias - x.vitorias)])),
+  };
+}
+
+/* ---------- Corrida de elo ----------
+ * A Valve não mostra o MMR: parte da medalha atual (OpenDota) e volta no tempo ±25 a cada ranqueada guardada. */
+
+const MEDALHAS = { 1: 'Arauto', 2: 'Guardião', 3: 'Cruzado', 4: 'Arconte', 5: 'Lenda', 6: 'Ancestral', 7: 'Divino', 8: 'Imortal' };
+const RANK_IMG = 'https://www.opendota.com/assets/images/dota2/rank_icons/';
+const CORES_ELO = ['#e8b04a', '#4fb3e8', '#e5533d', '#6fd17c', '#c38bf0', '#f08bc3', '#f0a35a', '#5ad1c2', '#b8c25a', '#9aa7ff'];
+let ordemElo = 'subiu';
+
+const nomeMedalha = t => (t ? `${MEDALHAS[Math.floor(t / 10)] || '?'}${Math.floor(t / 10) < 8 && t % 10 ? ` ${t % 10}` : ''}` : 'Sem medalha');
+// faixas da Valve: 770 de MMR por medalha, 154 por estrela
+const mmrDaMedalha = t => {
+  const m = Math.floor(t / 10), e = Math.max(1, t % 10);
+  return m >= 8 ? 5620 : (m - 1) * 770 + (e - 1) * 154 + 77;
+};
+
+function curvaDeElo(conta, tier) {
+  const ranqueadas = (parceirosBase.jogos || []).filter(g => g.r && g.j.some(x => x[0] === conta)).sort((a, b) => a.t - b.t);
+  let mmr = mmrDaMedalha(tier);
+  const pontos = [{ t: Date.now() / 1000, mmr }];
+  for (let i = ranqueadas.length - 1; i >= 0; i--) {
+    pontos.push({ t: ranqueadas[i].t, mmr, v: ranqueadas[i].v, id: ranqueadas[i].id });
+    mmr -= ranqueadas[i].v ? MMR_POR_PARTIDA : -MMR_POR_PARTIDA;
+  }
+  pontos.push({ t: ranqueadas.length ? ranqueadas[0].t - 1 : 0, mmr });
+  return pontos.reverse(); // do mais antigo pro atual; cada ponto é o MMR logo depois daquela partida
+}
+
+function renderizarElo() {
+  const alvo = $('elo-corrida');
+  const perfis = ranking.perfis || {};
+  const medalhas = (parceirosBase && parceirosBase.medalhas) || {};
+  const nomes = Object.fromEntries(ranking.ranking.map(j => [j.accountId, j.nome]));
+  const desde = desdePeriodo();
+  const agora = Date.now() / 1000;
+  const lista = Object.keys(ranking.historicos).map((conta, i) => {
+    const p = perfis[conta] || {};
+    const tier = p.rankTier || medalhas[conta] || null;
+    if (!tier || !parceirosBase) return null;
+    const curva = curvaDeElo(conta, tier);
+    const antes = [...curva].reverse().find(x => x.t < desde) || curva[0];
+    const noPeriodo = curva.filter(x => x.t >= desde && x.id);
+    const v = noPeriodo.filter(x => x.v).length;
+    return { conta, nome: nomes[conta] || conta, avatar: p.avatar, tier, cor: CORES_ELO[i % CORES_ELO.length], curva,
+      inicio: antes.mmr, atual: curva[curva.length - 1].mmr, v, d: noPeriodo.length - v };
+  }).filter(Boolean);
+
+  if (!lista.length) {
+    alvo.innerHTML = '<p class="carregando">Sem medalha de ninguém ainda: aparece quando o robô do ranking rodar de novo.</p>';
+    return;
+  }
+  lista.forEach(x => { x.delta = x.atual - x.inicio; });
+  lista.sort(ordemElo === 'subiu' ? (a, b) => b.delta - a.delta || b.atual - a.atual : (a, b) => b.atual - a.atual);
+
+  // gráfico: x = tempo do período, y = MMR estimado
+  const inicioX = desde || Math.min(...lista.map(x => x.curva[1] ? x.curva[1].t : agora));
+  const W = 900, H = 340, M = { e: 52, d: 56, c: 18, b: 30 };
+  const visiveis = lista.flatMap(x => [x.inicio, ...x.curva.filter(p => p.t >= inicioX).map(p => p.mmr)]);
+  let yMin = Math.min(...visiveis), yMax = Math.max(...visiveis);
+  if (yMax - yMin < 200) { const meio = (yMax + yMin) / 2; yMin = meio - 100; yMax = meio + 100; }
+  const px = t => M.e + ((Math.max(t, inicioX) - inicioX) / Math.max(1, agora - inicioX)) * (W - M.e - M.d);
+  const py = m => M.c + (1 - (m - yMin) / (yMax - yMin)) * (H - M.c - M.b);
+  const passo = Math.max(50, Math.ceil((yMax - yMin) / 5 / 50) * 50);
+  const linhasY = [];
+  for (let y = Math.ceil(yMin / passo) * passo; y <= yMax; y += passo) linhasY.push(y);
+  const datas = [0, 0.5, 1].map(f => inicioX + f * (agora - inicioX));
+
+  const linha = x => {
+    let d = `M${px(inicioX).toFixed(1)},${py(x.inicio).toFixed(1)}`;
+    x.curva.filter(p => p.t >= inicioX).forEach(p => { d += `H${px(p.t).toFixed(1)}V${py(p.mmr).toFixed(1)}`; });
+    d += `H${px(agora).toFixed(1)}`;
+    return d;
+  };
+  // ninguém em cima de ninguém no fim da linha: empurra os avatares para não encavalarem
+  const fins = lista.map(x => ({ x, y: py(x.atual) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < fins.length; i++) fins[i].y = Math.max(fins[i].y, fins[i - 1].y + 24);
+  const deslocar = Math.max(0, fins.length ? fins[fins.length - 1].y - (H - M.b) : 0);
+  fins.forEach(f => { f.y -= deslocar; });
+
+  const inicial = x => esc((x.nome.match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase());
+  const avatar = (x, tam) => {
+    const letra = `<span class="elo-avatar elo-inicial" style="--cor:${x.cor};width:${tam}px;height:${tam}px">${inicial(x)}</span>`;
+    // foto da Steam; se não carregar, fica a inicial
+    return x.avatar
+      ? `<img class="elo-avatar" src="${esc(x.avatar)}" alt="" width="${tam}" height="${tam}" loading="lazy" style="--cor:${x.cor}" onerror="this.outerHTML=this.nextElementSibling.innerHTML"><template>${letra}</template>`
+      : letra;
+  };
+
+  alvo.innerHTML = `
+    <div class="elo-grafico">
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="MMR estimado de cada amigo no período">
+        <defs>${fins.map(({ x }) => `<clipPath id="clip-${x.conta}"><circle r="11"/></clipPath>`).join('')}</defs>
+        ${linhasY.map(y => `<line class="elo-grade" x1="${M.e}" x2="${W - M.d}" y1="${py(y)}" y2="${py(y)}"/>
+          <text class="elo-eixo" x="${M.e - 6}" y="${py(y) + 4}" text-anchor="end">${y.toLocaleString('pt-BR')}</text>`).join('')}
+        ${datas.map((t, i) => `<text class="elo-eixo" x="${px(t)}" y="${H - 8}" text-anchor="${['start', 'middle', 'end'][i]}">${i === 2 ? 'agora' : data(t * 1000)}</text>`).join('')}
+        ${lista.map((x, i) => `<path class="elo-linha" d="${linha(x)}" pathLength="1" style="stroke:${x.cor};animation-delay:${i * 90}ms"><title>${esc(x.nome)}</title></path>`).join('')}
+        ${fins.map(({ x, y }) => `<g class="elo-fim" transform="translate(${px(agora) + 14},${y.toFixed(1)})">
+          <line x1="-14" y1="${(py(x.atual) - y).toFixed(1)}" x2="-11" y2="0" style="stroke:${x.cor}"/>
+          <circle r="12" style="fill:${x.cor}"/>
+          ${x.avatar ? `<image href="${esc(x.avatar)}" x="-11" y="-11" width="22" height="22" clip-path="url(#clip-${x.conta})"/>` : `<text class="elo-letra" y="4" text-anchor="middle">${inicial(x)}</text>`}
+          <title>${esc(x.nome)} · ≈ ${x.atual.toLocaleString('pt-BR')}</title></g>`).join('')}
+      </svg>
+    </div>
+    <ol class="elo-lista">${lista.map((x, i) => `
+      <li class="elo-item${i === 0 ? ' elo-lider' : ''}" style="--cor:${x.cor}">
+        <span class="elo-pos">${i === 0 ? '👑' : i + 1}</span>
+        ${avatar(x, 44)}
+        <div class="elo-nome"><b>${esc(x.nome)}</b>
+          <span class="elo-medalha"><img src="${RANK_IMG}rank_icon_${Math.floor(x.tier / 10)}.png" alt="" width="22" height="22" loading="lazy" onerror="this.remove()">${nomeMedalha(x.tier)}</span><span class="elo-mmr">≈ ${x.atual.toLocaleString('pt-BR')} MMR</span></div>
+        <div class="elo-delta ${x.delta > 0 ? 'bom' : x.delta < 0 ? 'ruim' : ''}"><b>${x.delta > 0 ? '+' : ''}${x.delta}</b>
+          <span>${x.v + x.d ? `${x.v}V · ${x.d}D` : 'sem ranqueada'}</span></div>
+      </li>`).join('')}</ol>
+    <p class="time-nota">MMR estimado: começa na medalha atual de cada um no OpenDota e volta no tempo ±${MMR_POR_PARTIDA} por ranqueada que o robô guardou. Partidas que o robô ainda não baixou não entram, e a Valve não mostra o MMR exato.</p>`;
 }
 
 /* ---------- Worker do coach (feedback e botão de atualizar) ---------- */

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <header class="topo">
@@ -47,10 +47,22 @@
       <button class="aba" data-aba="composicoes" role="tab" aria-selected="false">
         <span class="aba-icone" aria-hidden="true">🛡️</span><span class="aba-nome">Times e picks</span><span class="aba-sub">Monte o time de hoje</span><span class="aba-novo">Novo</span>
       </button>
+      <button class="aba" data-aba="elo" role="tab" aria-selected="false">
+        <span class="aba-icone" aria-hidden="true">📈</span><span class="aba-nome">Corrida de elo</span><span class="aba-sub">Quem tá subindo</span><span class="aba-novo">Novo</span>
+      </button>
       <button class="aba" data-aba="meta" role="tab" aria-selected="false">
         <span class="aba-icone" aria-hidden="true">🔥</span><span class="aba-nome">Meta</span><span class="aba-sub">Quem tá forte no patch</span><span class="aba-novo">Novo</span>
       </button>
     </nav>
+
+    <div class="periodo">
+      <div class="periodo-topo">
+        <label for="periodo">Período: <b id="periodo-nome">Tudo</b></label>
+        <span class="periodo-info" id="periodo-info"></span>
+      </div>
+      <input type="range" id="periodo" min="0" max="5" step="1" value="5">
+      <div class="periodo-marcas" id="periodo-marcas"></div>
+    </div>
 
     <section class="aba-conteudo aba-conteudo-ativa" id="aba-ranking">
       <div class="barra">
@@ -102,6 +114,17 @@
       <div class="cartoes" id="lista-composicoes"></div>
     </section>
 
+    <section class="aba-conteudo" id="aba-elo">
+      <div class="secao-titulo">
+        <h2>Corrida de elo</h2>
+        <div class="ordem" role="group" aria-label="Ordenar por">
+          <button class="chip chip-ativo" data-ordem-elo="subiu">🚀 Quem mais subiu</button>
+          <button class="chip" data-ordem-elo="elo">🏅 Elo atual</button>
+        </div>
+      </div>
+      <div id="elo-corrida"></div>
+    </section>
+
     <section class="aba-conteudo" id="aba-meta">
       <div class="secao-titulo">
         <h2>Meta do patch</h2>
@@ -141,6 +164,6 @@
   </form>
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

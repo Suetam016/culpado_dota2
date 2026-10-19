@@ -114,6 +114,19 @@ async function main() {
   const amigos = JSON.parse(fs.readFileSync(path.join(RAIZ, 'amigos.json'), 'utf8'));
   const idsAmigos = new Set(Object.keys(amigos).map(Number));
 
+  // foto da Steam e medalha atual de cada um (para a corrida de elo)
+  const perfis = {};
+  for (const conta of Object.keys(amigos)) {
+    const p = await pedir(`/players/${conta}`);
+    await sleep(PAUSA_MS);
+    if (!p) continue;
+    perfis[conta] = {
+      avatar: (p.profile && (p.profile.avatarfull || p.profile.avatarmedium)) || null,
+      rankTier: p.rank_tier || null,
+      leaderboard: p.leaderboard_rank || null,
+    };
+  }
+
   const partidas = new Map();
   const julgadas = new Set();
   const historicos = Object.fromEntries(Object.keys(amigos).map((k) => [k, []]));
@@ -198,6 +211,7 @@ async function main() {
     semAnalise: semReplay, // partidas recentes sem a análise do replay no OpenDota: entram numa próxima rodada
     ranking,
     historicos,
+    perfis,
   }, null, 2), 'utf8');
   const analisadas = [...partidas.values()].filter(Boolean).length;
   console.log(`Ranking salvo: ${saida} (${analisadas} partidas com replay, ${semReplay} sem replay)`);
