@@ -141,7 +141,7 @@
 .doc-interpol .ip-cab b{display:block;font-size:22px;letter-spacing:.3em;font-weight:900}
 .doc-interpol .ip-cab span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#a9b8d8}
 .doc-interpol .ip-faixa{background:#c8102e;color:#fff;font-weight:900;letter-spacing:.22em;text-transform:uppercase;font-size:13px;padding:6px 20px}
-.doc-interpol .ip-titulo{margin:16px 20px 0;font:900 clamp(2rem,6vw,3.4rem)/1 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.doc-interpol .ip-titulo{margin:16px 20px 0;font:900 clamp(1.6rem,5vw,3rem)/1.05 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:#fff}
 .doc-interpol .ip-sub{margin:4px 20px 0;color:#a9b8d8;font-size:14px}
 .doc-interpol .ip-reu{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;margin:16px 20px 0;padding-top:16px;border-top:1px solid #2b4a8a}
 .doc-interpol .ip-foto{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -165,7 +165,7 @@
 .doc-haia .tpi-cab{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 20px 6px;text-align:center}
 .doc-haia .tpi-cab b{display:block;font-family:var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:#c9a640;font-size:15px}
 .doc-haia .tpi-cab span{font-size:12px;color:#a8987a;letter-spacing:.1em;text-transform:uppercase}
-.doc-haia .tpi-titulo{text-align:center;margin:8px 20px 0;font:900 clamp(2rem,6.5vw,3.6rem)/1 var(--font-display);letter-spacing:.12em;text-transform:uppercase;color:#f3e7c4;text-shadow:0 0 24px rgba(201,166,64,.35)}
+.doc-haia .tpi-titulo{text-align:center;margin:8px 20px 0;font:900 clamp(1.6rem,5.5vw,3.2rem)/1.05 var(--font-display);letter-spacing:.1em;text-transform:uppercase;color:#f3e7c4;text-shadow:0 0 24px rgba(201,166,64,.35)}
 .doc-haia .tpi-caso{text-align:center;margin:6px 20px 0;color:#c9a640;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
 .doc-haia .tpi-reu{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;margin:18px 28px 0;padding-top:18px;border-top:1px solid rgba(201,166,64,.35)}
 .doc-haia .tpi-foto{position:relative;align-self:start}
@@ -5460,8 +5460,8 @@ const dif = cs.length > 1 ? Math.round(cs[0].fatia * 100) - Math.round(cs[1].fat
 // o cartaz compartilhado acompanha o documento da página (procura-se, B.O., Interpol, Haia)
 const nivel = gravidadeDaCulpa(cs[0]);
 const plural = cs.length > 1;
-const titulos = [plural ? 'Procuram-se' : 'Procura-se', 'Boletim de Ocorrência', plural ? 'Procurados · Interpol' : 'Procurado · Interpol', 'Mandado de Prisão'];
-const subs = ['por infrações menores contra o próprio time', 'registrado na delegacia do Ancient', 'difusão vermelha: crimes contra o próprio time', 'Tribunal Penal Internacional · crimes contra a humanidade'];
+const titulos = [plural ? 'Procuram-se' : 'Procura-se', 'Boletim de Ocorrência', plural ? 'Criminosos internacionais' : 'Criminoso internacional', 'Crimes contra a humanidade'];
+const subs = ['por infrações menores contra o próprio time', 'registrado na delegacia do Ancient', 'procurado pela Interpol em todos os servidores', 'Tribunal Penal Internacional · mandado de prisão'];
 return {
 vitoria, placar, titulo: titulos[nivel], selo: plural ? 'Culpados' : 'Culpado',
 sub: plural ? `${subs[nivel]} · dividido, ${dif === 0 ? 'empate' : `${dif} ${dif === 1 ? 'ponto' : 'pontos'} de diferença`}` : subs[nivel],
@@ -8966,7 +8966,7 @@ h('ul', { class: 'mini-attrs' }, [...f.atributos].sort((a, b) => b.valor - a.val
 }
 
 // ---------- O documento da culpa: o visual sobe com a gravidade ----------
-// procura-se (infração menor) → boletim de ocorrência → Interpol (difusão vermelha) → Tribunal Penal Internacional.
+// procura-se (infração menor) → boletim de ocorrência → Interpol (criminoso internacional) → Tribunal Penal Internacional.
 // Gravidade = metade a fatia da culpa, metade o tamanho da culpa em ouro (calibrado em 131 derrotas dos amigos:
 // ~30% / 27% / 28% / 14%). Os crimes saem do que a pessoa fez de fato (componentes da culpa); o nome do crime,
 // a alcunha e os detalhes são sorteados com semente na partida, então o mesmo link mostra sempre o mesmo documento.
@@ -9144,8 +9144,8 @@ f.v.diagnostico ? h('p', { class: 'ip-info' }, f.v.diagnostico) : null));
 return h('article', { class: `cartao veredito doc-interpol${fichas.length > 1 ? ' dividido' : ''}` },
 h('header', { class: 'ip-cab' }, h('span', { class: 'ip-globo' }, globo),
 h('div', {}, h('b', {}, 'INTERPOL'), h('span', {}, 'Organização Internacional de Polícia do Ancient'))),
-h('div', { class: 'ip-faixa' }, 'Difusão vermelha · Red notice'),
-h('h2', { class: 'ip-titulo' }, fichas.length > 1 ? 'Procurados' : 'Procurado'),
+h('div', { class: 'ip-faixa' }, fichas.length > 1 ? 'Procurados em todos os servidores' : 'Procurado em todos os servidores'),
+h('h2', { class: 'ip-titulo' }, fichas.length > 1 ? 'Criminosos internacionais' : 'Criminoso internacional'),
 h('p', { class: 'ip-sub' }, 'por crimes contra o próprio time em várias rotas'),
 fichas.map(ficha),
 h('p', { class: 'ip-alerta' }, '⚠ Considerado perigoso para o próprio time. Se avistado, não passe o farm e avise o capitão.'));
@@ -9171,8 +9171,8 @@ f.entregue > 0 ? h('p', { class: 'tpi-recompensa' }, `Recompensa: um Aegis + ${f
 return h('article', { class: `cartao veredito doc-haia${fichas.length > 1 ? ' dividido' : ''}` },
 h('header', { class: 'tpi-cab' }, h('span', { class: 'tpi-selo' }, selo),
 h('div', {}, h('b', {}, 'Tribunal Penal Internacional'), h('span', {}, 'Haia · Câmara de Julgamento do Ancient'))),
-h('h2', { class: 'tpi-titulo' }, 'Mandado de prisão'),
-h('p', { class: 'tpi-caso' }, `Caso nº ICC-${String(r.partida.id).slice(-6)} · Situação nos ${ladoNome(r.partida.ladoRadiant)}`),
+h('h2', { class: 'tpi-titulo' }, 'Crimes contra a humanidade'),
+h('p', { class: 'tpi-caso' }, `Mandado de prisão · caso nº ICC-${String(r.partida.id).slice(-6)} · Situação nos ${ladoNome(r.partida.ladoRadiant)}`),
 fichas.map(reu),
 fichas[0].v.diagnostico ? h('p', { class: 'tpi-fundamento' }, h('span', {}, 'Fundamentação: '), fichas[0].v.diagnostico) : null,
 h('footer', { class: 'tpi-rodape' },
