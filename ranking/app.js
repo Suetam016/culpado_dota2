@@ -24,7 +24,7 @@ const VISOES = {
 
 // Período escolhido no slider: vale para todas as abas
 const PERIODOS = [
-  ['hoje', 'Hoje'], ['semana', 'Últimos 7 dias'], ['mes', 'Últimos 30 dias'], ['3meses', 'Últimos 3 meses'], ['ano', 'Este ano'], ['tudo', 'Tudo'],
+  ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês'], ['3meses', 'Últimos 3 meses'], ['ano', 'Este ano'], ['tudo', 'Tudo'],
 ];
 const CHAVE_PERIODO = 'ranking-periodo';
 
@@ -688,14 +688,13 @@ function renderizarReddit() {
 
 const MINUTO_LANE = 10; // MINUTO_LANE do parceiros.py
 
-// início do período em segundos (hora local). Janela móvel em vez de "desde segunda": na segunda de manhã
-// "esta semana" ficava só com quem jogou hoje.
+// início do período em segundos (hora local; a semana começa no domingo)
 function desdePeriodo(chave = periodo) {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   if (chave === 'hoje') return d / 1000;
-  if (chave === 'semana') { d.setDate(d.getDate() - 6); return d / 1000; }
-  if (chave === 'mes') { d.setDate(d.getDate() - 29); return d / 1000; }
+  if (chave === 'semana') { d.setDate(d.getDate() - d.getDay()); return d / 1000; }
+  if (chave === 'mes') { d.setDate(1); return d / 1000; }
   if (chave === '3meses') { d.setMonth(d.getMonth() - 3); return d / 1000; }
   if (chave === 'ano') { d.setMonth(0, 1); return d / 1000; }
   return 0;
