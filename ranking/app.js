@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   montarFeedback();
   montarPeriodo();
+  contarVisitas();
   document.querySelectorAll('[data-ordem-elo]').forEach(b => b.addEventListener('click', () => {
     ordemElo = b.dataset.ordemElo;
     document.querySelectorAll('[data-ordem-elo]').forEach(x => x.classList.toggle('chip-ativo', x === b));
@@ -424,6 +425,20 @@ const TRACOS = {
     herois: 'spectre zuus furion silencer ancient_apparition storm_spirit spirit_breaker wisp dawnbreaker abyssal_underlord invoker tinker bloodseeker' },
   cedo: { icone: '⏱️', nome: 'Tempo cedo', desc: 'Forte no começo: dá pra acelerar o jogo',
     herois: 'batrider huskar ursa bristleback viper razor venomancer bounty_hunter mirana pudge clinkz legion_commander night_stalker dragon_knight monkey_king ember_spirit void_spirit queenofpain leshrac death_prophet lycan beastmaster brewmaster bloodseeker juggernaut primal_beast' },
+  iniciacao: { icone: '🦘', nome: 'Iniciação', desc: 'Abre a luta de longe (blink, salto, carga) pegando o time',
+    herois: 'earthshaker enigma magnataur tidehunter axe centaur mars batrider sand_king slardar primal_beast legion_commander dark_seer elder_titan spirit_breaker puck void_spirit storm_spirit faceless_void rattletrap earth_spirit tusk pangolier phoenix nyx_assassin marci dawnbreaker beastmaster' },
+  bkb: { icone: '🗡️', nome: 'Atravessa BKB', desc: 'Ultimate que pega mesmo com Black King Bar',
+    herois: 'enigma magnataur faceless_void bane batrider legion_commander beastmaster axe doom_bringer primal_beast winter_wyvern ancient_apparition necrolyte spirit_breaker' },
+  invis: { icone: '👻', nome: 'Invisibilidade', desc: 'Some do mapa pra emboscar ou fugir',
+    herois: 'riki bounty_hunter clinkz weaver nyx_assassin templar_assassin mirana invoker sand_king treant' },
+  deteccao: { icone: '👁️', nome: 'Detecção', desc: 'Revela herói invisível sem gastar pó',
+    herois: 'slardar bounty_hunter zuus bloodseeker' },
+  dispel: { icone: '✨', nome: 'Dispel', desc: 'Tira stun, silêncio ou debuff de aliado (ou buff de inimigo)',
+    herois: 'oracle abaddon legion_commander omniknight shadow_demon brewmaster slark life_stealer juggernaut weaver phantom_lancer' },
+  ilusao: { icone: '🪞', nome: 'Caça-ilusão', desc: 'Dano em área que limpa ilusões e invocações',
+    herois: 'sven magnataur kunkka leshrac ember_spirit medusa gyrocopter luna sand_king axe bristleback shredder jakiro death_prophet phoenix earthshaker tinker' },
+  anticura: { icone: '🩸', nome: 'Anti-cura', desc: 'Corta cura e regeneração do inimigo',
+    herois: 'ancient_apparition necrolyte' },
 };
 // slug -> [chave do traço]
 const TRACOS_DO_HEROI = {};
@@ -440,6 +455,13 @@ const SINERGIAS = [
   { id: 'global', niveis: [2, 3], nome: 'Rotação global' },
   { id: 'cedo', niveis: [3, 4], nome: 'Acelera o jogo' },
   { id: 'frente', niveis: [1, 2, 3], nome: 'Muralha' },
+  { id: 'iniciacao', niveis: [1, 2, 3], nome: 'Quem abre a luta' },
+  { id: 'bkb', niveis: [2, 3], nome: 'Atravessa BKB' },
+  { id: 'invis', niveis: [2, 3], nome: 'Emboscada' },
+  { id: 'dispel', niveis: [1, 2], nome: 'Purificação' },
+  { id: 'ilusao', niveis: [1, 2], nome: 'Caça-ilusão' },
+  { id: 'anticura', niveis: [1], nome: 'Anti-cura' },
+  { id: 'deteccao', niveis: [1], nome: 'Olho de águia' },
 ];
 const PESO_TRACO = 0.15;   // por nível ativo
 const PESO_ALERTA = 0.3;
@@ -466,6 +488,7 @@ function sinergiasDoTime(herois) {
   const alertas = [];
   if (herois.length >= 4 && !n('frente')) alertas.push('🪨 Sem linha de frente: ninguém pra iniciar ou segurar a luta');
   if (herois.length >= 4 && !n('controle')) alertas.push('🔒 Sem controle confiável');
+  if (herois.length >= 4 && !n('iniciacao')) alertas.push('🦘 Ninguém pra abrir a luta: vai depender de pickoff ou de esperar o outro time errar');
   if (n('late') && !n('baba') && herois.length >= 4) alertas.push('🍼 Carry de late sem babá: vai precisar de muito espaço');
   if (n('late') >= 2) alertas.push('🍼 Dois carries de late disputando farm');
   if (herois.length >= 4 && !n('dps') && n('push') < 2) alertas.push('⚔️ Pouco dano físico pra derrubar torre');
@@ -1179,6 +1202,39 @@ let estadoAtt = null;
 const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json', { cache: 'no-cache' })
   .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
   .catch(() => ''));
+
+/* ---------- Visitas (contador no Worker: código aleatório por navegador, sem nome nem IP) ---------- */
+
+const AVISO_VISITA_MS = 2 * 60_000;
+
+function idDoVisitante() {
+  try {
+    let id = localStorage.getItem('culpado-visitante');
+    if (!/^[a-z0-9]{12,40}$/.test(id || '')) {
+      id = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => (b % 36).toString(36)).join('');
+      localStorage.setItem('culpado-visitante', id);
+    }
+    return id;
+  } catch (e) { return null; }
+}
+
+async function contarVisitas() {
+  const url = await urlDoCoach();
+  const id = idDoVisitante();
+  if (!url || !id) return;
+  const avisar = () => fetch(`${url}/visita`, { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id, pagina: 'ranking' }), keepalive: true }).catch(() => null);
+  await avisar();
+  // enquanto a aba está aberta e visível, conta como "online agora"
+  setInterval(() => { if (!document.hidden) avisar(); }, AVISO_VISITA_MS);
+  const d = await fetch(`${url}/visitas`, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+  if (!d) return;
+  const el = $('visitas');
+  const pessoas = n => `${n} ${n === 1 ? 'pessoa' : 'pessoas'}`;
+  el.innerHTML = `<span class="visitas-online"><i></i>${d.online} online agora</span> · ${pessoas(d.hoje)} hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
+  el.title = (d.porDia || []).map(x => `${x.dia.split('-').reverse().slice(0, 2).join('/')}: ${pessoas(x.pessoas)}`).join('\n');
+  el.hidden = false;
+}
 
 /* ---------- Atualizar agora (no máximo a cada 30 min; a regra vale no Worker) ---------- */
 

@@ -672,3 +672,10 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 .pips i { font-style: normal; font-family: var(--font-mono); font-size: 10px; color: var(--muted); padding: 0 4px; border-radius: 3px; background: var(--surface-3); }
 .pips i.on { color: var(--on-gold); background: var(--gold); }
 .alertas-time { list-style: none; margin-top: 10px; display: grid; gap: 4px; font-size: 13px; color: var(--bad-ink); }
+.visitas { margin-bottom: 4px; cursor: help; }
+.visitas-online { color: var(--good-ink); font-weight: 700; }
+.visitas-online i {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 5px;
+  box-shadow: 0 0 0 0 var(--good); animation: online-pulsa 2s infinite;
+}
+@keyframes online-pulsa { 70% { box-shadow: 0 0 0 6px transparent; } }

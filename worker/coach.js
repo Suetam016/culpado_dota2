@@ -1103,6 +1103,69 @@ async function receberFeedback(req, env, origem) {
 
 // ------------------------------------------------------------------ entrada
 
+// ------------------------------------------------------------------ Visitas do site
+// Quantas pessoas abriram o site: cada navegador manda um código aleatório (guardado no localStorage dele), sem nome
+// nem IP. Fica num Durable Object com SQLite (plano Free da Cloudflare), uma linha por (dia, código, página).
+
+const ID_VISITANTE = /^[a-z0-9]{12,40}$/;
+const PAGINAS_VISITA = new Set(['painel', 'ranking']);
+const ONLINE_MS = 5 * 60_000; // o site avisa a cada 2 min enquanto está aberto
+const GUARDAR_VISITAS_DIAS = 120;
+const DIA_MS = 86_400_000;
+const diaBr = (ms) => new Date(ms - 3 * 3_600_000).toISOString().slice(0, 10); // dia no horário de Brasília
+
+// consulta(sql, ...args) -> linhas
+function resumoVisitas(consulta, agora) {
+  const contar = (onde, ...args) => Number((consulta(`SELECT COUNT(DISTINCT id) AS n FROM visita WHERE ${onde}`, ...args)[0] || {}).n || 0);
+  const desde = (dias) => diaBr(agora - dias * DIA_MS);
+  return {
+    online: contar('visto >= ?', agora - ONLINE_MS),
+    hoje: contar('dia = ?', diaBr(agora)),
+    semana: contar('dia >= ?', desde(6)),
+    mes: contar('dia >= ?', desde(29)),
+    porDia: consulta('SELECT dia, COUNT(DISTINCT id) AS n FROM visita WHERE dia >= ? GROUP BY dia ORDER BY dia', desde(13))
+      .map((r) => ({ dia: r.dia, pessoas: Number(r.n) })),
+    paginasHoje: Object.fromEntries(consulta('SELECT pagina, COUNT(DISTINCT id) AS n FROM visita WHERE dia = ? GROUP BY pagina', diaBr(agora))
+      .map((r) => [r.pagina, Number(r.n)])),
+  };
+}
+
+export class Visitas {
+  constructor(ctx) {
+    this.sql = ctx.storage.sql;
+    this.sql.exec('CREATE TABLE IF NOT EXISTS visita (dia TEXT NOT NULL, id TEXT NOT NULL, pagina TEXT NOT NULL, visto INTEGER NOT NULL, PRIMARY KEY (dia, id, pagina))');
+  }
+
+  async fetch(req) {
+    const agora = Date.now();
+    if (req.method === 'POST') {
+      const { id, pagina } = await req.json();
+      this.sql.exec('INSERT INTO visita (dia, id, pagina, visto) VALUES (?, ?, ?, ?) ON CONFLICT (dia, id, pagina) DO UPDATE SET visto = excluded.visto',
+        diaBr(agora), id, pagina, agora);
+      if (Math.random() < 0.02) this.sql.exec('DELETE FROM visita WHERE dia < ?', diaBr(agora - GUARDAR_VISITAS_DIAS * DIA_MS));
+      return Response.json({ ok: true });
+    }
+    return Response.json(resumoVisitas((q, ...a) => this.sql.exec(q, ...a).toArray(), agora));
+  }
+}
+
+async function rotaVisitas(req, env, origem, caminho) {
+  const sala = env.VISITAS.get(env.VISITAS.idFromName('site'));
+  if (req.method === 'POST' && caminho === '/visita') {
+    const texto = await lerCorpo(req, 512);
+    let corpo = null;
+    try { corpo = JSON.parse(texto || ''); } catch { /* inválido abaixo */ }
+    if (!corpo || !ID_VISITANTE.test(String(corpo.id)) || !PAGINAS_VISITA.has(corpo.pagina)) return recusar(400, 'invalido', origem, env);
+    await sala.fetch('https://visitas/', { method: 'POST', body: JSON.stringify({ id: corpo.id, pagina: corpo.pagina }) });
+    return json(200, { ok: true }, origem, env);
+  }
+  if (req.method === 'GET' && caminho === '/visitas') {
+    const r = await sala.fetch('https://visitas/');
+    return json(200, await r.json(), origem, env);
+  }
+  return recusar(404, 'rota', origem, env);
+}
+
 export default {
   async fetch(req, env = {}) {
     const origem = (req.headers.get('Origin') || '').replace(/\/$/, '');
@@ -1140,6 +1203,11 @@ export default {
       if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: 'A atualização do ranking ainda não foi ligada pelo dono do site.' }, origem, env);
       return rotaRanking(req, env, origem);
     }
+    if (caminho === '/visita' || caminho === '/visitas') {
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!env.VISITAS) return json(503, { erro: 'desligado' }, origem, env);
+      return rotaVisitas(req, env, origem, caminho);
+    }
     if (req.method === 'POST' && caminho === '/feedback') {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
       if (!tokenGithub(env)) return json(503, { erro: 'desligado' }, origem, env);
@@ -1169,7 +1237,7 @@ export default {
 // para os testes (o Cloudflare ignora exports nomeados)
 export const _interno = {
   enxugarContexto, cortarHistorico, montarConversa, eventosSse, classificarErroCF, limparContexto, chaveDoIp, msgCotaCF,
-  SISTEMA, LIMITES, MODELO_PADRAO, contagem, geminiPausa, entradaMinima,
+  SISTEMA, LIMITES, MODELO_PADRAO, resumoVisitas, diaBr, contagem, geminiPausa, entradaMinima,
   cacheMapa, consultas, PEDIDO_PARADO_MS, MAX_CHAVES,
   limparCacheMapa: () => {
     cacheMapa.clear(); consultas.clear();

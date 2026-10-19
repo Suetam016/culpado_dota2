@@ -9154,9 +9154,26 @@ avisoRanking.classList.add('av-rk-on');
 mostrar(2500);
 }
 
+// contador de visitas no Worker: um código aleatório por navegador (sem nome nem IP); a cada 2 min com a aba visível
+function contarVisita(url) {
+let id = null;
+try {
+id = localStorage.getItem('culpado-visitante');
+if (!/^[a-z0-9]{12,40}$/.test(id || '')) {
+id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => (b % 36).toString(36)).join('');
+localStorage.setItem('culpado-visitante', id);
+}
+} catch (e) { return; }
+if (!url || !id) return;
+const avisar = () => fetch(`${url}/visita`, { method: 'POST', headers: { 'content-type': 'application/json' },
+body: JSON.stringify({ id, pagina: 'painel' }), keepalive: true }).catch(() => null);
+avisar();
+setInterval(() => { if (!document.hidden) avisar(); }, 2 * 60_000);
+}
+
 function iniciar() { montarAvisoRanking();
 montarFeedback();
-urlDoCoach(); // lê o config.json do coach em paralelo com a partida
+urlDoCoach().then(contarVisita); // lê o config.json do coach em paralelo com a partida
 rotasDoSite(); // e a base de rotas
 const [, doHash, ladoHash] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];
 const ultimo = ler('culpado:ultimo');

@@ -2,7 +2,8 @@
 //   node --test worker/teste-coach.mjs   (ou: node worker/teste-coach.mjs)
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
-import worker, { _interno } from './coach.js';
+import worker, { _interno, Visitas } from './coach.js';
+import { DatabaseSync } from 'node:sqlite';
 
 const SITE = 'https://suetam016.github.io';
 const enc = new TextEncoder();
@@ -1109,4 +1110,50 @@ test('ranking: GET /ranking/arquivo/<nome> entrega o arquivo do repositório e s
   r = await worker.fetch(pedido(null, { caminho: '/ranking/arquivo/..%2Fconfig', metodo: 'GET' }), ENV_MAPA);
   assert.equal(r.status, 404);
   assert.ok(repo.chamadas.every((c) => ['amigos/ranking.json', 'amigos/parceiros.json'].includes(c.caminho)));
+});
+
+// ---------------------------------------------------------------- visitas
+
+function salaDeVisitas() {
+  const db = new DatabaseSync(':memory:');
+  const sql = {
+    exec(q, ...args) {
+      const st = db.prepare(q);
+      if (/^\s*SELECT/i.test(q)) return { toArray: () => st.all(...args) };
+      st.run(...args);
+      return { toArray: () => [] };
+    },
+  };
+  const sala = new Visitas({ storage: { sql } });
+  return { idFromName: () => 'site', get: () => ({ fetch: (u, init) => sala.fetch(new Request(u, init)) }) };
+}
+
+test('visitas: conta pessoas diferentes por dia e quem está online', async () => {
+  const env = { VISITAS: salaDeVisitas() };
+  const visita = (id, pagina) => worker.fetch(pedido({ id, pagina }, { caminho: '/visita' }), env);
+  assert.equal((await visita('abc123def456', 'painel')).status, 200);
+  assert.equal((await visita('abc123def456', 'ranking')).status, 200);
+  assert.equal((await visita('abc123def456', 'ranking')).status, 200);
+  assert.equal((await visita('zzz999yyy888', 'ranking')).status, 200);
+  const r = await worker.fetch(pedido(undefined, { caminho: '/visitas', metodo: 'GET' }), env);
+  assert.equal(r.status, 200);
+  const d = await r.json();
+  assert.equal(d.hoje, 2);
+  assert.equal(d.online, 2);
+  assert.equal(d.semana, 2);
+  assert.deepEqual(d.paginasHoje, { painel: 1, ranking: 2 });
+  assert.equal(d.porDia.length, 1);
+});
+
+test('visitas: recusa código inválido, outra origem e sem o Durable Object', async () => {
+  const env = { VISITAS: salaDeVisitas() };
+  assert.equal((await worker.fetch(pedido({ id: 'curto', pagina: 'painel' }, { caminho: '/visita' }), env)).status, 400);
+  assert.equal((await worker.fetch(pedido({ id: 'abc123def456', pagina: 'outra' }, { caminho: '/visita' }), env)).status, 400);
+  assert.equal((await worker.fetch(pedido({ id: 'abc123def456', pagina: 'painel' }, { caminho: '/visita', origem: 'https://malvado.example' }), env)).status, 403);
+  assert.equal((await worker.fetch(pedido({ id: 'abc123def456', pagina: 'painel' }, { caminho: '/visita' }), {})).status, 503);
+});
+
+test('visitas: dia no horário de Brasília', () => {
+  assert.equal(_interno.diaBr(Date.parse('2026-10-20T02:00:00Z')), '2026-10-19');
+  assert.equal(_interno.diaBr(Date.parse('2026-10-20T03:30:00Z')), '2026-10-20');
 });

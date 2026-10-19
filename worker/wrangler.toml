@@ -6,3 +6,12 @@ workers_dev = true
 
 [ai]
 binding = "AI"
+
+# contador de visitas do site (Durable Object com SQLite: incluso no plano Free)
+[[durable_objects.bindings]]
+name = "VISITAS"
+class_name = "Visitas"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Visitas"]
