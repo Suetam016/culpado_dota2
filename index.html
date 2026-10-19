@@ -105,6 +105,24 @@
 </main>
 <p class="visitas-site" id="visitas-site" hidden></p>
 <style>
+/* ---------- Procurado pelo TPI: o pôster original com a cara trocada ---------- */
+.veredito.doc-tpi6{display:block;padding:18px clamp(10px,3vw,28px) 24px;border-radius:4px;background:#121311;border:1px solid #2a2a2a;box-shadow:0 18px 34px -14px rgba(0,0,0,.85);text-align:center}
+.tp6{position:relative;width:min(100%,560px);margin:0 auto;container-type:inline-size;line-height:0}
+.tp6-fundo{width:100%;height:auto;display:block}
+.tp6>*:not(.tp6-fundo){position:absolute;line-height:1.2}
+.tp6-tapa{background:#151614;box-shadow:0 0 1.2cqw .9cqw #151614;border-radius:.6cqw}
+.tp6-moldura{border:.5cqw solid #e5262d;border-bottom:0}
+.tp6-foto{overflow:hidden}
+.tp6-foto .retrato.grande{width:100%;height:100%;border:0;border-radius:0;box-shadow:none;background:#2a2a2a;color:#ddd;font-size:5cqw}
+.tp6-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;filter:grayscale(1) contrast(1.15) brightness(.95)}
+.tp6-pais{color:#d8d8d8;font:500 2cqw/1 "Alegreya Sans",Arial,sans-serif;text-align:left;white-space:nowrap;text-shadow:0 0 .6cqw #000,0 0 .6cqw #000}
+.tp6-nome{display:flex;align-items:center;justify-content:center;background:#e5262d;color:#fff;font-family:Georgia,"Times New Roman",serif;font-weight:900;letter-spacing:.02em;white-space:nowrap;overflow:hidden;clip-path:polygon(0 0,100% 0,95% 100%,0 100%);padding:0 3% 0 1%}
+.tp6-crimes{margin:0;color:#bdbdbd;font:400 1.9cqw/1.3 "Alegreya Sans",Arial,sans-serif;text-align:center}
+@media (prefers-reduced-motion:no-preference){.doc-tpi6 .tp6-moldura{animation:tp6-pulso 2.4s ease-in-out infinite}}
+@keyframes tp6-pulso{50%{box-shadow:0 0 2.4cqw rgba(229,38,45,.7)}}
+</style>
+
+<style>
 /* ---------- Wanted (nível 1, faroeste) ---------- */
 .veredito.doc-wanted{display:block;position:relative;isolation:isolate;padding:34px clamp(16px,4vw,48px) 36px;border-radius:3px;color:#4a2414;text-align:center;
 background:radial-gradient(120% 90% at 50% 45%,#f3dfae 0%,#e2c58b 55%,#c9a467 100%),var(--tex-ruido);background-blend-mode:multiply;border:0;box-shadow:inset 0 0 60px rgba(110,60,20,.45),0 12px 26px -12px rgba(0,0,0,.6)}
@@ -9210,7 +9228,49 @@ const VILOES = [
 ['faceless_void', 'F. Void', 'Fora do tempo', ['Sequestro do tempo', 'Cárcere privado']],
 ];
 
+// O pôster de verdade (img/tpi-procurados.jpg, 498×615) com a cara do meio trocada pelo réu; com veredito
+// dividido, a de cima também. Coordenadas em pixels da imagem; a camada nova cobre foto, país, nome e crimes.
+const TPI_IMG = 'img/tpi-procurados.jpg';
+const TPI_W = 498;
+const TPI_H = 615;
+const TPI_CASAS = [{ dx: 0, dy: 0 }, { dx: 2, dy: -146 }]; // o meio e a de cima
+const noPoster = (x, y, w, h_) => `left:${(100 * x) / TPI_W}%;top:${(100 * y) / TPI_H}%;width:${(100 * w) / TPI_W}%;height:${(100 * h_) / TPI_H}%`;
+
+// "gustavoDotinhaPro" → "G. DOTINHAPRO", "Conhecido do Baia" → "C. BAIA": o jeito do pôster ("V. PUTIN")
+function nomeDePoster(nome) {
+const limpo = String(nome).replace(/[\[\]()|]/g, ' ').trim();
+const palavras = limpo.split(/\s+/).filter(Boolean);
+const partes = palavras.length > 1 ? palavras : limpo.split(/(?<=[a-zà-ü0-9])(?=[A-ZÀ-Ü])/);
+if (partes.length < 2) return limpo.toUpperCase();
+const resto = palavras.length > 1 ? partes[partes.length - 1] : partes.slice(1).join('');
+return `${partes[0][0]}. ${resto}`.toUpperCase();
+}
+
+function casaDoPoster(f, { dx, dy }, r) {
+const nome = nomeDePoster(f.p.nome);
+const tam = Math.min(2.6, (2.6 * 11) / Math.max(11, nome.length));
+return [
+h('div', { class: 'tp6-tapa', style: noPoster(186 + dx, 288 + dy, 121, 94) }),
+h('div', { class: 'tp6-moldura', style: noPoster(206 + dx, 311 + dy, 81, 72) }),
+h('div', { class: 'tp6-foto', style: noPoster(212 + dx, 295 + dy, 69, 87) }, fotoDe(f.p, true)),
+h('span', { class: 'tp6-pais', style: noPoster(188 + dx, 368 + dy, 60, 12) }, ladoNome(r.partida.ladoRadiant)),
+h('div', { class: 'tp6-nome', style: `${noPoster(190 + dx, 382 + dy, 115, 22)};font-size:${tam.toFixed(2)}cqw` }, nome),
+h('div', { class: 'tp6-tapa', style: noPoster(176 + dx, 405 + dy, 146, 30) }),
+h('p', { class: 'tp6-crimes', style: noPoster(176 + dx, 407 + dy, 146, 28) }, f.acusacoes.slice(0, 2).map((a, i) => [i ? h('br') : null, a.crime])),
+];
+}
+
 function docProcuradoTPI(fichas, r) {
+const fundo = h('img', { class: 'tp6-fundo', src: TPI_IMG, alt: 'Procurados pelo Tribunal Penal Internacional', width: TPI_W, height: TPI_H });
+const art = h('article', { class: `cartao veredito doc-tpi6${fichas.length > 1 ? ' dividido' : ''}` },
+h('div', { class: 'tp6' }, fundo, fichas.slice(0, 2).map((f, i) => casaDoPoster(f, TPI_CASAS[i], r))),
+h('p', { class: 'tp5-rodape' }, `${pct(fichas[0].v.fatia)} da culpa do time${fichas[0].entregue > 0 ? ` · ${fmtK(fichas[0].entregue)} de ouro entregue ao inimigo` : ''}. ${fichas[0].v.diagnostico || ''}`));
+// sem a imagem, cai na versão desenhada
+fundo.addEventListener('error', () => { if (art.isConnected) { const g = docProcuradoTPIGrade(fichas, r); g.dataset.gravidade = '5'; art.replaceWith(g); } });
+return art;
+}
+
+function docProcuradoTPIGrade(fichas, r) {
 const rnd = sorteador(`tpi-${r.partida.id}`);
 const viloes = [...VILOES].map((v) => ({ v, k: rnd.num(0, 9999) })).sort((a, b) => a.k - b.k).map((x) => x.v);
 const casa = ({ foto, origem, nome, crimes, reu }) => h('div', { class: `tp5-casa${reu ? ' tp5-reu' : ''}` },
