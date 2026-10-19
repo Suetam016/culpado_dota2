@@ -96,6 +96,7 @@ function mudarAba(aba) {
     visao = aba;
     renderizarRanking();
   }
+  if (aba === 'elo' && ranking) renderizarElo(); // a corrida roda de novo toda vez que a aba abre
 }
 
 /* ---------- Ranking (geral / stack / solo) ---------- */
@@ -888,6 +889,10 @@ function curvaDeElo(conta, tier) {
 
 function renderizarElo() {
   const alvo = $('elo-corrida');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    alvo.querySelectorAll('.palito').forEach(p => { p.style.left = `${p.dataset.para}%`; });
+    alvo.querySelectorAll('.rastro').forEach(r => r.classList.add('rastro-vai'));
+  }));
   const perfis = ranking.perfis || {};
   const medalhas = (parceirosBase && parceirosBase.medalhas) || {};
   const nomes = Object.fromEntries(ranking.ranking.map(j => [j.accountId, j.nome]));
@@ -912,30 +917,27 @@ function renderizarElo() {
   lista.forEach(x => { x.delta = x.atual - x.inicio; });
   lista.sort(ordemElo === 'subiu' ? (a, b) => b.delta - a.delta || b.atual - a.atual : (a, b) => b.atual - a.atual);
 
-  // gráfico: x = tempo do período, y = MMR estimado
-  const inicioX = desde || Math.min(...lista.map(x => x.curva[1] ? x.curva[1].t : agora));
-  const W = 900, H = 340, M = { e: 52, d: 56, c: 18, b: 30 };
-  const visiveis = lista.flatMap(x => [x.inicio, ...x.curva.filter(p => p.t >= inicioX).map(p => p.mmr)]);
-  let yMin = Math.min(...visiveis), yMax = Math.max(...visiveis);
-  if (yMax - yMin < 200) { const meio = (yMax + yMin) / 2; yMin = meio - 100; yMax = meio + 100; }
-  const px = t => M.e + ((Math.max(t, inicioX) - inicioX) / Math.max(1, agora - inicioX)) * (W - M.e - M.d);
-  const py = m => M.c + (1 - (m - yMin) / (yMax - yMin)) * (H - M.c - M.b);
-  const passo = Math.max(50, Math.ceil((yMax - yMin) / 5 / 50) * 50);
-  const linhasY = [];
-  for (let y = Math.ceil(yMin / passo) * passo; y <= yMax; y += passo) linhasY.push(y);
-  const datas = [0, 0.5, 1].map(f => inicioX + f * (agora - inicioX));
+  // régua de medalhas: x = MMR estimado; cada um é um palito com a cara em cima, saindo de onde estava no
+  // começo do período e correndo até onde está agora
+  const MEDALHA = 770;
+  const todos = lista.flatMap(x => [x.inicio, x.atual]);
+  const xMin = Math.max(0, Math.floor(Math.min(...todos) / MEDALHA) * MEDALHA);
+  const xMax = Math.min(8 * MEDALHA, Math.ceil((Math.max(...todos) + 1) / MEDALHA) * MEDALHA);
+  const pct = m => (100 * (Math.min(Math.max(m, xMin), xMax) - xMin)) / (xMax - xMin);
+  const faixas = [];
+  for (let m = xMin; m < xMax; m += MEDALHA) faixas.push(Math.floor(m / MEDALHA) + 1);
 
-  const linha = x => {
-    let d = `M${px(inicioX).toFixed(1)},${py(x.inicio).toFixed(1)}`;
-    x.curva.filter(p => p.t >= inicioX).forEach(p => { d += `H${px(p.t).toFixed(1)}V${py(p.mmr).toFixed(1)}`; });
-    d += `H${px(agora).toFixed(1)}`;
-    return d;
-  };
-  // ninguém em cima de ninguém no fim da linha: empurra os avatares para não encavalarem
-  const fins = lista.map(x => ({ x, y: py(x.atual) })).sort((a, b) => a.y - b.y);
-  for (let i = 1; i < fins.length; i++) fins[i].y = Math.max(fins[i].y, fins[i - 1].y + 24);
-  const deslocar = Math.max(0, fins.length ? fins[fins.length - 1].y - (H - M.b) : 0);
-  fins.forEach(f => { f.y -= deslocar; });
+  // quem está perto sobe um andar para as caras não se taparem
+  const largura = Math.max(560, (alvo.clientWidth || 900) - 68); // .regua tem min-width 560 e 34px de margem de cada lado
+  const folga = (100 * 50) / largura;
+  const andares = [];
+  [...lista].sort((a, b) => a.atual - b.atual).forEach(x => {
+    let k = andares.findIndex(ult => pct(x.atual) - ult >= folga);
+    if (k < 0) { andares.push(0); k = andares.length - 1; }
+    andares[k] = pct(x.atual);
+    x.andar = k;
+  });
+  const altura = 96 + andares.length * 58;
 
   const inicial = x => esc((x.nome.match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase());
   const avatar = (x, tam) => {
@@ -947,19 +949,21 @@ function renderizarElo() {
   };
 
   alvo.innerHTML = `
-    <div class="elo-grafico">
-      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="MMR estimado de cada amigo no período">
-        <defs>${fins.map(({ x }) => `<clipPath id="clip-${x.conta}"><circle r="11"/></clipPath>`).join('')}</defs>
-        ${linhasY.map(y => `<line class="elo-grade" x1="${M.e}" x2="${W - M.d}" y1="${py(y)}" y2="${py(y)}"/>
-          <text class="elo-eixo" x="${M.e - 6}" y="${py(y) + 4}" text-anchor="end">${y.toLocaleString('pt-BR')}</text>`).join('')}
-        ${datas.map((t, i) => `<text class="elo-eixo" x="${px(t)}" y="${H - 8}" text-anchor="${['start', 'middle', 'end'][i]}">${i === 2 ? 'agora' : data(t * 1000)}</text>`).join('')}
-        ${lista.map((x, i) => `<path class="elo-linha" d="${linha(x)}" pathLength="1" style="stroke:${x.cor};animation-delay:${i * 90}ms"><title>${esc(x.nome)}</title></path>`).join('')}
-        ${fins.map(({ x, y }) => `<g class="elo-fim" transform="translate(${px(agora) + 14},${y.toFixed(1)})">
-          <line x1="-14" y1="${(py(x.atual) - y).toFixed(1)}" x2="-11" y2="0" style="stroke:${x.cor}"/>
-          <circle r="12" style="fill:${x.cor}"/>
-          ${x.avatar ? `<image href="${esc(x.avatar)}" x="-11" y="-11" width="22" height="22" clip-path="url(#clip-${x.conta})"/>` : `<text class="elo-letra" y="4" text-anchor="middle">${inicial(x)}</text>`}
-          <title>${esc(x.nome)} · ≈ ${x.atual.toLocaleString('pt-BR')}</title></g>`).join('')}
-      </svg>
+    <div class="regua-wrap">
+      <div class="regua" style="height:${altura}px">
+        ${faixas.map(m => `<div class="faixa faixa-${m}" style="left:${pct((m - 1) * MEDALHA)}%;width:${(100 * MEDALHA) / (xMax - xMin)}%">
+          ${[1, 2, 3, 4].map(e => `<i style="left:${20 * e}%"></i>`).join('')}
+          <div class="faixa-nome"><img src="${RANK_IMG}rank_icon_${m}.png" alt="" width="34" height="34" loading="lazy" onerror="this.remove()"><span>${MEDALHAS[m]}</span></div>
+        </div>`).join('')}
+        ${lista.map(x => `<div class="palito" data-de="${pct(x.inicio)}" data-para="${pct(x.atual)}"
+            style="left:${pct(x.inicio)}%;--cor:${x.cor};--alto:${40 + x.andar * 58}px"
+            title="${esc(x.nome)} · ${nomeMedalha(x.tier)} · ≈ ${x.atual.toLocaleString('pt-BR')} MMR (${x.delta > 0 ? '+' : ''}${x.delta} no período)">
+          <div class="palito-cara">${avatar(x, 40)}<span class="palito-nome">${esc(x.nome)}</span></div>
+          <div class="palito-haste"></div>
+        </div>`).join('')}
+        ${lista.filter(x => x.delta).map(x => `<div class="rastro ${x.delta > 0 ? 'sobe' : 'desce'}"
+          style="left:${Math.min(pct(x.inicio), pct(x.atual))}%;width:${Math.abs(pct(x.atual) - pct(x.inicio))}%;--cor:${x.cor};bottom:${30 + x.andar * 4}px"></div>`).join('')}
+      </div>
     </div>
     <ol class="elo-lista">${lista.map((x, i) => `
       <li class="elo-item${i === 0 ? ' elo-lider' : ''}" style="--cor:${x.cor}">
@@ -970,7 +974,7 @@ function renderizarElo() {
         <div class="elo-delta ${x.delta > 0 ? 'bom' : x.delta < 0 ? 'ruim' : ''}"><b>${x.delta > 0 ? '+' : ''}${x.delta}</b>
           <span>${x.v + x.d ? `${x.v}V · ${x.d}D` : 'sem ranqueada'}</span></div>
       </li>`).join('')}</ol>
-    <p class="time-nota">MMR estimado: começa na medalha atual de cada um no OpenDota e volta no tempo ±${MMR_POR_PARTIDA} por ranqueada que o robô guardou. Partidas que o robô ainda não baixou não entram, e a Valve não mostra o MMR exato.</p>`;
+    <p class="time-nota">Cada palito sai de onde a pessoa estava no começo do período e corre até onde está agora. MMR estimado: começa na medalha atual de cada um no OpenDota e volta no tempo ±${MMR_POR_PARTIDA} por ranqueada que o robô guardou. Partidas que o robô ainda não baixou não entram, e a Valve não mostra o MMR exato.</p>`;
 }
 
 /* ---------- Worker do coach (feedback e botão de atualizar) ---------- */

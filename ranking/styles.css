@@ -523,26 +523,56 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 .par-lane-e { color: #c7b9a3; }
 
 /* ---------- Corrida de elo ---------- */
-.elo-grafico {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 6px 4px;
-  box-shadow: var(--shadow); margin-bottom: 14px;
+.regua-wrap {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 12px 34px 0; margin-bottom: 14px; overflow-x: auto;
 }
-.elo-grafico { overflow-x: auto; }
-.elo-grafico svg { width: 100%; min-width: 640px; height: auto; display: block; }
-.elo-grade { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 5; }
-.elo-eixo { fill: var(--muted); font: 12px var(--font-mono); }
-.elo-linha {
-  fill: none; stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round;
-  stroke-dasharray: 1; stroke-dashoffset: 1; animation: elo-corre 1.6s cubic-bezier(.4, .1, .2, 1) forwards;
+.regua { position: relative; min-width: 560px; }
+.faixa {
+  position: absolute; bottom: 0; height: 26px; border-top: 3px solid var(--line-strong);
+  background: linear-gradient(180deg, var(--surface-2), transparent);
 }
-.elo-linha:hover { stroke-width: 4.5; }
-.elo-fim { animation: elo-chega .5s 1.4s both; }
-.elo-fim line { stroke-width: 1.5; }
-.elo-fim circle { stroke: var(--bg); stroke-width: 2; }
-.elo-letra { fill: var(--on-gold); font: 800 12px var(--font-body); }
-@keyframes elo-corre { to { stroke-dashoffset: 0; } }
-@keyframes elo-chega { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .elo-linha { animation: none; stroke-dashoffset: 0; } .elo-fim { animation: none; } }
+.faixa + .faixa { box-shadow: inset 2px 0 0 var(--line-strong); }
+.faixa i { position: absolute; top: -3px; width: 1px; height: 7px; background: var(--line-strong); }
+.faixa-nome {
+  position: absolute; left: 50%; top: 2px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--ink-2); white-space: nowrap;
+}
+.faixa-nome img { width: 22px; height: 22px; }
+.faixa-1 { border-top-color: #8c7853; } .faixa-2 { border-top-color: #6f8f6b; } .faixa-3 { border-top-color: #5f9aa6; }
+.faixa-4 { border-top-color: #4f8fc9; } .faixa-5 { border-top-color: #8d6bd8; } .faixa-6 { border-top-color: #4fb3e8; }
+.faixa-7 { border-top-color: #e8b04a; } .faixa-8 { border-top-color: #e5533d; }
+.palito {
+  position: absolute; bottom: 26px; width: 0; z-index: 1;
+  transition: left 1.8s cubic-bezier(.3, .05, .2, 1);
+}
+.palito:hover { z-index: 3; }
+.palito-haste {
+  position: absolute; bottom: 0; left: -1.5px; width: 3px; height: var(--alto); border-radius: 2px;
+  background: linear-gradient(180deg, var(--cor), color-mix(in srgb, var(--cor) 30%, transparent));
+}
+.palito::after {
+  content: ""; position: absolute; bottom: -5px; left: -5px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--cor); box-shadow: 0 0 0 2px var(--surface);
+}
+.palito-cara {
+  position: absolute; bottom: var(--alto); left: 0; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.palito-cara .elo-avatar { width: 40px; height: 40px; box-shadow: 0 0 0 3px var(--cor), 0 4px 12px rgba(0, 0, 0, .5); transition: transform .2s; }
+.palito:hover .elo-avatar { transform: scale(1.25); }
+.palito-nome {
+  font-size: 11.5px; font-weight: 800; white-space: nowrap; max-width: 110px; overflow: hidden; text-overflow: ellipsis;
+  background: var(--surface); padding: 0 5px; border-radius: 6px; order: -1; color: var(--ink);
+}
+.rastro {
+  position: absolute; height: 4px; border-radius: 2px; transform: scaleX(0); opacity: .75; z-index: 0;
+  transition: transform 1.8s cubic-bezier(.3, .05, .2, 1);
+}
+.rastro.sobe { background: linear-gradient(90deg, transparent, var(--good)); transform-origin: left; }
+.rastro.desce { background: linear-gradient(270deg, transparent, var(--bad)); transform-origin: right; }
+.rastro-vai { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) { .palito, .rastro { transition: none; } }
 
 .elo-lista { list-style: none; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
 .elo-item {
