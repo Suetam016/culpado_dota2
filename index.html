@@ -9228,45 +9228,306 @@ return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 return { um: (xs) => xs[Math.floor(prox() * xs.length)], num: (a_, b) => a_ + Math.floor(prox() * (b - a_ + 1)) };
 }
 
+// Acusações por tipo de culpa (componente do veredito) e por nível do documento:
+// [0] Wanted (contravenção de faroeste), [1] Boletim de Ocorrência (crime comum), [2] Interpol (crime transnacional),
+// [3] Haia (crime contra a humanidade), [4] Tribunal Penal Internacional (o pior). Quanto mais raro o nível, menos
+// frases e mais pesadas. Só entra frase do tipo de culpa que a pessoa teve de fato na partida.
 const CRIMES = {
-mortes: ['Doação ilegal de ouro ao inimigo', 'Patrocínio não declarado ao time adversário', 'Tráfico de ouro pela fronteira do rio', 'Suicídio tático reincidente', 'Lavagem de dinheiro na fonte deles'],
-rota: ['Abandono de rota', 'Estelionato na fase de rotas', 'Perda culposa de lane', 'Entrega da T1 sem resistência'],
-rotacoes: ['Omissão de socorro às outras rotas', 'Deixar o mid deles passear sem passaporte'],
-snowball: ['Criação ilegal de monstro', 'Financiamento do carry inimigo', 'Alimentar animal selvagem'],
-pickoff: ['Andar sozinho em área de risco', 'Turismo em território inimigo sem visto', 'Passeio desacompanhado pela selva'],
-throw: ['Devolução do jogo ganho com juros', 'Desvio de vantagem', 'Throw doloso, com intenção de perder'],
-objetivos: ['Assistir torre cair da tela cinza', 'Omissão na defesa do patrimônio público', 'Dano ao patrimônio por ausência'],
-ausencia: ['Ausência em luta coletiva', 'Presença só em espírito', 'Abandono de incapaz (o suporte)'],
-farm: ['Vadiagem', 'Farm de suporte em cargo de core', 'Improbidade administrativa do farm'],
-dano: ['Agressão com força de folha caindo', 'Lesão corporal levíssima', 'Porte de dano inofensivo'],
-visao: ['Cegueira dolosa', 'Sonegação de wards', 'Jogar o mapa no escuro'],
-participacao: ['Falta de participação nos abates', 'Turismo durante as lutas'],
+mortes: [
+['Doação ilegal de ouro ao inimigo', 'Patrocínio não declarado ao time adversário', 'Suicídio tático reincidente', 'Visitas frequentes à fonte sem motivo',
+'Alimentar o inimigo depois das 22h', 'Passeio noturno sem Observer', 'Morrer em local proibido', 'Doação de recompensa para fins desconhecidos',
+'Deixar a tela cinza mais tempo que colorida', 'Uso indevido do respawn', 'Morrer de graça em território alheio', 'Distribuição gratuita de ouro na praça'],
+['Art. 171: estelionato contra o próprio time', 'Lavagem de ouro na fonte deles', 'Doação eleitoral ilegal ao inimigo', 'Desvio de verba para o caixa do adversário',
+'Falsidade ideológica (fingiu que ia fugir)', 'Exposição ao perigo da vida própria e alheia', 'Resistência à prisão… mas sem resistir', 'Contribuição para o enriquecimento ilícito do carry deles',
+'Abandono do próprio corpo em via pública', 'Perturbação da paz no chat de morte'],
+['Tráfico internacional de ouro pela fronteira do rio', 'Remessa ilegal de ouro ao exterior (lado deles)', 'Financiamento de facção inimiga', 'Lavagem de dinheiro em paraíso fiscal (fonte deles)',
+'Contrabando de recompensas pela Rosh Pit', 'Evasão de divisas em forma de bounty'],
+['Entrega sistemática de ouro ao inimigo em tempo de guerra', 'Sabotagem da economia do próprio povo', 'Colaboracionismo com a força de ocupação', 'Financiamento do regime adversário'],
+['Genocídio econômico do próprio time', 'Destruição deliberada da economia aliada', 'Colapso financeiro de proporções históricas'],
+],
+rota: [
+['Abandono de rota', 'Perda culposa de lane', 'Entregar a T1 sem nem pedir recibo', 'Furto de last hit (do próprio, pelo inimigo)',
+'Ser dominado em duelo ao meio-dia', 'Deixar o creep inimigo pastar em paz', 'Faltar ao duelo marcado na rota', 'Ceder terras ao vizinho sem contrato'],
+['Estelionato na fase de rotas', 'Omissão de cautela na lane', 'Invasão de domicílio (sofrida e ignorada)', 'Dano ao patrimônio: T1 entregue intacta ao inimigo',
+'Lesão corporal sofrida por insistência na lane', 'Ameaça… que nunca se concretizou', 'Abandono de posto de trabalho na rota'],
+['Entrega de território soberano ao inimigo', 'Cessão ilegal de fronteira (rota inteira)', 'Ocupação estrangeira consentida da lane', 'Contrabando de XP para o país vizinho',
+'Violação do tratado de não-agressão… a favor deles'],
+['Rendição incondicional da rota', 'Deportação forçada dos próprios creeps', 'Capitulação vergonhosa na linha de frente'],
+['Anexação da própria rota pelo inimigo', 'Rendição que mudou o curso da guerra'],
+],
+rotacoes: [
+['Deixar o mid deles passear sem passaporte', 'Omissão de aviso (“mid sumiu”)', 'Esquecer de pingar o MIA', 'Turismo liberado para o mid adversário',
+'Portão da rota aberto 24h', 'Fiscalização inexistente na própria lane'],
+['Omissão de socorro às outras rotas', 'Favorecimento de rotações inimigas', 'Prevaricação: viu e não avisou', 'Facilitação de invasão de domicílio alheio',
+'Falha no dever de vigilância'],
+['Fronteira aberta para o tráfico de ganks', 'Cooperação passiva com operações inimigas no exterior', 'Livre circulação de agentes inimigos pelo mapa',
+'Asilo concedido ao mid inimigo em todas as rotas'],
+['Permitir o massacre de aliados em outras rotas', 'Omissão diante de crimes de guerra contra o próprio time', 'Cumplicidade com a campanha inimiga'],
+['Abrir as portas do império para a invasão', 'Cumplicidade com o extermínio das outras rotas'],
+],
+snowball: [
+['Criação ilegal de monstro', 'Alimentar animal selvagem', 'Engorda irregular do carry inimigo', 'Dar comida pro bicho e reclamar que ele morde',
+'Criar fera em cativeiro e soltar', 'Manter criadouro do herói deles'],
+['Financiamento do carry inimigo', 'Associação para o crime com o herói deles', 'Investimento em empresa de fachada (o carry deles)', 'Apologia ao herói adversário',
+'Fornecimento de itens ao inimigo por vias indiretas', 'Receptação de ouro roubado pelo carry deles'],
+['Financiamento de organização criminosa transnacional', 'Fomento à formação de supervilão', 'Exportação de ouro para fabricar arma de destruição em massa',
+'Venda de tecnologia militar ao inimigo (via mortes)', 'Patrocínio de terrorismo estatal (o carry deles)'],
+['Criação deliberada de tirano', 'Fornecimento de armas a regime genocida', 'Corrida armamentista a favor do inimigo'],
+['Criar o monstro que exterminou o próprio povo', 'Pai do apocalipse do lado deles'],
+],
+pickoff: [
+['Andar sozinho em área de risco', 'Turismo em território inimigo sem visto', 'Passeio desacompanhado pela selva', 'Explorar a jungle deles sem lanterna',
+'Andar no rio como se tivesse Aegis', 'Farmar a selva inimiga sem ward', 'Fazer trilha solo em zona de guerra', 'Ignorar placa de “área sem visão”'],
+['Exposição voluntária ao perigo', 'Vadiagem em área de risco', 'Invasão de propriedade alheia sem mandado', 'Desobediência a ordem de recuar',
+'Andar sozinho de madrugada no rio', 'Facilitação de sequestro (da própria pessoa)'],
+['Entrada ilegal em território estrangeiro', 'Imigração clandestina para a selva deles', 'Violação de espaço aéreo sem plano de voo', 'Missão solo sem autorização do comando'],
+['Expor-se como alvo civil em zona de conflito', 'Deserção de tropa em pleno campo de batalha', 'Abandono de pelotão em território hostil'],
+['Entregar-se ao inimigo repetidas vezes', 'Rendição solo em série'],
+],
+throw: [
+['Devolução do jogo ganho com juros', 'Desvio de vantagem', 'Jogar fora a carroça cheia de ouro', 'Comemorar antes da hora',
+'Perder a diligência a uma milha da cidade', 'Dar meia-volta com o ouro na mão', 'Perder no pôquer com quatro ases'],
+['Throw doloso, com intenção de perder', 'Apropriação indébita da vitória', 'Gestão temerária de vantagem', 'Abuso de confiança do próprio time',
+'Desperdício de patrimônio do time', 'Furto qualificado da vitória (de si mesmo)', 'Peculato: desviou a vantagem que era do time'],
+['Lavagem da vantagem em operação suspeita', 'Fraude internacional: perdeu com o jogo ganho', 'Quebra de contrato com cláusula de vitória',
+'Sabotagem de operação ganha em território inimigo', 'Desvio bilionário de vantagem'],
+['Traição à pátria com o jogo vencido', 'Sabotagem da vitória do próprio povo', 'Entrega da guerra ganha ao inimigo'],
+['Crime contra a humanidade: jogou fora o jogo ganho', 'Apagar a vitória da história do próprio povo'],
+],
+objetivos: [
+['Assistir torre cair da tela cinza', 'Dar ao inimigo a chave da fortaleza', 'Deixar o forte sem sentinela', 'Abandonar o curral com o gado dentro',
+'Ver o Roshan morrer de longe', 'Guardar a base dormindo'],
+['Omissão na defesa do patrimônio público', 'Dano ao patrimônio por ausência', 'Abandono de posto de vigia', 'Negligência com o Roshan alheio',
+'Furto de torre (assistido sem reação)', 'Destruição de bem tombado (o quartel) sem esboçar reação'],
+['Entrega de instalações militares ao inimigo', 'Venda de patrimônio histórico ao exterior', 'Facilitação de saque internacional (Aegis incluso)',
+'Cessão de base militar a potência estrangeira'],
+['Destruição do patrimônio cultural da humanidade (o Ancient)', 'Rendição da capital sem resistência', 'Abandono da população civil durante o cerco'],
+['Assistir à queda do Ancient e chamar de destino', 'Entregar a capital e as últimas torres de pé'],
+],
+ausencia: [
+['Ausência em luta coletiva', 'Presença só em espírito', 'Faltar ao tiroteio marcado', 'Chegar depois do duelo terminar',
+'Sumir na hora da briga no saloon', 'Assistir à luta da janela', 'Farmar enquanto a cidade pegava fogo'],
+['Abandono de incapaz (o suporte)', 'Omissão de socorro em luta coletiva', 'Abandono de posto durante tumulto', 'Fuga do local do crime antes do crime',
+'Deserção em plena luta do time', 'Prevaricação: tinha TP e não veio'],
+['Abandono de missão internacional de paz', 'Fuga de zona de conflito com o farm debaixo do braço', 'Não comparecer à convocação da coalizão',
+'Recusa de apoio a país aliado em guerra'],
+['Abandono dos aliados em pleno massacre', 'Deserção em tempo de guerra', 'Omissão diante do extermínio do próprio time'],
+['Deixar o próprio povo ser varrido do mapa', 'Ausência no dia do juízo final'],
+],
+farm: [
+['Vadiagem', 'Farm de suporte em cargo de core', 'Garimpo sem ouro', 'Colher last hit com a mão boba',
+'Farmar como quem pede esmola', 'Errar creep de propósito (presumido)', 'Pastoreio de creeps sem lucro'],
+['Improbidade administrativa do farm', 'Gestão fraudulenta de recursos (creeps)', 'Desperdício de verba pública (last hits)', 'Inadimplência com o próprio item',
+'Prevaricação no farm: tinha tempo e não farmou'],
+['Falência fraudulenta do carry', 'Quebra de banco central do próprio time', 'Gestão temerária de reservas internacionais', 'Crise econômica autoinfligida'],
+['Fome provocada no próprio povo (zero itens)', 'Colapso econômico do império'],
+['Miséria planejada do próprio time', 'Fome em massa no inventário'],
+],
+dano: [
+['Agressão com força de folha caindo', 'Lesão corporal levíssima', 'Porte de dano inofensivo', 'Atirar com balas de festim',
+'Duelar com pistola de água', 'Ameaçar com faca de manteiga'],
+['Tentativa (bem tentativa) de lesão corporal', 'Porte ilegal de arma descarregada', 'Simulação de agressão', 'Desacato: bateu e ninguém sentiu',
+'Fraude no laudo de dano'],
+['Contrabando de armas de brinquedo', 'Operação militar internacional sem munição', 'Envio de tropas desarmadas ao front'],
+['Pacifismo em tempo de guerra', 'Recusa em combater o agressor'],
+['Desarmamento unilateral diante do inimigo'],
+],
+visao: [
+['Cegueira dolosa', 'Sonegação de wards', 'Jogar o mapa no escuro', 'Andar sem lampião à noite',
+'Esconder os Observers no bolso', 'Guardar ward pra ocasião especial que nunca veio', 'Mapa preto por opção'],
+['Sonegação fiscal de Observers', 'Ocultação de informação ao time', 'Apropriação indébita de wards (comprou e não plantou)', 'Omissão de vigilância patrimonial',
+'Apagão criminoso do mapa'],
+['Blecaute internacional de inteligência', 'Sabotagem dos satélites aliados', 'Espionagem a serviço do inimigo (deixou eles enxergarem tudo)'],
+['Deixar o próprio povo às cegas durante a guerra', 'Apagar a luz do mundo aliado'],
+['Escuridão total imposta ao próprio povo'],
+],
+participacao: [
+['Falta de participação nos abates', 'Turismo durante as lutas', 'Assistir à briga comendo pipoca', 'Chegar depois do tiroteio pra contar história',
+'Torcer de longe', 'Ficar no balcão durante a briga'],
+['Omissão de participação em ação coletiva', 'Ausência injustificada em mutirão', 'Falta grave no trabalho em equipe', 'Abandono de obrigação de grupo'],
+['Neutralidade suspeita em conflito internacional', 'Não aderir à coalizão aliada', 'Espectador privilegiado da guerra'],
+['Neutralidade cúmplice durante o massacre'],
+['Indiferença diante do fim do mundo'],
+],
 };
-const CRIMES_DO_NIVEL = [
-['Furto de last hit', 'Porte ilegal de Tango', 'Ping sem justa causa', 'Comprar Clarity e não usar'],
-['Perturbação do sossego no chat de voz', 'Desacato ao capitão do draft', 'Falsidade ideológica no pick'],
-['Formação de quadrilha com o carry inimigo', 'Fuga internacional pelo rio', 'Contrabando de Divine Rapier'],
-['Genocídio de creeps aliados', 'Crime de guerra contra o próprio Ancient', 'Violação da Convenção de Genebra do Roshan', 'Terrorismo contra o próprio MMR'],
-];
-const ALCUNHAS = ['O Patrocinador', 'Mão de Alface', 'O Fantasma da Lane', 'Doador Universal', 'O Turista', 'Rei do Feed', 'Buyback Nunca',
-'O Cego do Rio', 'Courier Humano', 'O Arquiteto da Derrota', 'Pé Frio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza'];
-const PARADEIROS = ['visto pela última vez na selva deles, sem ward', 'avistado farmando enquanto a base caía', 'localizado na fonte, esperando o respawn',
-'flagrado no rio sem visão e sem plano', 'escondido atrás da T3 com o TP no cooldown'];
-const RECOMPENSAS_LEVES = ['2 Tangos e um Clarity', 'uma Healing Salve usada pela metade', 'um Iron Branch e um abraço', 'um Observer que ninguém plantou'];
-const PENAS = ['banimento perpétuo do pick de carry', 'suporte 5 por 30 dias, sem direito a farm', 'comprar todas as wards até o fim da temporada',
-'assistir ao próprio replay em câmera lenta', 'prestação de serviços comunitários: stackar camps'];
-const ESCRIVAES = ['Escrivão Kunkka', 'Delegada Lina', 'Investigador Slardar', 'Delegado Axe', 'Escrivã Crystal Maiden'];
 
-function acusacoesDe(v, nivel, rnd) {
+// Crimes que dependem de algo concreto da partida (estatística do jogador). Cada um traz a prova.
+// suporte = pos 4/5; core = pos 1 a 3. Frases por nível, igual ao CRIMES.
+const GATILHOS = [
+{ teste: (p) => (p.raw.deaths || 0) >= 12, prova: (p) => `${p.raw.deaths} mortes na partida`, frases: [
+['Recordista de visitas ao cemitério', 'Assinante premium da tela cinza', 'Morador fixo da fonte', 'Colecionador de mortes'],
+['Reincidência específica (morreu mais de 12 vezes)', 'Formação de quadrilha com o próprio respawn', 'Vício em tela cinza'],
+['Rede internacional de entregas (12+ mortes)', 'Turismo mortuário internacional'],
+['Morte em escala industrial'],
+['Extermínio de si mesmo em série'],
+] },
+{ teste: (p) => { const d = (p.raw.deaths_log || [])[0]; return d && Number(d.time) < 180; }, prova: (p) => `primeira morte aos ${mmss(Number(p.raw.deaths_log[0].time))}`, frases: [
+['Morrer antes do primeiro Bounty', 'Abrir o placar pro inimigo', 'Chegar morto na lane'],
+['Morte prematura com dolo eventual', 'Entrega antecipada de recompensa'],
+['Primeira baixa internacional do conflito'],
+['Primeira vítima da guerra (por escolha)'],
+['O primeiro sangue que começou o apocalipse'],
+] },
+{ teste: (p) => (p.posicao >= 4) && ((p.raw.obs_placed || 0) + (p.raw.sen_placed || 0)) <= 3 && p.raw.obs_placed != null, prova: (p) => `${(p.raw.obs_placed || 0) + (p.raw.sen_placed || 0)} wards plantadas jogando de suporte`, frases: [
+['Suporte sem lampião', 'Guarda-noturno que dormiu o jogo todo', 'Esquecer as wards na loja'],
+['Falsidade ideológica: se dizia suporte', 'Abandono de função pública (as wards)'],
+['Espionagem às avessas: deixou o mapa todo pro inimigo'],
+['Deixar o povo no escuro em plena guerra'],
+['Apagão total sob sua responsabilidade'],
+] },
+{ teste: (p) => p.posicao <= 3 && (p.raw.gold_per_min || 999) < 400, prova: (p) => `${p.raw.gold_per_min} de GPM jogando de core`, frases: [
+['Core com salário de suporte', 'Garimpeiro sem pepita', 'Farm de quem joga de olhos fechados'],
+['Exercício ilegal da profissão de core', 'Enriquecimento ilícito… ao contrário'],
+['Falência de multinacional (o carry)'],
+['Fome provocada no núcleo do time'],
+['Ruína econômica do império'],
+] },
+{ teste: (p) => p.posicao <= 3 && p.raw.tower_damage != null && p.raw.tower_damage < 600, prova: (p) => `${p.raw.tower_damage} de dano em torre jogando de core`, frases: [
+['Alergia a estrutura', 'Medo de torre', 'Nunca encostar no forte inimigo'],
+['Abstenção de ataque a patrimônio (quando era a hora)'],
+['Recusa em tomar o território inimigo'],
+['Paz unilateral com as torres deles'],
+['Pacto de não-agressão com a base inimiga'],
+] },
+{ teste: (p) => Boolean((p.raw.purchase && p.raw.purchase.rapier) || (p.raw.purchase_log || []).some((x) => x.key === 'rapier')), prova: () => 'comprou Divine Rapier e perdeu', frases: [
+['Porte ilegal de Divine Rapier', 'Apostar a fazenda na mesa de pôquer'],
+['Porte ilegal de arma de alto calibre', 'Fornecimento de arma de fogo ao inimigo'],
+['Tráfico internacional de armas (Rapier)'],
+['Entrega de arma de destruição em massa ao inimigo'],
+['Armou o inimigo com a própria Rapier'],
+] },
+{ teste: (p) => (p.raw.kills || 0) === 0 && (p.raw.deaths || 0) >= 5, prova: (p) => `0 abates e ${p.raw.deaths} mortes`, frases: [
+['Pacifismo radical', 'Atirar só pro alto', 'Xerife que nunca sacou a arma'],
+['Porte de arma sem uso'],
+['Missão de paz em plena guerra'],
+['Pacifismo armado durante o massacre'],
+['Zero baixas inimigas em guerra total'],
+] },
+{ teste: (p) => (p.raw.kills || 0) >= 12, prova: (p) => `${p.raw.kills} abates e derrota mesmo assim`, frases: [
+['Juntar escalpo e esquecer o objetivo', 'Caçador de recompensa que perdeu a cidade'],
+['Abuso de poder (12+ abates e derrota)'],
+['Mercenário sem causa'],
+['Massacre sem propósito militar'],
+['Matou muito e mesmo assim perdeu a guerra'],
+] },
+{ teste: (p, r) => (r.partida.duracao || 0) >= 3000, prova: (p, r) => `jogo de ${Math.round(r.partida.duracao / 60)} min`, frases: [
+['Prolongar o sofrimento', 'Duelo que durou o dia inteiro'],
+['Cárcere privado do time por 50 minutos'],
+['Guerra prolongada sem objetivo'],
+['Guerra de atrito contra o próprio povo'],
+['Fazer o apocalipse durar uma hora'],
+] },
+{ teste: (p, r) => (r.partida.duracao || 9999) <= 1560, prova: (p, r) => `derrota em ${Math.round(r.partida.duracao / 60)} min`, frases: [
+['Rendição antes do almoço', 'Fechar o saloon cedo'],
+['Rendição precoce do time'],
+['Capitulação relâmpago'],
+['Derrota relâmpago da nação'],
+['Extinção em tempo recorde'],
+] },
+{ teste: (p) => (p.raw.buyback_count || 0) >= 2, prova: (p) => `${p.raw.buyback_count} buybacks`, frases: [
+['Buyback compulsivo', 'Voltar do cemitério só pra morrer de novo'],
+['Reincidência com fiança paga'],
+['Fuga de presídio internacional em série'],
+['Ressurreição sem propósito militar'],
+['Voltou dos mortos pra piorar tudo'],
+] },
+{ teste: (p) => p.posicao >= 4 && p.raw.camps_stacked === 0, prova: () => 'nenhum stack de suporte', frases: [
+['Fazendeiro que nunca empilhou o feno', 'Esquecer de stackar o camp'],
+['Abandono de função (stack zero)'],
+['Embargo de recursos ao carry aliado'],
+['Fome deliberada imposta ao próprio carry'],
+['Fome planejada do próprio carry'],
+] },
+];
+
+const CRIMES_DO_NIVEL = [
+['Furto de last hit', 'Porte ilegal de Tango', 'Ping sem justa causa', 'Comprar Clarity e não usar', 'Cuspir no chão do saloon', 'Assobiar pro xerife',
+'Andar a cavalo na contramão', 'Jogo de azar no pick', 'Atrapalhar o trânsito de creeps', 'Embriaguez em via pública (de tanto morrer)', 'Desacato ao capitão do draft',
+'Roubar runa do mid', 'Spam de “?” no chat'],
+['Perturbação do sossego no chat de voz', 'Desacato ao capitão do draft', 'Falsidade ideológica no pick', 'Injúria contra o próprio suporte',
+'Associação criminosa com o pick aleatório', 'Ameaça (de dar GG aos 15)', 'Furto de buff do suporte', 'Dano moral ao courier', 'Estelionato no mute'],
+['Formação de quadrilha com o carry inimigo', 'Fuga internacional pelo rio', 'Contrabando de Divine Rapier', 'Tráfico de Aegis', 'Pirataria de runas em águas internacionais',
+'Falsificação de passaporte para a selva deles', 'Lavagem de ouro em paraíso fiscal'],
+['Genocídio de creeps aliados', 'Crime de guerra contra o próprio Ancient', 'Violação da Convenção de Genebra do Roshan', 'Terrorismo contra o próprio MMR',
+'Tortura psicológica do suporte', 'Uso de civis (creeps) como escudo humano'],
+['Genocídio de creeps aliados', 'Extermínio do próprio MMR', 'Crimes contra a humanidade e contra o Ancient', 'Destruição em massa da paz do grupo'],
+];
+
+const ALCUNHAS = ['O Patrocinador', 'Mão de Alface', 'O Fantasma da Lane', 'Doador Universal', 'O Turista', 'Rei do Feed', 'Buyback Nunca',
+'O Cego do Rio', 'Courier Humano', 'O Arquiteto da Derrota', 'Pé Frio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza',
+'O Contador de Respawn', 'Bounty Ambulante', 'Caixa Eletrônico', 'O Benfeitor', 'Garçom do Inimigo', 'Papai Noel do Rio', 'Mão Furada',
+'O Sem-Ward', 'Ministro da Fazenda (deles)', 'O Mártir', 'Paz e Amor', 'O Doador de Órgãos', 'Seu Madruga', 'O Investidor Anjo (deles)',
+'Wi-Fi da Padaria', 'Lag Humano', 'O Herdeiro do GG', 'Delivery de Ouro', 'O Iluminado (pelo respawn)', 'Fiel da Fonte', 'Capitão Tela Cinza',
+'O Pacifista', 'Sem Bota', 'Freguês do Roshan', 'Professor de Feed', 'O Fiador'];
+const PARADEIROS = ['visto pela última vez na selva deles, sem ward', 'avistado farmando enquanto a base caía', 'localizado na fonte, esperando o respawn',
+'flagrado no rio sem visão e sem plano', 'escondido atrás da T3 com o TP no cooldown', 'visto pela última vez na loja secreta, sem dinheiro',
+'avistado no Roshan… do lado errado', 'flagrado farmando a jungle deles às 2 da manhã', 'visto correndo de volta pra base sem TP',
+'encontrado na fonte comprando Tango', 'avistado na lane errada de novo', 'visto pela última vez saindo da tela cinza', 'flagrado esperando o carry voltar da selva',
+'localizado em lugar incerto e não sabido (sem ward)', 'visto pela última vez dando ping no mapa e indo pro outro lado'];
+const RECOMPENSAS_LEVES = ['2 Tangos e um Clarity', 'uma Healing Salve usada pela metade', 'um Iron Branch e um abraço', 'um Observer que ninguém plantou',
+'uma Magic Stick sem carga', 'um Quelling Blade enferrujado', 'uma bota sem velocidade', 'um Smoke vencido', 'um TP de ida', 'meio Faerie Fire',
+'um Enchanted Mango amassado', 'uma Dust que ninguém usou'];
+const PENAS = ['banimento perpétuo do pick de carry', 'suporte 5 por 30 dias, sem direito a farm', 'comprar todas as wards até o fim da temporada',
+'assistir ao próprio replay em câmera lenta', 'prestação de serviços comunitários: stackar camps', 'jogar de Io com o carry mais tóxico do grupo',
+'carregar o courier no braço por 10 partidas', 'comprar Smoke pro time inteiro durante um mês', 'proibição de pickar herói de agilidade',
+'assistir a 10 replays de pro player tomando nota', 'pedir desculpa no chat de voz antes de cada draft', 'jogar mid só com o mouse',
+'ficar responsável pelo Gem do time pra sempre', 'participar de todas as lutas, inclusive as perdidas', 'mutar o próprio microfone até subir de medalha'];
+const ESCRIVAES = ['Escrivão Kunkka', 'Delegada Lina', 'Investigador Slardar', 'Delegado Axe', 'Escrivã Crystal Maiden', 'Delegado Sven', 'Investigadora Drow Ranger',
+'Escrivão Tusk', 'Delegada Luna', 'Perito Tinker', 'Investigador Bounty Hunter', 'Escrivã Windranger', 'Delegado Omniknight'];
+const INTRO_BO = [
+(vit) => `Compareceram a esta Delegacia as vítimas (${vit}) noticiando que o autor`,
+(vit) => `Relatam as vítimas (${vit}), em depoimento colhido sob forte emoção, que o autor`,
+(vit) => `Segundo o relato das vítimas (${vit}), que pediram para não ser identificadas no chat, o autor`,
+(vit) => `Noticiam as vítimas (${vit}), ainda na tela de derrota, que o autor`,
+(vit) => `Em diligência no local dos fatos, apurou-se junto às vítimas (${vit}) que o autor`,
+];
+const FECHO_BO = ['Nada mais havendo, encerra-se o presente.', 'Foi orientado a não se aproximar do pick de carry.', 'O autor alegou lag. Não foi encontrado lag.',
+'O autor alegou que “o time não ajudou”. As vítimas negam.', 'Lavrado o presente, segue para as providências cabíveis no próximo draft.',
+'O autor não quis se manifestar e deu ready na próxima.'];
+const ALERTAS_INTERPOL = ['⚠ Considerado perigoso para o próprio time. Se avistado, não passe o farm e avise o capitão.',
+'⚠ Não confiar em pings deste indivíduo. Pode estar indo para o lado errado.', '⚠ Se avistado no rio sem ward, não siga. Ele vai morrer e levar você junto.',
+'⚠ Altamente perigoso com Divine Rapier no inventário. Evite contato.', '⚠ Se oferecer “vamos de Roshan”, recuse e acione as autoridades.',
+'⚠ Costuma agir de madrugada, sozinho, na selva inimiga.', '⚠ Não aceite trocas de lane com este indivíduo.'];
+const DECISOES_HAIA = ['A Câmara decide, por unanimidade, expedir o presente mandado.', 'Decide a Câmara, sem votos contrários e com dois juízes em choque, expedir o mandado.',
+'A Câmara, após ver o replay três vezes, expede o presente mandado.', 'Por unanimidade e com um minuto de silêncio pelo Ancient, expede-se o mandado.',
+'A defesa pediu clemência alegando lag. Pedido negado. Expeça-se o mandado.'];
+const FAIXAS_WANTED = ['Vivo ou no respawn', 'Vivo ou morto (de preferência morto)', 'Vivo, morto ou na fonte', 'Vivo ou com a tela cinza', 'Vivo ou de Io',
+'Vivo ou sem bota'];
+const RODAPES_WANTED = ['Perigoso e sempre sem ward', 'Armado e sem TP na bolsa', 'Perigoso e com buyback no cooldown', 'Visto pela última vez farmando a jungle deles',
+'Perigoso, desarmado e sem Smoke', 'Atira primeiro e morre depois', 'Não negocia, não recua, não ganha', 'Anda sozinho e não ouve ping',
+'Procurado em todos os servidores do Sul', 'Último visto na loja secreta sem ouro'];
+
+// frases do nível do documento; se já foram todas usadas, desce um nível (o crime nunca fica mais pesado que o papel)
+function frasesDoNivel(tabela, nivel, usadas) {
+for (let n = nivel; n >= 0; n--) {
+const xs = (tabela[n] || []).filter((x) => !usadas.has(x));
+if (xs.length) return xs;
+}
+return [];
+}
+
+function acusacoesDe(v, nivel, rnd, r) {
 const usadas = new Set();
-const lista = (v.pesou && v.pesou.length ? v.pesou : v.componentes.filter((c) => c.pontos > 0).slice(0, 2)).map((c) => {
-const xs = (CRIMES[c.key] || []).filter((x) => !usadas.has(x));
-const crime = xs.length ? rnd.um(xs) : c.label;
-usadas.add(crime);
-return { crime, evidencia: c.evidencia || c.label };
-});
-if (lista.length < 3 || nivel >= 3) lista.push({ crime: rnd.um(CRIMES_DO_NIVEL[nivel]), evidencia: null });
-return lista.slice(0, nivel >= 3 ? 4 : 3);
+const pegar = (tabela) => {
+const xs = frasesDoNivel(tabela, nivel, usadas);
+const x = xs.length ? rnd.um(xs) : null;
+if (x) usadas.add(x);
+return x;
+};
+const pesou = (v.pesou && v.pesou.length ? v.pesou : v.componentes.filter((c) => c.pontos > 0).slice(0, 2))
+.map((c) => ({ crime: pegar(CRIMES[c.key] || []) || c.label, evidencia: c.evidencia || c.label }));
+// o que deu pra provar com o placar da pessoa: 1 no papel comum, 2 nos tribunais
+const possiveis = GATILHOS.filter((g) => { try { return g.teste(v.jogador, r); } catch { return false; } });
+const provados = [];
+for (let i = 0, n = nivel >= 3 ? 2 : 1; i < n && possiveis.length; i++) {
+const [g] = possiveis.splice(rnd.num(0, possiveis.length - 1), 1);
+const crime = pegar(g.frases);
+if (crime) provados.push({ crime, evidencia: g.prova(v.jogador, r) });
+}
+const max = nivel >= 2 ? 4 : 3;
+const lista = [...pesou.slice(0, 2), ...provados, ...pesou.slice(2)];
+if (lista.length < 3 || (nivel >= 3 && lista.length < max)) lista.push({ crime: pegar(CRIMES_DO_NIVEL) || rnd.um(CRIMES_DO_NIVEL[0]), evidencia: null });
+return lista.slice(0, max);
 }
 
 function fichaDoReu(v, r, nivel) {
@@ -9275,7 +9536,7 @@ const rnd = sorteador(`${r.partida.id}-${p.idx}`);
 const local = { safe: 'Rota segura', mid: 'Rota do meio', off: 'Offlane' }[p.rota && p.rota.tipo] || 'Selva e arredores';
 return {
 p, v, rnd, local,
-acusacoes: acusacoesDe(v, nivel, rnd),
+acusacoes: acusacoesDe(v, nivel, rnd, r),
 alcunha: rnd.um(ALCUNHAS),
 paradeiro: rnd.um(PARADEIROS),
 entregue: ouroEntregue(r, p),
@@ -9338,8 +9599,6 @@ s('polygon', { points: pts.join(' '), fill: 'currentColor' }),
 s('circle', { cx: 50, cy: 50, r: 15, fill: 'none', stroke: '#e9dcbf', 'stroke-width': 2 }),
 s('circle', { cx: 50, cy: 50, r: 9, fill: '#e9dcbf', 'fill-opacity': 0.25 }));
 };
-const FAIXAS_WANTED = ['Vivo ou no respawn', 'Vivo ou morto (de preferência morto)', 'Vivo, morto ou na fonte'];
-const RODAPES_WANTED = ['Perigoso e sempre sem ward', 'Armado e sem TP na bolsa', 'Perigoso e com buyback no cooldown', 'Visto pela última vez farmando a jungle deles'];
 
 function docWanted(fichas, r) {
 const dividido = fichas.length > 1;
@@ -9459,7 +9718,7 @@ h('p', { class: 'tp5-rodape' }, `${pct(fichas[0].v.fatia)} da culpa do time${fic
 function documentoDaCulpa(cs, r) {
 // acima do corte vira o pôster do Tribunal; as acusações seguem as do nível 4
 const nivel = cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
-const fichas = cs.map((v) => fichaDoReu(v, r, Math.min(nivel, 3)));
+const fichas = cs.map((v) => fichaDoReu(v, r, nivel));
 const doc = [docWanted, docBoletim, docInterpol, docHaia, docProcuradoTPI][nivel](fichas, r);
 doc.dataset.gravidade = String(nivel + 1);
 return doc;
@@ -9506,12 +9765,12 @@ campo('KDA', f.kda),
 campo('Culpa', pct(f.v.fatia)),
 campo('Ouro entregue', f.entregue > 0 ? fmtK(f.entregue) : '—'),
 campo('Local do fato', f.local, 'largo'),
-campo('Natureza', f.acusacoes.map((a, k) => `Art. ${f.rnd.num(121, 359)} — ${a.crime}`).join('; '), 'inteiro')));
+campo('Natureza', f.acusacoes.map((a) => (/^Art\. /.test(a.crime) ? a.crime : `Art. ${f.rnd.num(121, 359)} — ${a.crime}`)).join('; '), 'inteiro')));
 const historico = fichas.map((f) => [
-`Compareceram a esta Delegacia as vítimas (${vitimas || 'o resto do time'}) noticiando que o autor ${f.p.nome}, utilizando-se do herói ${f.p.heroi.nome},`,
+`${f.rnd.um(INTRO_BO)(vitimas || 'o resto do time')} ${f.p.nome}, utilizando-se do herói ${f.p.heroi.nome},`,
 f.acusacoes.filter((a) => a.evidencia).map((a) => a.evidencia.replace(/\.$/, '')).join('; ') + '.',
 f.v.diagnostico ? `Consta ainda: ${f.v.diagnostico}` : '',
-'Nada mais havendo, encerra-se o presente.',
+rnd.um(FECHO_BO),
 ].filter(Boolean).join(' '));
 return h('article', { class: `cartao veredito doc-bo${fichas.length > 1 ? ' dividido' : ''}` },
 h('header', { class: 'bo-cab' },
@@ -9557,7 +9816,7 @@ h('div', { class: 'ip-faixa' }, fichas.length > 1 ? 'Procurados em todos os serv
 h('h2', { class: 'ip-titulo' }, fichas.length > 1 ? 'Criminosos internacionais' : 'Criminoso internacional'),
 h('p', { class: 'ip-sub' }, 'por crimes contra o próprio time em várias rotas'),
 fichas.map(ficha),
-h('p', { class: 'ip-alerta' }, '⚠ Considerado perigoso para o próprio time. Se avistado, não passe o farm e avise o capitão.'));
+h('p', { class: 'ip-alerta' }, sorteador(`ip-${r.partida.id}`).um(ALERTAS_INTERPOL)));
 }
 
 function docHaia(fichas, r) {
@@ -9586,7 +9845,7 @@ fichas.map(reu),
 fichas[0].v.diagnostico ? h('p', { class: 'tpi-fundamento' }, h('span', {}, 'Fundamentação: '), fichas[0].v.diagnostico) : null,
 h('footer', { class: 'tpi-rodape' },
 h('p', {}, `Pena sugerida: ${rnd.um(PENAS)}.`),
-h('p', { class: 'tpi-assina' }, 'A Câmara decide, por unanimidade, expedir o presente mandado.'),
+h('p', { class: 'tpi-assina' }, rnd.um(DECISOES_HAIA)),
 h('span', { class: 'tpi-lacre', 'aria-hidden': 'true' }, '⚖')));
 }
 
