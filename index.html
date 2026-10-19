@@ -9927,7 +9927,7 @@ function documentoDaCulpa(cs, r) {
 // acima do corte vira o pôster do Tribunal; as acusações seguem as do nível 4
 const nivel = cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
 const fichas = cs.map((v) => fichaDoReu(v, r, nivel));
-const doc = [docWanted, docBoletim, docInterpol, docHaia, docProcuradoTPI][nivel](fichas, r);
+const doc = [docBoletim, docBoletim, docInterpol, docHaia, docProcuradoTPI][nivel](fichas, r); // o B.O. rende mais risada que o Wanted
 doc.dataset.gravidade = String(nivel + 1);
 return doc;
 }
@@ -10260,6 +10260,14 @@ feeder: [() => 'Eu parei de contar na décima.', () => 'O inimigo já sabia onde
 throw: [() => 'Eu vi a vitória. Eu toquei nela. Ele levou embora.', () => 'Tinha tudo pra ganhar. Tinha.'],
 };
 
+// o que o delegado pergunta no interrogatório (completa "Perguntado ...")
+const PERGUNTAS_BO = {
+mortes: [(c) => `por que morreu ${c.d} vezes`, (c) => `por que insistia em lutar ${c.aoM ? `contra ${c.m}` : 'sozinho'}`],
+rota: [(c) => `o que aconteceu na ${c.rota}`], rotacoes: [() => 'por que não avisou que o mid deles tinha saído'], snowball: [(c) => `por que alimentou ${c.m}`],
+pickoff: [() => 'o que fazia sozinho na selva deles, sem ward'], throw: [() => 'por que entrou naquela luta com o jogo ganho'],
+objetivos: [() => 'onde estava quando as torres caíram'], ausencia: [() => 'onde estava durante as lutas do time'], farm: [(c) => `como terminou com ${c.p.raw.gold_per_min} de GPM`],
+dano: [() => 'por que o dano dele era tão baixo'], visao: [(c) => `por que plantou só ${c.w} ${c.w === 1 ? 'ward' : 'wards'}`], participacao: [() => 'por que quase não aparecia nos abates'],
+};
 function historiaDoBO(fichas, r) {
 const cs = fichas.map((f) => contextoDoBO(f, r));
 const rnd = fichas[0].rnd;
@@ -10273,15 +10281,42 @@ const desculpa = () => `${rnd.um(DESCULPAS_BO)}. ${rnd.um(REACOES_DESCULPA)}`;
 const paras = [];
 if (cs.length === 1) {
 const [c] = cs;
-paras.push(`${abertura} ${c.vitima ? quem(c.vitima) : 'o resto do time'}, na qualidade de vítima, relatando que, por volta das ${hora(c)}, encontrava-se na ${c.rota} quando seu ${c.relacao} ${c.p.nome}, vulgo “${c.vulgo}”, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}.`
-+ ` Nas palavras da vítima: “${um([...(DESABAFOS_BO[c.k1] || DESABAFOS_BO.mortes), ...(DESABAFOS_ARQUETIPO[arquetipoDoBO(c)] || [])], c)}”`);
-paras.push(um(ENQUADRAMENTOS_BO[arquetipoDoBO(c)], c));
-if (c.k2) paras.push(`Relata ainda que o autor ${fato(c, c.k2)}. ${rnd.um(['Acrescenta: ', 'E desabafa: ', 'Em tom de revolta, completa: '])}“${um(DESABAFOS_BO[c.k2] || DESABAFOS_BO.mortes, c)}”`);
+const arq = arquetipoDoBO(c);
+const desabafo = (k = c.k1) => um([...(DESABAFOS_BO[k] || DESABAFOS_BO.mortes), ...(k === c.k1 ? DESABAFOS_ARQUETIPO[arq] || [] : [])], c);
 const [t, disse] = um(TESTEMUNHAS_BO[c.k1] || TESTEMUNHAS_BO.mortes, c);
-paras.push(`Arrolado(a) como testemunha, ${t} declarou: “${disse}”`);
-if (c.f.entregue > 0) paras.push(`O prejuízo foi estimado em ${fmtK(c.f.entregue)} de ouro, entregue ao time adversário${c.matadorP ? `, em especial ${c.aoM}` : ''}.`);
-paras.push(`Ouvido, o autor alegou que ${desculpa()} ${rnd.um(FECHOS_BO)}`);
-return paras;
+const testemunha = () => `${rnd.um(['Arrolado(a) como testemunha', 'Ouvido(a) como testemunha', 'Localizado(a) pela equipe', 'Em depoimento informal'])}, ${t} declarou: “${disse}”`;
+const prejuizo = () => (c.f.entregue > 0 ? `O prejuízo foi estimado em ${fmtK(c.f.entregue)} de ouro, entregue ao time adversário${c.matadorP ? `, em especial ${c.aoM}` : ''}.` : null);
+const autorVulgo = `${c.p.nome}, vulgo “${c.vulgo}”`;
+const vit = c.vitima ? quem(c.vitima) : 'o resto do time';
+const estruturas = [
+// 1. a vítima comparece e conta
+() => [`${abertura} ${vit}, na qualidade de vítima, relatando que, por volta das ${hora(c)}, encontrava-se na ${c.rota} quando seu ${c.relacao} ${autorVulgo}, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}. Nas palavras da vítima: “${desabafo()}”`,
+um(ENQUADRAMENTOS_BO[arq], c),
+c.k2 ? `Relata ainda que o autor ${fato(c, c.k2)}. ${rnd.um(['Acrescenta: ', 'E desabafa: ', 'Em tom de revolta, completa: '])}“${desabafo(c.k2)}”` : null,
+testemunha(), prejuizo(), `Ouvido, o autor alegou que ${desculpa()} ${rnd.um(FECHOS_BO)}`],
+// 2. flagrante de uma viatura
+() => [`${rnd.um(['Uma guarnição da PM em patrulha de rotina pelo rio', 'Uma viatura da Ronda Ostensiva do Ancient', 'A Delegacia de Repressão ao Feed', 'A equipe tática do Courier Blindado'])}, ao passar pela ${c.rota} por volta das ${hora(c)}, flagrou ${autorVulgo}, utilizando-se do herói ${c.p.heroi.nome}, em plena atividade criminosa. Levantamento posterior apurou que o autor ${fato(c, c.k1)}.`,
+`Abordado, o autor ${rnd.um(['alegou que', 'tentou explicar que', 'jurou que'])} ${desculpa()}`,
+`A vítima, ${vit}, que presenciou tudo, declarou: “${desabafo()}”`,
+c.k2 ? `Em revista, a equipe constatou ainda que o autor ${fato(c, c.k2)}.` : null,
+testemunha(), prejuizo(), `O autor foi conduzido à Delegacia e liberado para a próxima partida. ${rnd.um(FECHOS_BO)}`],
+// 3. denúncia anônima no chat
+() => [`Chegou a esta Delegacia denúncia anônima, ${rnd.um(['enviada pelo chat de todos', 'feita por um jogador do time adversário, que pediu sigilo', 'deixada num ping no minimapa', 'enviada por um espectador da partida'])}, informando que ${autorVulgo}, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}.`,
+`Em diligência, a equipe confirmou os fatos. ${um(ENQUADRAMENTOS_BO[arq], c)}`,
+`Ouvida, a vítima ${vit} declarou: “${desabafo()}”`,
+testemunha(), prejuizo(), `Intimado, o autor ${rnd.um(['não compareceu, pois estava na fila de outra partida.', 'compareceu, deu ready e saiu.', `alegou que ${desculpa()}`])} ${rnd.um(FECHOS_BO)}`],
+// 4. termo de declaração com os "QUE" do cartório
+() => [`Termo de declaração de ${vit}. A vítima declara:`,
+`QUE estava na ${c.rota} por volta das ${hora(c)}; QUE seu ${c.relacao} ${autorVulgo}, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}; QUE, nas suas palavras, “${desabafo()}”;`
++ `${c.k2 ? ` QUE o autor ainda ${fato(c, c.k2)};` : ''} QUE ${rnd.um(['pediu ajuda no chat e não foi atendida', 'deu ping e ninguém respondeu', 'chegou a pensar em dar GG', 'não deseja isso a ninguém'])}; QUE nada mais tem a declarar.`,
+testemunha(), prejuizo(), `${rnd.um(['Lido e achado conforme, vai assinado pela vítima.', 'Lido e achado conforme. A vítima assinou chorando.'])} ${rnd.um(FECHOS_BO)}`],
+// 5. interrogatório do autor
+() => [`Comparece o autor ${autorVulgo}, que, utilizando-se do herói ${c.p.heroi.nome}, ${fato(c, c.k1)}, conforme apurado no replay. Interrogado, respondeu:`,
+`Perguntado ${um(PERGUNTAS_BO[c.k1] || PERGUNTAS_BO.mortes, c)}, respondeu que ${rnd.um(DESCULPAS_BO)}. Perguntado se tinha algo a acrescentar, ${rnd.um(['digitou "?"', 'disse que o time é que tinha errado', 'pediu pra jogar mais uma', 'ficou em silêncio e deu ready'])}.`,
+`A vítima, ${vit}, contestou: “${desabafo()}”`,
+testemunha(), prejuizo(), rnd.um(FECHOS_BO)],
+];
+return rnd.um(estruturas)().filter(Boolean);
 }
 // dupla: uma história só, com a divisão de tarefas
 const [a, b] = cs;
@@ -10289,7 +10324,8 @@ const vitimas = r.nos.filter((q) => q !== a.p && q !== b.p);
 const cenario = cenarioDaDupla(a, b);
 const juntos = cenario === 'coreESuporte' || cenario === 'mesmaRota';
 const vit = vitimas.length ? listaE(vitimas.map((q) => q.nome)) : 'o resto do time';
-paras.push(`${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
+const estilo = rnd.num(0, 2); // 0: vítimas comparecem; 1: flagrante; 2: termina em acareação
+paras.push(estilo === 1 ? `${rnd.um(['Uma guarnição da PM', 'A Delegacia de Repressão ao Feed', 'Uma viatura da Ronda Ostensiva do Ancient'])} flagrou, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), agindo em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}. As vítimas, ${vit}, foram ouvidas em seguida.` : `${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
 paras.push([um(ENQUADRAMENTOS_DUPLA[cenario], a, b), ...AGRAVANTES_DUPLA.map((g) => g(a, b)).filter(Boolean).slice(0, 1)].join(' '));
 paras.push(`Nas palavras de ${vitimas.length ? rnd.um(vitimas).nome : 'uma das vítimas'}: “${um(DESABAFOS_DUPLA, a, b)}”`);
 const extra = [a.k2 ? `${a.p.nome} ${fato(a, a.k2)}` : null, b.k2 ? `${b.p.nome} ${fato(b, b.k2)}` : null].filter(Boolean);
@@ -10298,7 +10334,8 @@ const [t, disse] = um(TESTEMUNHAS_DUPLA.filter((x) => (juntos ? !x.separados : !
 paras.push(`Arrolado(a) como testemunha, ${t} declarou: “${disse}”`);
 const total = Math.max(0, a.f.entregue) + Math.max(0, b.f.entregue);
 if (total > 0) paras.push(`O prejuízo somado foi estimado em ${fmtK(total)} de ouro (${a.p.nome}: ${fmtK(Math.max(0, a.f.entregue))}; ${b.p.nome}: ${fmtK(Math.max(0, b.f.entregue))}).`);
-paras.push(`Ouvidos separadamente, os autores apresentaram versões conflitantes: ${a.p.nome} alegou que ${rnd.um(DESCULPAS_BO)}; ${b.p.nome}, que ${rnd.um(DESCULPAS_BO)}. ${rnd.um(['Um culpou o outro.', 'Cada um culpou o outro.', 'Ambos culparam o suporte.', 'Nenhuma das versões se sustenta no replay.'])} ${rnd.um(FECHOS_BO)}`);
+if (estilo === 2) paras.push(`Realizada acareação, os autores foram colocados frente a frente. ${a.p.nome}: “${rnd.um(['A culpa é dele.', 'Eu fiz a minha parte.', 'Ele que puxou a luta.', 'Eu tava farmando pra gente ganhar no late.'])}” ${b.p.nome}: “${rnd.um(['Mentira.', 'Olha o replay.', 'Eu tava criando espaço pra ele.', 'Eu nem conheço ele.'])}” ${rnd.um(['A acareação foi encerrada após troca de pings ofensivos.', 'Os dois saíram juntos e foram vistos na fila da próxima partida, em duo.', 'Nenhum dos dois reconheceu a culpa.'])} ${rnd.um(FECHOS_BO)}`);
+else paras.push(`Ouvidos separadamente, os autores apresentaram versões conflitantes: ${a.p.nome} alegou que ${rnd.um(DESCULPAS_BO)}; ${b.p.nome}, que ${rnd.um(DESCULPAS_BO)}. ${rnd.um(['Um culpou o outro.', 'Cada um culpou o outro.', 'Ambos culparam o suporte.', 'Nenhuma das versões se sustenta no replay.'])} ${rnd.um(FECHOS_BO)}`);
 return paras;
 }
 
