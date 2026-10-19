@@ -734,8 +734,7 @@ function renderizarMeta() {
   if (!meta || !meta.fortes || !meta.fortes.length) {
     desc.textContent = 'O meta do patch ainda não foi gerado. O robô "Meta do patch" atualiza todo dia.';
   } else {
-    desc.textContent = `${meta.patch ? `Patch ${meta.patch} · ` : ''}partidas de ${meta.faixa} na OpenDota · atualizado em ${dataHora(meta.atualizadoEm)}. ` +
-      'Os heróis que mais ganham agora, com a build mais comprada e quem de vocês já joga.';
+    desc.textContent = `${meta.patch ? `Patch ${meta.patch} · ` : ''}partidas de ${meta.faixa} na OpenDota · atualizado em ${dataHora(meta.atualizadoEm)}`;
     $('meta-fortes').innerHTML = '';
     meta.fortes.forEach((x, i) => $('meta-fortes').append(cartaoHeroiMeta(x, i)));
 
@@ -1122,149 +1121,138 @@ const urlDoCoach = () => (coachPromessa = coachPromessa || fetch('../config.json
   .then(r => (r.ok ? r.json() : {})).then(j => (/^https:\/\//.test(j.coach || '') ? j.coach.replace(/\/$/, '') : ''))
   .catch(() => ''));
 
-/* ---------- Time fechado: raio-x das partidas com os 5 do grupo do mesmo lado ----------
- * parceiros.timeFechado (parceiros.py): heróis dos dois lados, ouro aos 10/20/30, maior vantagem e maior
- * desvantagem, abates, torres, roshans e lanes. Aqui cruza com os traços (sinergias e alertas) dos dois times. */
+/* ---------- Time fechado: as partidas com os 5 do grupo do mesmo lado ----------
+ * Cada partida ganha marcadores (o que aconteceu nela: virada, começo ruim, draft sem iniciação, alguém que morreu
+ * muito, o que o inimigo tinha...). Os marcadores viram o resumo e o filtro: tocar num mostra só os jogos com ele.
+ * Dados: parceiros.timeFechado (parceiros.py). */
 
-const VIRADA = 5000;         // vantagem de ouro que conta como "jogo na mão"
-const MIN_JOGOS_LEITURA = 3; // amostra mínima de cada lado para uma comparação virar diagnóstico
+const VIRADA = 5000;          // vantagem de ouro que conta como "jogo na mão"
+const MIN_JOGOS_LEITURA = 3;  // um marcador só vira diagnóstico com pelo menos isso de jogos
+const MORTES_DEMAIS = 12;
+const TIPOS_MARCADOR = { jogo: 'O jogo', draft: 'Nosso draft', inimigo: 'O time deles', pessoa: 'Gente' };
+let filtroFechado = null;
+
+function marcadoresDe(g) {
+  const ms = [];
+  const add = (id, tipo, icone, nome, desc) => ms.push({ id, tipo, icone, nome, desc, resultado: ['virada', 'jogaram-fora', 'atropelo', 'atropelados'].includes(id) });
+  const o10 = g.ouro && g.ouro['10'];
+  const saldo = g.lanes && g.lanes.length ? g.lanes.filter(x => x > 0).length - g.lanes.filter(x => x < 0).length : null;
+  if (g.v && g.menor != null && g.menor <= -VIRADA) add('virada', 'jogo', '🔄', 'Virada', `Chegaram a estar ${(-g.menor / 1000).toFixed(1).replace('.', ',')}k atrás e ganharam`);
+  if (!g.v && g.maior != null && g.maior >= VIRADA) add('jogaram-fora', 'jogo', '💸', 'Jogaram fora', `Chegaram a estar ${(g.maior / 1000).toFixed(1).replace('.', ',')}k na frente e perderam`);
+  if (g.v && g.menor != null && g.menor > -2000 && g.maior >= 10000) add('atropelo', 'jogo', '🚀', 'Atropelaram', 'Nunca ficaram 2k atrás e abriram 10k+');
+  if (!g.v && g.maior != null && g.maior < 2000 && g.menor <= -10000) add('atropelados', 'jogo', '🧱', 'Atropelados', 'Nunca abriram 2k e tomaram 10k+');
+  if (o10 != null && o10 <= -1500) add('comeco-ruim', 'jogo', '🐢', 'Começo ruim', 'Mais de 1,5k de ouro atrás aos 10 min');
+  if (o10 != null && o10 >= 1500) add('comeco-forte', 'jogo', '🔥', 'Começo forte', 'Mais de 1,5k de ouro na frente aos 10 min');
+  if (saldo != null && saldo <= -2) add('lanes-perdidas', 'jogo', '🛣️', 'Lanes perdidas', 'Perderam 2 lanes a mais do que ganharam');
+  if (saldo != null && saldo >= 2) add('lanes-ganhas', 'jogo', '🛣️', 'Lanes ganhas', 'Ganharam 2 lanes a mais do que perderam');
+  if (g.dur != null && g.dur >= 2700) add('longo', 'jogo', '⏳', 'Jogo longo', 'Passou de 45 min');
+  if (g.dur != null && g.dur < 1680) add('curto', 'jogo', '⏱️', 'Jogo curto', 'Acabou antes dos 28 min');
+  if (g.roshans && g.roshans[1] > 0 && !g.roshans[0]) add('rosh-deles', 'jogo', '🐉', 'Roshan deles', 'O outro time pegou Roshan e vocês nenhum');
+  g.sinNos.alertas.forEach(a => add(`alerta:${a}`, 'draft', '⚠️', a.replace(/^\S+\s/, '').split(':')[0], a));
+  g.sinNos.lista.filter(s => s.nivel >= 2 || (s.id === 'babysit' && s.nivel)).forEach(s => add(`nos:${s.id}`, 'draft', s.icone, s.nome, s.desc));
+  g.sinEles.lista.filter(s => s.nivel >= 2 || (['push', 'bkb', 'invis'].includes(s.id) && s.nivel)).forEach(s =>
+    add(`eles:${s.id}`, 'inimigo', s.icone, `Inimigo: ${s.nome}`, `O time deles tinha ${s.nome.toLowerCase()} (${s.desc.toLowerCase()})`));
+  g.nos.filter(x => (x[4] || 0) >= MORTES_DEMAIS).forEach(x => add(`mortes:${x[0]}`, 'pessoa', '💀', `${nomeJogador(x[0])} morreu ${MORTES_DEMAIS}+`, `${nomeJogador(x[0])} morreu ${x[4]} vezes`));
+  return ms;
+}
 
 function renderizarTimeFechado() {
   const alvo = $('fechado-conteudo');
   const desde = desdePeriodo();
-  const jogos = ((parceirosBase && parceirosBase.timeFechado) || []).filter(g => g.t >= desde)
-    .map(g => ({ ...g, sinNos: sinergiasDoTime(g.nos.map(x => x[1]).filter(Boolean)), sinEles: sinergiasDoTime(g.eles.filter(Boolean)) }));
-  if (!jogos.length) {
+  const todos = ((parceirosBase && parceirosBase.timeFechado) || []).filter(g => g.t >= desde).map(g => {
+    const x = { ...g, sinNos: sinergiasDoTime(g.nos.map(n => n[1]).filter(Boolean)), sinEles: sinergiasDoTime(g.eles.filter(Boolean)) };
+    x.marcadores = marcadoresDe(x);
+    return x;
+  });
+  if (!todos.length) {
     alvo.innerHTML = `<p class="carregando">${parceirosBase && parceirosBase.timeFechado ? 'Nenhuma partida com os 5 juntos nesse período.' : 'O raio-x aparece depois da próxima atualização do ranking.'}</p>`;
     return;
   }
   const pct = (v, n) => (n ? Math.round((100 * v) / n) : 0);
-  const vit = jogos.filter(g => g.v), der = jogos.filter(g => !g.v);
-  const media = (xs, f) => { const v = xs.map(f).filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
-  const mil = x => (x == null ? '—' : `${x > 0 ? '+' : ''}${(x / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`);
-  const min = s => (s == null ? '—' : `${Math.round(s / 60)} min`);
+  const mil = x => (x == null ? '—' : `${x > 0 ? '+' : x < 0 ? '−' : ''}${(Math.abs(x) / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`);
 
-  // sinergias (nossas e deles): win rate com e sem
-  const comparar = (lado) => {
-    const ids = [...new Set(jogos.flatMap(g => g[lado].lista.map(s => s.id)))];
-    return ids.map(id => {
-      const ativo = g => (g[lado].lista.find(s => s.id === id) || {}).nivel > 0;
-      const com = jogos.filter(ativo), sem = jogos.filter(g => !ativo(g));
-      const s = jogos[0][lado].lista.find(x => x.id === id);
-      return { id, icone: s.icone, nome: s.nome, com: com.length, vCom: com.filter(g => g.v).length, sem: sem.length, vSem: sem.filter(g => g.v).length };
-    }).filter(x => x.com > 0).map(x => ({ ...x, delta: pct(x.vCom, x.com) - pct(x.vSem, x.sem) }));
+  // cada marcador: em quantos jogos apareceu e quantos ganharam
+  const porMarcador = new Map();
+  todos.forEach(g => g.marcadores.forEach(m => {
+    const x = porMarcador.get(m.id) || porMarcador.set(m.id, { ...m, n: 0, v: 0 }).get(m.id);
+    x.n++; x.v += g.v;
+  }));
+  const marcadores = [...porMarcador.values()];
+  if (filtroFechado && !porMarcador.has(filtroFechado)) filtroFechado = null;
+  const jogos = filtroFechado ? todos.filter(g => g.marcadores.some(m => m.id === filtroFechado)) : todos;
+  const vit = todos.filter(g => g.v).length;
+  const wrGeral = pct(vit, todos.length);
+
+  // diagnóstico: os marcadores que mais derrubam e os que mais ajudam (contra a média de vocês)
+  // virada, jogaram fora e atropelo já dizem o resultado: não entram como causa
+  const confiaveis = marcadores.filter(m => m.n >= MIN_JOGOS_LEITURA && !m.resultado);
+  const piores = confiaveis.filter(m => pct(m.v, m.n) <= wrGeral - 15).sort((a, b) => pct(a.v, a.n) - pct(b.v, b.n) || b.n - a.n).slice(0, 3);
+  const melhores = confiaveis.filter(m => pct(m.v, m.n) >= wrGeral + 15).sort((a, b) => pct(b.v, b.n) - pct(a.v, a.n) || b.n - a.n).slice(0, 2);
+  const frase = (m, bom) => `<li class="${bom ? 'bom' : 'ruim'}"><button type="button" data-marcador="${esc(m.id)}">${m.icone} ${esc(m.nome)}</button>
+    ${bom ? 'dá certo' : 'pesa contra'}: <b>${m.v} vitória${m.v === 1 ? '' : 's'} em ${m.n}</b> (${pct(m.v, m.n)}%, a média de vocês é ${wrGeral}%).</li>`;
+
+  const chip = m => `<button type="button" class="tf-marcador tm-${m.tipo}${filtroFechado === m.id ? ' ativo' : ''}" data-marcador="${esc(m.id)}" title="${esc(m.desc)}">
+      <span>${m.icone}</span>${esc(m.nome)}${m.n != null ? `<small class="${pct(m.v, m.n) > 55 ? 'bom' : pct(m.v, m.n) < 45 ? 'ruim' : ''}">${m.v}V ${m.n - m.v}D</small>` : ''}</button>`;
+  const grupos = Object.entries(TIPOS_MARCADOR).map(([tipo, nome]) => {
+    const xs = marcadores.filter(m => m.tipo === tipo).sort((a, b) => b.n - a.n);
+    return xs.length ? `<div class="tf-grupo"><span class="tf-grupo-nome">${nome}</span><div class="tf-marcadores">${xs.map(chip).join('')}</div></div>` : '';
+  }).join('');
+
+  const forma = [...todos].slice(-15).map(g => `<i class="${g.v ? 'v' : 'd'}" title="${g.v ? 'Vitória' : 'Derrota'} · ${data(g.t * 1000)}"></i>`).join('');
+  const ouro = (g, m) => {
+    const x = g.ouro && g.ouro[m];
+    return x == null ? '' : `<span class="tf-ouro ${x >= 0 ? 'bom' : 'ruim'}"><small>${m}'</small>${mil(x)}</span>`;
   };
-  const nossas = comparar('sinNos').sort((a, b) => b.delta - a.delta);
-  const delas = comparar('sinEles').sort((a, b) => pct(a.vCom, a.com) - pct(b.vCom, b.com));
-
-  // alertas: quanto aparecem nas derrotas e nas vitórias
-  const alertas = [...new Set(jogos.flatMap(g => g.sinNos.alertas))].map(a => ({
-    texto: a, d: der.filter(g => g.sinNos.alertas.includes(a)).length, v: vit.filter(g => g.sinNos.alertas.includes(a)).length,
-  })).sort((x, y) => (pct(y.d, der.length) - pct(y.v, vit.length)) - (pct(x.d, der.length) - pct(x.v, vit.length)));
-
-  // fases do jogo
-  const jogadas = der.filter(g => g.maior != null && g.maior >= VIRADA);
-  const viradas = vit.filter(g => g.menor != null && g.menor <= -VIRADA);
-  const faixas = [['Até 30 min', g => g.dur < 1800], ['30 a 45 min', g => g.dur >= 1800 && g.dur < 2700], ['Mais de 45 min', g => g.dur >= 2700]]
-    .map(([nome, f]) => { const xs = jogos.filter(g => g.dur != null && f(g)); return { nome, n: xs.length, v: xs.filter(g => g.v).length }; });
-  const lanesDe = g => (g.lanes && g.lanes.length ? g.lanes.filter(x => x > 0).length - g.lanes.filter(x => x < 0).length : null);
-
-  // quem morre nas derrotas
-  const contas = [...new Set(jogos.flatMap(g => g.nos.map(x => x[0])))];
-  const mortes = contas.map(c => {
-    const nas = xs => media(xs.filter(g => g.nos.some(x => x[0] === c)), g => g.nos.find(x => x[0] === c)[4]);
-    return { conta: c, d: nas(der), v: nas(vit) };
-  }).filter(x => x.d != null).sort((a, b) => b.d - a.d);
-
-  // diagnóstico: o que falta e onde pecamos, do mais forte pro mais fraco
-  const leituras = [];
-  nossas.filter(x => x.com >= MIN_JOGOS_LEITURA && x.sem >= MIN_JOGOS_LEITURA && x.delta >= 15).forEach(x => leituras.push({ peso: x.delta,
-    txt: `<b>Falta ${x.icone} ${esc(x.nome)}</b>: com ela vocês ganham ${pct(x.vCom, x.com)}% (${x.vCom}/${x.com}); sem, ${pct(x.vSem, x.sem)}% (${x.vSem}/${x.sem}). Só montaram em ${x.com} de ${jogos.length} jogos.` }));
-  nossas.filter(x => x.com >= MIN_JOGOS_LEITURA && x.sem >= MIN_JOGOS_LEITURA && x.delta <= -15).forEach(x => leituras.push({ peso: -x.delta * 0.8,
-    txt: `<b>${x.icone} ${esc(x.nome)} não tá rendendo</b>: com ela ${pct(x.vCom, x.com)}% (${x.vCom}/${x.com}), sem ela ${pct(x.vSem, x.sem)}%.` }));
-  alertas.filter(a => a.d >= 2 && pct(a.d, der.length) - pct(a.v, vit.length) >= 20).forEach(a => leituras.push({ peso: pct(a.d, der.length) - pct(a.v, vit.length),
-    txt: `<b>Onde pecam: ${esc(a.texto)}</b>. Apareceu em ${a.d} das ${der.length} derrotas (${pct(a.d, der.length)}%) e só em ${a.v} das ${vit.length} vitórias.` }));
-  delas.filter(x => x.com >= MIN_JOGOS_LEITURA && pct(x.vCom, x.com) <= 35).forEach(x => leituras.push({ peso: 50 - pct(x.vCom, x.com),
-    txt: `<b>Sofrem contra ${x.icone} ${esc(x.nome)} deles</b>: ${x.vCom}/${x.com} (${pct(x.vCom, x.com)}%). Vale draftar resposta.` }));
-  const ouro10D = media(der, g => g.ouro && g.ouro['10']);
-  if (ouro10D != null && ouro10D <= -1000) leituras.push({ peso: Math.min(60, -ouro10D / 50),
-    txt: `<b>O começo tá perdendo jogo</b>: nas derrotas vocês chegam aos 10 min com ${mil(ouro10D)} de ouro. Nas vitórias, ${mil(media(vit, g => g.ouro && g.ouro['10']))}.` });
-  if (jogadas.length >= 2) leituras.push({ peso: 20 + 10 * jogadas.length,
-    txt: `<b>Jogaram fora ${jogadas.length} partida${jogadas.length === 1 ? '' : 's'}</b> que chegaram a ter ${mil(VIRADA)} ou mais. Fechar o jogo cedo (Roshan, torre com vantagem) vale ouro.` });
-  const tarde = faixas[2];
-  if (tarde.n >= MIN_JOGOS_LEITURA && pct(tarde.v, tarde.n) <= 35) leituras.push({ peso: 50 - pct(tarde.v, tarde.n),
-    txt: `<b>Jogo longo é do outro time</b>: passando de 45 min vocês ganham ${tarde.v} de ${tarde.n}. Falta carry de late ou plano pra fechar antes.` });
-  if (mortes.length && mortes[0].d >= 8 && mortes[0].d >= (mortes[0].v ?? 0) + 2) leituras.push({ peso: mortes[0].d * 3,
-    txt: `<b>${esc(nomeJogador(mortes[0].conta))} morre ${mortes[0].d.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} vezes em média nas derrotas</b> (${(mortes[0].v ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} nas vitórias).` });
-  leituras.sort((a, b) => b.peso - a.peso);
-
-  const barra = (v, n) => `<span class="tf-barra"><i style="width:${pct(v, n)}%"></i></span>`;
-  const linhaSin = x => `<div class="tf-sin">
-      <span class="tf-sin-nome">${x.icone} ${esc(x.nome)}</span>
-      <span class="tf-sin-num ${pct(x.vCom, x.com) > 50 ? 'bom' : pct(x.vCom, x.com) < 50 ? 'ruim' : ''}">com: ${x.vCom}/${x.com} · ${pct(x.vCom, x.com)}%</span>${barra(x.vCom, x.com)}
-      <span class="tf-sin-sem">sem: ${x.vSem}/${x.sem}${x.sem ? ` · ${pct(x.vSem, x.sem)}%` : ''}</span>
-    </div>`;
-  const icones = s => s.lista.filter(x => x.nivel).map(x => `<span class="traco" title="${esc(x.nome)}">${x.icone}</span>`).join('');
-  const heroiMini = id => (id ? heroi(id, 'heroi heroi-mini') : '');
-
   const ficha = g => `
     <article class="tf-jogo ${g.v ? 'tf-v' : 'tf-d'}">
-      <div class="tf-jogo-cab">
-        <b class="${g.v ? 'bom' : 'ruim'}">${g.v ? 'Vitória' : 'Derrota'}</b>
-        <span>${data(g.t * 1000)} · ${min(g.dur)}${g.ouro && g.ouro['10'] != null ? ` · ouro aos 10: <span class="${g.ouro['10'] >= 0 ? 'bom' : 'ruim'}">${mil(g.ouro['10'])}</span>` : ''}${g.ouro && g.ouro['20'] != null ? ` · aos 20: <span class="${g.ouro['20'] >= 0 ? 'bom' : 'ruim'}">${mil(g.ouro['20'])}</span>` : ''}</span>
-        <a href="../#${g.id}" title="Julgar essa partida">⚖️ julgar</a>
+      <div class="tf-res"><b>${g.v ? 'V' : 'D'}</b><small>${data(g.t * 1000)}</small><small>${g.dur != null ? `${Math.round(g.dur / 60)} min` : ''}</small></div>
+      <div class="tf-meio">
+        <div class="tf-times">
+          <div class="tf-lado">${[...g.nos].sort((a, b) => (a[2] || 9) - (b[2] || 9)).map(x => `
+            <div class="tf-heroi">${x[1] ? heroi(x[1], 'heroi heroi-mini') : ''}<small>${esc(nomeJogador(x[0]))}</small><small class="tf-kda">${x[3] ?? '?'}/${x[4] ?? '?'}/${x[5] ?? '?'}</small></div>`).join('')}</div>
+          <span class="tf-vs">vs</span>
+          <div class="tf-lado tf-eles">${g.eles.map(h => `<div class="tf-heroi">${h ? heroi(h, 'heroi heroi-mini') : ''}</div>`).join('')}</div>
+        </div>
+        <div class="tf-linha">
+          ${ouro(g, '10')}${ouro(g, '20')}${ouro(g, '30')}
+          ${g.marcadores.map(m => chip({ ...m, n: null })).join('')}
+        </div>
       </div>
-      <div class="tf-times">
-        <div class="tf-lado">${[...g.nos].sort((a, b) => (a[2] || 9) - (b[2] || 9)).map(x => `
-          <div class="tf-heroi">${heroiMini(x[1])}<small>${esc(nomeJogador(x[0]))}</small><small class="tf-kda">${x[3] ?? '?'}/${x[4] ?? '?'}/${x[5] ?? '?'}</small></div>`).join('')}</div>
-        <span class="tf-vs">vs</span>
-        <div class="tf-lado tf-eles">${g.eles.map(h => `<div class="tf-heroi">${heroiMini(h)}</div>`).join('')}</div>
-      </div>
-      <div class="tf-rodape">
-        <span>Nós: ${icones(g.sinNos) || '—'}</span>
-        <span>Eles: ${icones(g.sinEles) || '—'}</span>
-        ${g.lanes && g.lanes.length ? `<span>Lanes: ${g.lanes.map(x => (x > 0 ? '✔' : x < 0 ? '✖' : '=')).join(' ')}</span>` : ''}
-        ${g.v && g.menor != null && g.menor <= -VIRADA ? `<span class="tf-selo bom">🔄 virada (${mil(g.menor)})</span>` : ''}
-        ${!g.v && g.maior != null && g.maior >= VIRADA ? `<span class="tf-selo ruim">💸 jogaram fora (${mil(g.maior)})</span>` : ''}
-        ${g.sinNos.alertas.length ? `<span class="ruim" title="${esc(g.sinNos.alertas.join('\n'))}">⚠️ ${g.sinNos.alertas.length} alerta${g.sinNos.alertas.length === 1 ? '' : 's'}</span>` : ''}
-      </div>
+      <a class="tf-julgar" href="../#${g.id}" title="Julgar essa partida">⚖️</a>
     </article>`;
 
+  const vF = jogos.filter(g => g.v).length;
+  const mF = filtroFechado && porMarcador.get(filtroFechado);
   alvo.innerHTML = `
-    <div class="tf-placar">
-      <div><b>${jogos.length}</b><span>partidas com os 5</span></div>
-      <div><b class="${vit.length > der.length ? 'bom' : vit.length < der.length ? 'ruim' : ''}">${pct(vit.length, jogos.length)}%</b><span>${vit.length}V · ${der.length}D</span></div>
-      <div><b>${mil(media(jogos, g => g.ouro && g.ouro['10']))}</b><span>ouro médio aos 10 min</span></div>
-      <div><b>${(media(jogos, lanesDe) ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' })}</b><span>saldo de lanes por jogo</span></div>
-      <div><b class="bom">${viradas.length}</b><span>viradas</span></div>
-      <div><b class="ruim">${jogadas.length}</b><span>jogaram fora</span></div>
+    <div class="tf-topo">
+      <div class="tf-placar-num"><b class="${wrGeral > 50 ? 'bom' : wrGeral < 50 ? 'ruim' : ''}">${wrGeral}%</b><span>${vit}V · ${todos.length - vit}D em ${todos.length} jogos com os 5</span></div>
+      <div class="tf-forma" title="Últimos ${Math.min(15, todos.length)} jogos, do mais antigo pro mais novo">${forma}</div>
     </div>
 
-    <article class="cartao tf-diagnostico">
-      <div class="cartao-titulo">🩺 O que falta e onde vocês pecam</div>
-      ${leituras.length ? `<ol>${leituras.slice(0, 6).map(l => `<li>${l.txt}</li>`).join('')}</ol>`
-        : `<p class="cartao-sub">Ainda sem padrão claro${jogos.length < 10 ? ': poucas partidas nesse período' : ''}. Cada comparação precisa de pelo menos ${MIN_JOGOS_LEITURA} jogos de cada lado.</p>`}
-    </article>
+    ${piores.length || melhores.length ? `<article class="cartao tf-diagnostico">
+      <div class="cartao-titulo">🩺 O que mais pesa nos jogos de vocês</div>
+      <ul>${piores.map(m => frase(m, false)).join('')}${melhores.map(m => frase(m, true)).join('')}</ul>
+      <p class="cartao-sub">Toque num marcador pra ver só os jogos em que ele aparece.</p>
+    </article>` : ''}
 
-    <div class="cartoes">
-      <article class="cartao"><div class="bloco-titulo">Nossas sinergias: com e sem</div>
-        ${nossas.map(linhaSin).join('') || '<p class="cartao-sub">—</p>'}</article>
-      <article class="cartao"><div class="bloco-titulo">Contra as sinergias deles</div>
-        ${delas.map(linhaSin).join('') || '<p class="cartao-sub">—</p>'}</article>
-      <article class="cartao"><div class="bloco-titulo">Alertas do draft</div>
-        ${alertas.length ? alertas.map(a => `<div class="tf-alerta"><span>${esc(a.texto)}</span>
-          <small>em ${a.d}/${der.length} derrotas · ${a.v}/${vit.length} vitórias</small></div>`).join('') : '<p class="cartao-sub">Nenhum alerta nesses drafts. 👏</p>'}</article>
-      <article class="cartao"><div class="bloco-titulo">Por duração</div>
-        ${faixas.map(f => `<div class="tf-sin"><span class="tf-sin-nome">⏳ ${f.nome}</span>
-          <span class="tf-sin-num ${pct(f.v, f.n) > 50 ? 'bom' : pct(f.v, f.n) < 50 ? 'ruim' : ''}">${f.v}/${f.n}${f.n ? ` · ${pct(f.v, f.n)}%` : ''}</span>${barra(f.v, f.n)}</div>`).join('')}
-        <div class="bloco-titulo">Mortes por partida</div>
-        ${mortes.map(m => `<div class="tf-sin"><span class="tf-sin-nome">${esc(nomeJogador(m.conta))}</span>
-          <span class="tf-sin-num">derrota: ${m.d.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} · vitória: ${(m.v ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}</span></div>`).join('')}
-      </article>
+    <div class="tf-filtros">${grupos}</div>
+
+    <div class="tf-lista-cab">
+      ${mF ? `<span>Jogos com <b>${mF.icone} ${esc(mF.nome)}</b>: ${vF}V · ${jogos.length - vF}D (${pct(vF, jogos.length)}%)</span>
+        <button type="button" class="chip" data-marcador="">✕ Ver todos</button>` : `<span>Todos os ${todos.length} jogos, do mais novo pro mais antigo</span>`}
     </div>
-
-    <div class="secao-titulo"><h2>Histórico das composições</h2><p>Mais recente primeiro. Os ícones são as sinergias que cada time ativou.</p></div>
     <div class="tf-lista">${[...jogos].reverse().map(ficha).join('')}</div>`;
+
+  if (!alvo.dataset.ouvindo) {
+    alvo.dataset.ouvindo = '1';
+    alvo.addEventListener('click', e => {
+      const b = e.target.closest('[data-marcador]');
+      if (!b) return;
+      filtroFechado = b.dataset.marcador && b.dataset.marcador !== filtroFechado ? b.dataset.marcador : null;
+      renderizarTimeFechado();
+      $('fechado-conteudo').querySelector('.tf-lista-cab').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 }
 
 /* ---------- Visitas (contador no Worker: código aleatório por navegador, sem nome nem IP) ---------- */

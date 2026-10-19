@@ -6367,7 +6367,7 @@ for (const [x, heroi] of sugestoes) sugestoesBotoes.push(h('button', { type: 'bu
 sugestoesBox.append(...sugestoesBotoes);
 pintarEstado();
 const sec = h('section', { class: 'bloco chat', 'aria-labelledby': 'titulo-chat' },
-cabecalho('Pergunte ao oráculo', 'Tire dúvidas sobre esta partida: build, decisões, o que fazer contra cada herói. O oráculo responde com os dados do replay.', 'titulo-chat'),
+cabecalho('Pergunte ao oráculo', 'Pergunte sobre build, decisões ou como jogar contra cada herói.', 'titulo-chat'),
 h('div', { class: 'cartao chat-cartao' },
 cab('O oráculo leu o replay inteiro. Escolha uma runa ou escreva a sua pergunta.'),
 lista,
@@ -6896,7 +6896,7 @@ const dica = h('p', { class: 'cinema-dica', id: 'cinema-dica' }, 'Play of the Ga
 const barra = h('div', { class: 'cinema-barra', hidden: true, role: 'group', 'aria-label': 'Resumo da partida' });
 const cartao = h('div', { class: 'cartao lances' }, h('div', { class: 'mapa-col' }, barra, palco, controles, legenda), h('div', { class: 'lances-lista-wrap' }, lista));
 const sec = h('section', { class: 'bloco', id: 'lances', 'aria-labelledby': 'titulo-lances' },
-cabecalho('Lances da partida', 'Os momentos que decidiram o jogo, no mapa. Azul são vocês, vermelho são eles; toque num lance.', 'titulo-lances'),
+cabecalho('Lances da partida', 'Azul são vocês, vermelho são eles. Toque num lance.', 'titulo-lances'),
 h('div', { class: 'cinema-acoes' }, bCinema, dica),
 cartao);
 palco.append(formaMapa(), h('p', { class: 'sil-status sil-sobre', 'data-status': 'chegando' }, 'Carregando o mapa…'));
@@ -8427,7 +8427,7 @@ montarLances(r, mapa, palco, legenda, null, controles, { unico: nm.lances[0], mi
 return true;
 };
 const sec = h('section', { class: 'bloco janela', 'aria-labelledby': 'titulo-janela' },
-cabecalho(TITULOS[j.tipo], SUBS[j.tipo], 'titulo-janela'),
+cabecalho(TITULOS[j.tipo], null, 'titulo-janela'),
 h('div', { class: `cartao jn-cartao ${j.tipo}` },
 h('p', { class: 'jn-manchete' }, j.manchete),
 numeros,
@@ -8449,7 +8449,7 @@ const temChance = r.chance && r.chance.curva.length > 2;
 estado.metrica = estado.metrica === 'chance' && temChance ? 'chance' : 'ouro';
 aoRedesenhar(() => desenharJogo(alvo, wrap, r));
 return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-jogo' },
-cabecalho('O jogo em um gráfico', 'Acima da linha, vocês na frente. Os pontos são os lances: toque para ver no mapa.', 'titulo-jogo'),
+cabecalho('O jogo em um gráfico', 'Acima da linha, vocês na frente. Toque num ponto para ver o lance.', 'titulo-jogo'),
 temChance ? h('div', { class: 'segmentado', role: 'group', 'aria-label': 'Métrica' }, ['ouro', 'chance'].map((m) => h('button', { type: 'button', 'aria-pressed': String(estado.metrica === m), onclick: (ev) => {
 estado.metrica = m;
 ev.currentTarget.parentElement.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === ev.currentTarget)));
@@ -8538,7 +8538,7 @@ svg.addEventListener('pointerleave', () => { tip.hidden = true; mira.setAttribut
 function secaoRotas(r) {
 if (!r.rotas.length) return null;
 return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-rotas' },
-cabecalho('Fase de rotas', 'Rota contra rota aos 10 min, cada herói na posição em que jogou e sempre papel contra papel: core contra core, suporte contra suporte. A balança pende pra quem saiu na frente (ouro + metade da XP; o duelo dos cores pesa o dobro do dos suportes; quem roamou ou ficou sem par fica fora). A linha tracejada é o esperado pela base de rotas.', 'titulo-rotas'),
+cabecalho('Fase de rotas', 'Cada rota aos 10 min, papel contra papel.', 'titulo-rotas'),
 h('div', { class: 'lanes' }, r.rotas.map(balanca)));
 }
 
@@ -8655,7 +8655,7 @@ h('span', { class: 'quem' }, h('strong', {}, x.jogador.heroi.nome), h('small', {
 h('span', { class: 'item' }, iconeItem(x), h('strong', {}, x.nome), h('small', {}, `${x.papel} · contra ${x.contra}`)),
 h('span', { class: 'ate' }, x.quando != null ? `até ${mmss(x.quando)}` : ''));
 return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-itens-time' },
-cabecalho('Itens do time', 'Contra as duas maiores ameaças do jogo: quem devia ter respondido com item, quem respondeu e o que dividir na próxima. Item de aura é um por time, e cada posição tem a sua parte.', 'titulo-itens-time'),
+cabecalho('Itens do time', 'O que faltou de item contra as duas maiores ameaças.', 'titulo-itens-time'),
 debates.length ? h('div', { class: 'debates' }, debates.map(cartaoDebate)) : null,
 plano.length ? h('div', { class: 'cartao plano-time' },
 h('h3', {}, 'Divisão de itens para a próxima'),
@@ -8689,7 +8689,7 @@ if (!r.partida.venceu || !vs.length) return null;
 const cs = craquesDe(r);
 const elogio = (v) => elogioDe(r, v);
 return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-craques' },
-cabecalho('O que deu certo', 'Quem carregou a vitória e por quê. Mesma régua do tribunal, só que contando o que cada um somou.', 'titulo-craques'),
+cabecalho('O que deu certo', null, 'titulo-craques'),
 h('ol', { class: 'cartao ranking-texto craques-lista rol-honra', 'aria-label': 'Ranking de mérito' }, vs.map((v, i) => h('li', { class: `honra-${i + 1}${i < 3 ? ` medalha-${['ouro', 'prata', 'bronze'][i]}` : ''}${i === 0 ? ' pergaminho' : ''}${cs.includes(v) ? ' e-craque' : ''}` },
 h('div', { class: 'craque-linha' },
 i < 3 ? h('span', { class: 'medalha-disco pos' }, h('span', {}, `${i + 1}º`)) : h('span', { class: 'pos' }, `${i + 1}º`),
@@ -8704,7 +8704,7 @@ const vitoria = r.partida.venceu && r.craques && r.craques.length;
 if (vitoria) {
 const vs = r.craques.map((c) => r.vereditos.find((v) => v.jogador === c.jogador));
 return h('section', { class: 'bloco tribunal-sec', 'aria-labelledby': 'titulo-tribunal' },
-cabecalho('O parecer de cada um', 'Jogou como qual elo, o que somou na vitória, a jogada que merece replay e o que dá para limpar.', 'titulo-tribunal'),
+cabecalho('O parecer de cada um', null, 'titulo-tribunal'),
 h('ol', { class: 'cartao ranking-texto ranking-elo', 'aria-label': 'Jogou como qual elo' }, vs.map((v, i) => h('li', {},
 h('button', { type: 'button', onclick: () => abrirDossie(v.jogador.idx) },
 h('span', { class: 'pos' }, `${i + 1}º`),
@@ -8715,7 +8715,7 @@ h('div', { class: 'dossies' }, vs.map((v, i) => dossie(v, i, r, craquesDe(r).som
 }
 const vs = r.vereditos;
 return h('section', { class: 'bloco tribunal-sec', 'aria-labelledby': 'titulo-tribunal' },
-cabecalho('O tribunal', 'O parecer do coach para cada um: o que custou o jogo, o que deu certo e o plano para a próxima.', 'titulo-tribunal'),
+cabecalho('O tribunal', null, 'titulo-tribunal'),
 h('ol', { class: 'cartao ranking-texto', 'aria-label': 'Ranking de culpa' }, vs.map((v, i) => h('li', { class: culpados(r).includes(v) ? 'e-culpado' : null },
 h('button', { type: 'button', onclick: () => abrirDossie(v.jogador.idx) },
 h('span', { class: 'pos' }, `${i + 1}º`),
@@ -9301,7 +9301,7 @@ carregarDraft()
 .then((d) => corpo.replaceChildren(montarDraft(r, d)))
 .catch((e) => { console.error('draft', e); corpo.replaceChildren(h('p', { class: 'sil-status', 'data-status': 'indisponivel' }, 'Análise do draft indisponível agora.')); });
 return h('section', { class: 'bloco draft', 'aria-labelledby': 'titulo-draft' },
-cabecalho('O draft', 'Os picks de cada time como no TFT: o que cada herói soma, quem acertou o pick e o que dava pra ter pegado no lugar.', 'titulo-draft'),
+cabecalho('O draft', null, 'titulo-draft'),
 corpo);
 }
 
@@ -9446,7 +9446,7 @@ h('div', { class: 'draft-lados' },
 h('div', { class: 'cartao draft-lado nos' }, h('h3', {}, 'Vocês'), h('div', { class: 'draft-herois' }, r.nos.map((p) => h('span', { class: 'draft-img', title: p.heroi.nome }, retrato(p.heroi), powerUp(metaWr(p.heroi.id))))), chips(sinTime)),
 h('div', { class: 'cartao draft-lado eles' }, h('h3', {}, 'Eles'), h('div', { class: 'draft-herois' }, r.eles.map((p) => h('span', { class: 'draft-img', title: p.heroi.nome }, retrato(p.heroi), powerUp(metaWr(p.heroi.id))))), chips(sinEles))),
 h('div', { class: 'draft-picks' }, picks.map(cartao)),
-h('p', { class: 'draft-nota' }, 'A nota de cada pick soma a força do herói no patch, a experiência de quem pegou (partidas guardadas do grupo), quanto ele completa as sinergias do time e, quando o OpenDota tem, o matchup contra os 5 deles. É o draft no papel: execução é outra conversa.'));
+h('p', { class: 'draft-nota' }, 'A nota de cada pick soma a força do herói no patch, a experiência de quem pegou (partidas guardadas do grupo), quanto ele completa as sinergias do time e, quando o OpenDota tem, o matchup contra os 5 deles.'));
 }
 
 function secaoTime(r) {
@@ -9466,7 +9466,7 @@ h('span', { class: 'cabo-meio' })),
 h('span', { class: 'v eles' }, h('span', { class: 'sr-only' }, 'Eles: '), fmtK(c.eles), h('span', { class: 'sr-only' }, ` (${fmtInt(c.eles)})`))));
 });
 return h('section', { class: 'bloco', 'aria-labelledby': 'titulo-time' },
-cabecalho('Time contra time', 'Os totais de cada lado. O que vocês fizeram a mais e a menos que o outro time.', 'titulo-time'),
+cabecalho('Time contra time', null, 'titulo-time'),
 h('div', { class: 'cartao comparativo' },
 h('p', { class: 'cabo-cab', 'aria-hidden': 'true' }, h('span', { class: 'nos' }, 'Vocês'), h('span', { class: 'eles' }, 'Eles')),
 linhas),
