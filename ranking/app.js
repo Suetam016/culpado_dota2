@@ -24,7 +24,7 @@ const VISOES = {
 
 // Período escolhido no slider: vale para todas as abas
 const PERIODOS = [
-  ['hoje', 'Hoje'], ['semana', 'Esta semana'], ['mes', 'Este mês'], ['3meses', 'Últimos 3 meses'], ['ano', 'Este ano'], ['tudo', 'Tudo'],
+  ['hoje', 'Hoje'], ['semana', 'Últimos 7 dias'], ['mes', 'Últimos 30 dias'], ['3meses', 'Últimos 3 meses'], ['ano', 'Este ano'], ['tudo', 'Tudo'],
 ];
 const CHAVE_PERIODO = 'ranking-periodo';
 
@@ -148,7 +148,9 @@ function renderizarRanking() {
   }[ordem];
   lista.sort(criterio);
 
-  $('ranking-desc').textContent = `${VISOES[visao].desc} O robô julga as últimas ${PARTIDAS_JULGADAS} de cada um.`;
+  const fora = Object.keys(ranking.historicos).filter(c => !lista.some(j => j.conta === c)).map(c => nomes[c] || c);
+  $('ranking-desc').textContent = `${VISOES[visao].desc} O robô julga as últimas ${PARTIDAS_JULGADAS} de cada um.` +
+    (fora.length && periodo !== 'tudo' ? ` Sem partida nesse período: ${fora.join(', ')}.` : '');
   const ol = $('lista-jogadores');
   ol.innerHTML = lista.length ? '' : '<li class="carregando">Sem partidas nesse recorte ainda.</li>';
 
@@ -686,13 +688,14 @@ function renderizarReddit() {
 
 const MINUTO_LANE = 10; // MINUTO_LANE do parceiros.py
 
-// início do período em segundos (hora local; semana começa na segunda)
+// início do período em segundos (hora local). Janela móvel em vez de "desde segunda": na segunda de manhã
+// "esta semana" ficava só com quem jogou hoje.
 function desdePeriodo(chave = periodo) {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   if (chave === 'hoje') return d / 1000;
-  if (chave === 'semana') { d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d / 1000; }
-  if (chave === 'mes') { d.setDate(1); return d / 1000; }
+  if (chave === 'semana') { d.setDate(d.getDate() - 6); return d / 1000; }
+  if (chave === 'mes') { d.setDate(d.getDate() - 29); return d / 1000; }
   if (chave === '3meses') { d.setMonth(d.getMonth() - 3); return d / 1000; }
   if (chave === 'ano') { d.setMonth(0, 1); return d / 1000; }
   return 0;
