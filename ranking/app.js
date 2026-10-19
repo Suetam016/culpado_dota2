@@ -1231,7 +1231,7 @@ async function contarVisitas() {
   if (!d) return;
   const el = $('visitas');
   const pessoas = n => `${n} ${n === 1 ? 'pessoa' : 'pessoas'}`;
-  el.innerHTML = `<span class="visitas-online"><i></i>${d.online} online agora</span> · ${pessoas(d.hoje)} hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
+  el.innerHTML = `<span class="visitas-online"><i></i>${d.online} online agora</span> · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
   el.title = (d.porDia || []).map(x => `${x.dia.split('-').reverse().slice(0, 2).join('/')}: ${pessoas(x.pessoas)}`).join('\n');
   el.hidden = false;
 }

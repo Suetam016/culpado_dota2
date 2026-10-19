@@ -103,6 +103,14 @@
     <p class="sil-status" data-status="chegando">chegando…</p>
   </section>
 </main>
+<p class="visitas-site" id="visitas-site" hidden></p>
+<style>
+.visitas-site{max-width:1100px;margin:0 auto;padding:4px 16px 28px;color:var(--muted);font-size:13px;text-align:center}
+.visitas-site b{color:var(--good-ink)}
+.visitas-site i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;animation:visitas-pulsa 2s infinite}
+@keyframes visitas-pulsa{70%{box-shadow:0 0 0 6px transparent}0%{box-shadow:0 0 0 0 var(--good)}}
+@media (prefers-reduced-motion:reduce){.visitas-site i{animation:none}}
+</style>
 <script>
 (function () {
   var pre = window.__pre, alvo = document.getElementById('casca-id');
@@ -9167,7 +9175,14 @@ localStorage.setItem('culpado-visitante', id);
 if (!url || !id) return;
 const avisar = () => fetch(`${url}/visita`, { method: 'POST', headers: { 'content-type': 'application/json' },
 body: JSON.stringify({ id, pagina: 'painel' }), keepalive: true }).catch(() => null);
-avisar();
+avisar().then(() => fetch(`${url}/visitas`, { cache: 'no-store' })).then((r) => (r && r.ok ? r.json() : null)).then((d) => {
+const el = document.getElementById('visitas-site');
+if (!d || !el) return;
+const pessoas = (n) => `${n} ${n === 1 ? 'pessoa' : 'pessoas'}`;
+el.innerHTML = `<i></i><b>${d.online} online agora</b> · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
+el.title = (d.porDia || []).map((x) => `${x.dia.split('-').reverse().slice(0, 2).join('/')}: ${pessoas(x.pessoas)}`).join('\n');
+el.hidden = false;
+}).catch(() => null);
 setInterval(() => { if (!document.hidden) avisar(); }, 2 * 60_000);
 }
 
