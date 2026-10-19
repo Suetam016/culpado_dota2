@@ -1,18 +1,18 @@
 {
-  "atualizadoEm": "2026-10-19T15:45:15.393Z",
-  "semAnalise": 0,
+  "atualizadoEm": "2026-10-19T16:41:59.270Z",
+  "semAnalise": 1,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
-      "culpados": 5,
-      "craques": 4,
-      "partidas": 16,
-      "vitorias": 9,
-      "winRate": 56,
+      "culpados": 6,
+      "craques": 5,
+      "partidas": 23,
+      "vitorias": 13,
+      "winRate": 57,
       "streak": null,
-      "mmrGanho": 225,
-      "mmrPerdido": 175
+      "mmrGanho": 325,
+      "mmrPerdido": 250
     },
     {
       "accountId": "111257540",
@@ -30,12 +30,12 @@
       "accountId": "77621319",
       "nome": "Jalim",
       "culpados": 3,
-      "craques": 4,
-      "partidas": 15,
-      "vitorias": 8,
-      "winRate": 53,
+      "craques": 3,
+      "partidas": 14,
+      "vitorias": 7,
+      "winRate": 50,
       "streak": null,
-      "mmrGanho": 200,
+      "mmrGanho": 175,
       "mmrPerdido": 175
     },
     {
@@ -67,11 +67,11 @@
       "nome": "Suéter",
       "culpados": 2,
       "craques": 1,
-      "partidas": 25,
-      "vitorias": 10,
-      "winRate": 40,
+      "partidas": 24,
+      "vitorias": 9,
+      "winRate": 38,
       "streak": null,
-      "mmrGanho": 250,
+      "mmrGanho": 225,
       "mmrPerdido": 375
     },
     {
@@ -103,11 +103,11 @@
       "nome": "Conhecido do Baia",
       "culpados": 0,
       "craques": 0,
-      "partidas": 12,
-      "vitorias": 3,
-      "winRate": 25,
+      "partidas": 11,
+      "vitorias": 2,
+      "winRate": 18,
       "streak": null,
-      "mmrGanho": 75,
+      "mmrGanho": 50,
       "mmrPerdido": 225
     }
   ],
@@ -139,14 +139,6 @@
       }
     ],
     "77621319": [
-      {
-        "matchId": 9047749731,
-        "lado": "radiant",
-        "tipo": "craque",
-        "inicio": 1792165701,
-        "comStack": true,
-        "ranqueada": true
-      },
       {
         "matchId": 9048454587,
         "lado": "radiant",
@@ -298,14 +290,6 @@
         "lado": "dire",
         "tipo": "culpado",
         "inicio": 1791840824,
-        "comStack": true,
-        "ranqueada": true
-      },
-      {
-        "matchId": 9047749731,
-        "lado": "radiant",
-        "tipo": "vitoria",
-        "inicio": 1792165701,
         "comStack": true,
         "ranqueada": true
       },
@@ -1040,6 +1024,62 @@
         "ranqueada": true
       },
       {
+        "matchId": 9050478638,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1792309707,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9050551179,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1792313308,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9050607151,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1792315977,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9050654087,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1792318113,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9050721626,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1792321056,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9050790993,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1792323793,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9050921747,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1792328377,
+        "comStack": false,
+        "ranqueada": true
+      },
+      {
         "matchId": 9050983024,
         "lado": "radiant",
         "tipo": "vitoria",
@@ -1102,14 +1142,6 @@
         "lado": "dire",
         "tipo": "derrota",
         "inicio": 1791840824,
-        "comStack": true,
-        "ranqueada": true
-      },
-      {
-        "matchId": 9047749731,
-        "lado": "radiant",
-        "tipo": "vitoria",
-        "inicio": 1792165701,
         "comStack": true,
         "ranqueada": true
       },
