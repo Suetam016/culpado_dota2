@@ -105,6 +105,35 @@
 </main>
 <p class="visitas-site" id="visitas-site" hidden></p>
 <style>
+.progresso{margin-top:14px;padding:14px 16px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);transition:opacity .4s}
+.progresso.prog-sumindo{opacity:0}
+.prog-cab{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap}
+.prog-cab b{font-size:15px}
+.prog-tempo{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.prog-barra{height:6px;border-radius:3px;background:var(--surface-3);overflow:hidden;margin:10px 0}
+.prog-barra i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--bronze),var(--gold));transition:width .25s linear;box-shadow:0 0 10px rgba(232,176,74,.45)}
+.prog-etapas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.prog-etapas li{display:flex;align-items:center;gap:6px}
+.prog-etapas li.feito{color:var(--good-ink)}
+.prog-etapas li.agora{color:var(--ink);font-weight:700}
+.prog-icone{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--line-strong);flex:none;display:inline-grid;place-items:center}
+.feito .prog-icone{border:0;width:auto;height:auto}
+.feito .prog-icone::before{content:"✓";font-size:12px;font-weight:800}
+.agora .prog-icone{border-color:var(--line-strong);border-top-color:var(--gold);animation:gira .9s linear infinite}
+.capitulos{position:sticky;top:var(--topo-h,64px);z-index:15;margin:4px -4px 18px;padding:8px 4px;overflow-x:auto;scrollbar-width:none;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.capitulos::-webkit-scrollbar{display:none}
+.cap-trilho{display:flex;gap:8px;width:max-content}
+.cap{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-2);text-decoration:none;font-size:14px;font-weight:600;white-space:nowrap;transition:background .2s,color .2s,border-color .2s,transform .15s}
+.cap:hover{border-color:var(--gold);color:var(--ink);transform:translateY(-1px)}
+.cap-num{font-family:var(--font-display,Georgia,serif);font-size:12px;color:var(--gold)}
+.cap-ativo{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.cap-ativo .cap-num{color:var(--on-gold)}
+.cap-espera{opacity:.6}
+#pagina>[data-secao]{scroll-margin-top:calc(var(--topo-h,64px) + 64px)}
+@media (prefers-reduced-motion:reduce){.prog-barra i,.cap{transition:none}.agora .prog-icone{animation:none}}
+</style>
+
+<style>
 .draft-sub{font-size:var(--t-sm,14px);color:var(--muted);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
 .draft-ordem{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
 .draft-passo{position:relative;border-radius:6px;padding:2px;background:var(--nos-wash);box-shadow:inset 0 0 0 1px var(--nos)}
@@ -4466,7 +4495,126 @@ return img;
 
 
 
+// ---------- Barra de progresso da análise: etapas com uma barra que anda sozinha até a próxima etapa chegar
+const ETAPAS = [
+['busca', 'Partida encontrada no OpenDota', 'Buscando a partida no OpenDota'],
+['replay', 'Replay processado', 'Processando o replay'],
+['veredito', 'Veredito montado', 'Montando o veredito'],
+['herois', 'Comparado com quem joga os mesmos heróis', 'Comparando com quem joga os mesmos heróis'],
+];
+const ALVO_ETAPA = [32, 58, 80, 100]; // % da barra ao terminar cada etapa
+let progresso = null;
+
+function iniciarProgresso(id) {
+pararProgresso(true);
+const barra = h('i', { style: 'width:2%' });
+const tempo = h('span', { class: 'prog-tempo' });
+const lista = h('ol', { class: 'prog-etapas' });
+const no = h('div', { class: 'progresso', role: 'status', 'aria-live': 'polite' },
+h('div', { class: 'prog-cab' }, h('b', {}, `Analisando a partida ${id}`), tempo),
+h('div', { class: 'prog-barra', 'aria-hidden': 'true' }, barra),
+lista);
+el.status.textContent = '';
+el.status.append(no);
+progresso = { no, barra, tempo, lista, etapa: 0, largura: 2, inicio: Date.now(), avisos: {}, timer: 0 };
+pintarEtapas();
+progresso.timer = setInterval(() => {
+const p = progresso;
+if (!p) return;
+// anda devagar até perto do fim da etapa atual, sem passar (fica parecendo vivo enquanto espera a rede)
+const alvo = ALVO_ETAPA[Math.min(p.etapa, ALVO_ETAPA.length - 1)] - 3;
+p.largura += Math.max(0.05, (alvo - p.largura) * 0.04);
+p.largura = Math.min(p.largura, alvo);
+p.barra.style.width = `${p.largura.toFixed(1)}%`;
+const passou = (Date.now() - p.inicio) / 1000;
+if (passou > 2 && p.largura > 5) {
+const resta = Math.max(1, Math.round((passou * (100 - p.largura)) / p.largura));
+p.tempo.textContent = resta > 90 ? 'mais de 1 min restante' : `cerca de ${resta} s restantes`;
+}
+}, 200);
+}
+
+function pintarEtapas() {
+const p = progresso;
+if (!p) return;
+p.lista.replaceChildren(...ETAPAS.map(([k, feito, fazendo], i) => h('li', {
+class: i < p.etapa ? 'feito' : i === p.etapa ? 'agora' : '',
+}, h('span', { class: 'prog-icone', 'aria-hidden': 'true' }), p.avisos[k] || (i < p.etapa ? feito : fazendo))));
+}
+
+function avancarProgresso(etapa, aviso) {
+const p = progresso;
+if (!p) return;
+const k = ETAPAS[etapa - 1] && ETAPAS[etapa - 1][0];
+if (aviso && k) p.avisos[k] = aviso;
+p.etapa = Math.max(p.etapa, etapa);
+p.largura = Math.max(p.largura, ALVO_ETAPA[etapa - 1] || 0);
+p.barra.style.width = `${p.largura}%`;
+pintarEtapas();
+if (p.etapa >= ETAPAS.length) {
+p.tempo.textContent = 'pronto';
+pararProgresso();
+}
+}
+
+function pararProgresso(agora = false) {
+const p = progresso;
+if (!p) return;
+clearInterval(p.timer);
+progresso = null;
+const tirar = () => { if (p.no.isConnected) p.no.remove(); };
+if (agora) tirar(); else setTimeout(() => { p.no.classList.add('prog-sumindo'); setTimeout(tirar, 400); }, 1200);
+}
+
+// ---------- Capítulos: o índice da página, que desce junto com a rolagem e marca onde você está
+const CAPITULOS = { chat: 'Oráculo', lances: 'Lances', jogo: 'Gráfico', janela: 'Janela', draft: 'Draft', craques: 'Craques',
+rotas: 'Rotas', itens: 'Itens', tribunal: 'Tribunal', time: 'Time x time' };
+const ROMANOS_CAP = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+let observadorCapitulos = null;
+
+function montarCapitulos() {
+const secoes = [...el.pagina.querySelectorAll(':scope > [data-secao]')].filter((s_) => CAPITULOS[s_.dataset.secao]);
+let nav = el.pagina.querySelector(':scope > .capitulos');
+if (secoes.length < 2) { if (nav) nav.remove(); return; }
+if (!nav) nav = h('nav', { class: 'capitulos', 'aria-label': 'Capítulos da análise' });
+nav.replaceChildren(h('div', { class: 'cap-trilho' }, secoes.map((s_, i) => h('a', {
+href: `#cap-${s_.dataset.secao}`,
+class: `cap${s_.classList.contains('silhueta') ? ' cap-espera' : ''}`,
+'data-alvo': s_.dataset.secao,
+onclick: (ev) => { ev.preventDefault(); s_.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); },
+}, h('span', { class: 'cap-num' }, ROMANOS_CAP[i] || i + 1), CAPITULOS[s_.dataset.secao]))));
+const topo = el.pagina.querySelector(':scope > [data-secao="topo"]');
+if (nav.parentNode !== el.pagina) {
+if (topo && topo.nextSibling) el.pagina.insertBefore(nav, topo.nextSibling); else el.pagina.prepend(nav);
+}
+secoes.forEach((s_) => { s_.id = s_.id || `cap-${s_.dataset.secao}`; });
+if (observadorCapitulos) observadorCapitulos.disconnect();
+if (!('IntersectionObserver' in window)) return;
+const visiveis = new Map();
+observadorCapitulos = new IntersectionObserver((entradas) => {
+entradas.forEach((e) => visiveis.set(e.target.dataset.secao, e.isIntersecting ? e.boundingClientRect.top : null));
+const atual = [...visiveis].filter(([, t]) => t != null).sort((a, b) => Math.abs(a[1]) - Math.abs(b[1]))[0];
+if (!atual) return;
+nav.querySelectorAll('.cap').forEach((a) => {
+const ativo = a.dataset.alvo === atual[0];
+a.classList.toggle('cap-ativo', ativo);
+if (ativo) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+if (ativo && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: a.offsetLeft - nav.clientWidth / 2 + a.offsetWidth / 2, behavior: 'smooth' });
+});
+}, { rootMargin: '-35% 0px -55% 0px' });
+secoes.forEach((s_) => observadorCapitulos.observe(s_));
+}
+
+function medirTopo() {
+const topo = document.querySelector('header.topo');
+// no celular o cabeçalho rola junto (não é sticky): aí os capítulos grudam no topo da tela
+if (topo) document.documentElement.style.setProperty('--topo-h', getComputedStyle(topo).position === 'sticky' ? `${topo.offsetHeight}px` : '0px');
+}
+medirTopo();
+addEventListener('resize', medirTopo);
+
 function mostrarStatus(texto, tipo) {
+if (texto && progresso) pararProgresso(true);
 el.status.textContent = '';
 if (!texto) return;
 el.status.append(h('p', { class: `status-msg ${tipo || ''}`, role: tipo === 'erro' ? 'alert' : 'status' }, texto));
@@ -4744,8 +4892,9 @@ let mapaJa = null;
 const mapaP = carregarMapa(id); // o mapa vem do próprio site: começa já, em paralelo com a partida
 mapaP.then((m) => { mapaJa = m; });
 try {
-if (!ehEmbutida(id) && !SO_EMBUTIDO) mostrarStatus('Buscando a partida no OpenDota…', 'carregando');
+if (!ehEmbutida(id) && !SO_EMBUTIDO) iniciarProgresso(id);
 const dados = await dadosDaPartida(id, signal);
+avancarProgresso(1);
 dados.amigos = AMIGOS;
 dados.rotas = await baseDeRotas();
 if (!vivo()) return;
@@ -4753,9 +4902,12 @@ if (mapaJa && !dados.mapa) dados.mapa = mapaJa;
 Object.assign(estado, { id, dados, lado, exemplo, f3: dados.embutida ? 'pronto' : 'carregando' });
 estado.resultado = analisarAgora();
 marcar('F1');
-mostrarStatus('');
+avancarProgresso(2, dados.match.version == null ? 'Replay ainda não analisado: o resumo sai do placar e a análise já foi pedida' : null);
+if (!progresso) mostrarStatus('');
 if (estado.revelado !== id) { estado.revelado = id; revelar(estado.resultado); } // por cima da página
 if (mesma) semPularRolagem(() => render(estado.resultado)); else render(estado.resultado);
+avancarProgresso(3);
+if (dados.embutida) avancarProgresso(4);
 el.botao.disabled = false;
 el.pagina.classList.remove('recarregando');
 pedirAnalise = !exemplo && !SO_EMBUTIDO && dados.match.version == null && !parseJaPedido.has(id);
@@ -4781,10 +4933,12 @@ if (!vivo()) return;
 const r3 = mudou ? analisarAgora() : estado.resultado;
 estado.f3 = r3.disponivel && r3.disponivel.itensHeroi ? 'pronto' : 'falhou';
 marcar('F3');
+avancarProgresso(4, estado.f3 === 'falhou' ? 'Comparação com quem joga os mesmos heróis indisponível agora' : null);
 adotar(r3, ['itensHeroi']);
 }
 } catch (err) {
 if (ehAbort(err) || !vivo()) return;
+pararProgresso(true);
 if (!estado.resultado) el.pagina.textContent = ''; // casca e silhuetas saem: não vem nada para elas
 mostrarStatus(mensagemDeErro(err, id), 'erro');
 } finally {
@@ -4887,6 +5041,7 @@ desenhos.clear();
 el.pagina.textContent = '';
 for (const sec of SECOES) { const no = montarSecao(sec, r); if (no) el.pagina.append(no); }
 el.pagina.append(rodape(r));
+montarCapitulos();
 requestAnimationFrame(() => redesenhar());
 if (observador) observador.disconnect();
 if ('ResizeObserver' in window) {
@@ -4925,6 +5080,7 @@ el.pagina.insertBefore(novo, depois || null);
 }
 if (novo) trocadas.push(sec.id);
 });
+if (trocadas.length) montarCapitulos();
 redesenhar(trocadas);
 });
 const avisos = { itensHeroi: 'Itens prontos', mapa: 'Mapa pronto' };
@@ -5024,6 +5180,7 @@ if (alvo) alvo.textContent = exemplo ? `Partida de exemplo ${id}` : `Partida ${i
 el.pagina.append(topo);
 }
 el.pagina.append(silLances(null), silJogo(null), silRotas(null), silItens(null), silTribunal(null));
+montarCapitulos();
 }
 
 function cabecalho(titulo, texto, id) {
