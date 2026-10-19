@@ -4930,19 +4930,28 @@ mostrarStatus('O replay ainda não foi analisado. Replays ficam disponíveis por
 
 const parseJaPedido = new Set();
 
-// Partida recém-terminada: o OpenDota só conhece depois que alguém pede (POST /request busca na Steam).
-// Pede uma vez e tenta de novo sozinho; desiste em 5 min (aí o ID deve estar errado mesmo).
-const BUSCA_NOVA_MS = 5 * 60e3;
+// Partida recém-terminada: o OpenDota só conhece depois que alguém pede (POST /request busca na Steam e entra
+// numa fila). Acompanha o pedido na fila (GET /request/<job>), pede de novo se ele sumir sem trazer a partida
+// e tenta a partida a cada 10 s; desiste em 15 min (aí o ID deve estar errado ou a Steam não entregou).
+const BUSCA_NOVA_MS = 15 * 60e3;
 const BUSCA_NOVA_PASSO_MS = 10e3;
+const BUSCA_NOVA_REPEDIR_MS = 4 * 60e3;
 async function buscarPartidaNova(id, carga) {
 const vivo = () => estado.carga === carga && !carga.signal.aborted;
-try { await api(`/request/${id}`, { method: 'POST' }); } catch (e) { return false; }
+const pedir = () => api(`/request/${id}`, { method: 'POST' }).then((x) => (x && x.job && x.job.jobId) || null);
+let job;
+try { job = await pedir(); } catch (e) { return false; }
 parseJaPedido.add(String(id));
-const limite = Date.now() + BUSCA_NOVA_MS;
-while (Date.now() < limite) {
+const inicio = Date.now();
+let ultimoPedido = inicio;
+let pedidos = 1;
+let fila = null;
+while (Date.now() - inicio < BUSCA_NOVA_MS) {
 if (!vivo()) return true;
-const resta = Math.max(1, Math.round((limite - Date.now()) / 1000));
-mostrarStatus(`A partida ${id} é nova e o OpenDota ainda não tinha ela. Já pedi pra ele buscar na Steam e tento de novo sozinho a cada 10 s (desisto em ${Math.ceil(resta / 60)} min).`, 'carregando');
+const passou = Math.round((Date.now() - inicio) / 1000);
+const tempo = `${Math.floor(passou / 60)}:${String(passou % 60).padStart(2, '0')}`;
+const naFila = fila ? ` Na fila do OpenDota${fila.attempts ? ` (tentativa ${fila.attempts + 1})` : ''}.` : '';
+mostrarStatus(`A partida ${id} é nova e o OpenDota ainda não tinha ela. Pedi pra ele buscar na Steam há ${tempo}.${naFila} Pode deixar a aba aberta: a análise abre sozinha quando chegar (costuma levar de 1 a 10 min).`, 'carregando');
 await new Promise((r) => setTimeout(r, BUSCA_NOVA_PASSO_MS));
 if (!vivo()) return true;
 const m = await api(`/matches/${id}`, { signal: carga.signal }).catch(() => null);
@@ -4950,6 +4959,13 @@ if (m && Array.isArray(m.players) && m.players.length) {
 if (m.version != null) partidasMem.set(String(id), m);
 carregar(id);
 return true;
+}
+fila = job ? await api(`/request/${job}`, { signal: carga.signal }).catch(() => fila) : null;
+// o pedido saiu da fila e a partida não veio: pede de novo (no máximo a cada 4 min)
+if ((!fila || !job) && Date.now() - ultimoPedido >= BUSCA_NOVA_REPEDIR_MS && pedidos < 4) {
+job = await pedir().catch(() => job);
+ultimoPedido = Date.now();
+pedidos++;
 }
 }
 return false;
@@ -5054,6 +5070,10 @@ if (err && err.code === 'nao-encontrada' && !exemplo && !SO_EMBUTIDO && !ehEmbut
 estado.buscandoNova = id;
 const achou = await buscarPartidaNova(id, carga).finally(() => { estado.buscandoNova = null; });
 if (achou || !vivo()) return;
+pararProgresso(true);
+if (!estado.resultado) el.pagina.textContent = '';
+mostrarStatus(`O OpenDota não conseguiu trazer a partida ${id} em 15 min. Se o ID estiver certo, a fila deles está lenta: tente de novo daqui a pouco (o pedido continua lá).`, 'erro');
+return;
 }
 if (!estado.resultado) el.pagina.textContent = ''; // casca e silhuetas saem: não vem nada para elas
 mostrarStatus(mensagemDeErro(err, id), 'erro');
