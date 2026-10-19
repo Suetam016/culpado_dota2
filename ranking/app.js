@@ -397,15 +397,22 @@ function cartaoComposicao(g) {
 }
 
 /* ---------- Sugestão de time ----------
- * Win rate de cada amigo em cada (herói, posição), puxada pra 50% quando há poucos jogos (prior de PESO_PRIOR
- * partidas), mais um bônus para duplas de heróis que já deram certo entre dois amigos. Busca exaustiva: no
- * máximo 5 amigos × 120 jeitos de distribuir as posições × 3 heróis por amigo/posição. */
+ * Nota de cada pick = proficiência do amigo no herói/posição (win rate puxada pra 50% quando há poucos jogos, prior
+ * de PESO_PRIOR partidas, mais um bônus de experiência por número de jogos) + força do herói no meta atual (win rate
+ * do OpenDota no patch). O time soma os picks, as duplas de heróis que já deram certo entre dois amigos e as
+ * formações (3+ amigos nas mesmas posições) que já jogaram juntas. Busca exaustiva: no máximo 5 amigos × 120 jeitos
+ * de distribuir as posições × 3 heróis por amigo/posição. */
 
 const PESO_PRIOR = 10;
 const MIN_JOGOS_PICK = 2;
 const PESO_SINERGIA = 0.5;
+const PESO_EXPERIENCIA = 0.15; // × ln(1 + jogos): 4 jogos ≈ +0,24, 20 jogos ≈ +0,46
+const PESO_META = 2;           // × logit(win rate do meta): 55% ≈ +0,4, 45% ≈ -0,4
+const PESO_FORMACAO = 1;
 const MAX_TIME = 5;
 let escolhidos = null;
+let fixos = {};      // conta -> { heroi, pos } escolhido na mão (clicando no herói)
+let abertoPick = null; // conta com a lista de opções aberta
 
 const suavizado = (v, j) => (v + PESO_PRIOR / 2) / (j + PESO_PRIOR);
 const logit = p => Math.log(p / (1 - p));
@@ -415,7 +422,10 @@ function candidatos(conta) {
   const porPos = {};
   for (const minimo of [MIN_JOGOS_PICK, 1]) {
     pool.filter(x => x.pos && x.jogos >= minimo).forEach(x => {
-      (porPos[x.pos] = porPos[x.pos] || []).push({ ...x, nota: logit(suavizado(x.vitorias, x.jogos)) });
+      const wrMeta = metaDoHeroi(x.heroi);
+      const notaMeta = wrMeta == null ? 0 : PESO_META * logit(wrMeta / 100);
+      const notaJogador = logit(suavizado(x.vitorias, x.jogos)) + PESO_EXPERIENCIA * Math.log(1 + x.jogos);
+      (porPos[x.pos] = porPos[x.pos] || []).push({ ...x, wrMeta, nota: notaJogador + notaMeta });
     });
     if (Object.keys(porPos).length) break;
   }
@@ -435,17 +445,39 @@ function permutacoes(n, livres = [1, 2, 3, 4, 5]) {
   return livres.flatMap(pos => permutacoes(n - 1, livres.filter(x => x !== pos)).map(r => [pos, ...r]));
 }
 
+// win rate do herói no patch atual (última foto do meta.json), ou null
+function metaDoHeroi(id) {
+  const h = meta && meta.historico && meta.historico[meta.historico.length - 1];
+  const wr = h && h.wr && h.wr[id];
+  return typeof wr === 'number' ? wr : null;
+}
+
+// formações já jogadas (3+ amigos, cada um numa posição) cujos membros estão todos entre os escolhidos
+function formacoesDe(contas) {
+  return ((parceiros && parceiros.composicoes) || []).filter(g => g.membros.every(c => contas.includes(c)))
+    .flatMap(g => g.formacoes.map(f => ({ ...f, membros: g.membros })));
+}
+
 function melhoresTimes(contas) {
   const cand = Object.fromEntries(contas.map(c => [c, candidatos(c)]));
+  const formacoes = formacoesDe(contas);
   const times = [];
   for (const posicoes of permutacoes(contas.length)) {
-    const opcoes = contas.map((c, i) => (cand[c][posicoes[i]] || []).slice(0, 3));
+    const posDe = Object.fromEntries(contas.map((c, i) => [c, posicoes[i]]));
+    const formacao = formacoes.filter(f => f.membros.every(c => f.posicoes[c] === posDe[c]));
+    const notaFormacao = formacao.reduce((s, f) => s + PESO_FORMACAO * logit(suavizado(f.vitorias, f.jogos)), 0);
+    const opcoes = contas.map((c, i) => {
+      const lista = cand[c][posicoes[i]] || [];
+      const f = fixos[c];
+      if (!f) return lista.slice(0, 3);
+      return f.pos === posicoes[i] ? lista.filter(x => x.heroi === f.heroi) : [];
+    });
     if (opcoes.some(o => !o.length)) continue;
     const combinar = (i, atual) => {
       if (i === contas.length) {
         const herois = new Set(atual.map(x => x.heroi));
         if (herois.size < atual.length) return;
-        let nota = atual.reduce((s, x) => s + x.nota, 0);
+        let nota = notaFormacao + atual.reduce((s, x) => s + x.nota, 0);
         const sinergias = [];
         for (let a = 0; a < atual.length; a++) for (let b = a + 1; b < atual.length; b++) {
           const sn = sinergiaEntre(contas[a], atual[a].heroi, contas[b], atual[b].heroi);
@@ -454,7 +486,7 @@ function melhoresTimes(contas) {
             sinergias.push({ a: contas[a], b: contas[b], ...sn, ha: atual[a].heroi, hb: atual[b].heroi });
           }
         }
-        times.push({ nota, picks: atual.map((x, k) => ({ ...x, conta: contas[k], pos: posicoes[k] })), sinergias });
+        times.push({ nota, picks: atual.map((x, k) => ({ ...x, conta: contas[k], pos: posicoes[k] })), sinergias, formacao });
         return;
       }
       opcoes[i].forEach(o => combinar(i + 1, [...atual, o]));
@@ -488,6 +520,7 @@ function montarSugestao() {
       else if (escolhidos.size >= MAX_TIME) { aviso.textContent = 'Time cheio: desmarque alguém antes.'; return; }
       else escolhidos.add(c);
       b.setAttribute('aria-pressed', String(escolhidos.has(c)));
+      if (!escolhidos.has(c)) delete fixos[c];
       renderizarSugestao();
     });
     box.append(b);
@@ -496,43 +529,96 @@ function montarSugestao() {
   renderizarSugestao();
 }
 
+function seloMeta(wr) {
+  if (wr == null) return '';
+  const forte = wr >= 52, fraco = wr <= 48;
+  return `<span class="selo-meta ${forte ? 'bom' : fraco ? 'ruim' : ''}" title="Win rate do herói no patch atual (OpenDota)">${forte ? '🔥' : fraco ? '🧊' : '⚖️'} meta ${wr.toLocaleString('pt-BR')}%</span>`;
+}
+
 function renderizarSugestao() {
   const alvo = $('time-sugerido');
+  if (!alvo.dataset.ouvindo) {
+    alvo.dataset.ouvindo = '1';
+    alvo.addEventListener('click', e => {
+      const abrir = e.target.closest('[data-abrir]');
+      const opcao = e.target.closest('[data-opcao]');
+      const soltar = e.target.closest('[data-soltar]');
+      if (opcao) {
+        const [c, heroi, pos] = opcao.dataset.opcao.split('|');
+        fixos[c] = { heroi: Number(heroi), pos: Number(pos) };
+        // quem já estava travado nessa posição sai dela
+        Object.keys(fixos).forEach(o => { if (o !== c && fixos[o].pos === Number(pos)) delete fixos[o]; });
+        abertoPick = null;
+      } else if (soltar) {
+        if (soltar.dataset.soltar === '*') fixos = {};
+        else delete fixos[soltar.dataset.soltar];
+        abertoPick = null;
+      } else if (abrir) {
+        abertoPick = abertoPick === abrir.dataset.abrir ? null : abrir.dataset.abrir;
+      } else return;
+      renderizarSugestao();
+    });
+  }
   const contas = [...escolhidos];
+  Object.keys(fixos).forEach(c => { if (!escolhidos.has(c)) delete fixos[c]; });
   if (!contas.length) { alvo.innerHTML = '<p class="carregando">Marque quem vai jogar.</p>'; return; }
   const { times, semDados } = melhoresTimes(contas);
   if (!times.length) {
-    alvo.innerHTML = `<p class="carregando">Não deu pra montar um time sem repetir posição com o histórico de ${esc(semDados.map(nomeJogador).join(', ') || 'vocês')}. Tente outra combinação.</p>`;
+    alvo.innerHTML = Object.keys(fixos).length
+      ? `<p class="carregando">Com esses heróis travados não dá pra fechar o time. <button type="button" class="chip" data-soltar="*">Voltar à sugestão</button></p>`
+      : `<p class="carregando">Não deu pra montar um time sem repetir posição com o histórico de ${esc(semDados.map(nomeJogador).join(', ') || 'vocês')}. Tente outra combinação.</p>`;
     return;
   }
   const [melhor] = times;
   const media = Math.round(100 * melhor.picks.reduce((s, x) => s + suavizado(x.vitorias, x.jogos), 0) / melhor.picks.length);
-  // segunda opção de cada um: o melhor time em que essa pessoa joga outro herói
-  const alternativa = c => {
-    const atual = melhor.picks.find(x => x.conta === c).heroi;
-    const t = times.find(t => t.picks.find(x => x.conta === c).heroi !== atual);
-    return t && t.picks.find(x => x.conta === c);
-  };
   const ordenados = [...melhor.picks].sort((a, b) => a.pos - b.pos);
+  const pct = x => Math.round((100 * x.vitorias) / x.jogos);
+  const classe = x => (x.vitorias / x.jogos > 0.5 ? 'bom' : x.vitorias / x.jogos < 0.5 ? 'ruim' : '');
+
+  // opções de quem foi clicado: outros heróis na mesma posição e o melhor de cada outra posição
+  const painel = () => {
+    const x = melhor.picks.find(p => p.conta === abertoPick);
+    if (!x) return '';
+    const cand = candidatos(x.conta);
+    const usados = new Set(melhor.picks.filter(p => p.conta !== x.conta).map(p => p.heroi));
+    const opcao = o => `<button type="button" class="opcao${o.heroi === x.heroi && o.pos === x.pos ? ' opcao-atual' : ''}" data-opcao="${x.conta}|${o.heroi}|${o.pos}"
+        ${usados.has(o.heroi) ? 'disabled title="Outro jogador do time já está com esse herói"' : ''}>
+        ${heroi(o.heroi)}<b>${esc(nomeHeroi(o.heroi))}</b><span>${POSICOES[o.pos]}</span>
+        <span class="opcao-num ${classe(o)}">${o.vitorias}/${o.jogos} · ${pct(o)}%</span>${seloMeta(o.wrMeta)}</button>`;
+    const mesma = (cand[x.pos] || []).slice(0, 8);
+    const outras = [1, 2, 3, 4, 5].filter(p => p !== x.pos).flatMap(p => (cand[p] || []).slice(0, 2));
+    return `<div class="opcoes">
+      <div class="opcoes-cab"><b>Outras opções de ${esc(nomeJogador(x.conta))}</b>
+        <button type="button" class="opcoes-fechar" data-abrir="${x.conta}" aria-label="Fechar">✕</button></div>
+      <div class="bloco-titulo">De ${POSICOES[x.pos]}</div>
+      <div class="opcoes-lista">${mesma.map(opcao).join('') || '<span class="cartao-sub">Só esse herói nessa posição.</span>'}</div>
+      ${outras.length ? `<div class="bloco-titulo">Em outra posição</div><div class="opcoes-lista">${outras.map(opcao).join('')}</div>` : ''}
+      <p class="time-nota">Escolher um herói trava esse pick e remonta o resto do time em volta dele.</p>
+    </div>`;
+  };
+
   alvo.innerHTML = `
     <div class="time">
       <div class="time-cab">
-        <div><h3>Time sugerido</h3><p>${contas.length} ${contas.length === 1 ? 'jogador' : 'jogadores'} · aproveitamento médio nesses picks ≈ ${media}%</p></div>
+        <div><h3>Time sugerido</h3><p>${contas.length} ${contas.length === 1 ? 'jogador' : 'jogadores'} · aproveitamento médio nesses picks ≈ ${media}% · toque no herói pra ver outras opções</p></div>
+        ${Object.keys(fixos).length ? '<button type="button" class="chip" data-soltar="*">↺ Voltar à sugestão</button>' : ''}
       </div>
-      <div class="escalacao">${ordenados.map(x => {
-        const alt = alternativa(x.conta);
-        return `<div class="pick">
-          <div class="pick-pos">${POSICOES[x.pos]}</div>
-          ${heroi(x.heroi)}
+      <div class="escalacao">${ordenados.map(x => `<div class="pick${fixos[x.conta] ? ' pick-fixo' : ''}${abertoPick === x.conta ? ' pick-aberto' : ''}">
+          <div class="pick-pos">${POSICOES[x.pos]}${fixos[x.conta] ? ' · 🔒' : ''}</div>
+          <button type="button" class="pick-trocar" data-abrir="${x.conta}" aria-expanded="${abertoPick === x.conta}" title="Ver outras opções de ${esc(nomeJogador(x.conta))}">
+            ${heroi(x.heroi)}<span class="pick-trocar-txt">⇄ opções</span></button>
           <div class="pick-heroi">${esc(nomeHeroi(x.heroi))}</div>
           <div class="pick-quem">${esc(nomeJogador(x.conta))}</div>
-          <div class="pick-num ${x.vitorias / x.jogos > 0.5 ? 'bom' : x.vitorias / x.jogos < 0.5 ? 'ruim' : ''}">${x.vitorias}V em ${x.jogos} (${Math.round(100 * x.vitorias / x.jogos)}%)</div>
-          ${alt ? `<div class="pick-alt">ou ${esc(nomeHeroi(alt.heroi))} de ${POSICOES[alt.pos]} (${alt.vitorias}/${alt.jogos})</div>` : ''}
-        </div>`;
-      }).join('')}</div>
+          <div class="pick-num ${classe(x)}">${x.vitorias}V em ${x.jogos} (${pct(x)}%)</div>
+          ${seloMeta(x.wrMeta)}
+          ${fixos[x.conta] ? `<button type="button" class="pick-soltar" data-soltar="${x.conta}">destravar</button>` : ''}
+        </div>`).join('')}</div>
+      ${painel()}
+      ${melhor.formacao.length ? `<div class="sinergia-time">Formação que vocês já jogaram: ${melhor.formacao.map(f =>
+        `${f.membros.map(c => `${esc(nomeJogador(c))} ${POSICOES[f.posicoes[c]]}`).join(', ')} <b>${f.vitorias}/${f.jogos}</b>`).join(' · ')}</div>` : ''}
       ${melhor.sinergias.length ? `<div class="sinergia-time">Sinergia: ${melhor.sinergias.map(sn =>
         `${esc(nomeHeroi(sn.ha))} (${esc(nomeJogador(sn.a))}) + ${esc(nomeHeroi(sn.hb))} (${esc(nomeJogador(sn.b))}) <b>${sn.vitorias}/${sn.jogos}</b>`).join(' · ')}</div>` : ''}
-      <p class="time-nota">Com poucos jogos num herói o modelo puxa a nota pra 50%, então quem tem muitos jogos bons pesa mais que um 2/2. É o histórico de vocês, não leva em conta o draft do inimigo.</p>
+      <p class="time-nota">A nota junta a proficiência de cada um no herói (win rate e quantos jogos tem com ele), a força do herói no meta atual, as duplas de heróis e as formações que já deram certo entre vocês. Com poucos jogos o modelo puxa a win rate pra 50%, então quem tem muitos jogos bons pesa mais que um 2/2. É o histórico de vocês${periodo === 'tudo' ? '' : ' no período escolhido'}, não leva em conta o draft do inimigo.</p>
     </div>`;
 }
 
