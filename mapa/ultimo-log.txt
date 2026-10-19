@@ -1349,3 +1349,12 @@ OK 9051739695
 1 mapas novos
 Fila: []
 0 mapas novos
+Fila: [9051791878]
+  replay http://replay202.valve.net/570/9051791878_588293541.dem.bz2 -> HTTP 200 application/octet-stream 48535896 inicio=b'(\xb5/\xfd\x00`\xd4\x19\x0fn`\x1e'
+  9051791878: 182504 eventos; tipos [('actions', 85608), ('DOTA_COMBATLOG_DAMAGE', 30413), ('interval', 28000), ('DOTA_COMBATLOG_MODIFIER_ADD', 9462), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 9391), ('DOTA_COMBATLOG_XP', 3801), ('DOTA_COMBATLOG_HEAL', 3750), ('DOTA_COMBATLOG_DEATH', 3648)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Disruptor", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 87, "variant": 0, "facet_hero_id": 87, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "
+  exemplo de habilidade: {"time": -66, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_disruptor", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  2455 registros de dano herói->herói
+  1766 usos de skill/item de 3143 no combat log
+OK 9051791878
+1 mapas novos
