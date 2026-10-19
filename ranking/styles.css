@@ -867,3 +867,24 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
   .tf-casa-jogos li { flex-wrap: wrap; row-gap: 3px; }
   .ico { width: 21px; height: 21px; }
 }
+/* coluna de vocês: os heróis da categoria */
+.tf-hcs { list-style: none; display: grid; gap: 8px; max-height: 520px; overflow-y: auto; scrollbar-width: thin; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+.tf-hc { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 5px; }
+.tf-hc-topo { display: flex; align-items: center; gap: 8px; }
+.ico.ico-g { width: 34px; height: 34px; }
+.tf-hc-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.tf-hc-nome b { font-size: 14px; }
+.tf-hc-nome small { color: var(--muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-hc-wr { text-align: right; display: flex; flex-direction: column; }
+.tf-hc-wr b { font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
+.tf-hc-wr small { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.tf-hc-barra { height: 4px; border-radius: 2px; background: var(--bad-wash); overflow: hidden; }
+.tf-hc-barra i { display: block; height: 100%; background: var(--good); }
+.tf-hc-imp { font-size: 12px; color: var(--ink-2); font-family: var(--font-mono); }
+.tf-hc-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 11.5px; }
+.tf-hc-linha > span { min-width: 76px; color: var(--muted); }
+.tf-hc-linha.bom > span { color: var(--good-ink); } .tf-hc-linha.ruim > span { color: var(--bad-ink); }
+.tf-contra { display: inline-flex; align-items: center; gap: 2px; }
+.tf-contra small { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
+.tf-hc { min-width: 0; overflow: hidden; }
+.tf-hc-wr { flex: none; }

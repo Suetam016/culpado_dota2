@@ -1260,7 +1260,49 @@ function jogosDaCasa(todos, casa) {
   return todos.filter(g => (l === '*' || ativo(g.sinEles, l)) && (c === '*' || ativo(g.sinNos, c)));
 }
 
+// Coluna de vocês: os heróis daquela categoria que vocês jogaram nos jogos com os 5, quanto cada um ganhou,
+// o impacto médio (KDA, GPM) e contra quais heróis deles ele foi bem ou sofreu, tudo dos jogos de vocês.
+function painelDaColuna(todos, colId, info) {
+  const tracos = colId === 'babysit' ? ['late', 'baba'] : [colId];
+  const slugs = new Set(tracos.flatMap(t => (TRACOS[t] ? TRACOS[t].herois.split(' ') : [])));
+  const slugDe = id => (parceiros.herois[id] || [])[0];
+  const porHeroi = new Map();
+  todos.forEach(g => g.nos.forEach(([conta, heroi, , k, d, a, gpm]) => {
+    if (!heroi || !slugs.has(slugDe(heroi))) return;
+    const x = porHeroi.get(heroi) || porHeroi.set(heroi, { heroi, n: 0, v: 0, quem: new Map(), k: 0, d: 0, a: 0, gpm: 0, nk: 0, contra: new Map() }).get(heroi);
+    x.n++; x.v += g.v;
+    x.quem.set(conta, (x.quem.get(conta) || 0) + 1);
+    if (k != null) { x.k += k; x.d += d; x.a += a; x.gpm += gpm || 0; x.nk++; }
+    g.eles.forEach(e => { if (!e) return; const c = x.contra.get(e) || x.contra.set(e, [0, 0]).get(e); c[0]++; c[1] += g.v; });
+  }));
+  const herois = [...porHeroi.values()].sort((a, b) => b.n - a.n || b.v - a.v);
+  const cab = `<div class="tf-casa-cab"><b>${info[colId].icone} ${esc(info[colId].nome)} de vocês: quem joga isso</b><button type="button" data-casa="" aria-label="Fechar">✕</button></div>`;
+  if (!herois.length) return `<aside class="tf-casa-painel">${cab}<p class="tf-casa-placar">Nenhum herói dessa categoria nos jogos com os 5 nesse período.</p></aside>`;
+  const media = (x, campo) => (x.nk ? (x[campo] / x.nk).toLocaleString('pt-BR', { maximumFractionDigits: campo === 'gpm' ? 0 : 1 }) : '?');
+  const lista = (x, bom) => [...x.contra].filter(([, [n, v]]) => n >= 2 && (bom ? v / n >= 0.67 : v / n <= 0.34))
+    .sort((a, b) => (bom ? b[1][1] / b[1][0] - a[1][1] / a[1][0] : a[1][1] / a[1][0] - b[1][1] / b[1][0]) || b[1][0] - a[1][0]).slice(0, 4)
+    .map(([e, [n, v]]) => `<span class="tf-contra" title="${esc(nomeHeroi(e))}: ${v}V ${n - v}D">${iconeHeroi(e)}<small>${v}/${n}</small></span>`).join('');
+  const card = x => {
+    const wr = pctDe(x.v, x.n);
+    const bons = lista(x, true), ruins = lista(x, false);
+    return `<li class="tf-hc">
+      <div class="tf-hc-topo">${iconeHeroi(x.heroi, 'ico ico-g')}
+        <div class="tf-hc-nome"><b>${esc(nomeHeroi(x.heroi))}</b><small>${[...x.quem].sort((a, b) => b[1] - a[1]).map(([c]) => esc(nomeJogador(c))).join(', ')}</small></div>
+        <div class="tf-hc-wr ${wr > 50 ? 'bom' : wr < 50 ? 'ruim' : ''}"><b>${wr}%</b><small>${x.v}V ${x.n - x.v}D</small></div></div>
+      <div class="tf-hc-barra"><i style="width:${wr}%"></i></div>
+      <p class="tf-hc-imp">Média no jogo: ${media(x, 'k')}/${media(x, 'd')}/${media(x, 'a')} · ${media(x, 'gpm')} GPM</p>
+      ${bons ? `<p class="tf-hc-linha bom"><span>Bom contra</span>${bons}</p>` : ''}
+      ${ruins ? `<p class="tf-hc-linha ruim"><span>Sofreu contra</span>${ruins}</p>` : ''}
+    </li>`;
+  };
+  return `<aside class="tf-casa-painel">${cab}
+    <p class="tf-casa-placar">${herois.length} herói${herois.length === 1 ? '' : 's'} nos jogos com os 5 · “bom/sofreu contra” = heróis deles enfrentados 2+ vezes</p>
+    <ul class="tf-hcs">${herois.map(card).join('')}</ul>
+  </aside>`;
+}
+
 function painelDaCasa(todos, casa, info) {
+  if (casa && casa.startsWith('*|')) return painelDaColuna(todos, casa.slice(2), info);
   const xs = jogosDaCasa(todos, casa);
   if (!xs) return `<aside class="tf-casa-painel vazio"><p>Toque numa casa da grade pra ver os jogos dela: os heróis de vocês contra os deles.</p></aside>`;
   const [l, c] = casa.split('|');
