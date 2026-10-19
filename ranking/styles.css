@@ -635,3 +635,40 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 .selo-meta { display: inline-block; margin-top: 4px; font-size: 11px; font-family: var(--font-mono); color: var(--muted); }
 .opcao .selo-meta { margin-top: 0; }
 .opcao .selo-meta.bom { color: var(--good-ink); } .opcao .selo-meta.ruim { color: var(--bad-ink); }
+
+/* ---------- Traços e sinergias (estilo TFT) ---------- */
+.pick-trocar, .opcao-img { position: relative; display: block; }
+.power {
+  position: absolute; top: 2px; right: 4px; font-size: 13px; line-height: 1; padding: 3px 5px; border-radius: 999px;
+  background: rgba(10, 8, 4, .82); box-shadow: 0 0 0 1px rgba(246, 210, 122, .55);
+}
+.power-2 { box-shadow: 0 0 0 1px #f6d27a, 0 0 12px rgba(246, 210, 122, .8); animation: power-pulsa 1.8s ease-in-out infinite; }
+.power-fraco { box-shadow: 0 0 0 1px rgba(120, 180, 255, .6); }
+@keyframes power-pulsa { 50% { box-shadow: 0 0 0 1px #f6d27a, 0 0 20px rgba(246, 210, 122, 1); } }
+.opcao-img .power { top: 0; right: 0; font-size: 11px; padding: 2px 4px; }
+.tracos { display: flex; justify-content: center; flex-wrap: wrap; gap: 3px; margin: 4px 0 2px; }
+.traco {
+  width: 24px; height: 24px; display: grid; place-items: center; font-size: 13px; border-radius: 6px;
+  background: var(--surface-3); box-shadow: inset 0 0 0 1px var(--line-strong); cursor: help;
+}
+.opcao .traco { width: 20px; height: 20px; font-size: 11px; }
+.sinergias-time { margin-top: 14px; }
+.sinergia-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sinergia-chip {
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--line); min-width: 150px;
+}
+.sinergia-chip b { display: block; font-size: 13px; line-height: 1.2; }
+.sinergia-icone {
+  width: 32px; height: 32px; display: grid; place-items: center; font-size: 17px; flex: none;
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); background: var(--surface-3);
+}
+.nivel-bronze { border-color: #b0773f; } .nivel-bronze .sinergia-icone { background: linear-gradient(135deg, #c98a4f, #7a4a22); }
+.nivel-prata { border-color: #b9c3cc; } .nivel-prata .sinergia-icone { background: linear-gradient(135deg, #e3e9ee, #7b8791); }
+.nivel-ouro { border-color: #f6d27a; box-shadow: 0 0 14px rgba(246, 210, 122, .3); }
+.nivel-ouro .sinergia-icone { background: linear-gradient(135deg, #ffe7a3, #c48a1c); }
+.inativa { opacity: .5; }
+.pips { display: flex; gap: 3px; margin-top: 2px; }
+.pips i { font-style: normal; font-family: var(--font-mono); font-size: 10px; color: var(--muted); padding: 0 4px; border-radius: 3px; background: var(--surface-3); }
+.pips i.on { color: var(--on-gold); background: var(--gold); }
+.alertas-time { list-style: none; margin-top: 10px; display: grid; gap: 4px; font-size: 13px; color: var(--bad-ink); }

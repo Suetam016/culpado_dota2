@@ -396,6 +396,113 @@ function cartaoComposicao(g) {
   return div;
 }
 
+/* ---------- Traços dos heróis (estilo TFT) ----------
+ * Cada herói tem alguns traços (lista à mão, pelo nome interno da imagem). O time ativa sinergias quando junta
+ * heróis com o mesmo traço (2 = bronze, 3 = prata, 4+ = ouro) ou combinações (carry de late + babá). As sinergias
+ * dão um bônus pequeno na nota do time e aparecem na montagem. */
+
+const TRACOS = {
+  area: { icone: '🌀', nome: 'Ult em área', desc: 'Ultimate ou combo que pega o time todo',
+    herois: 'enigma magnataur tidehunter faceless_void earthshaker dark_seer warlock phoenix puck treant mars sand_king axe kunkka jakiro disruptor invoker centaur elder_titan primal_beast snapfire winter_wyvern lich crystal_maiden necrolyte medusa ember_spirit gyrocopter void_spirit queenofpain leshrac ringmaster largo dawnbreaker' },
+  pickoff: { icone: '🎯', nome: 'Pickoff', desc: 'Pega herói sozinho no mapa',
+    herois: 'bounty_hunter riki nyx_assassin spirit_breaker rattletrap pudge mirana batrider bane shadow_shaman lion legion_commander slark storm_spirit earth_spirit tusk night_stalker vengefulspirit hoodwink marci grimstroke weaver templar_assassin clinkz void_spirit monkey_king primal_beast kez bloodseeker pangolier' },
+  dps: { icone: '⚔️', nome: 'Dano físico', desc: 'Bate forte no auto-ataque e derruba torre',
+    herois: 'phantom_assassin troll_warlord ursa sven drow_ranger juggernaut life_stealer slark faceless_void luna medusa morphling spectre terrorblade antimage phantom_lancer gyrocopter sniper chaos_knight skeleton_king monkey_king lycan naga_siren arc_warden muerta clinkz weaver templar_assassin razor viper alchemist bloodseeker kez windrunner lone_druid huskar meepo' },
+  late: { icone: '🍼', nome: 'Carry de late', desc: 'Fica monstro no fim, mas precisa de espaço e proteção',
+    herois: 'antimage spectre medusa terrorblade phantom_lancer naga_siren morphling faceless_void luna arc_warden alchemist gyrocopter drow_ranger muerta sniper slark troll_warlord phantom_assassin meepo' },
+  baba: { icone: '🛡️', nome: 'Babá', desc: 'Salva, cura ou protege o carry',
+    herois: 'oracle dazzle abaddon omniknight treant wisp winter_wyvern shadow_demon vengefulspirit chen witch_doctor undying marci lich ancient_apparition keeper_of_the_light dark_willow snapfire elder_titan grimstroke' },
+  burst: { icone: '💥', nome: 'Burst mágico', desc: 'Mata rápido com magia',
+    herois: 'lina lion zuus leshrac tinker skywrath_mage queenofpain invoker storm_spirit earthshaker pugna ember_spirit puck void_spirit nyx_assassin nevermore obsidian_destroyer dark_willow death_prophet jakiro crystal_maiden lich witch_doctor venomancer hoodwink snapfire ringmaster tiny morphling necrolyte techies' },
+  controle: { icone: '🔒', nome: 'Controle', desc: 'Stun, hex ou silêncio confiável',
+    herois: 'lion shadow_shaman bane rubick disruptor silencer doom_bringer beastmaster batrider legion_commander magnataur enigma earthshaker faceless_void sand_king centaur tidehunter axe ogre_magi dragon_knight slardar sven skeleton_king jakiro crystal_maiden vengefulspirit tusk elder_titan mars primal_beast dawnbreaker marci grimstroke winter_wyvern kunkka chaos_knight storm_spirit void_spirit nyx_assassin ancient_apparition earth_spirit' },
+  frente: { icone: '🪨', nome: 'Linha de frente', desc: 'Aguenta pancada e entra primeiro',
+    herois: 'axe centaur tidehunter bristleback mars dragon_knight abyssal_underlord primal_beast shredder legion_commander pudge abaddon skeleton_king sand_king night_stalker doom_bringer slardar ogre_magi brewmaster tiny huskar dawnbreaker beastmaster spirit_breaker chaos_knight lycan earth_spirit tusk elder_titan magnataur' },
+  push: { icone: '🏰', nome: 'Push', desc: 'Derruba torre rápido',
+    herois: 'furion lycan death_prophet pugna jakiro shadow_shaman dragon_knight broodmother lone_druid chen enchantress leshrac visage terrorblade luna drow_ranger beastmaster venomancer naga_siren tinker razor troll_warlord' },
+  global: { icone: '🌍', nome: 'Global', desc: 'Aparece em qualquer canto do mapa',
+    herois: 'spectre zuus furion silencer ancient_apparition storm_spirit spirit_breaker wisp dawnbreaker abyssal_underlord invoker tinker bloodseeker' },
+  cedo: { icone: '⏱️', nome: 'Tempo cedo', desc: 'Forte no começo: dá pra acelerar o jogo',
+    herois: 'batrider huskar ursa bristleback viper razor venomancer bounty_hunter mirana pudge clinkz legion_commander night_stalker dragon_knight monkey_king ember_spirit void_spirit queenofpain leshrac death_prophet lycan beastmaster brewmaster bloodseeker juggernaut primal_beast' },
+};
+// slug -> [chave do traço]
+const TRACOS_DO_HEROI = {};
+Object.entries(TRACOS).forEach(([k, t]) => t.herois.split(' ').forEach(s => { (TRACOS_DO_HEROI[s] = TRACOS_DO_HEROI[s] || []).push(k); }));
+
+// sinergias: quantos heróis com o traço ativam cada nível (bronze, prata, ouro)
+const SINERGIAS = [
+  { id: 'area', niveis: [2, 3, 4], nome: 'Wombo combo' },
+  { id: 'pickoff', niveis: [2, 3, 4], nome: 'Caçadores' },
+  { id: 'controle', niveis: [2, 3, 4], nome: 'Cadeia de stun' },
+  { id: 'burst', niveis: [2, 3, 4], nome: 'Chuva de magia' },
+  { id: 'dps', niveis: [2, 3], nome: 'Pancadaria' },
+  { id: 'push', niveis: [2, 3, 4], nome: 'Derruba-torre' },
+  { id: 'global', niveis: [2, 3], nome: 'Rotação global' },
+  { id: 'cedo', niveis: [3, 4], nome: 'Acelera o jogo' },
+  { id: 'frente', niveis: [1, 2, 3], nome: 'Muralha' },
+];
+const PESO_TRACO = 0.15;   // por nível ativo
+const PESO_ALERTA = 0.3;
+
+function slugDoHeroi(id) {
+  const h = parceiros && parceiros.herois && parceiros.herois[id];
+  return h ? h[0] : null;
+}
+const tracosDe = id => TRACOS_DO_HEROI[slugDoHeroi(id)] || [];
+
+// sinergias ativas, quase ativas e alertas de um time (lista de ids de herói)
+function sinergiasDoTime(herois) {
+  const conta = {};
+  herois.forEach(h => tracosDe(h).forEach(t => { conta[t] = (conta[t] || 0) + 1; }));
+  const n = k => conta[k] || 0;
+  const lista = SINERGIAS.map(s => {
+    const nivel = s.niveis.filter(x => n(s.id) >= x).length;
+    return { ...TRACOS[s.id], ...s, n: n(s.id), nivel, proximo: s.niveis[nivel] || null };
+  });
+  // combinação: carry de late com babá
+  const babysit = { id: 'babysit', icone: '🍼🛡️', nome: 'Babysit', desc: 'Carry de late com alguém pra proteger ele',
+    n: Math.min(n('late'), n('baba')), niveis: [1, 2], nivel: n('late') && n('baba') ? (n('baba') >= 2 ? 2 : 1) : 0, proximo: null };
+  lista.unshift(babysit);
+  const alertas = [];
+  if (herois.length >= 4 && !n('frente')) alertas.push('🪨 Sem linha de frente: ninguém pra iniciar ou segurar a luta');
+  if (herois.length >= 4 && !n('controle')) alertas.push('🔒 Sem controle confiável');
+  if (n('late') && !n('baba') && herois.length >= 4) alertas.push('🍼 Carry de late sem babá: vai precisar de muito espaço');
+  if (n('late') >= 2) alertas.push('🍼 Dois carries de late disputando farm');
+  if (herois.length >= 4 && !n('dps') && n('push') < 2) alertas.push('⚔️ Pouco dano físico pra derrubar torre');
+  return { lista, alertas, nota: lista.reduce((s, x) => s + x.nivel * PESO_TRACO, 0) - alertas.length * PESO_ALERTA };
+}
+
+// selo de power-up no herói: forte ou fraco no patch atual
+function powerUp(wr) {
+  if (wr == null) return '';
+  if (wr >= 54) return `<span class="power power-2" title="Muito forte no patch: ${wr.toLocaleString('pt-BR')}% de vitória">⚡⚡</span>`;
+  if (wr >= 52) return `<span class="power power-1" title="Forte no patch: ${wr.toLocaleString('pt-BR')}% de vitória">⚡</span>`;
+  if (wr <= 47) return `<span class="power power-fraco" title="Fraco no patch: ${wr.toLocaleString('pt-BR')}% de vitória">🧊</span>`;
+  return '';
+}
+
+function iconesTracos(id) {
+  return `<div class="tracos">${tracosDe(id).map(t =>
+    `<span class="traco" title="${esc(TRACOS[t].nome)}: ${esc(TRACOS[t].desc)}">${TRACOS[t].icone}</span>`).join('')}</div>`;
+}
+
+function painelSinergias(s) {
+  const nivelNome = ['', 'bronze', 'prata', 'ouro'];
+  const ordem = [...s.lista].sort((a, b) => b.nivel - a.nivel || b.n - a.n);
+  const chips = ordem.filter(x => x.n > 0).map(x => `
+    <div class="sinergia-chip ${x.nivel ? `nivel-${nivelNome[Math.min(3, x.nivel)]}` : 'inativa'}" title="${esc(x.desc)}">
+      <span class="sinergia-icone">${x.icone}</span>
+      <div><b>${esc(x.nome)}</b>
+        <span class="pips">${x.niveis.map(l => `<i class="${x.n >= l ? 'on' : ''}">${l}</i>`).join('')}</span></div>
+    </div>`).join('');
+  return `<div class="sinergias-time">
+    <div class="bloco-titulo">Sinergias do time</div>
+    <div class="sinergia-chips">${chips || '<span class="cartao-sub">Nenhuma ainda.</span>'}</div>
+    ${s.alertas.length ? `<ul class="alertas-time">${s.alertas.map(a => `<li>${esc(a)}</li>`).join('')}</ul>` : ''}
+  </div>`;
+}
+
+
 /* ---------- Sugestão de time ----------
  * Nota de cada pick = proficiência do amigo no herói/posição (win rate puxada pra 50% quando há poucos jogos, prior
  * de PESO_PRIOR partidas, mais um bônus de experiência por número de jogos) + força do herói no meta atual (win rate
@@ -477,7 +584,7 @@ function melhoresTimes(contas) {
       if (i === contas.length) {
         const herois = new Set(atual.map(x => x.heroi));
         if (herois.size < atual.length) return;
-        let nota = notaFormacao + atual.reduce((s, x) => s + x.nota, 0);
+        let nota = notaFormacao + sinergiasDoTime(atual.map(x => x.heroi)).nota + atual.reduce((s, x) => s + x.nota, 0);
         const sinergias = [];
         for (let a = 0; a < atual.length; a++) for (let b = a + 1; b < atual.length; b++) {
           const sn = sinergiaEntre(contas[a], atual[a].heroi, contas[b], atual[b].heroi);
@@ -583,7 +690,7 @@ function renderizarSugestao() {
     const usados = new Set(melhor.picks.filter(p => p.conta !== x.conta).map(p => p.heroi));
     const opcao = o => `<button type="button" class="opcao${o.heroi === x.heroi && o.pos === x.pos ? ' opcao-atual' : ''}" data-opcao="${x.conta}|${o.heroi}|${o.pos}"
         ${usados.has(o.heroi) ? 'disabled title="Outro jogador do time já está com esse herói"' : ''}>
-        ${heroi(o.heroi)}<b>${esc(nomeHeroi(o.heroi))}</b><span>${POSICOES[o.pos]}</span>
+        <span class="opcao-img">${heroi(o.heroi)}${powerUp(o.wrMeta)}</span><b>${esc(nomeHeroi(o.heroi))}</b>${iconesTracos(o.heroi)}<span>${POSICOES[o.pos]}</span>
         <span class="opcao-num ${classe(o)}">${o.vitorias}/${o.jogos} · ${pct(o)}%</span>${seloMeta(o.wrMeta)}</button>`;
     const mesma = (cand[x.pos] || []).slice(0, 8);
     const outras = [1, 2, 3, 4, 5].filter(p => p !== x.pos).flatMap(p => (cand[p] || []).slice(0, 2));
@@ -606,19 +713,21 @@ function renderizarSugestao() {
       <div class="escalacao">${ordenados.map(x => `<div class="pick${fixos[x.conta] ? ' pick-fixo' : ''}${abertoPick === x.conta ? ' pick-aberto' : ''}">
           <div class="pick-pos">${POSICOES[x.pos]}${fixos[x.conta] ? ' · 🔒' : ''}</div>
           <button type="button" class="pick-trocar" data-abrir="${x.conta}" aria-expanded="${abertoPick === x.conta}" title="Ver outras opções de ${esc(nomeJogador(x.conta))}">
-            ${heroi(x.heroi)}<span class="pick-trocar-txt">⇄ opções</span></button>
+            ${heroi(x.heroi)}${powerUp(x.wrMeta)}<span class="pick-trocar-txt">⇄ opções</span></button>
           <div class="pick-heroi">${esc(nomeHeroi(x.heroi))}</div>
+          ${iconesTracos(x.heroi)}
           <div class="pick-quem">${esc(nomeJogador(x.conta))}</div>
           <div class="pick-num ${classe(x)}">${x.vitorias}V em ${x.jogos} (${pct(x)}%)</div>
           ${seloMeta(x.wrMeta)}
           ${fixos[x.conta] ? `<button type="button" class="pick-soltar" data-soltar="${x.conta}">destravar</button>` : ''}
         </div>`).join('')}</div>
+      ${painelSinergias(sinergiasDoTime(melhor.picks.map(p => p.heroi)))}
       ${painel()}
       ${melhor.formacao.length ? `<div class="sinergia-time">Formação que vocês já jogaram: ${melhor.formacao.map(f =>
         `${f.membros.map(c => `${esc(nomeJogador(c))} ${POSICOES[f.posicoes[c]]}`).join(', ')} <b>${f.vitorias}/${f.jogos}</b>`).join(' · ')}</div>` : ''}
       ${melhor.sinergias.length ? `<div class="sinergia-time">Sinergia: ${melhor.sinergias.map(sn =>
         `${esc(nomeHeroi(sn.ha))} (${esc(nomeJogador(sn.a))}) + ${esc(nomeHeroi(sn.hb))} (${esc(nomeJogador(sn.b))}) <b>${sn.vitorias}/${sn.jogos}</b>`).join(' · ')}</div>` : ''}
-      <p class="time-nota">A nota junta a proficiência de cada um no herói (win rate e quantos jogos tem com ele), a força do herói no meta atual, as duplas de heróis e as formações que já deram certo entre vocês. Com poucos jogos o modelo puxa a win rate pra 50%, então quem tem muitos jogos bons pesa mais que um 2/2. É o histórico de vocês${periodo === 'tudo' ? '' : ' no período escolhido'}, não leva em conta o draft do inimigo.</p>
+      <p class="time-nota">A nota junta a proficiência de cada um no herói (win rate e quantos jogos tem com ele), a força do herói no meta atual (⚡), as sinergias do time, as duplas de heróis e as formações que já deram certo entre vocês. Com poucos jogos o modelo puxa a win rate pra 50%, então quem tem muitos jogos bons pesa mais que um 2/2. É o histórico de vocês${periodo === 'tudo' ? '' : ' no período escolhido'}, não leva em conta o draft do inimigo.</p>
     </div>`;
 }
 
