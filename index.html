@@ -106,7 +106,7 @@
 <p class="visitas-site" id="visitas-site" hidden></p>
 <style>
 /* ---------- Procurado pelo TPI: o pôster original com a cara trocada ---------- */
-.veredito.doc-tpi6{display:block;padding:18px clamp(10px,3vw,28px) 24px;border-radius:4px;background:#121311;border:1px solid #2a2a2a;box-shadow:0 18px 34px -14px rgba(0,0,0,.85);text-align:center}
+.veredito.doc-tpi6{display:block;padding:18px clamp(10px,3vw,28px) 24px;border-radius:4px;background:#121311!important;border:1px solid #2a2a2a;box-shadow:0 18px 34px -14px rgba(0,0,0,.85);text-align:center}
 .tp6{position:relative;width:min(100%,560px);margin:0 auto;container-type:inline-size;line-height:0}
 .tp6-fundo{width:100%;height:auto;display:block}
 .tp6>*:not(.tp6-fundo){position:absolute;line-height:1.2}
@@ -169,6 +169,7 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .tp5-reu .tp5-nome{background:#fff;color:#e3242b;white-space:normal;overflow-wrap:anywhere;font-size:clamp(.8rem,2.3vw,1.15rem)}
 .tp5-reu .tp5-crimes{color:#fff;font-weight:700}
 .tp5-rodape{margin:24px auto 0;max-width:640px;color:#cfcfcf;font-size:14px}
+.tp6-declara{margin:22px auto 0;max-width:680px;padding:0 12px}.tp6-fala{margin:0;font:italic 600 clamp(1.1rem,2.8vw,1.45rem)/1.45 Georgia,"Times New Roman",serif;color:#f2f2f2}.tp6-orgao{margin:10px 0 0;font:700 12.5px/1.4 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e2453a}.tp6-declara .tp5-rodape{margin-top:14px;font-size:12.5px;color:#9a9a9a}
 @media (prefers-reduced-motion:no-preference){.tp5-reu .tp5-foto{animation:tp5-pulso 2.4s ease-in-out infinite}}
 @media (max-width:640px){.tp5-grade{gap:16px 10px}.tp5-foto::before{inset:-5px 18% 26% -5px;border-width:2px}.tp5-foto::after{inset:-5px -5px 26% 70%;border-width:2px}.tp5-origem{font-size:9.5px;left:-2px}}
 @keyframes tp5-pulso{50%{filter:drop-shadow(0 0 14px rgba(227,36,43,.65))}}
@@ -9848,11 +9849,55 @@ h('p', { class: 'tp6-crimes', style: noPoster(176 + dx, 407 + dy, 146, 28) }, f.
 ];
 }
 
+// O pôster do Tribunal fecha com uma declaração oficial, no tom de discurso da ONU, assinada por um órgão internacional.
+const DECLARACOES_TPI = [
+() => 'O que estamos testemunhando apresenta níveis sem precedentes de crueldade contra o próprio time.',
+() => 'Os fatos revelam um completo desprezo pelo valor da vida de quatro aliados.',
+(c) => `Ao longo de ${c.min} minutos, o mundo assistiu em silêncio. Não podemos mais permanecer em silêncio.`,
+(c) => `${c.d} mortes não são um acidente. São uma política.`,
+(c) => `${fmtK(Math.max(0, c.f.entregue))} de ouro foram transferidos ao inimigo de forma sistemática. A comunidade internacional não pode fechar os olhos.`,
+() => 'Não há registro, na história recente do Dota, de conduta comparável.',
+() => 'A humanidade falhou com aquele time. Que esta falha não se repita.',
+() => 'Este Tribunal reafirma: nenhuma partida, por mais perdida que pareça, justifica tamanha barbárie.',
+() => 'As gerações futuras perguntarão onde estávamos. Que a resposta não seja: na fila do próximo jogo.',
+() => 'O Ancient caiu. Com ele, caíram também os últimos vestígios de esperança daquele povo.',
+(c) => `Os relatos das vítimas, todas elas companheiras de equipe, descrevem um cenário de devastação absoluta na ${c.rota}.`,
+() => 'Trata-se de um ataque deliberado e reiterado contra a população civil do próprio time.',
+() => 'A comunidade internacional condena, nos termos mais veementes, os atos aqui documentados.',
+() => 'Nenhum patch, nenhum nerf e nenhum pedido de desculpas no chat apagará o que foi feito.',
+(c) => `A cada morte, ${c.m} ficava mais forte. A cada morte, o mundo ficava mais escuro.`,
+() => 'Exigimos responsabilização. Exigimos que isso conste no histórico de partidas para sempre.',
+() => 'Este não é apenas um crime contra um time. É um crime contra a própria ideia de jogar em equipe.',
+() => 'Que a memória das vítimas sirva de alerta: isto aconteceu num servidor sul-americano, em pleno século XXI.',
+() => 'Os mecanismos de proteção falharam. As wards não foram plantadas. Os pings não foram ouvidos.',
+() => 'Diante do horror, só nos resta registrar, julgar e jamais esquecer.',
+(c) => `Em ${c.min} minutos, uma única pessoa conseguiu o que exércitos inteiros não conseguiriam: destruir o próprio time por dentro.`,
+];
+const DECLARACOES_TPI_DUPLA = [
+() => 'Dois indivíduos, agindo em conluio, levaram um time inteiro à ruína. A história não registra aliança mais sombria.',
+() => 'A coordenação entre os acusados revela planejamento, método e total ausência de remorso.',
+() => 'Um destruía a rota; o outro, a esperança. Juntos, destruíram tudo.',
+];
+const ORGAOS_TPI = ['Alto Comissariado das Nações Unidas para os Direitos dos Suportes', 'Câmara Internacional de Proteção à Vida dos Aliados',
+'Secretaria Internacional de Defesa dos Direitos Humanos no Ancient', 'Órgão Internacional de Justiça e Combate à Tirania no Mid',
+'Conselho de Segurança das Nações Unidas, em sessão de emergência', 'Comitê Internacional para a Erradicação do Feed',
+'Comissão Permanente de Direitos Humanos de Radiant e Dire', 'Assembleia Geral das Nações do Ancient, por aclamação',
+'Liga Internacional de Proteção aos Courier e Demais Inocentes', 'Corte Interamericana de Direitos do Jogador Aliado'];
+function declaracaoTPI(fichas, r) {
+const rnd = sorteador(`tpi-declara-${r.partida.id}`);
+const c = contextoDoBO(fichas[0], r);
+const fala = rnd.um(fichas.length > 1 && rnd.num(0, 1) ? DECLARACOES_TPI_DUPLA : DECLARACOES_TPI)(c);
+return h('div', { class: 'tp6-declara' },
+h('p', { class: 'tp6-fala' }, `“${fala}”`),
+h('p', { class: 'tp6-orgao' }, `— ${rnd.um(ORGAOS_TPI)}`),
+h('p', { class: 'tp5-rodape' }, `${pct(fichas[0].v.fatia)} da culpa do time${fichas[0].entregue > 0 ? ` · ${fmtK(fichas[0].entregue)} de ouro entregue ao inimigo` : ''}`));
+}
+
 function docProcuradoTPI(fichas, r) {
 const fundo = h('img', { class: 'tp6-fundo', src: TPI_IMG, alt: 'Procurados pelo Tribunal Penal Internacional', width: TPI_W, height: TPI_H });
 const art = h('article', { class: `cartao veredito doc-tpi6${fichas.length > 1 ? ' dividido' : ''}` },
 h('div', { class: 'tp6' }, fundo, fichas.slice(0, 2).map((f, i) => casaDoPoster(f, TPI_CASAS[i], r))),
-h('p', { class: 'tp5-rodape' }, `${pct(fichas[0].v.fatia)} da culpa do time${fichas[0].entregue > 0 ? ` · ${fmtK(fichas[0].entregue)} de ouro entregue ao inimigo` : ''}. ${fichas[0].v.diagnostico || ''}`));
+declaracaoTPI(fichas, r));
 // sem a imagem, cai na versão desenhada
 fundo.addEventListener('error', () => { if (art.isConnected) { const g = docProcuradoTPIGrade(fichas, r); g.dataset.gravidade = '5'; art.replaceWith(g); } });
 return art;
@@ -9875,7 +9920,7 @@ return h('article', { class: `cartao veredito doc-tpi5${fichas.length > 1 ? ' di
 h('h2', { class: 'tp5-titulo' }, fichas.length > 1 ? 'Procurados' : 'Procurado'),
 h('p', { class: 'tp5-sub' }, 'pelo Tribunal Penal Internacional'),
 h('div', { class: 'tp5-grade' }, casas.map(casa)),
-h('p', { class: 'tp5-rodape' }, `${pct(fichas[0].v.fatia)} da culpa do time${fichas[0].entregue > 0 ? ` · ${fmtK(fichas[0].entregue)} de ouro entregue ao inimigo` : ''}. ${fichas[0].v.diagnostico || ''}`));
+declaracaoTPI(fichas, r));
 }
 
 function documentoDaCulpa(cs, r) {
