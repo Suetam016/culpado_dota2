@@ -4844,6 +4844,31 @@ mostrarStatus('O replay ainda não foi analisado. Replays ficam disponíveis por
 
 const parseJaPedido = new Set();
 
+// Partida recém-terminada: o OpenDota só conhece depois que alguém pede (POST /request busca na Steam).
+// Pede uma vez e tenta de novo sozinho; desiste em 5 min (aí o ID deve estar errado mesmo).
+const BUSCA_NOVA_MS = 5 * 60e3;
+const BUSCA_NOVA_PASSO_MS = 10e3;
+async function buscarPartidaNova(id, carga) {
+const vivo = () => estado.carga === carga && !carga.signal.aborted;
+try { await api(`/request/${id}`, { method: 'POST' }); } catch (e) { return false; }
+parseJaPedido.add(String(id));
+const limite = Date.now() + BUSCA_NOVA_MS;
+while (Date.now() < limite) {
+if (!vivo()) return true;
+const resta = Math.max(1, Math.round((limite - Date.now()) / 1000));
+mostrarStatus(`A partida ${id} é nova e o OpenDota ainda não tinha ela. Já pedi pra ele buscar na Steam e tento de novo sozinho a cada 10 s (desisto em ${Math.ceil(resta / 60)} min).`, 'carregando');
+await new Promise((r) => setTimeout(r, BUSCA_NOVA_PASSO_MS));
+if (!vivo()) return true;
+const m = await api(`/matches/${id}`, { signal: carga.signal }).catch(() => null);
+if (m && Array.isArray(m.players) && m.players.length) {
+if (m.version != null) partidasMem.set(String(id), m);
+carregar(id);
+return true;
+}
+}
+return false;
+}
+
 
 
 
@@ -4939,6 +4964,11 @@ adotar(r3, ['itensHeroi']);
 } catch (err) {
 if (ehAbort(err) || !vivo()) return;
 pararProgresso(true);
+if (err && err.code === 'nao-encontrada' && !exemplo && !SO_EMBUTIDO && !ehEmbutida(id) && /^\d{9,12}$/.test(id) && !estado.buscandoNova) {
+estado.buscandoNova = id;
+const achou = await buscarPartidaNova(id, carga).finally(() => { estado.buscandoNova = null; });
+if (achou || !vivo()) return;
+}
 if (!estado.resultado) el.pagina.textContent = ''; // casca e silhuetas saem: não vem nada para elas
 mostrarStatus(mensagemDeErro(err, id), 'erro');
 } finally {
