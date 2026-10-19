@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-10-19T16:41:59.270Z",
+  "atualizadoEm": "2026-10-19T18:31:05.254Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -30,12 +30,12 @@
       "accountId": "77621319",
       "nome": "Jalim",
       "culpados": 3,
-      "craques": 3,
-      "partidas": 14,
-      "vitorias": 7,
-      "winRate": 50,
-      "streak": null,
-      "mmrGanho": 175,
+      "craques": 4,
+      "partidas": 15,
+      "vitorias": 8,
+      "winRate": 53,
+      "streak": "craque",
+      "mmrGanho": 200,
       "mmrPerdido": 175
     },
     {
@@ -67,11 +67,11 @@
       "nome": "Suéter",
       "culpados": 2,
       "craques": 1,
-      "partidas": 24,
-      "vitorias": 9,
-      "winRate": 38,
+      "partidas": 25,
+      "vitorias": 10,
+      "winRate": 40,
       "streak": null,
-      "mmrGanho": 225,
+      "mmrGanho": 250,
       "mmrPerdido": 375
     },
     {
@@ -248,6 +248,14 @@
         "lado": "dire",
         "tipo": "derrota",
         "inicio": 1792371167,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9052652046,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1792424153,
         "comStack": true,
         "ranqueada": true
       }
@@ -442,6 +450,14 @@
         "lado": "dire",
         "tipo": "vitoria",
         "inicio": 1792387572,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9052652046,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1792424153,
         "comStack": true,
         "ranqueada": true
       }
