@@ -6288,6 +6288,11 @@ if (!ok) return 0;
 a.play().catch(() => {});
 return Number.isFinite(a.duration) ? Math.min(ALARME_MAX, a.duration) : 0;
 },
+// celular: só toca áudio depois de um toque; este destrava o arquivo dentro do toque para tocar depois
+destravar() {
+a.muted = true;
+a.play().then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+},
 parar() {
 const passo_ = () => { a.volume = Math.max(0, a.volume - 0.1); if (a.volume > 0.01) setTimeout(passo_, 35); else a.pause(); };
 passo_();
@@ -6373,7 +6378,26 @@ let tocando = false;
 if (somLigado() && volumeMapa()) {
 audio = new Audio(AUDIO_ABERTURA);
 audio.volume = Math.min(1, volumeMapa());
-audio.play().then(() => { tocando = !fim; if (fim) audio.pause(); }).catch(() => { audio = null; som = somDoBau(); });
+}
+// sem toque na página (celular abrindo o link direto) o navegador bloqueia o som: pede um toque antes de girar
+let pronto = Promise.resolve();
+if (audio) {
+pronto = audio.play().then(() => { tocando = !fim; if (fim) audio.pause(); }).catch(() => new Promise((ok) => {
+const botao = h('button', { class: 'rev-tocar', type: 'button' }, '🔊 Toque para abrir');
+palco.append(botao);
+let foi = false;
+const seguir = (comSom) => {
+if (foi) return;
+foi = true;
+botao.remove();
+if (comSom && audio) {
+if (alarme) alarme.destravar();
+audio.play().then(() => { tocando = !fim; if (fim) audio.pause(); }).catch(() => { audio = null; som = somDoBau(); }).finally(ok);
+} else { audio = null; som = somDoBau(); ok(); }
+};
+botao.addEventListener('click', () => seguir(true));
+relogios.push(setTimeout(() => seguir(false), 15000));
+}));
 }
 const calarAudio = () => {
 if (!audio) return;
@@ -6463,7 +6487,7 @@ cartas.forEach((c) => { if (c.vivo) c.gira.style.transform = `rotateY(${c.ang.to
 if (!revelado && t >= ABERTURA.revela) { revelado = true; mostrarFinal(); return; }
 quadro = requestAnimationFrame(passo);
 };
-quadro = requestAnimationFrame(passo);
+pronto.then(() => { if (fim) return; antes = performance.now(); quadro = requestAnimationFrame(passo); });
 });
 }
 
@@ -10656,6 +10680,7 @@ iniciar();
 <style>
 /* ---------- abertura estilo baú do Dota: cartas lado a lado girando no próprio eixo ---------- */
 .revelacao.bau{gap:10px;--raridade:#e4ae39}
+.rev-tocar{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;font:600 1.1rem/1 inherit;padding:16px 26px;border-radius:999px;border:2px solid var(--raridade);background:#120d08ee;color:#fff;cursor:pointer;box-shadow:0 0 30px var(--raridade)}
 .revelacao.bau.alarme-policia::after,.revelacao.bau.alarme-nuclear::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0}
 .revelacao.bau.alarme-policia::after{animation:giroflex 0.55s steps(1) infinite}
 .revelacao.bau.alarme-nuclear::after{animation:alerta-nuclear 4.7s ease-in-out infinite}
