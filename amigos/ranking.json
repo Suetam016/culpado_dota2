@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-10-20T23:29:04.653Z",
+  "atualizadoEm": "2026-10-20T23:53:50.428Z",
   "semAnalise": 0,
   "ranking": [
     {
@@ -42,13 +42,13 @@
       "accountId": "111257540",
       "nome": "Kuscomem",
       "culpados": 7,
-      "craques": 3,
-      "partidas": 64,
-      "vitorias": 28,
+      "craques": 4,
+      "partidas": 66,
+      "vitorias": 29,
       "winRate": 44,
-      "streak": null,
-      "mmrGanho": 700,
-      "mmrPerdido": 900
+      "streak": "craque",
+      "mmrGanho": 725,
+      "mmrPerdido": 925
     },
     {
       "accountId": "1254464470",
@@ -91,12 +91,12 @@
       "nome": "ptn",
       "culpados": 1,
       "craques": 0,
-      "partidas": 13,
-      "vitorias": 8,
-      "winRate": 62,
+      "partidas": 15,
+      "vitorias": 9,
+      "winRate": 60,
       "streak": null,
-      "mmrGanho": 200,
-      "mmrPerdido": 125
+      "mmrGanho": 225,
+      "mmrPerdido": 150
     },
     {
       "accountId": "96286191",
@@ -2582,6 +2582,28 @@
         "heroi": 5,
         "culpa": 0.267,
         "merito": 0.202
+      },
+      {
+        "matchId": 9054441044,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1792528232,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 2,
+        "culpa": 0.266,
+        "merito": 0.239
+      },
+      {
+        "matchId": 9054497652,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1792532042,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 2,
+        "culpa": 0.199,
+        "merito": 0.195
       }
     ],
     "96286191": [
@@ -3532,6 +3554,28 @@
         "heroi": 105,
         "culpa": 0.162,
         "merito": 0.142
+      },
+      {
+        "matchId": 9054441044,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1792528232,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 53,
+        "culpa": 0.305,
+        "merito": 0.246
+      },
+      {
+        "matchId": 9054497652,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1792532042,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 105,
+        "culpa": 0.191,
+        "merito": 0.122
       }
     ],
     "241782761": [
