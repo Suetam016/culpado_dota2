@@ -9226,9 +9226,10 @@ h('div', { class: 'dossies' }, vs.map((v, i) => dossie(v, i, r, culpados(r).incl
 
 
 const EMPATE_TECNICO = 0.05;
+const COAUTORIA_MIN = 0.25; // abaixo de 25% da culpa ninguém vira coautor, mesmo colado no primeiro
 function culpados(r) {
 const vs = r.vereditos;
-return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : [vs[0]];
+return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO && vs[1].fatia >= COAUTORIA_MIN ? [vs[0], vs[1]] : [vs[0]];
 }
 
 // A figurinha do jogador: só o essencial (cara do herói, função, frag, build final, % de culpa e os marcadores que

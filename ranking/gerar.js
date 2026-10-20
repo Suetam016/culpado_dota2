@@ -18,6 +18,7 @@ const DIAS_HISTORICO = 365;   // igual ao parceiros.py: partida mais velha que i
 const PERFIS_HORAS = 12;
 const PAUSA_MS = 1100;
 const EMPATE_TECNICO = 0.05;
+const COAUTORIA_MIN = 0.25;   // igual ao culpados() do index.html: abaixo de 25% ninguém vira coautor
 const LOBBY_RANQUEADA = 7;
 // A Valve não expõe o MMR de cada partida; ±25 é a variação típica de uma ranqueada (é uma estimativa)
 const MMR_POR_PARTIDA = 25;
@@ -97,7 +98,7 @@ async function pedir(caminho) {
 
 function culpadosDe(r) {
   const vs = r.vereditos || [];
-  return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : vs.slice(0, 1);
+  return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO && vs[1].fatia >= COAUTORIA_MIN ? [vs[0], vs[1]] : vs.slice(0, 1);
 }
 
 function craquesDe(r) {
@@ -112,6 +113,13 @@ function sequencia(tipos) {
   let n = 0;
   for (let i = decisivos.length - 1; i >= 0 && decisivos[i] === ultimo; i--) n++;
   return n >= 2 ? ultimo : null;
+}
+
+// culpados a partir da culpa guardada de cada jogador: mudar a regra de coautoria não exige reanalisar a base
+function culpadosGuardados(a) {
+  const vs = [...(a.jogadores || [])].sort((x, y) => y.culpa - x.culpa);
+  if (!vs.length) return a.culpados || [];
+  return (vs.length > 1 && vs[0].culpa - vs[1].culpa < EMPATE_TECNICO && vs[1].culpa >= COAUTORIA_MIN ? vs.slice(0, 2) : vs.slice(0, 1)).map((v) => v.conta);
 }
 
 // o que o motor disse de uma partida, só com o que interessa guardar (para o ranking e para modelos depois)
@@ -191,7 +199,7 @@ async function main() {
     for (const [lado, a] of Object.entries(analise.lados || {})) {
       for (const c of a.amigos) {
         if (!historicos[String(c)]) continue;
-        const tipo = a.venceu ? (a.craques.includes(c) ? 'craque' : 'vitoria') : (a.culpados.includes(c) ? 'culpado' : 'derrota');
+        const tipo = a.venceu ? (a.craques.includes(c) ? 'craque' : 'vitoria') : (culpadosGuardados(a).includes(c) ? 'culpado' : 'derrota');
         const eu = (a.jogadores || []).find((j) => j.conta === c) || {};
         historicos[String(c)].push({ matchId: analise.matchId, lado, tipo, inicio: analise.inicio, comStack: a.amigos.length >= 2, ranqueada: analise.ranqueada,
           heroi: eu.heroi ?? null, culpa: eu.culpa ?? null, merito: ((a.merito || []).find((m) => m.conta === c) || {}).fatia ?? null });
