@@ -243,8 +243,7 @@ def main():
     composicoes.sort(key=lambda x: (-x['winRate'], -x['jogos']))
 
     destino = RAIZ / 'amigos' / 'parceiros.json'
-    destino.write_text(json.dumps({
-        'atualizadoEm': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+    novo = {
         'desde': time.strftime('%Y-%m-%d', time.gmtime(inicio_mais_antigo)) if inicio_mais_antigo else None,
         'partidasLidas': lidas,
         'jogadores': {str(k): {'nome': amigos[k], 'jogos': j, 'vitorias': v, 'winRate': wr(v, j)}
@@ -259,7 +258,18 @@ def main():
         'jogos': sorted(jogos, key=lambda x: x['t']),
         'medalhas': {c: m[1] for c, m in medalhas.items()},
         'timeFechado': sorted(time_fechado, key=lambda x: x['t']),
-    }, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    }
+    # roda depois de toda coleta: só regrava (e só gera commit) se algo mudou de verdade
+    try:
+        velho = json.loads(destino.read_text(encoding='utf-8'))
+        velho.pop('atualizadoEm', None)
+    except (OSError, ValueError):
+        velho = None
+    if velho == json.loads(json.dumps(novo, ensure_ascii=False)):
+        print(f'{destino}: nada mudou')
+        return
+    destino.write_text(json.dumps({'atualizadoEm': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), **novo},
+                                  ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f'{destino}: {len(saida)} duplas, {len(composicoes)} composições, {lidas} partidas lidas')
 
 

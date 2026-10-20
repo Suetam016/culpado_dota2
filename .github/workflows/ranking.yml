@@ -1,10 +1,15 @@
 name: Ranking dos amigos (culpados, MMR e parceiros)
 
-# Gera amigos/ranking.json (culpados, craques e MMR estimado, com ranking/gerar.js: acumula o histórico, julgando o que
-# o robô de coleta guardou e as partidas recentes de cada amigo no OpenDota) e amigos/parceiros.json (win rate de cada dupla, rotas e heróis, com ranking/parceiros.py: partidas
-# guardadas pelo robô de coleta no branch "dados"). Todo dia, na mão (Actions > Run workflow) ou com push em
-# ranking/pedido (qualquer conteúdo), no robô ou no amigos.json. Se um dos dois falhar, o arquivo anterior fica.
+# Gera amigos/ranking.json (culpados, craques e MMR estimado, com ranking/gerar.js) e amigos/parceiros.json (win rate
+# de cada dupla, rotas e heróis, com ranking/parceiros.py), lendo só a base do branch "dados": a partida crua vem do
+# robô de coleta (o único que baixa do OpenDota) e a análise do motor de cada partida fica guardada em
+# dados/analises/ (não é refeita enquanto o motor não muda). Roda depois de cada coleta, todo dia, na mão ou com push
+# em ranking/pedido ("Atualizar agora" do site, que também dispara a coleta). Se um dos dois falhar, o anterior fica.
 on:
+  # depois de cada rodada da coleta (a única que baixa partida do OpenDota): o ranking só lê a base
+  workflow_run:
+    workflows: ["Coleta de partidas (base para modelos)"]
+    types: [completed]
   schedule:
     - cron: "23 8 * * *"   # todo dia, 05:23 em Brasília
   workflow_dispatch:
@@ -31,7 +36,6 @@ jobs:
         with:
           ref: dados
           path: .dados
-          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -48,7 +52,18 @@ jobs:
       - name: Parceiros (branch dados)
         id: parceiros
         continue-on-error: true
-        run: python ranking/parceiros.py --dados .dados --recentes .recentes
+        run: python ranking/parceiros.py --dados .dados
+      # as análises do motor (analises/<id>.json) voltam para a base: na próxima rodada não são refeitas
+      - name: Guardar análises na base
+        if: steps.ranking.outcome == 'success'
+        run: |
+          cd .dados
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analises
+          git diff --cached --quiet && exit 0
+          git commit -m "Análises do motor: $(git diff --cached --name-only | wc -l) partidas"
+          for i in 1 2 3 4 5; do git pull --rebase origin dados && git push origin HEAD:dados && exit 0; git rebase --abort 2>/dev/null; sleep 10; done; exit 1
       - name: Salvar
         run: |
           git config user.name "github-actions[bot]"

@@ -11,7 +11,7 @@ on:
   # o agendamento do GitHub demora (ou falha) neste repositório: um push em coleta/disparar (qualquer conteúdo) roda na hora
   push:
     branches: [main]
-    paths: ["coleta/disparar", "coleta/coletar.py", ".github/workflows/coleta.yml"]
+    paths: ["coleta/disparar", "coleta/coletar.py", ".github/workflows/coleta.yml", "ranking/pedido"]   # "Atualizar agora" do ranking também coleta
 
 permissions:
   contents: write

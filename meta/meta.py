@@ -20,6 +20,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 DESTINO = RAIZ / 'meta' / 'meta.json'
 MATCHUPS = RAIZ / 'meta' / 'matchups.json'   # herói contra herói, para o draft do site pensar na ordem dos picks
 MATCHUP_MIN_JOGOS = 10
+ITENS = RAIZ / 'meta' / 'itens.json'   # itemPopularity de todo herói: o site usa no lugar de pedir ao OpenDota a cada visita
 API = 'https://api.opendota.com/api'
 FAIXAS = {4: 'Archon', 5: 'Legend', 6: 'Ancient'}   # onde o grupo joga (rank_tier das partidas guardadas)
 MIN_FATIA_PICKS = 0.35   # herói precisa de pelo menos 35% dos picks do herói mediano pra entrar nas listas
@@ -111,10 +112,10 @@ def main():
         if isinstance(v, list) and len(v) > 3 and isinstance(v[3], list):
             for peca in v[3]:
                 pais.setdefault(peca, set()).add(chave)
+    pops = gerar_itens([x['id'] for x in lista])
     builds = {}
     for x in fortes[:HEROIS_COM_BUILD]:
-        pop = pedir(f'/heroes/{x["id"]}/itemPopularity')
-        time.sleep(1.1)
+        pop = pops.get(str(x['id']))
         if not isinstance(pop, dict):
             continue
         candidatos = {}
@@ -150,6 +151,27 @@ def main():
     print(f'{DESTINO}: patch {saida["patch"]}, {len(validos)} heróis, {len(builds)} builds, '
           f'{"com" if subindo else "sem"} tendência')
     gerar_matchups([x['id'] for x in lista])
+
+
+def gerar_itens(ids):
+    """meta/itens.json: {h: {heroi: itemPopularity do OpenDota}}. Se a OpenDota falhar num herói, fica o anterior."""
+    anterior = json.loads(ITENS.read_text(encoding='utf-8')).get('h', {}) if ITENS.exists() else {}
+    h = {}
+    falhas = 0
+    for hid in ids:
+        pop = pedir(f'/heroes/{hid}/itemPopularity') if falhas < 5 else None
+        falhas = 0 if isinstance(pop, dict) else falhas + 1
+        if falhas < 5:
+            time.sleep(0.4 if os.environ.get('OPENDOTA_API_KEY') else 1.1)
+        if isinstance(pop, dict):
+            h[str(hid)] = pop
+        elif str(hid) in anterior:
+            h[str(hid)] = anterior[str(hid)]
+    ITENS.write_text(json.dumps({'atualizadoEm': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+                                 'fonte': 'OpenDota (/heroes/{id}/itemPopularity)', 'h': h},
+                                separators=(',', ':')) + '\n', encoding='utf-8')
+    print(f'{ITENS}: {len(h)} heróis')
+    return h
 
 
 def gerar_matchups(ids):

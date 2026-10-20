@@ -14,13 +14,15 @@
     var exemplo = EX.indexOf(id) >= 0;
     var f = function (u, o) { return fetch(u, o).catch(function () { return null; }); };
     window.__pre = { id: id, exemplo: exemplo,
-      partida: f(exemplo ? 'exemplos/' + id + '.json' : 'https://api.opendota.com/api/matches/' + id),
+      partida: exemplo ? f('exemplos/' + id + '.json') : null,
+      base: exemplo ? null : f('https://raw.githubusercontent.com/Suetam016/culpado_dota2/dados/partidas/' + id + '.json.gz'),
       mapa: f('mapas/' + id + '.json', { cache: 'no-cache' }),
       rotas: f('rotas/base.json', { cache: 'no-cache' }),
       config: f('config.json', { cache: 'no-cache' }) };
   } catch (e) { /* navegador sem fetch: o painel busca sozinho */ }
 })();
 </script>
+<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
 <link rel="preconnect" href="https://api.opendota.com" crossorigin>
 <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4883,10 +4885,33 @@ return p;
 }
 
 
+// A base do grupo (branch "dados", alimentado pelo robô de coleta): partida que já está lá não gasta chamada do
+// OpenDota. O arquivo é o JSON cru do OpenDota em gzip.
+const BASE_PARTIDAS = 'https://raw.githubusercontent.com/Suetam016/culpado_dota2/dados/partidas/';
+async function partidaDaBase(k, signal) {
+try {
+const pre = tomarPre('base', k);
+const r = (pre && await pre) || await fetch(`${BASE_PARTIDAS}${k}.json.gz`, { signal });
+if (!r || !r.ok) return null;
+const bytes = new Uint8Array(await r.arrayBuffer());
+let txt;
+if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+if (typeof DecompressionStream === 'undefined') return null;
+txt = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+} else txt = new TextDecoder().decode(bytes);
+const m = JSON.parse(txt);
+return m && Array.isArray(m.players) && m.players.length && m.version != null ? m : null; // sem análise: vai no OpenDota
+} catch (e) {
+if (ehAbort(e)) throw e;
+return null;
+}
+}
 const partidasMem = new Map();
 async function buscarPartida(id, signal) {
 const k = String(id);
 if (partidasMem.has(k)) return partidasMem.get(k);
+const daBase = await partidaDaBase(k, signal);
+if (daBase) { partidasMem.set(k, daBase); return daBase; }
 const pre = tomarPre('partida', k);
 const resp = pre && await pre;
 const match = resp ? await respostaApi(resp) : await api(`/matches/${k}`, { signal });
@@ -4942,22 +4967,40 @@ return c;
 
 
 
-async function dadosDoHeroi(hid, signal) {
+async function dadosDoHeroi(hid, signal, { pop: querPop = true, mu: querMu = true } = {}) {
 const nulo = (e) => { if (ehAbort(e)) throw e; return null; };
 const [pop, mu] = await Promise.all([
-apiMemo(`/heroes/${hid}/itemPopularity`, signal).catch(nulo),
-apiMemo(`/heroes/${hid}/matchups`, signal).catch(nulo),
+querPop ? apiMemo(`/heroes/${hid}/itemPopularity`, signal).catch(nulo) : null,
+querMu ? apiMemo(`/heroes/${hid}/matchups`, signal).catch(nulo) : null,
 ]);
 return { pop: pop && typeof pop === 'object' && !Array.isArray(pop) ? pop : null, mu: Array.isArray(mu) ? mu : null };
 }
 
 
+// Matchups e itens populares de cada herói: o robô do meta guarda todo dia em meta/matchups.json e meta/itens.json.
+// Só o que faltar nessas tabelas vai no OpenDota.
+let tabelasMeta = null;
+function carregarTabelasMeta() {
+const json = (u) => fetch(u, { cache: 'no-cache' }).then((x) => (x.ok ? x.json() : null)).catch(() => null);
+return tabelasMeta || (tabelasMeta = Promise.all([json('meta/matchups.json'), json('meta/itens.json')])
+.then(([mu, it]) => ({ matchups: (mu && mu.m) || {}, itens: (it && it.h) || {} })));
+}
 async function completarHerois(r, dados, signal) {
 if (dados.embutida) return false; // as partidas embutidas já vêm com o que foi coletado
-const hids = r.vereditos.map((v) => String(v.jogador.heroi.id)).filter((h) => !(h in dados.popularidade && h in dados.matchups));
+let hids = r.vereditos.map((v) => String(v.jogador.heroi.id)).filter((h) => !(h in dados.popularidade && h in dados.matchups));
 if (!hids.length) return false;
-const res = await Promise.all(hids.map((h) => dadosDoHeroi(h, signal)));
 let mudou = false;
+const tab = await carregarTabelasMeta();
+for (const h of hids) {
+if (!(h in dados.matchups) && tab.matchups[h]) {
+dados.matchups[h] = Object.entries(tab.matchups[h]).map(([e, [g, w]]) => ({ hero_id: Number(e), games_played: g, wins: w }));
+mudou = true;
+}
+if (!(h in dados.popularidade) && tab.itens[h]) { dados.popularidade[h] = tab.itens[h]; mudou = true; }
+}
+hids = hids.filter((h) => !(h in dados.popularidade && h in dados.matchups));
+if (!hids.length) return mudou;
+const res = await Promise.all(hids.map((h) => dadosDoHeroi(h, signal, { pop: !(h in dados.popularidade), mu: !(h in dados.matchups) })));
 res.forEach(({ pop, mu }, i) => {
 if (pop) { dados.popularidade[hids[i]] = pop; mudou = true; }
 if (mu) { dados.matchups[hids[i]] = mu; mudou = true; }

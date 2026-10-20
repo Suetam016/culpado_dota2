@@ -382,6 +382,9 @@ Gravado pelo robô `.github/workflows/coleta.yml` (código em `coleta/` no branc
 - `amigos.json`: quem o robô considera amigo (e quem quase entrou), com jogos juntos, sessões e a última vez.
 - `estado.json`: controle do robô (pedidos de análise pendentes, desistências e descartes, falhas, uso da cota por
   dia). Em `desistencias`, `"salva": false` é partida descartada sem nenhum dado (erro que se repetiu).
+- `analises/<id>.json`: o que o motor do site concluiu de cada partida com amigos (culpa, pontos e componentes de cada
+  jogador, culpados, craques), gravado pelo robô do ranking com a versão do motor (`motor`). Não é refeito enquanto o
+  motor não muda; o ranking e os modelos leem daqui em vez de reanalisar.
 
 Baixar tudo: `git clone --branch dados --single-branch https://github.com/Suetam016/culpado_dota2 culpado-dados`
 
