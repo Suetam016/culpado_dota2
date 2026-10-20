@@ -103,7 +103,7 @@ function culpadosDe(r) {
 
 function craquesDe(r) {
   const vs = r.craques || [];
-  return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : vs.slice(0, 1);
+  return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO && vs[1].fatia >= COAUTORIA_MIN ? [vs[0], vs[1]] : vs.slice(0, 1);
 }
 
 function sequencia(tipos) {
@@ -120,6 +120,12 @@ function culpadosGuardados(a) {
   const vs = [...(a.jogadores || [])].sort((x, y) => y.culpa - x.culpa);
   if (!vs.length) return a.culpados || [];
   return (vs.length > 1 && vs[0].culpa - vs[1].culpa < EMPATE_TECNICO && vs[1].culpa >= COAUTORIA_MIN ? vs.slice(0, 2) : vs.slice(0, 1)).map((v) => v.conta);
+}
+
+function craquesGuardados(a) {
+  const vs = [...(a.merito || [])].sort((x, y) => y.fatia - x.fatia);
+  if (!vs.length) return a.craques || [];
+  return (vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO && vs[1].fatia >= COAUTORIA_MIN ? vs.slice(0, 2) : vs.slice(0, 1)).map((v) => v.conta);
 }
 
 // o que o motor disse de uma partida, só com o que interessa guardar (para o ranking e para modelos depois)
@@ -199,7 +205,7 @@ async function main() {
     for (const [lado, a] of Object.entries(analise.lados || {})) {
       for (const c of a.amigos) {
         if (!historicos[String(c)]) continue;
-        const tipo = a.venceu ? (a.craques.includes(c) ? 'craque' : 'vitoria') : (culpadosGuardados(a).includes(c) ? 'culpado' : 'derrota');
+        const tipo = a.venceu ? (craquesGuardados(a).includes(c) ? 'craque' : 'vitoria') : (culpadosGuardados(a).includes(c) ? 'culpado' : 'derrota');
         const eu = (a.jogadores || []).find((j) => j.conta === c) || {};
         historicos[String(c)].push({ matchId: analise.matchId, lado, tipo, inicio: analise.inicio, comStack: a.amigos.length >= 2, ranqueada: analise.ranqueada,
           heroi: eu.heroi ?? null, culpa: eu.culpa ?? null, merito: ((a.merito || []).find((m) => m.conta === c) || {}).fatia ?? null });

@@ -5491,7 +5491,7 @@ return 100000;
 
 function craquesDe(r) {
 const vs = r.craques || [];
-return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO ? [vs[0], vs[1]] : vs.slice(0, 1);
+return vs.length > 1 && vs[0].fatia - vs[1].fatia < EMPATE_TECNICO && vs[1].fatia >= COAUTORIA_MIN ? [vs[0], vs[1]] : vs.slice(0, 1);
 }
 
 
