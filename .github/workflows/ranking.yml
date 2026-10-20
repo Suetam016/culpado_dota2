@@ -1,7 +1,7 @@
 name: Ranking dos amigos (culpados, MMR e parceiros)
 
-# Gera amigos/ranking.json (culpados, craques e MMR estimado, com ranking/gerar.js: últimas 20 partidas de cada amigo
-# no OpenDota) e amigos/parceiros.json (win rate de cada dupla, rotas e heróis, com ranking/parceiros.py: partidas
+# Gera amigos/ranking.json (culpados, craques e MMR estimado, com ranking/gerar.js: acumula o histórico, julgando o que
+# o robô de coleta guardou e as partidas recentes de cada amigo no OpenDota) e amigos/parceiros.json (win rate de cada dupla, rotas e heróis, com ranking/parceiros.py: partidas
 # guardadas pelo robô de coleta no branch "dados"). Todo dia, na mão (Actions > Run workflow) ou com push em
 # ranking/pedido (qualquer conteúdo), no robô ou no amigos.json. Se um dos dois falhar, o arquivo anterior fica.
 on:

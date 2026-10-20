@@ -4,13 +4,17 @@
 
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 const vm = require('vm');
 
 const RAIZ = path.resolve(__dirname, '..');
 // partidas baixadas aqui ficam para o parceiros.py (--recentes): o robô de coleta pode estar horas atrás
 const RECENTES = path.join(RAIZ, '.recentes');
 const API = 'https://api.opendota.com/api';
-const PARTIDAS_POR_AMIGO = 20;
+const PARTIDAS_POR_AMIGO = 60;   // só baixa o detalhe das que ainda não foram julgadas
+const DADOS = path.join(RAIZ, '.dados');   // branch "dados" do robô de coleta (o workflow faz checkout aqui)
+const MAX_PEDIDOS_ANALISE = 40;
+const DIAS_HISTORICO = 365;   // igual ao parceiros.py: partida mais velha que isso é outro patch, outro meta
 const PAUSA_MS = 1100;
 const EMPATE_TECNICO = 0.05;
 const LOBBY_RANQUEADA = 7;
@@ -72,12 +76,12 @@ function dadosEmbutidos() {
   return { h, i, ids };
 }
 
-async function pedir(caminho) {
+async function pedir(caminho, metodo = 'GET') {
   const chave = process.env.OPENDOTA_API_KEY;
   const url = `${API}${caminho}${chave ? `${caminho.includes('?') ? '&' : '?'}api_key=${chave}` : ''}`;
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     try {
-      const resp = await fetch(url, { headers: { 'User-Agent': 'culpado-dota2-ranking/1.0' } });
+      const resp = await fetch(url, { method: metodo, headers: { 'User-Agent': 'culpado-dota2-ranking/1.0' } });
       if (resp.ok) return resp.json();
       console.error(`  ${caminho}: HTTP ${resp.status}`);
     } catch (erro) {
@@ -129,54 +133,92 @@ async function main() {
     };
   }
 
+  // O histórico se acumula: parte do ranking.json anterior e só julga partida nova (antes recomeçava do zero com as
+  // últimas 20 de cada um, e quem jogava muito perdia os jogos mais antigos).
+  const saida = path.join(RAIZ, 'amigos', 'ranking.json');
+  const anterior = fs.existsSync(saida) ? JSON.parse(fs.readFileSync(saida, 'utf8')) : {};
+  const historicos = Object.fromEntries(Object.keys(amigos).map((k) => [k, ((anterior.historicos || {})[k] || []).slice()]));
+  const jaTem = new Set(Object.entries(historicos).flatMap(([k, xs]) => xs.map((e) => `${e.matchId}:${k}`)));
+  const faltaAlguem = (match) => match.players.some((p) => idsAmigos.has(p.account_id) && !jaTem.has(`${match.match_id}:${p.account_id}`));
   const partidas = new Map();
-  const julgadas = new Set();
-  const historicos = Object.fromEntries(Object.keys(amigos).map((k) => [k, []]));
   let semReplay = 0;
+  let novas = 0;
+  let pedidosAnalise = 0;
 
+  const julgar = (match) => {
+    const mid = match.match_id;
+    const amigosNaPartida = match.players.filter((p) => idsAmigos.has(p.account_id));
+    for (const lado of ['radiant', 'dire']) {
+      const doLado = amigosNaPartida.filter((p) => p.isRadiant === (lado === 'radiant'));
+      if (!doLado.some((p) => !jaTem.has(`${mid}:${p.account_id}`))) continue;
+      let r;
+      try {
+        r = motor.analisar({ match, heroes, items, itemIds, amigos, rotas, timings: {}, matchups: {}, duracoes: {}, mapa: null }, { lado });
+      } catch (erro) {
+        console.error(`  partida ${mid}: motor falhou (${erro.message})`);
+        continue;
+      }
+      const culpados = new Set(culpadosDe(r).map((v) => v.jogador.conta));
+      const craques = new Set(craquesDe(r).map((c) => c.jogador.conta));
+      const venceu = r.partida.venceu;
+      const comStack = doLado.length >= 2;
+      for (const p of doLado) {
+        const chave = `${mid}:${p.account_id}`;
+        if (jaTem.has(chave)) continue;
+        const tipo = venceu
+          ? (craques.has(p.account_id) ? 'craque' : 'vitoria')
+          : (culpados.has(p.account_id) ? 'culpado' : 'derrota');
+        historicos[String(p.account_id)].push({ matchId: mid, lado, tipo, inicio: match.start_time, comStack, ranqueada: match.lobby_type === LOBBY_RANQUEADA });
+        jaTem.add(chave);
+        novas++;
+      }
+    }
+  };
+
+  // 1) o que o robô de coleta já baixou (branch dados): partida analisada com amigo que ainda não foi julgada
+  const indice = fs.existsSync(path.join(DADOS, 'indice.json')) ? JSON.parse(fs.readFileSync(path.join(DADOS, 'indice.json'), 'utf8')) : {};
+  for (const [mid, info] of Object.entries(indice)) {
+    if (!info.analisada || (info.inicio || 0) < Date.now() / 1000 - DIAS_HISTORICO * 86400) continue;
+    const contas = [...(info.radiant || []), ...(info.dire || [])].filter((c) => idsAmigos.has(c));
+    if (!contas.some((c) => !jaTem.has(`${mid}:${c}`))) continue;
+    const arq = path.join(DADOS, 'partidas', `${mid}.json.gz`);
+    if (!fs.existsSync(arq)) continue;
+    try {
+      const match = JSON.parse(zlib.gunzipSync(fs.readFileSync(arq)));
+      if (match && Array.isArray(match.players) && match.version != null) { partidas.set(Number(mid), match); julgar(match); }
+    } catch (erro) { console.error(`  ${arq}: ${erro.message}`); }
+  }
+  console.log(`branch dados: ${novas} julgamentos novos`);
+
+  // 2) as partidas recentes de cada amigo no OpenDota (o robô de coleta pode estar horas atrás)
   for (const [conta, nome] of Object.entries(amigos)) {
     console.log(`${nome}: buscando partidas`);
     const lista = (await pedir(`/players/${conta}/matches?limit=${PARTIDAS_POR_AMIGO}`)) || [];
     await sleep(PAUSA_MS);
     for (const meta of lista) {
       const mid = meta.match_id;
+      if (jaTem.has(`${mid}:${conta}`)) continue;
       if (!partidas.has(mid)) {
         const detalhe = await pedir(`/matches/${mid}`);
         await sleep(PAUSA_MS);
         if (!detalhe || !Array.isArray(detalhe.players)) continue;
         fs.mkdirSync(RECENTES, { recursive: true });
         fs.writeFileSync(path.join(RECENTES, `${mid}.json`), JSON.stringify(detalhe));
-        if (detalhe.version == null) { semReplay++; partidas.set(mid, null); continue; }
+        if (detalhe.version == null) {
+          // sem a análise do replay: pede ao OpenDota e ela entra numa próxima rodada
+          semReplay++;
+          partidas.set(mid, null);
+          if (pedidosAnalise < MAX_PEDIDOS_ANALISE && Date.now() / 1000 - (detalhe.start_time || 0) < 14 * 86400) {
+            pedidosAnalise++;
+            await pedir(`/request/${mid}`, 'POST');
+            await sleep(PAUSA_MS);
+          }
+          continue;
+        }
         partidas.set(mid, detalhe);
       }
       const match = partidas.get(mid);
-      // a mesma partida aparece na lista de cada amigo que jogou; o julgamento abaixo já cobre todos eles
-      if (!match || julgadas.has(mid)) continue;
-      julgadas.add(mid);
-
-      const amigosNaPartida = match.players.filter((p) => idsAmigos.has(p.account_id));
-      for (const lado of ['radiant', 'dire']) {
-        const doLado = amigosNaPartida.filter((p) => p.isRadiant === (lado === 'radiant'));
-        if (!doLado.length) continue;
-        let r;
-        try {
-          r = motor.analisar({ match, heroes, items, itemIds, amigos, rotas, timings: {}, matchups: {}, duracoes: {}, mapa: null }, { lado });
-        } catch (erro) {
-          console.error(`  partida ${mid}: motor falhou (${erro.message})`);
-          continue;
-        }
-        const culpados = new Set(culpadosDe(r).map((v) => v.jogador.conta));
-        const craques = new Set(craquesDe(r).map((c) => c.jogador.conta));
-        const venceu = r.partida.venceu;
-        const comStack = doLado.length >= 2;
-        for (const p of doLado) {
-          const tipo = venceu
-            ? (craques.has(p.account_id) ? 'craque' : 'vitoria')
-            : (culpados.has(p.account_id) ? 'culpado' : 'derrota');
-          const ranqueada = match.lobby_type === LOBBY_RANQUEADA;
-          historicos[String(p.account_id)].push({ matchId: mid, lado, tipo, inicio: match.start_time, comStack, ranqueada });
-        }
-      }
+      if (match && faltaAlguem(match)) julgar(match);
     }
   }
 
@@ -202,13 +244,12 @@ async function main() {
     };
   }).sort((a, b) => b.culpados - a.culpados);
 
-  if (![...partidas.values()].some(Boolean)) {
-    // OpenDota fora do ar ou sem cota: não troca o ranking bom anterior por um vazio
-    console.error('Nenhuma partida analisada; ranking.json fica como está.');
+  if (!Object.values(historicos).some((xs) => xs.length)) {
+    // OpenDota fora do ar ou sem cota e nada guardado: não troca o ranking bom anterior por um vazio
+    console.error('Nenhuma partida julgada; ranking.json fica como está.');
     process.exit(1);
   }
 
-  const saida = path.join(RAIZ, 'amigos', 'ranking.json');
   fs.mkdirSync(path.dirname(saida), { recursive: true });
   fs.writeFileSync(saida, JSON.stringify({
     atualizadoEm: new Date().toISOString(),
@@ -217,8 +258,7 @@ async function main() {
     historicos,
     perfis,
   }, null, 2), 'utf8');
-  const analisadas = [...partidas.values()].filter(Boolean).length;
-  console.log(`Ranking salvo: ${saida} (${analisadas} partidas com replay, ${semReplay} sem replay)`);
+  console.log(`Ranking salvo: ${saida} (${novas} julgamentos novos, ${semReplay} partidas ainda sem análise, ${pedidosAnalise} análises pedidas)`);
 }
 
 main().catch((erro) => {
