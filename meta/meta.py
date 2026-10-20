@@ -18,6 +18,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 DESTINO = RAIZ / 'meta' / 'meta.json'
+MATCHUPS = RAIZ / 'meta' / 'matchups.json'   # herói contra herói, para o draft do site pensar na ordem dos picks
+MATCHUP_MIN_JOGOS = 10
 API = 'https://api.opendota.com/api'
 FAIXAS = {4: 'Archon', 5: 'Legend', 6: 'Ancient'}   # onde o grupo joga (rank_tier das partidas guardadas)
 MIN_FATIA_PICKS = 0.35   # herói precisa de pelo menos 35% dos picks do herói mediano pra entrar nas listas
@@ -147,6 +149,30 @@ def main():
     DESTINO.write_text(json.dumps(saida, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     print(f'{DESTINO}: patch {saida["patch"]}, {len(validos)} heróis, {len(builds)} builds, '
           f'{"com" if subindo else "sem"} tendência')
+    gerar_matchups([x['id'] for x in lista])
+
+
+def gerar_matchups(ids):
+    """meta/matchups.json: {heroi: {inimigo: [partidas, vitórias do herói]}} (OpenDota /heroes/{id}/matchups).
+    O draft do site usa para saber quem counter quem: quão seguro é um pick cego e se o pick respondeu ao que o outro
+    time já tinha mostrado. Se a OpenDota falhar em algum herói, fica o que havia antes para ele."""
+    anterior = json.loads(MATCHUPS.read_text(encoding='utf-8')).get('m', {}) if MATCHUPS.exists() else {}
+    m = {}
+    falhas = 0
+    for hid in ids:
+        mu = pedir(f'/heroes/{hid}/matchups') if falhas < 5 else None   # 5 falhas seguidas: OpenDota fora, usa o anterior
+        falhas = 0 if isinstance(mu, list) and mu else falhas + 1
+        if falhas < 5:
+            time.sleep(0.4 if os.environ.get('OPENDOTA_API_KEY') else 1.1)
+        if isinstance(mu, list) and mu:
+            m[str(hid)] = {str(x['hero_id']): [x['games_played'], x['wins']] for x in mu
+                           if (x.get('games_played') or 0) >= MATCHUP_MIN_JOGOS}
+        elif str(hid) in anterior:
+            m[str(hid)] = anterior[str(hid)]
+    MATCHUPS.write_text(json.dumps({'atualizadoEm': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+                                    'fonte': 'OpenDota (/heroes/{id}/matchups)', 'm': m},
+                                   separators=(',', ':')) + '\n', encoding='utf-8')
+    print(f'{MATCHUPS}: {len(m)} heróis')
 
 
 if __name__ == '__main__':
