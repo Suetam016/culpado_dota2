@@ -1,17 +1,17 @@
 {
-  "atualizadoEm": "2026-10-20T00:06:14.481Z",
-  "semAnalise": 2,
+  "atualizadoEm": "2026-10-20T00:39:59.151Z",
+  "semAnalise": 0,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
       "culpados": 5,
-      "craques": 5,
-      "partidas": 22,
-      "vitorias": 13,
-      "winRate": 59,
-      "streak": null,
-      "mmrGanho": 325,
+      "craques": 6,
+      "partidas": 23,
+      "vitorias": 14,
+      "winRate": 61,
+      "streak": "craque",
+      "mmrGanho": 350,
       "mmrPerdido": 225
     },
     {
@@ -67,12 +67,24 @@
       "nome": "Suéter",
       "culpados": 2,
       "craques": 1,
-      "partidas": 27,
-      "vitorias": 11,
+      "partidas": 29,
+      "vitorias": 12,
       "winRate": 41,
       "streak": null,
-      "mmrGanho": 275,
-      "mmrPerdido": 400
+      "mmrGanho": 300,
+      "mmrPerdido": 425
+    },
+    {
+      "accountId": "96286191",
+      "nome": "charlinho",
+      "culpados": 1,
+      "craques": 0,
+      "partidas": 10,
+      "vitorias": 5,
+      "winRate": 50,
+      "streak": null,
+      "mmrGanho": 125,
+      "mmrPerdido": 125
     },
     {
       "accountId": "83300280",
@@ -85,18 +97,6 @@
       "streak": null,
       "mmrGanho": 25,
       "mmrPerdido": 50
-    },
-    {
-      "accountId": "96286191",
-      "nome": "charlinho",
-      "culpados": 0,
-      "craques": 0,
-      "partidas": 8,
-      "vitorias": 4,
-      "winRate": 50,
-      "streak": null,
-      "mmrGanho": 100,
-      "mmrPerdido": 100
     },
     {
       "accountId": "1254464470",
@@ -476,6 +476,22 @@
         "inicio": 1792431537,
         "comStack": true,
         "ranqueada": true
+      },
+      {
+        "matchId": 9053177641,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1792449146,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9053203691,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1792451900,
+        "comStack": true,
+        "ranqueada": true
       }
     ],
     "83300280": [
@@ -566,6 +582,22 @@
         "lado": "radiant",
         "tipo": "derrota",
         "inicio": 1792366233,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9053177641,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1792449146,
+        "comStack": true,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9053203691,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1792451900,
         "comStack": true,
         "ranqueada": true
       }
@@ -1149,6 +1181,14 @@
         "tipo": "craque",
         "inicio": 1792393257,
         "comStack": false,
+        "ranqueada": true
+      },
+      {
+        "matchId": 9053203691,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1792451900,
+        "comStack": true,
         "ranqueada": true
       }
     ],
