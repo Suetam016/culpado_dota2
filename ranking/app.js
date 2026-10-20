@@ -872,8 +872,21 @@ function pintarPeriodo() {
   const jogos = (parceirosBase.jogos || []).filter(g => g.t >= desde).length;
   const julgadas = new Set(Object.values(ranking.historicos).flat().filter(h => (h.inicio || 0) >= desde).map(h => h.matchId)).size;
   $('periodo-info').textContent = periodo === 'tudo'
-    ? `${julgadas} partidas julgadas · ${jogos} partidas guardadas${parceirosBase.desde ? ` desde ${new Date(parceirosBase.desde + 'T12:00:00').toLocaleDateString('pt-BR')}` : ''}`
+    ? `${julgadas} partidas julgadas · ${textoGuardadas(parceirosBase.jogos || [])}`
     : `${desde ? `desde ${data(desde * 1000)} · ` : ''}${julgadas} partidas julgadas · ${jogos} guardadas`;
+}
+
+// "294 em outubro/26 + 105 mais antigas, desde 24/10/2025": a coleta é recente, então o mês atual pesa quase tudo
+function textoGuardadas(jogos) {
+  if (!jogos.length) return '0 partidas guardadas';
+  const ts = jogos.map(g => g.t).sort((a, b) => a - b);
+  const ult = new Date(ts[ts.length - 1] * 1000);
+  const iniMes = new Date(ult.getFullYear(), ult.getMonth(), 1).getTime() / 1000;
+  const doMes = ts.filter(t => t >= iniMes).length;
+  const antes = ts.length - doMes;
+  const mes = `${ult.toLocaleDateString('pt-BR', { month: 'long' })}/${String(ult.getFullYear()).slice(2)}`;
+  if (!antes) return `${doMes} partidas guardadas em ${mes}`;
+  return `${doMes} partidas guardadas em ${mes} + ${antes} mais ${antes === 1 ? 'antiga' : 'antigas'}, desde ${data(ts[0] * 1000)}`;
 }
 
 function aplicarPeriodo() {
