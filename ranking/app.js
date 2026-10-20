@@ -886,7 +886,7 @@ function textoGuardadas(jogos) {
   const antes = ts.length - doMes;
   const mes = `${ult.toLocaleDateString('pt-BR', { month: 'long' })}/${String(ult.getFullYear()).slice(2)}`;
   if (!antes) return `${doMes} partidas guardadas em ${mes}`;
-  return `${doMes} partidas guardadas em ${mes} + ${antes} mais ${antes === 1 ? 'antiga' : 'antigas'}, desde ${data(ts[0] * 1000)}`;
+  return `${doMes} partidas guardadas em ${mes} + ${antes} mais ${antes === 1 ? 'antiga' : 'antigas'}, desde ${new Date(ts[0] * 1000).toLocaleDateString('pt-BR')}`;
 }
 
 function aplicarPeriodo() {
