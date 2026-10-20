@@ -49,7 +49,7 @@
 .fig-simples .fig-topo{align-self:stretch}
 .fig-rosto .retrato.grande{width:96px;height:96px;border-radius:14px}
 .fig-nome{margin:4px 0 0;font-size:1.05rem;overflow-wrap:anywhere}
-.fig-heroi{margin:0;font-size:12.5px;color:var(--ink-2)}
+.fig-heroi{margin:0;font-size:12.5px;color:var(--ink-2);display:flex;align-items:center;gap:6px;justify-content:center}.fig-heroi-ico .retrato{width:40px;height:23px;border-radius:4px;font-size:9px}
 .fig-kda{margin:0;font-size:1.15rem}.fig-kda small{color:var(--muted);font-size:11px}
 .fig-build{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
 .fig-build span{width:34px;height:25px;border-radius:4px;overflow:hidden;background:var(--surface-3);font-size:9px;display:grid;place-items:center;color:var(--muted)}
@@ -9207,7 +9207,7 @@ h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, h('span', { clas
 merito ? h('span', { class: 'fig-culpa merito' }, `${pct(merito.fatia)} do mérito`) : h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
 h('div', { class: 'fig-rosto' }, fotoDe(p, true)),
 h('h3', { class: 'fig-nome' }, p.nome),
-h('p', { class: 'fig-heroi' }, `${p.heroi.nome} · ${funcao}`),
+h('p', { class: 'fig-heroi' }, h('span', { class: 'fig-heroi-ico' }, retrato(p.heroi)), `${p.heroi.nome} · ${funcao}`),
 h('p', { class: 'fig-kda' }, h('b', {}, `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`), h('small', {}, ' K/D/A')),
 build.length ? h('div', { class: 'fig-build', 'aria-label': 'Build' }, build.map((c) => h('span', { title: c.nome }, iconeItem(c) || c.nome.slice(0, 3)))) : null,
 marcadores.length ? h('p', { class: 'fig-marcadores' }, marcadores.map(([cls, t]) => h('span', { class: `fig-marca ${cls}` }, t))) : null);
