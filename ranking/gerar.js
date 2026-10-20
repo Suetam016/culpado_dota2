@@ -192,7 +192,9 @@ async function main() {
       for (const c of a.amigos) {
         if (!historicos[String(c)]) continue;
         const tipo = a.venceu ? (a.craques.includes(c) ? 'craque' : 'vitoria') : (a.culpados.includes(c) ? 'culpado' : 'derrota');
-        historicos[String(c)].push({ matchId: analise.matchId, lado, tipo, inicio: analise.inicio, comStack: a.amigos.length >= 2, ranqueada: analise.ranqueada });
+        const eu = (a.jogadores || []).find((j) => j.conta === c) || {};
+        historicos[String(c)].push({ matchId: analise.matchId, lado, tipo, inicio: analise.inicio, comStack: a.amigos.length >= 2, ranqueada: analise.ranqueada,
+          heroi: eu.heroi ?? null, culpa: eu.culpa ?? null, merito: ((a.merito || []).find((m) => m.conta === c) || {}).fatia ?? null });
       }
     }
   }

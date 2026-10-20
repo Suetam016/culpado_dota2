@@ -150,7 +150,20 @@ button, select { font: inherit; color: inherit; }
 .wr-num span { color: var(--muted); font-size: 12px; }
 .barra-wr { height: 6px; border-radius: 3px; background: var(--bad-wash); overflow: hidden; margin-top: 6px; }
 .barra-wr div { height: 100%; background: var(--good); border-radius: 3px; }
-.contador { text-align: center; min-width: 58px; }
+.contador { text-align: center; min-width: 58px; background: none; border: 1px solid transparent; border-radius: 10px; padding: 4px 6px; color: inherit; font: inherit; cursor: pointer; }
+button.contador:not(:disabled):hover, button.contador[aria-expanded="true"] { border-color: var(--line-strong); background: var(--surface-3); }
+button.contador:disabled { cursor: default; opacity: .75; }
+button.contador:not(:disabled) b { text-decoration: underline dotted; text-underline-offset: 4px; }
+.jogos-do-tipo { grid-column: 1 / -1; border-top: 1px dashed var(--line); padding-top: 10px; display: grid; gap: 6px; }
+.jogos-tit { margin: 0 0 2px; font-size: 13px; color: var(--muted); }
+.jogo-tipo { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; background: var(--surface-3); color: inherit; text-decoration: none; }
+.jogo-tipo:hover { outline: 1px solid var(--gold); }
+.jogo-tipo img, .jogo-tipo .sem-heroi { width: 48px; height: 27px; border-radius: 4px; object-fit: cover; background: var(--surface-2); }
+.jogo-tipo b { display: block; font-size: 14px; }
+.jogo-tipo small { color: var(--muted); font-size: 12px; }
+.jogo-tipo em { font-style: normal; font-family: var(--font-mono); font-size: 13px; color: var(--ink-2); }
+.jogo-tipo .seta { font-size: 12px; color: var(--gold); white-space: nowrap; }
+@media (max-width: 560px) { .jogo-tipo { grid-template-columns: 48px minmax(0, 1fr) auto; } .jogo-tipo .seta { display: none; } }
 .contador b { display: block; font-family: var(--font-mono); font-size: 20px; line-height: 1.1; }
 .contador span { font-size: 12px; color: var(--muted); }
 .contador-culpa b { color: var(--bad-ink); }
@@ -288,7 +301,7 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 @media (max-width: 860px) {
   .jogador {
     grid-template-columns: 34px 1fr auto auto;
-    grid-template-areas: "pos nome culpa craque" "pos wr wr wr" "pos forma forma forma";
+    grid-template-areas: "pos nome culpa craque" "pos wr wr wr" "pos forma forma forma" "lista lista lista lista";
     padding: 12px 14px; gap: 10px 14px;
   }
   .jogador .pos { grid-area: pos; align-self: start; font-size: 18px; }
@@ -297,6 +310,7 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
   .jogador .contador-culpa { grid-area: culpa; }
   .jogador .contador-craque { grid-area: craque; }
   .jogador .col-forma { grid-area: forma; }
+  .jogador .jogos-do-tipo { grid-area: lista; }
   .casa { width: 48px; height: 44px; font-size: 13px; }
   .grade thead th { height: 90px; }
   .formacao { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
@@ -888,3 +902,6 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 .tf-contra small { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
 .tf-hc { min-width: 0; overflow: hidden; }
 .tf-hc-wr { flex: none; }
+
+.jogos-mais summary { cursor: pointer; color: var(--gold); font-size: 13px; padding: 4px 2px; }
+.jogos-mais[open] { display: grid; gap: 6px; }

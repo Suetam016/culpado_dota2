@@ -12,7 +12,6 @@ const MIN_JOGOS_GRUPO = 3;
 // A Valve não expõe o MMR de cada partida: ±25 por ranqueada é uma estimativa
 const MMR_POR_PARTIDA = 25;
 const TAMANHO_FORMA = 10;
-const PARTIDAS_JULGADAS = 20; // PARTIDAS_POR_AMIGO do gerar.js
 
 const POSICOES = { 1: 'Carry', 2: 'Mid', 3: 'Offlane', 4: 'Sup 4', 5: 'Sup 5' };
 
@@ -124,6 +123,7 @@ function estatisticas(conta, nome, historico) {
     mmr: temRanqueada ? (2 * vitRanq - ranqueadas.length) * MMR_POR_PARTIDA : null,
     streak: sequencia(eventos.map(h => h.tipo)),
     forma: eventos.slice(-TAMANHO_FORMA),
+    eventos,
   };
 }
 
@@ -151,7 +151,7 @@ function renderizarRanking() {
   lista.sort(criterio);
 
   const fora = Object.keys(ranking.historicos).filter(c => !lista.some(j => j.conta === c)).map(c => nomes[c] || c);
-  $('ranking-desc').textContent = `${VISOES[visao].desc} O robô julga as últimas ${PARTIDAS_JULGADAS} de cada um.` +
+  $('ranking-desc').textContent = `${VISOES[visao].desc} Toque no número de culpado ou craque para ver os jogos.` +
     (fora.length && periodo !== 'tudo' ? ` Sem partida nesse período: ${fora.join(', ')}.` : '');
   const ol = $('lista-jogadores');
   ol.innerHTML = lista.length ? '' : '<li class="carregando">Sem partidas nesse recorte ainda.</li>';
@@ -177,14 +177,44 @@ function renderizarRanking() {
         <div class="wr-num">${j.winRate}% <span>${j.vitorias}V · ${j.partidas - j.vitorias}D</span></div>
         <div class="barra-wr"><div style="width:${j.winRate}%"></div></div>
       </div>
-      <div class="contador contador-culpa"><b>${j.culpados}</b><span>🚨 culpado</span></div>
-      <div class="contador contador-craque"><b>${j.craques}</b><span>✨ craque</span></div>
+      <button type="button" class="contador contador-culpa" data-tipo="culpado" aria-expanded="false" ${j.culpados ? '' : 'disabled'}><b>${j.culpados}</b><span>🚨 culpado</span></button>
+      <button type="button" class="contador contador-craque" data-tipo="craque" aria-expanded="false" ${j.craques ? '' : 'disabled'}><b>${j.craques}</b><span>✨ craque</span></button>
       <div class="col-forma">
         <div class="forma">${pontos}</div>
         <div class="forma-legenda"><span>mais antiga</span><span>última</span></div>
-      </div>`;
+      </div>
+      <div class="jogos-do-tipo" hidden></div>`;
+    // tocar no número abre a lista dos jogos em que ele foi culpado (ou craque), cada um com link para a análise
+    const painel = li.querySelector('.jogos-do-tipo');
+    li.querySelectorAll('button.contador').forEach((bt) => bt.addEventListener('click', () => {
+      const tipo = bt.dataset.tipo;
+      const aberto = !painel.hidden && painel.dataset.tipo === tipo;
+      li.querySelectorAll('button.contador').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+      if (aberto) { painel.hidden = true; return; }
+      bt.setAttribute('aria-expanded', 'true');
+      painel.dataset.tipo = tipo;
+      painel.innerHTML = listaDeJogos(j, tipo);
+      painel.hidden = false;
+    }));
     ol.append(li);
   });
+}
+
+function listaDeJogos(j, tipo) {
+  const jogos = j.eventos.filter(h => h.tipo === tipo).slice().reverse();
+  const titulo = `${tipo === 'culpado' ? '🚨 Culpado' : '✨ Craque'} em ${jogos.length} ${jogos.length === 1 ? 'jogo' : 'jogos'}${periodo !== 'tudo' ? ' nesse período' : ''}`;
+  const linhas = jogos.map(h => {
+    const info = h.heroi != null && parceiros && parceiros.herois && parceiros.herois[h.heroi];
+    const img = info && info[0] ? `<img src="${HEROI_IMG}${info[0]}.png" alt="" width="48" height="27" loading="lazy">` : '<span class="sem-heroi"></span>';
+    const nomeHeroi = info ? esc(info[1]) : 'Partida';
+    const fatia = tipo === 'culpado' ? h.culpa : h.merito;
+    const quando = h.inicio ? new Date(h.inicio * 1000).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + new Date(h.inicio * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+    return `<a class="jogo-tipo" href="../#${h.matchId}${h.lado ? '-' + h.lado : ''}">${img}<span><b>${nomeHeroi}</b><small>${quando}${h.comStack ? ' · em grupo' : ''}</small></span>${fatia != null ? `<em>${Math.round(fatia * 100)}% ${tipo === 'culpado' ? 'da culpa' : 'do mérito'}</em>` : ''}<span class="seta">ver análise →</span></a>`;
+  });
+  const mostra = 10;
+  const resto = linhas.length - mostra;
+  return `<p class="jogos-tit">${titulo}</p>${linhas.slice(0, mostra).join('')}` +
+    (resto > 0 ? `<details class="jogos-mais"><summary>ver os outros ${resto}</summary>${linhas.slice(mostra).join('')}</details>` : '');
 }
 
 function rotuloTipo(t) {
