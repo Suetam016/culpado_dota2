@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-10-20T23:16:24Z",
+  "quando": "2026-10-20T23:53:26Z",
   "restante": {
-   "dia": 2956,
-   "minuto": 16
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -466,7 +466,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-10-20T23:16:06Z",
+   "em": "2026-10-20T23:53:23Z",
    "partidas": {
     "9031421110": 1791247730,
     "9031441810": 1791250210,
@@ -2040,26 +2040,12 @@
   "99113261": "Randy Bobandy"
  },
  "pendentes": {
-  "9054441044": {
-   "inicio": 1792528232,
-   "pedido_em": "2026-10-20T23:16:18Z",
-   "primeira_vez": "2026-10-20T23:16:17Z",
-   "proxima": "2026-10-20T23:46:17Z",
-   "tentativas": 0
-  },
-  "9054497652": {
-   "inicio": 1792532042,
-   "pedido_em": "2026-10-20T23:16:21Z",
-   "primeira_vez": "2026-10-20T23:16:20Z",
-   "proxima": "2026-10-20T23:46:20Z",
-   "tentativas": 0
-  },
   "9054546751": {
    "inicio": 1792536348,
    "pedido_em": "2026-10-20T23:16:24Z",
    "primeira_vez": "2026-10-20T23:16:23Z",
-   "proxima": "2026-10-20T23:46:23Z",
-   "tentativas": 0
+   "proxima": "2026-10-21T00:53:26Z",
+   "tentativas": 1
   }
  },
  "rodadas": [
@@ -2731,6 +2717,22 @@
     "minuto": 16
    },
    "sobra_do_dia": 2691
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-10-20T23:53:23Z",
+   "novas": 2,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2687
   }
  ],
  "uso": {
@@ -2740,6 +2742,6 @@
   "2026-10-17": 84,
   "2026-10-18": 139,
   "2026-10-19": 76,
-  "2026-10-20": 109
+  "2026-10-20": 113
  }
 }
