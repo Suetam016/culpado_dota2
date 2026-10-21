@@ -9949,7 +9949,9 @@ function documentoDaCulpa(cs, r) {
 // acima do corte vira o pôster do Tribunal; as acusações seguem as do nível 4
 const nivel = cs[0].fatia >= CULPA_PROCURADO_TPI ? 4 : gravidadeDaCulpa(cs[0]);
 const fichas = cs.map((v) => fichaDoReu(v, r, nivel));
-const doc = [docBoletim, docBoletim, docInterpol, docHaia, docProcuradoTPI][nivel](fichas, r); // o B.O. rende mais risada que o Wanted
+// no nível mais baixo, metade das partidas vira o Wanted do faroeste e metade o B.O. (sorteio fixo por partida)
+const primeiro = sorteador(`papel-${r.partida.id}`).num(0, 1) ? docWanted : docBoletim;
+const doc = [primeiro, docBoletim, docInterpol, docHaia, docProcuradoTPI][nivel](fichas, r);
 doc.dataset.gravidade = String(nivel + 1);
 return doc;
 }
