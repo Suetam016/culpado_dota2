@@ -287,6 +287,9 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .prog-cab b{font-size:15px}
 .prog-tempo{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
 .prog-barra{height:6px;border-radius:3px;background:var(--surface-3);overflow:hidden;margin:10px 0}
+.prog-barra.indeterminada{position:relative}.prog-barra.indeterminada i{position:absolute;width:30%;animation:vaivem 1.6s ease-in-out infinite}@keyframes vaivem{0%{left:-30%}100%{left:100%}}
+.espera-replay p{margin:6px 0 2px;font-size:14px;color:var(--ink-2)}.espera-replay small{color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion: reduce){.prog-barra.indeterminada i{animation:none;left:35%}}
 .prog-barra i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--bronze),var(--gold));transition:width .25s linear;box-shadow:0 0 10px rgba(232,176,74,.45)}
 .prog-etapas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
 .prog-etapas li{display:flex;align-items:center;gap:6px}
@@ -5041,19 +5044,47 @@ return { match, ...(await constantes(match, signal)), popularidade: {}, matchups
 
 const marcar = (fase) => { try { performance.mark(`culpado:${fase}`); } catch (e) { /* sem User Timing */ } };
 
+// Enquanto o OpenDota analisa o replay, a página mostra o veredito provisório (só o placar). A faixa abaixo deixa
+// claro que o site continua esperando e que a análise completa abre sozinha.
+function faixaEsperaReplay(id) {
+const tempo = h('span', { class: 'prog-tempo' });
+const checagem = h('small', {});
+const no = h('div', { class: 'progresso espera-replay', role: 'status', 'aria-live': 'polite' },
+h('div', { class: 'prog-cab' }, h('b', {}, 'O OpenDota está analisando o replay'), tempo),
+h('div', { class: 'prog-barra indeterminada', 'aria-hidden': 'true' }, h('i')),
+h('p', {}, 'Este é o veredito provisório, só com o placar. Lances, rotas, itens e o veredito completo abrem sozinhos quando o replay ficar pronto, normalmente entre 2 e 10 minutos. Pode deixar a aba aberta.'),
+checagem);
+el.status.textContent = '';
+el.status.append(no);
+const inicio = Date.now();
+let ultima = inicio;
+const timer = setInterval(() => {
+const s_ = Math.round((Date.now() - inicio) / 1000);
+tempo.textContent = `esperando há ${Math.floor(s_ / 60)}:${String(s_ % 60).padStart(2, '0')}`;
+checagem.textContent = `Última checagem há ${Math.round((Date.now() - ultima) / 1000)} s.`;
+}, 1000);
+return { checou: () => { ultima = Date.now(); }, parar: () => { clearInterval(timer); if (no.isConnected) no.remove(); } };
+}
+
 async function pedirParse(id) {
 await api(`/request/${id}`, { method: 'POST' });
+const faixa = faixaEsperaReplay(id);
 const limite = Date.now() + 15 * 60e3;
+try {
 while (Date.now() < limite) {
 await new Promise((r) => setTimeout(r, 15000));
+if (estado.id !== String(id)) return; // foi para outra partida
 const m = await api(`/matches/${id}`).catch(() => null);
+faixa.checou();
 if (m && m.version != null) {
 partidasMem.set(String(id), m); // a recarga usa esta, sem pedir de novo
 marcar('F4');
+faixa.parar();
 await carregar(id);
 return;
 }
 }
+} finally { faixa.parar(); }
 mostrarStatus('O replay ainda não foi analisado. Replays ficam disponíveis por cerca de 2 semanas; tente de novo mais tarde.', 'erro');
 }
 
