@@ -288,7 +288,6 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .prog-tempo{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
 .prog-barra{height:6px;border-radius:3px;background:var(--surface-3);overflow:hidden;margin:10px 0}
 .prog-barra.indeterminada{position:relative}.prog-barra.indeterminada i{position:absolute;width:30%;animation:vaivem 1.6s ease-in-out infinite}@keyframes vaivem{0%{left:-30%}100%{left:100%}}
-.espera-replay p{margin:6px 0 2px;font-size:14px;color:var(--ink-2)}.espera-replay small{color:var(--muted);font-size:12px}
 @media (prefers-reduced-motion: reduce){.prog-barra.indeterminada i{animation:none;left:35%}}
 .prog-barra i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--bronze),var(--gold));transition:width .25s linear;box-shadow:0 0 10px rgba(232,176,74,.45)}
 .prog-etapas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
@@ -5044,31 +5043,39 @@ return { match, ...(await constantes(match, signal)), popularidade: {}, matchups
 
 const marcar = (fase) => { try { performance.mark(`culpado:${fase}`); } catch (e) { /* sem User Timing */ } };
 
-// Enquanto o OpenDota analisa o replay, a página mostra o veredito provisório (só o placar). A faixa abaixo deixa
-// claro que o site continua esperando e que a análise completa abre sozinha.
-function faixaEsperaReplay(id) {
-const tempo = h('span', { class: 'prog-tempo' });
-const checagem = h('small', {});
-const no = h('div', { class: 'progresso espera-replay', role: 'status', 'aria-live': 'polite' },
-h('div', { class: 'prog-cab' }, h('b', {}, 'O OpenDota está analisando o replay'), tempo),
-h('div', { class: 'prog-barra indeterminada', 'aria-hidden': 'true' }, h('i')),
-h('p', {}, 'Este é o veredito provisório, só com o placar. Lances, rotas, itens e o veredito completo abrem sozinhos quando o replay ficar pronto, normalmente entre 2 e 10 minutos. Pode deixar a aba aberta.'),
-checagem);
+// Enquanto o OpenDota analisa o replay, a página mostra o veredito provisório (só o placar) e uma barra de
+// carregamento que anda sozinha (estimativa: costuma levar uns 5 min), só para ninguém achar que travou. Chega
+// perto do fim e espera lá; quando o replay fica pronto, completa e a análise completa abre.
+const ESPERA_REPLAY_S = 300;
+function faixaEsperaReplay() {
+const barra = h('i', { style: 'width:1%' });
+const rotulo = h('span', { class: 'prog-tempo' }, '1%');
+const no = h('div', { class: 'progresso espera-replay', role: 'progressbar', 'aria-label': 'Analisando o replay' },
+h('div', { class: 'prog-cab' }, h('b', {}, 'Analisando o replay da partida'), rotulo),
+h('div', { class: 'prog-barra', 'aria-hidden': 'true' }, barra));
 el.status.textContent = '';
 el.status.append(no);
 const inicio = Date.now();
-let ultima = inicio;
 const timer = setInterval(() => {
-const s_ = Math.round((Date.now() - inicio) / 1000);
-tempo.textContent = `esperando há ${Math.floor(s_ / 60)}:${String(s_ % 60).padStart(2, '0')}`;
-checagem.textContent = `Última checagem há ${Math.round((Date.now() - ultima) / 1000)} s.`;
-}, 1000);
-return { checou: () => { ultima = Date.now(); }, parar: () => { clearInterval(timer); if (no.isConnected) no.remove(); } };
+const t = (Date.now() - inicio) / 1000;
+const pct = 97 * (1 - Math.exp(-2.3 * t / ESPERA_REPLAY_S)); // ~90% no tempo típico, depois quase para
+barra.style.width = `${pct.toFixed(1)}%`;
+rotulo.textContent = `${Math.floor(pct)}%`;
+no.setAttribute('aria-valuenow', String(Math.floor(pct)));
+}, 250);
+return {
+checou: () => {},
+parar: (completo) => {
+clearInterval(timer);
+if (!no.isConnected) return;
+if (completo) { barra.style.width = '100%'; rotulo.textContent = '100%'; setTimeout(() => no.remove(), 500); } else no.remove();
+},
+};
 }
 
 async function pedirParse(id) {
 await api(`/request/${id}`, { method: 'POST' });
-const faixa = faixaEsperaReplay(id);
+const faixa = faixaEsperaReplay();
 const limite = Date.now() + 15 * 60e3;
 try {
 while (Date.now() < limite) {
@@ -5079,7 +5086,8 @@ faixa.checou();
 if (m && m.version != null) {
 partidasMem.set(String(id), m); // a recarga usa esta, sem pedir de novo
 marcar('F4');
-faixa.parar();
+faixa.parar(true);
+await new Promise((r) => setTimeout(r, 500));
 await carregar(id);
 return;
 }
