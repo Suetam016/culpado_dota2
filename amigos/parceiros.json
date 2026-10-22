@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-10-22T00:43:59Z",
+ "atualizadoEm": "2026-10-22T04:38:30Z",
  "desde": "2025-10-24",
- "partidasLidas": 461,
+ "partidasLidas": 462,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -17,15 +17,15 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 132,
+   "jogos": 133,
    "vitorias": 61,
    "winRate": 46
   },
   "1000265186": {
    "nome": "gustavoDotinhaPro",
-   "jogos": 75,
+   "jogos": 76,
    "vitorias": 36,
-   "winRate": 48
+   "winRate": 47
   },
   "111257540": {
    "nome": "Kuscomem",
@@ -1424,9 +1424,9 @@
    "b": "1000265186",
    "nomeA": "Suéter",
    "nomeB": "gustavoDotinhaPro",
-   "jogos": 54,
+   "jogos": 55,
    "vitorias": 25,
-   "winRate": 46,
+   "winRate": 45,
    "rotas": [
     {
      "posA": 5,
@@ -1445,9 +1445,9 @@
     {
      "posA": 5,
      "posB": 1,
-     "jogos": 14,
+     "jogos": 15,
      "vitorias": 7,
-     "winRate": 50
+     "winRate": 47
     },
     {
      "posA": 3,
@@ -1514,6 +1514,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9056028885,
+     "inicio": 1792636469,
+     "venceu": false,
+     "heroiA": 86,
+     "heroiB": 94,
+     "posA": 5,
+     "posB": 1
+    },
+    {
      "matchId": 9054679725,
      "inicio": 1792551533,
      "venceu": true,
@@ -1573,15 +1582,6 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 91,
-     "posA": 2,
-     "posB": 1
-    },
-    {
-     "matchId": 9048454587,
-     "inicio": 1792201545,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 54,
      "posA": 2,
      "posB": 1
     }
@@ -9900,7 +9900,7 @@
    {
     "heroi": 86,
     "pos": 5,
-    "jogos": 9,
+    "jogos": 10,
     "vitorias": 4
    },
    {
@@ -10080,6 +10080,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 94,
+    "pos": 1,
+    "jogos": 3,
+    "vitorias": 2
+   },
+   {
     "heroi": 21,
     "pos": 2,
     "jogos": 3,
@@ -10099,12 +10105,6 @@
    },
    {
     "heroi": 67,
-    "pos": 1,
-    "jogos": 2,
-    "vitorias": 2
-   },
-   {
-    "heroi": 94,
     "pos": 1,
     "jogos": 2,
     "vitorias": 2
@@ -20487,6 +20487,28 @@
      21,
      2,
      2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9056028885,
+   "t": 1792636469,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     5,
+     1,
+     0
+    ],
+    [
+     "1000265186",
+     94,
+     1,
+     1,
      0
     ]
    ]
