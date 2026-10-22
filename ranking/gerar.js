@@ -15,7 +15,8 @@ const RAIZ = path.resolve(__dirname, '..');
 const API = 'https://api.opendota.com/api';
 const DADOS = process.env.DADOS || path.join(RAIZ, '.dados');   // checkout do branch "dados"
 const DIAS_HISTORICO = 365;   // igual ao parceiros.py: partida mais velha que isso é outro patch, outro meta
-const PERFIS_HORAS = 12;
+const PERFIS_HORAS = 6;
+const ESPERA_REFRESH_MS = 90_000;   // o OpenDota reprocessa o perfil (medalha) em segundo plano depois do pedido
 const PAUSA_MS = 1100;
 const EMPATE_TECNICO = 0.05;
 const COAUTORIA_MIN = 0.25;   // igual ao culpados() do index.html: abaixo de 25% ninguém vira coautor
@@ -80,12 +81,12 @@ function dadosEmbutidos() {
   return { h, i, ids };
 }
 
-async function pedir(caminho) {
+async function pedir(caminho, metodo = 'GET') {
   const chave = process.env.OPENDOTA_API_KEY;
   const url = `${API}${caminho}${chave ? `${caminho.includes('?') ? '&' : '?'}api_key=${chave}` : ''}`;
   for (let tentativa = 0; tentativa < 3; tentativa++) {
     try {
-      const resp = await fetch(url, { headers: { 'User-Agent': 'culpado-dota2-ranking/1.0' } });
+      const resp = await fetch(url, { method: metodo, headers: { 'User-Agent': 'culpado-dota2-ranking/1.0' } });
       if (resp.ok) return resp.json();
       console.error(`  ${caminho}: HTTP ${resp.status}`);
     } catch (erro) {
@@ -228,6 +229,13 @@ async function main() {
   let perfisEm = anterior.perfisEm || null;
   const perfisVelhos = !perfisEm || Date.now() - Date.parse(perfisEm) > PERFIS_HORAS * 3600e3 || Object.keys(amigos).some((k) => !perfis[k]);
   if (perfisVelhos) {
+    // a medalha do perfil no OpenDota só muda quando alguém pede um refresh do jogador: pede para todos, espera
+    // o OpenDota reprocessar e só então lê (sem isso, quem subiu de medalha continuava com a antiga)
+    for (const conta_ of Object.keys(amigos)) {
+      await pedir(`/players/${conta_}/refresh`, 'POST');
+      await sleep(PAUSA_MS);
+    }
+    await sleep(ESPERA_REFRESH_MS);
     const novos = {};
     for (const conta_ of Object.keys(amigos)) {
       const p = await pedir(`/players/${conta_}`);
@@ -240,6 +248,19 @@ async function main() {
     }
     perfis = novos;
     perfisEm = new Date().toISOString();
+  }
+  // a medalha que aparece na partida mais recente da base vale se o perfil estiver sem ou diferente dela
+  for (const conta_ of Object.keys(amigos)) {
+    const ultima = Object.entries(indice).filter(([, v]) => [...(v.radiant || []), ...(v.dire || [])].includes(Number(conta_)))
+      .sort((a, b) => (b[1].inicio || 0) - (a[1].inicio || 0))[0];
+    if (!ultima || !perfis[conta_]) continue;
+    const arq = path.join(DADOS, 'partidas', `${ultima[0]}.json.gz`);
+    if (!fs.existsSync(arq)) continue;
+    try {
+      const m = JSON.parse(zlib.gunzipSync(fs.readFileSync(arq)));
+      const eu = (m.players || []).find((p) => p.account_id === Number(conta_));
+      if (eu && eu.rank_tier && Date.parse(perfisEm || 0) / 1000 < (m.start_time || 0)) perfis[conta_].rankTier = eu.rank_tier;
+    } catch (e) { /* arquivo ruim: fica a do perfil */ }
   }
 
   const ranking = Object.entries(amigos).map(([conta_, nome]) => {
