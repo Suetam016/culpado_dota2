@@ -293,9 +293,14 @@ async function main() {
   // só regrava (e só gera commit) se algo mudou de verdade
   const conteudo = { semAnalise: conta.semAnalise, ranking, historicos, perfis, perfisEm };
   const igual = JSON.stringify(conteudo) === JSON.stringify({ semAnalise: anterior.semAnalise, ranking: anterior.ranking, historicos: anterior.historicos, perfis: anterior.perfis, perfisEm: anterior.perfisEm });
-  if (igual) { console.log('ranking.json: nada mudou'); return; }
+  // pedido de alguém ("Atualizar agora" no site ou rodada na mão): grava a hora mesmo sem nada novo, senão o site
+  // continua dizendo "atualizado há 5 h" e fica esperando uma mudança que não vem. Rodada automática sem novidade
+  // não gera commit.
+  const pedido = ['push', 'workflow_dispatch'].includes(process.env.GITHUB_EVENT_NAME || '');
+  if (igual && !pedido) { console.log('ranking.json: nada mudou'); return; }
   fs.mkdirSync(path.dirname(saida), { recursive: true });
   fs.writeFileSync(saida, JSON.stringify({ atualizadoEm: new Date().toISOString(), ...conteudo }, null, 2), 'utf8');
+  if (igual) console.log('ranking.json: nada novo, só a hora da verificação');
   console.log(`Ranking salvo: ${saida}`);
 }
 
