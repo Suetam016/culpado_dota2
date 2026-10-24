@@ -2024,3 +2024,19 @@ Fila: [9042304728] (pedidos do site: [9042304728])
   1674 usos de skill/item de 2677 no combat log
 OK 9042304728
 1 mapas novos
+Fila: [9059528693, 9059443440]
+  replay http://replay202.valve.net/570/9059528693_1299215158.dem.bz2 -> HTTP 200 application/octet-stream 42105203 inicio=b'(\xb5/\xfd\x00`$g\x0fN\xde\xdf'
+  9059528693: 154327 eventos; tipos [('actions', 62924), ('DOTA_COMBATLOG_DAMAGE', 27967), ('interval', 22820), ('DOTA_COMBATLOG_MODIFIER_ADD', 11311), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 11258), ('DOTA_COMBATLOG_HEAL', 4162), ('DOTA_COMBATLOG_XP', 3627), ('DOTA_COMBATLOG_DEATH', 3119)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Magnataur", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 97, "variant": 0, "facet_hero_id": 97, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "
+  exemplo de habilidade: {"time": -55, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_sniper", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_observer"}
+  1779 registros de dano herói->herói
+  1409 usos de skill/item de 2435 no combat log
+OK 9059528693
+  replay http://replay201.valve.net/570/9059443440_641924221.dem.bz2 -> HTTP 200 application/octet-stream 63987169 inicio=b'(\xb5/\xfd\x00`|-\x0f~7^'
+  9059443440: 252646 eventos; tipos [('actions', 105976), ('DOTA_COMBATLOG_DAMAGE', 55461), ('interval', 33790), ('DOTA_COMBATLOG_MODIFIER_ADD', 15181), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 15169), ('DOTA_COMBATLOG_HEAL', 6183), ('DOTA_COMBATLOG_XP', 5393), ('DOTA_COMBATLOG_DEATH', 5150)]
+  exemplo de interval: {"time": -90, "type": "interval", "unit": "CDOTA_Unit_Hero_VengefulSpirit", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 20, "variant": 0, "facet_hero_id": 20, "life_state": 0, "level": 0, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups":
+  exemplo de habilidade: {"time": -54, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_weaver", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_quelling_blade"}
+  4962 registros de dano herói->herói
+  2376 usos de skill/item de 3443 no combat log
+OK 9059443440
+2 mapas novos
