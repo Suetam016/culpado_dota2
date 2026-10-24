@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-10-24T05:14:25Z",
+  "quando": "2026-10-24T05:55:05Z",
   "restante": {
-   "dia": 2940,
-   "minuto": 9
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -486,7 +486,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-10-24T05:13:50Z",
+   "em": "2026-10-24T05:55:02Z",
    "partidas": {
     "9036627330": 1791558746,
     "9037417047": 1791598055,
@@ -2143,46 +2143,8 @@
   "99113261": "Randy Bobandy",
   "99140295": "·NEO·GEO·"
  },
- "pendentes": {
-  "9058893357": {
-   "inicio": 1792805487,
-   "pedido_em": "2026-10-24T05:14:10Z",
-   "primeira_vez": "2026-10-24T05:14:09Z",
-   "proxima": "2026-10-24T05:44:09Z",
-   "tentativas": 0
-  },
-  "9058917037": {
-   "inicio": 1792807777,
-   "pedido_em": "2026-10-24T05:14:13Z",
-   "primeira_vez": "2026-10-24T05:14:12Z",
-   "proxima": "2026-10-24T05:44:12Z",
-   "tentativas": 0
-  },
-  "9058949681": {
-   "inicio": 1792810687,
-   "pedido_em": "2026-10-24T05:14:16Z",
-   "primeira_vez": "2026-10-24T05:14:14Z",
-   "proxima": "2026-10-24T05:44:14Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-10-17T17:11:05Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2990,
-    "minuto": 50
-   },
-   "sobra_do_dia": 2750
-  },
   {
    "basicas": 0,
    "chamadas": 12,
@@ -2934,6 +2896,22 @@
     "minuto": 9
    },
    "sobra_do_dia": 2740
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-10-24T05:55:01Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2745
   }
  ],
  "uso": {
@@ -2947,6 +2925,6 @@
   "2026-10-21": 91,
   "2026-10-22": 87,
   "2026-10-23": 94,
-  "2026-10-24": 51
+  "2026-10-24": 55
  }
 }
