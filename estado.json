@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-10-24T18:10:23Z",
+  "quando": "2026-10-24T19:41:05Z",
   "restante": {
-   "dia": 2979,
-   "minuto": 39
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -488,7 +488,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-10-24T18:10:10Z",
+   "em": "2026-10-24T19:41:04Z",
    "partidas": {
     "9037417047": 1791598055,
     "9037459533": 1791601845,
@@ -2181,32 +2181,8 @@
   "99113261": "Randy Bobandy",
   "99140295": "·NEO·GEO·"
  },
- "pendentes": {
-  "9059947342": {
-   "inicio": 1792859669,
-   "pedido_em": "2026-10-24T18:10:12Z",
-   "primeira_vez": "2026-10-24T18:10:11Z",
-   "proxima": "2026-10-24T18:40:11Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 28,
-   "descartadas": [],
-   "faltam": 5,
-   "fim": "fila vazia",
-   "inicio": "2026-10-18T14:35:15Z",
-   "novas": 9,
-   "pedidos": 3,
-   "pendentes": 5,
-   "restante": {
-    "dia": 2936,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2717
-  },
   {
    "basicas": 0,
    "chamadas": 21,
@@ -2958,6 +2934,22 @@
     "minuto": 39
    },
    "sobra_do_dia": 2687
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-10-24T19:41:03Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2685
   }
  ],
  "uso": {
@@ -2971,6 +2963,6 @@
   "2026-10-21": 91,
   "2026-10-22": 87,
   "2026-10-23": 94,
-  "2026-10-24": 113
+  "2026-10-24": 115
  }
 }
