@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-10-24T19:41:10.314Z",
+  "atualizadoEm": "2026-10-24T19:41:33.774Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -31,12 +31,12 @@
       "nome": "Suéter",
       "culpados": 7,
       "craques": 5,
-      "partidas": 155,
+      "partidas": 156,
       "vitorias": 76,
       "winRate": 49,
       "streak": "craque",
       "mmrGanho": 1850,
-      "mmrPerdido": 1950
+      "mmrPerdido": 1975
     },
     {
       "accountId": "111257540",
@@ -89,14 +89,14 @@
     {
       "accountId": "96286191",
       "nome": "charlinho",
-      "culpados": 2,
+      "culpados": 3,
       "craques": 2,
-      "partidas": 35,
+      "partidas": 36,
       "vitorias": 19,
-      "winRate": 54,
-      "streak": "craque",
+      "winRate": 53,
+      "streak": null,
       "mmrGanho": 475,
-      "mmrPerdido": 400
+      "mmrPerdido": 425
     },
     {
       "accountId": "83300280",
@@ -2679,6 +2679,17 @@
         "heroi": 108,
         "culpa": 0.23,
         "merito": 0.174
+      },
+      {
+        "matchId": 9059947342,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1792859669,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.182,
+        "merito": 0.204
       }
     ],
     "83300280": [
@@ -3277,6 +3288,17 @@
         "heroi": 54,
         "culpa": 0.108,
         "merito": 0.346
+      },
+      {
+        "matchId": 9059947342,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1792859669,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 25,
+        "culpa": 0.415,
+        "merito": 0.114
       }
     ],
     "111257540": [
