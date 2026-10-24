@@ -1,18 +1,18 @@
 {
-  "atualizadoEm": "2026-10-23T22:14:35.296Z",
+  "atualizadoEm": "2026-10-24T00:47:07.306Z",
   "semAnalise": 0,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
-      "culpados": 40,
-      "craques": 49,
-      "partidas": 185,
-      "vitorias": 94,
+      "culpados": 41,
+      "craques": 50,
+      "partidas": 187,
+      "vitorias": 95,
       "winRate": 51,
       "streak": null,
-      "mmrGanho": 2325,
-      "mmrPerdido": 2275
+      "mmrGanho": 2350,
+      "mmrPerdido": 2300
     },
     {
       "accountId": "241782761",
@@ -43,12 +43,12 @@
       "nome": "Kuscomem",
       "culpados": 7,
       "craques": 4,
-      "partidas": 68,
+      "partidas": 69,
       "vitorias": 29,
-      "winRate": 43,
+      "winRate": 42,
       "streak": "craque",
       "mmrGanho": 725,
-      "mmrPerdido": 975
+      "mmrPerdido": 1000
     },
     {
       "accountId": "1254464470",
@@ -3851,6 +3851,17 @@
         "heroi": 72,
         "culpa": 0.148,
         "merito": 0.269
+      },
+      {
+        "matchId": 9058650039,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1792787497,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 71,
+        "culpa": 0.093,
+        "merito": 0.139
       }
     ],
     "241782761": [
@@ -8257,6 +8268,17 @@
         "merito": 0.139
       },
       {
+        "matchId": 9058473521,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1792780387,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 74,
+        "culpa": 0.094,
+        "merito": 0.296
+      },
+      {
         "matchId": 9058558506,
         "lado": "radiant",
         "tipo": "derrota",
@@ -8266,6 +8288,17 @@
         "heroi": 91,
         "culpa": 0.246,
         "merito": 0.238
+      },
+      {
+        "matchId": 9058650039,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1792787497,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 91,
+        "culpa": 0.329,
+        "merito": 0.21
       }
     ],
     "1254464470": [
@@ -9099,5 +9132,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-10-23T16:44:01.591Z"
+  "perfisEm": "2026-10-24T00:47:07.254Z"
 }
