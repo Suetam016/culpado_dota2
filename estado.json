@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Day": "2994",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-10-24T14:34:26Z",
+  "quando": "2026-10-24T16:14:15Z",
   "restante": {
-   "dia": 2942,
-   "minuto": 2
+   "dia": 2990,
+   "minuto": 55
   }
  },
  "desistencias": {
@@ -490,9 +490,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-10-24T14:34:03Z",
+   "em": "2026-10-24T16:14:10Z",
    "partidas": {
-    "9036627330": 1791558746,
     "9037417047": 1791598055,
     "9037459533": 1791601845,
     "9037481924": 1791603819,
@@ -2171,53 +2170,8 @@
   "99113261": "Randy Bobandy",
   "99140295": "·NEO·GEO·"
  },
- "pendentes": {
-  "9059332888": {
-   "inicio": 1792836583,
-   "pedido_em": "2026-10-24T14:34:19Z",
-   "primeira_vez": "2026-10-24T14:34:18Z",
-   "proxima": "2026-10-24T15:04:18Z",
-   "tentativas": 0
-  },
-  "9059406153": {
-   "inicio": 1792840118,
-   "pedido_em": "2026-10-24T14:34:22Z",
-   "primeira_vez": "2026-10-24T14:34:21Z",
-   "proxima": "2026-10-24T15:04:21Z",
-   "tentativas": 0
-  },
-  "9059443440": {
-   "inicio": 1792841753,
-   "pedido_em": "2026-10-24T14:34:24Z",
-   "primeira_vez": "2026-10-24T14:34:23Z",
-   "proxima": "2026-10-24T15:04:23Z",
-   "tentativas": 0
-  },
-  "9059528693": {
-   "inicio": 1792845253,
-   "pedido_em": "2026-10-24T14:34:26Z",
-   "primeira_vez": "2026-10-24T14:34:25Z",
-   "proxima": "2026-10-24T15:04:25Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 11,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-10-18T05:55:09Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2989,
-    "minuto": 49
-   },
-   "sobra_do_dia": 2775
-  },
   {
    "basicas": 0,
    "chamadas": 30,
@@ -2969,6 +2923,22 @@
     "minuto": 2
    },
    "sobra_do_dia": 2704
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-10-24T16:14:10Z",
+   "novas": 4,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2990,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2699
   }
  ],
  "uso": {
@@ -2982,6 +2952,6 @@
   "2026-10-21": 91,
   "2026-10-22": 87,
   "2026-10-23": 94,
-  "2026-10-24": 96
+  "2026-10-24": 101
  }
 }
