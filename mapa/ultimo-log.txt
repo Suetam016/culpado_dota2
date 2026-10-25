@@ -2156,3 +2156,12 @@ OK 9061353436
   2037 usos de skill/item de 2963 no combat log
 OK 9061234499
 2 mapas novos
+Fila: [9061555532]
+  replay http://replay202.valve.net/570/9061555532_1184891422.dem.bz2 -> HTTP 200 application/octet-stream 60184295 inicio=b'(\xb5/\xfd\x00`\\:\x0f\xcem\xde'
+  9061555532: 211045 eventos; tipos [('actions', 82270), ('DOTA_COMBATLOG_DAMAGE', 41958), ('interval', 32090), ('DOTA_COMBATLOG_MODIFIER_ADD', 12344), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 12246), ('DOTA_COMBATLOG_HEAL', 11615), ('DOTA_COMBATLOG_XP', 5101), ('DOTA_COMBATLOG_DEATH', 4502)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Zuus", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 22, "variant": 0, "facet_hero_id": 22, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "rando
+  exemplo de habilidade: {"time": -81, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_shadow_shaman", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  3834 registros de dano herói->herói
+  1972 usos de skill/item de 3040 no combat log
+OK 9061555532
+1 mapas novos
