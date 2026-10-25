@@ -1,9 +1,9 @@
 {
- "atualizadoEm": "2026-10-24T13:41:54Z",
+ "atualizadoEm": "2026-10-25T14:00:38Z",
  "fonte": "OpenDota (/heroStats e /itemPopularity)",
  "patch": "7.41",
  "faixa": "Archon a Ancient",
- "partidas": 2385691,
+ "partidas": 2395685,
  "fortes": [
   {
    "id": 42,
@@ -16,12 +16,12 @@
     "Disabler",
     "Initiator"
    ],
-   "picks": 322290,
-   "winRate": 54.9,
+   "picks": 324687,
+   "winRate": 55.0,
    "proPicks": 2,
    "proWinRate": 100.0,
-   "pickRate": 13.5,
-   "variacao": 0.1
+   "pickRate": 13.6,
+   "variacao": 0.2
   },
   {
    "id": 76,
@@ -32,11 +32,11 @@
     "Nuker",
     "Disabler"
    ],
-   "picks": 303268,
+   "picks": 302696,
    "winRate": 54.0,
-   "proPicks": 10,
-   "proWinRate": 50.0,
-   "pickRate": 12.7,
+   "proPicks": 11,
+   "proWinRate": 45.5,
+   "pickRate": 12.6,
    "variacao": -0.2
   },
   {
@@ -48,7 +48,7 @@
     "Escape",
     "Disabler"
    ],
-   "picks": 133631,
+   "picks": 134980,
    "winRate": 53.2,
    "proPicks": 0,
    "proWinRate": null,
@@ -64,9 +64,9 @@
     "Durable",
     "Escape"
    ],
-   "picks": 240232,
+   "picks": 241922,
    "winRate": 53.2,
-   "proPicks": 3,
+   "proPicks": 4,
    "proWinRate": 0.0,
    "pickRate": 10.1,
    "variacao": -0.1
@@ -80,10 +80,10 @@
     "Pusher",
     "Escape"
    ],
-   "picks": 443278,
+   "picks": 446004,
    "winRate": 52.9,
-   "proPicks": 3,
-   "proWinRate": 33.3,
+   "proPicks": 7,
+   "proWinRate": 57.1,
    "pickRate": 18.6,
    "variacao": -0.3
   },
@@ -97,12 +97,12 @@
     "Pusher",
     "Nuker"
    ],
-   "picks": 275956,
-   "winRate": 52.8,
+   "picks": 277493,
+   "winRate": 52.9,
    "proPicks": 1,
    "proWinRate": 100.0,
    "pickRate": 11.6,
-   "variacao": -0.3
+   "variacao": -0.2
   },
   {
    "id": 49,
@@ -116,11 +116,41 @@
     "Initiator",
     "Nuker"
    ],
-   "picks": 343873,
+   "picks": 347957,
    "winRate": 52.7,
-   "proPicks": 51,
-   "proWinRate": 62.7,
-   "pickRate": 14.4,
+   "proPicks": 43,
+   "proWinRate": 62.8,
+   "pickRate": 14.5,
+   "variacao": -0.1
+  },
+  {
+   "id": 135,
+   "nome": "Dawnbreaker",
+   "slug": "dawnbreaker",
+   "funcoes": [
+    "Carry",
+    "Durable"
+   ],
+   "picks": 225698,
+   "winRate": 52.7,
+   "proPicks": 10,
+   "proWinRate": 70.0,
+   "pickRate": 9.4,
+   "variacao": 0.1
+  },
+  {
+   "id": 31,
+   "nome": "Lich",
+   "slug": "lich",
+   "funcoes": [
+    "Support",
+    "Nuker"
+   ],
+   "picks": 271553,
+   "winRate": 52.6,
+   "proPicks": 8,
+   "proWinRate": 50.0,
+   "pickRate": 11.3,
    "variacao": -0.1
   },
   {
@@ -134,58 +164,12 @@
     "Durable",
     "Nuker"
    ],
-   "picks": 394999,
-   "winRate": 52.7,
-   "proPicks": 0,
-   "proWinRate": null,
-   "pickRate": 16.6,
-   "variacao": 0.2
-  },
-  {
-   "id": 31,
-   "nome": "Lich",
-   "slug": "lich",
-   "funcoes": [
-    "Support",
-    "Nuker"
-   ],
-   "picks": 269117,
+   "picks": 393675,
    "winRate": 52.6,
-   "proPicks": 7,
-   "proWinRate": 42.9,
-   "pickRate": 11.3,
-   "variacao": -0.1
-  },
-  {
-   "id": 113,
-   "nome": "Arc Warden",
-   "slug": "arc_warden",
-   "funcoes": [
-    "Carry",
-    "Escape",
-    "Nuker"
-   ],
-   "picks": 106577,
-   "winRate": 52.6,
-   "proPicks": 0,
-   "proWinRate": null,
-   "pickRate": 4.5,
+   "proPicks": 1,
+   "proWinRate": 0.0,
+   "pickRate": 16.4,
    "variacao": 0.1
-  },
-  {
-   "id": 135,
-   "nome": "Dawnbreaker",
-   "slug": "dawnbreaker",
-   "funcoes": [
-    "Carry",
-    "Durable"
-   ],
-   "picks": 225062,
-   "winRate": 52.6,
-   "proPicks": 11,
-   "proWinRate": 72.7,
-   "pickRate": 9.4,
-   "variacao": 0.0
   },
   {
    "id": 88,
@@ -197,12 +181,28 @@
     "Initiator",
     "Escape"
    ],
-   "picks": 264043,
+   "picks": 265303,
    "winRate": 52.5,
-   "proPicks": 10,
-   "proWinRate": 40.0,
+   "proPicks": 9,
+   "proWinRate": 33.3,
    "pickRate": 11.1,
    "variacao": -0.1
+  },
+  {
+   "id": 113,
+   "nome": "Arc Warden",
+   "slug": "arc_warden",
+   "funcoes": [
+    "Carry",
+    "Escape",
+    "Nuker"
+   ],
+   "picks": 107775,
+   "winRate": 52.5,
+   "proPicks": 0,
+   "proWinRate": null,
+   "pickRate": 4.5,
+   "variacao": 0.0
   }
  ],
  "fracos": [
@@ -216,12 +216,12 @@
     "Escape",
     "Nuker"
    ],
-   "picks": 206790,
-   "winRate": 42.6,
-   "proPicks": 19,
-   "proWinRate": 47.4,
-   "pickRate": 8.7,
-   "variacao": -0.1
+   "picks": 205653,
+   "winRate": 42.7,
+   "proPicks": 20,
+   "proWinRate": 40.0,
+   "pickRate": 8.6,
+   "variacao": 0.0
   },
   {
    "id": 11,
@@ -231,12 +231,12 @@
     "Carry",
     "Nuker"
    ],
-   "picks": 204737,
-   "winRate": 42.8,
-   "proPicks": 6,
+   "picks": 204132,
+   "winRate": 42.9,
+   "proPicks": 4,
    "proWinRate": 0.0,
-   "pickRate": 8.6,
-   "variacao": 0.1
+   "pickRate": 8.5,
+   "variacao": 0.2
   },
   {
    "id": 19,
@@ -250,11 +250,11 @@
     "Durable",
     "Disabler"
    ],
-   "picks": 110269,
+   "picks": 107964,
    "winRate": 44.3,
    "proPicks": 13,
-   "proWinRate": 30.8,
-   "pickRate": 4.6,
+   "proWinRate": 23.1,
+   "pickRate": 4.5,
    "variacao": 0.4
   },
   {
@@ -266,12 +266,12 @@
     "Pusher",
     "Nuker"
    ],
-   "picks": 99022,
-   "winRate": 44.5,
-   "proPicks": 15,
-   "proWinRate": 33.3,
-   "pickRate": 4.2,
-   "variacao": 0.1
+   "picks": 97113,
+   "winRate": 44.6,
+   "proPicks": 18,
+   "proWinRate": 27.8,
+   "pickRate": 4.1,
+   "variacao": 0.2
   },
   {
    "id": 145,
@@ -282,27 +282,30 @@
     "Escape",
     "Disabler"
    ],
-   "picks": 92923,
-   "winRate": 44.7,
-   "proPicks": 19,
-   "proWinRate": 52.6,
+   "picks": 92945,
+   "winRate": 44.8,
+   "proPicks": 17,
+   "proWinRate": 47.1,
    "pickRate": 3.9,
-   "variacao": 0.3
+   "variacao": 0.4
   },
   {
-   "id": 46,
-   "nome": "Templar Assassin",
-   "slug": "templar_assassin",
+   "id": 83,
+   "nome": "Treant Protector",
+   "slug": "treant",
    "funcoes": [
-    "Carry",
+    "Support",
+    "Initiator",
+    "Durable",
+    "Disabler",
     "Escape"
    ],
-   "picks": 106567,
-   "winRate": 45.4,
-   "proPicks": 2,
-   "proWinRate": 100.0,
-   "pickRate": 4.5,
-   "variacao": -0.4
+   "picks": 48037,
+   "winRate": 45.3,
+   "proPicks": 0,
+   "proWinRate": null,
+   "pickRate": 2.0,
+   "variacao": -0.1
   }
  ],
  "populares": [
@@ -316,10 +319,10 @@
     "Durable",
     "Nuker"
    ],
-   "picks": 664956,
+   "picks": 667516,
    "winRate": 51.1,
    "proPicks": 15,
-   "proWinRate": 40.0,
+   "proWinRate": 53.3,
    "pickRate": 27.9,
    "variacao": 0.0
   },
@@ -333,10 +336,10 @@
     "Nuker",
     "Initiator"
    ],
-   "picks": 614944,
+   "picks": 618010,
    "winRate": 48.7,
-   "proPicks": 2,
-   "proWinRate": 50.0,
+   "proPicks": 5,
+   "proWinRate": 60.0,
    "pickRate": 25.8,
    "variacao": 0.2
   },
@@ -349,12 +352,12 @@
     "Disabler",
     "Nuker"
    ],
-   "picks": 513097,
-   "winRate": 49.6,
-   "proPicks": 34,
-   "proWinRate": 41.2,
+   "picks": 514626,
+   "winRate": 49.5,
+   "proPicks": 26,
+   "proWinRate": 42.3,
    "pickRate": 21.5,
-   "variacao": 0.0
+   "variacao": -0.1
   },
   {
    "id": 35,
@@ -364,12 +367,12 @@
     "Carry",
     "Nuker"
    ],
-   "picks": 466147,
-   "winRate": 49.3,
-   "proPicks": 1,
-   "proWinRate": 100.0,
+   "picks": 467135,
+   "winRate": 49.4,
+   "proPicks": 0,
+   "proWinRate": null,
    "pickRate": 19.5,
-   "variacao": -0.1
+   "variacao": 0.0
   },
   {
    "id": 74,
@@ -382,12 +385,12 @@
     "Escape",
     "Pusher"
    ],
-   "picks": 452553,
-   "winRate": 50.6,
+   "picks": 454428,
+   "winRate": 50.7,
    "proPicks": 13,
-   "proWinRate": 61.5,
+   "proWinRate": 53.8,
    "pickRate": 19.0,
-   "variacao": -0.1
+   "variacao": 0.0
   },
   {
    "id": 8,
@@ -398,10 +401,10 @@
     "Pusher",
     "Escape"
    ],
-   "picks": 443278,
+   "picks": 446004,
    "winRate": 52.9,
-   "proPicks": 3,
-   "proWinRate": 33.3,
+   "proPicks": 7,
+   "proWinRate": 57.1,
    "pickRate": 18.6,
    "variacao": -0.3
   },
@@ -416,12 +419,12 @@
     "Escape",
     "Nuker"
    ],
-   "picks": 415476,
-   "winRate": 48.2,
-   "proPicks": 46,
-   "proWinRate": 58.7,
+   "picks": 417129,
+   "winRate": 48.1,
+   "proPicks": 52,
+   "proWinRate": 51.9,
    "pickRate": 17.4,
-   "variacao": -0.1
+   "variacao": -0.2
   },
   {
    "id": 30,
@@ -432,11 +435,11 @@
     "Nuker",
     "Disabler"
    ],
-   "picks": 413592,
+   "picks": 416430,
    "winRate": 52.0,
-   "proPicks": 26,
-   "proWinRate": 42.3,
-   "pickRate": 17.3,
+   "proPicks": 33,
+   "proWinRate": 54.5,
+   "pickRate": 17.4,
    "variacao": -0.2
   }
  ],
@@ -451,12 +454,30 @@
     "Escape",
     "Disabler"
    ],
-   "picks": 262855,
+   "picks": 265188,
    "winRate": 47.1,
    "proPicks": 54,
-   "proWinRate": 44.4,
-   "pickRate": 11.0,
+   "proWinRate": 50.0,
+   "pickRate": 11.1,
    "variacao": -0.1
+  },
+  {
+   "id": 21,
+   "nome": "Windranger",
+   "slug": "windrunner",
+   "funcoes": [
+    "Carry",
+    "Support",
+    "Disabler",
+    "Escape",
+    "Nuker"
+   ],
+   "picks": 417129,
+   "winRate": 48.1,
+   "proPicks": 52,
+   "proWinRate": 51.9,
+   "pickRate": 17.4,
+   "variacao": -0.2
   },
   {
    "id": 49,
@@ -470,11 +491,11 @@
     "Initiator",
     "Nuker"
    ],
-   "picks": 343873,
+   "picks": 347957,
    "winRate": 52.7,
-   "proPicks": 51,
-   "proWinRate": 62.7,
-   "pickRate": 14.4,
+   "proPicks": 43,
+   "proWinRate": 62.8,
+   "pickRate": 14.5,
    "variacao": -0.1
   },
   {
@@ -487,61 +508,11 @@
     "Disabler",
     "Escape"
    ],
-   "picks": 169525,
-   "winRate": 49.2,
-   "proPicks": 48,
-   "proWinRate": 47.9,
+   "picks": 170851,
+   "winRate": 49.1,
+   "proPicks": 40,
+   "proWinRate": 47.5,
    "pickRate": 7.1,
-   "variacao": 0.1
-  },
-  {
-   "id": 21,
-   "nome": "Windranger",
-   "slug": "windrunner",
-   "funcoes": [
-    "Carry",
-    "Support",
-    "Disabler",
-    "Escape",
-    "Nuker"
-   ],
-   "picks": 415476,
-   "winRate": 48.2,
-   "proPicks": 46,
-   "proWinRate": 58.7,
-   "pickRate": 17.4,
-   "variacao": -0.1
-  },
-  {
-   "id": 112,
-   "nome": "Winter Wyvern",
-   "slug": "winter_wyvern",
-   "funcoes": [
-    "Support",
-    "Disabler",
-    "Nuker"
-   ],
-   "picks": 141558,
-   "winRate": 49.8,
-   "proPicks": 38,
-   "proWinRate": 57.9,
-   "pickRate": 5.9,
-   "variacao": 0.1
-  },
-  {
-   "id": 86,
-   "nome": "Rubick",
-   "slug": "rubick",
-   "funcoes": [
-    "Support",
-    "Disabler",
-    "Nuker"
-   ],
-   "picks": 513097,
-   "winRate": 49.6,
-   "proPicks": 34,
-   "proWinRate": 41.2,
-   "pickRate": 21.5,
    "variacao": 0.0
   },
   {
@@ -555,50 +526,63 @@
     "Initiator",
     "Durable"
    ],
-   "picks": 99608,
-   "winRate": 49.5,
-   "proPicks": 34,
-   "proWinRate": 47.1,
+   "picks": 99826,
+   "winRate": 49.4,
+   "proPicks": 35,
+   "proWinRate": 54.3,
    "pickRate": 4.2,
-   "variacao": -0.2
+   "variacao": -0.3
   },
   {
-   "id": 9,
-   "nome": "Mirana",
-   "slug": "mirana",
+   "id": 112,
+   "nome": "Winter Wyvern",
+   "slug": "winter_wyvern",
    "funcoes": [
-    "Carry",
     "Support",
-    "Escape",
+    "Disabler",
+    "Nuker"
+   ],
+   "picks": 142214,
+   "winRate": 49.7,
+   "proPicks": 35,
+   "proWinRate": 57.1,
+   "pickRate": 5.9,
+   "variacao": 0.0
+  },
+  {
+   "id": 30,
+   "nome": "Witch Doctor",
+   "slug": "witch_doctor",
+   "funcoes": [
+    "Support",
     "Nuker",
     "Disabler"
    ],
-   "picks": 273322,
-   "winRate": 51.8,
-   "proPicks": 28,
-   "proWinRate": 42.9,
-   "pickRate": 11.5,
-   "variacao": 0.2
-  }
- ],
- "subindo": [
+   "picks": 416430,
+   "winRate": 52.0,
+   "proPicks": 33,
+   "proWinRate": 54.5,
+   "pickRate": 17.4,
+   "variacao": -0.2
+  },
   {
-   "id": 111,
-   "nome": "Oracle",
-   "slug": "oracle",
+   "id": 50,
+   "nome": "Dazzle",
+   "slug": "dazzle",
    "funcoes": [
     "Support",
     "Nuker",
-    "Disabler",
-    "Escape"
+    "Disabler"
    ],
-   "picks": 105270,
-   "winRate": 50.2,
-   "proPicks": 0,
-   "proWinRate": null,
-   "pickRate": 4.4,
-   "variacao": 0.9
-  },
+   "picks": 126916,
+   "winRate": 51.2,
+   "proPicks": 29,
+   "proWinRate": 44.8,
+   "pickRate": 5.3,
+   "variacao": -0.1
+  }
+ ],
+ "subindo": [
   {
    "id": 136,
    "nome": "Marci",
@@ -610,47 +594,29 @@
     "Disabler",
     "Escape"
    ],
-   "picks": 119171,
-   "winRate": 49.3,
-   "proPicks": 3,
-   "proWinRate": 66.7,
-   "pickRate": 5.0,
-   "variacao": 0.7
+   "picks": 117501,
+   "winRate": 49.5,
+   "proPicks": 2,
+   "proWinRate": 50.0,
+   "pickRate": 4.9,
+   "variacao": 0.9
   },
   {
-   "id": 102,
-   "nome": "Abaddon",
-   "slug": "abaddon",
+   "id": 111,
+   "nome": "Oracle",
+   "slug": "oracle",
    "funcoes": [
     "Support",
-    "Carry",
-    "Durable"
+    "Nuker",
+    "Disabler",
+    "Escape"
    ],
-   "picks": 72517,
-   "winRate": 51.3,
+   "picks": 103728,
+   "winRate": 50.1,
    "proPicks": 0,
    "proWinRate": null,
-   "pickRate": 3.0,
-   "variacao": 0.5
-  },
-  {
-   "id": 19,
-   "nome": "Tiny",
-   "slug": "tiny",
-   "funcoes": [
-    "Carry",
-    "Nuker",
-    "Pusher",
-    "Initiator",
-    "Durable",
-    "Disabler"
-   ],
-   "picks": 110269,
-   "winRate": 44.3,
-   "proPicks": 13,
-   "proWinRate": 30.8,
-   "pickRate": 4.6,
-   "variacao": 0.4
+   "pickRate": 4.3,
+   "variacao": 0.8
   },
   {
    "id": 58,
@@ -662,12 +628,47 @@
     "Durable",
     "Disabler"
    ],
-   "picks": 53590,
-   "winRate": 47.7,
-   "proPicks": 5,
-   "proWinRate": 60.0,
+   "picks": 53744,
+   "winRate": 47.9,
+   "proPicks": 4,
+   "proWinRate": 50.0,
    "pickRate": 2.2,
-   "variacao": 0.4
+   "variacao": 0.6
+  },
+  {
+   "id": 120,
+   "nome": "Pangolier",
+   "slug": "pangolier",
+   "funcoes": [
+    "Carry",
+    "Nuker",
+    "Disabler",
+    "Durable",
+    "Escape",
+    "Initiator"
+   ],
+   "picks": 76585,
+   "winRate": 46.5,
+   "proPicks": 29,
+   "proWinRate": 51.7,
+   "pickRate": 3.2,
+   "variacao": 0.6
+  },
+  {
+   "id": 137,
+   "nome": "Primal Beast",
+   "slug": "primal_beast",
+   "funcoes": [
+    "Initiator",
+    "Durable",
+    "Disabler"
+   ],
+   "picks": 89712,
+   "winRate": 49.1,
+   "proPicks": 7,
+   "proWinRate": 42.9,
+   "pickRate": 3.7,
+   "variacao": 0.6
   },
   {
    "id": 69,
@@ -680,12 +681,12 @@
     "Durable",
     "Nuker"
    ],
-   "picks": 140877,
-   "winRate": 48.1,
+   "picks": 143441,
+   "winRate": 48.2,
    "proPicks": 25,
-   "proWinRate": 48.0,
-   "pickRate": 5.9,
-   "variacao": 0.4
+   "proWinRate": 44.0,
+   "pickRate": 6.0,
+   "variacao": 0.5
   }
  ],
  "builds": {
@@ -809,14 +810,13 @@
    "meio": [
     "bfury",
     "manta",
-    "butterfly",
-    "sange_and_yasha"
+    "butterfly"
    ],
    "tarde": [
     "butterfly",
-    "monkey_king_bar",
     "swift_blink",
-    "skadi"
+    "skadi",
+    "monkey_king_bar"
    ]
   },
   "12": {
@@ -867,6 +867,53 @@
     "black_king_bar"
    ]
   },
+  "135": {
+   "inicio": [
+    "gauntlets",
+    "circlet",
+    "quelling_blade",
+    "magic_stick"
+   ],
+   "cedo": [
+    "soul_ring",
+    "phase_boots",
+    "bracer",
+    "bottle"
+   ],
+   "meio": [
+    "aghanims_shard",
+    "harpoon",
+    "black_king_bar",
+    "phase_boots"
+   ],
+   "tarde": [
+    "black_king_bar",
+    "assault",
+    "abyssal_blade",
+    "nullifier"
+   ]
+  },
+  "31": {
+   "inicio": [
+    "magic_stick",
+    "wind_lace",
+    "quelling_blade",
+    "circlet"
+   ],
+   "cedo": [],
+   "meio": [
+    "aghanims_shard",
+    "blink",
+    "glimmer_cape",
+    "force_staff"
+   ],
+   "tarde": [
+    "ultimate_scepter",
+    "blink",
+    "aeon_disk",
+    "glimmer_cape"
+   ]
+  },
   "104": {
    "inicio": [
     "gauntlets",
@@ -893,25 +940,29 @@
     "nullifier"
    ]
   },
-  "31": {
+  "88": {
    "inicio": [
-    "magic_stick",
+    "boots",
+    "circlet",
     "wind_lace",
-    "quelling_blade",
-    "circlet"
+    "magic_stick"
    ],
-   "cedo": [],
+   "cedo": [
+    "bottle",
+    "power_treads",
+    "null_talisman"
+   ],
    "meio": [
-    "aghanims_shard",
     "blink",
-    "glimmer_cape",
-    "force_staff"
+    "essence_distiller",
+    "aghanims_shard",
+    "dagon"
    ],
    "tarde": [
-    "ultimate_scepter",
     "blink",
     "aeon_disk",
-    "glimmer_cape"
+    "ultimate_scepter",
+    "force_staff"
    ]
   },
   "113": {
@@ -938,57 +989,6 @@
     "hurricane_pike",
     "sheepstick",
     "black_king_bar"
-   ]
-  },
-  "135": {
-   "inicio": [
-    "gauntlets",
-    "circlet",
-    "quelling_blade",
-    "magic_stick"
-   ],
-   "cedo": [
-    "soul_ring",
-    "phase_boots",
-    "bracer",
-    "bottle"
-   ],
-   "meio": [
-    "aghanims_shard",
-    "harpoon",
-    "black_king_bar",
-    "phase_boots"
-   ],
-   "tarde": [
-    "assault",
-    "black_king_bar",
-    "abyssal_blade",
-    "nullifier"
-   ]
-  },
-  "88": {
-   "inicio": [
-    "boots",
-    "circlet",
-    "wind_lace",
-    "magic_stick"
-   ],
-   "cedo": [
-    "bottle",
-    "power_treads",
-    "null_talisman"
-   ],
-   "meio": [
-    "blink",
-    "essence_distiller",
-    "aghanims_shard",
-    "dagon"
-   ],
-   "tarde": [
-    "blink",
-    "aeon_disk",
-    "force_staff",
-    "ultimate_scepter"
    ]
   }
  },
@@ -1037,7 +1037,6 @@
   "power_treads": "Power Treads",
   "quelling_blade": "Quelling Blade",
   "radiance": "Radiance",
-  "sange_and_yasha": "Sange and Yasha",
   "sheepstick": "Scythe of Vyse",
   "shivas_guard": "Shiva's Guard",
   "skadi": "Eye of Skadi",
@@ -1776,6 +1775,127 @@
     "137": 48.8,
     "138": 47.6,
     "145": 44.7
+   }
+  },
+  {
+   "quando": 1792936683,
+   "wr": {
+    "1": 51.2,
+    "2": 50.2,
+    "3": 49.0,
+    "4": 52.3,
+    "5": 51.5,
+    "6": 46.0,
+    "7": 50.7,
+    "8": 52.9,
+    "9": 51.8,
+    "10": 47.9,
+    "11": 42.9,
+    "12": 52.9,
+    "13": 46.8,
+    "14": 51.1,
+    "15": 50.2,
+    "16": 48.9,
+    "17": 46.6,
+    "18": 51.8,
+    "19": 44.3,
+    "20": 52.4,
+    "21": 48.1,
+    "22": 50.3,
+    "23": 49.3,
+    "25": 47.4,
+    "26": 48.7,
+    "27": 51.7,
+    "28": 49.0,
+    "29": 49.2,
+    "30": 52.0,
+    "31": 52.6,
+    "32": 53.2,
+    "33": 51.1,
+    "34": 47.7,
+    "35": 49.4,
+    "36": 50.7,
+    "37": 49.9,
+    "39": 47.4,
+    "40": 48.5,
+    "41": 48.3,
+    "42": 55.0,
+    "43": 48.4,
+    "44": 51.0,
+    "45": 51.3,
+    "46": 45.4,
+    "47": 48.8,
+    "48": 50.6,
+    "49": 52.7,
+    "50": 51.2,
+    "51": 47.4,
+    "52": 52.0,
+    "53": 42.7,
+    "54": 51.6,
+    "55": 49.3,
+    "56": 50.0,
+    "57": 51.3,
+    "58": 47.9,
+    "59": 45.6,
+    "60": 52.1,
+    "62": 52.4,
+    "63": 47.4,
+    "64": 48.3,
+    "67": 53.2,
+    "68": 51.3,
+    "69": 48.2,
+    "70": 49.3,
+    "71": 52.2,
+    "72": 47.2,
+    "73": 47.0,
+    "74": 50.7,
+    "75": 50.2,
+    "76": 54.0,
+    "78": 50.2,
+    "80": 49.1,
+    "81": 51.1,
+    "83": 45.3,
+    "84": 50.0,
+    "85": 49.9,
+    "86": 49.5,
+    "87": 50.6,
+    "88": 52.5,
+    "90": 49.4,
+    "91": 49.8,
+    "93": 49.3,
+    "94": 48.9,
+    "95": 51.5,
+    "96": 49.3,
+    "97": 49.2,
+    "98": 45.4,
+    "99": 47.4,
+    "100": 48.0,
+    "101": 49.8,
+    "102": 51.3,
+    "104": 52.6,
+    "105": 50.8,
+    "106": 48.8,
+    "107": 49.4,
+    "108": 47.8,
+    "109": 44.6,
+    "110": 51.8,
+    "111": 50.1,
+    "112": 49.7,
+    "113": 52.5,
+    "114": 45.5,
+    "119": 49.1,
+    "120": 46.5,
+    "121": 52.2,
+    "123": 47.1,
+    "126": 49.9,
+    "128": 49.6,
+    "129": 47.8,
+    "131": 48.7,
+    "135": 52.7,
+    "136": 49.5,
+    "137": 49.1,
+    "138": 47.6,
+    "145": 44.8
    }
   }
  ]
