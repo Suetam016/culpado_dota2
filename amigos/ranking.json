@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-10-26T13:14:39.776Z",
+  "atualizadoEm": "2026-10-26T19:23:05.092Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -19,12 +19,12 @@
       "nome": "[Pau]DeCamelo",
       "culpados": 31,
       "craques": 30,
-      "partidas": 248,
-      "vitorias": 118,
-      "winRate": 48,
+      "partidas": 252,
+      "vitorias": 119,
+      "winRate": 47,
       "streak": "craque",
-      "mmrGanho": 2850,
-      "mmrPerdido": 3200
+      "mmrGanho": 2875,
+      "mmrPerdido": 3275
     },
     {
       "accountId": "26668150",
@@ -89,14 +89,14 @@
     {
       "accountId": "83300280",
       "nome": "ptn",
-      "culpados": 3,
+      "culpados": 5,
       "craques": 0,
-      "partidas": 24,
+      "partidas": 26,
       "vitorias": 14,
-      "winRate": 58,
+      "winRate": 54,
       "streak": "culpado",
       "mmrGanho": 350,
-      "mmrPerdido": 250
+      "mmrPerdido": 300
     },
     {
       "accountId": "96286191",
@@ -3154,6 +3154,28 @@
         "heroi": 29,
         "culpa": 0.146,
         "merito": 0.177
+      },
+      {
+        "matchId": 9063040455,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793028352,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 2,
+        "culpa": 0.358,
+        "merito": 0.114
+      },
+      {
+        "matchId": 9063123733,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793031557,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 5,
+        "culpa": 0.234,
+        "merito": 0.115
       }
     ],
     "96286191": [
@@ -7274,6 +7296,50 @@
         "heroi": 76,
         "culpa": 0.081,
         "merito": 0.274
+      },
+      {
+        "matchId": 9062445970,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1792995415,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 70,
+        "culpa": 0.201,
+        "merito": 0.104
+      },
+      {
+        "matchId": 9062641153,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793010461,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": 0.242,
+        "merito": 0.207
+      },
+      {
+        "matchId": 9063040455,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793028352,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 53,
+        "culpa": 0.251,
+        "merito": 0.157
+      },
+      {
+        "matchId": 9063123733,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793031557,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 102,
+        "culpa": 0.144,
+        "merito": 0.16
       }
     ],
     "1000265186": [
@@ -10397,5 +10463,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-10-26T13:14:39.741Z"
+  "perfisEm": "2026-10-26T19:23:05.034Z"
 }
