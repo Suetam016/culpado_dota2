@@ -2342,3 +2342,20 @@ OK 9062319534
 1 mapas novos
 Fila: []
 0 mapas novos
+Fila: [9063376041, 9063123733, 9063040455]
+FALHOU 9063376041: HTTP Error 404: Not Found
+  replay http://replay201.valve.net/570/9063123733_1717784420.dem.bz2 -> HTTP 200 application/octet-stream 66110678 inicio=b'(\xb5/\xfd\x00`\xdc9\x0f\x0er^'
+  9063123733: 265930 eventos; tipos [('actions', 110725), ('DOTA_COMBATLOG_DAMAGE', 53899), ('interval', 33940), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 17773), ('DOTA_COMBATLOG_MODIFIER_ADD', 17560), ('DOTA_COMBATLOG_HEAL', 10967), ('DOTA_COMBATLOG_DEATH', 4866), ('DOTA_COMBATLOG_XP', 4823)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_WitchDoctor", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 30, "variant": 0, "facet_hero_id": 30, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0,
+  exemplo de habilidade: {"time": -82, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_witch_doctor", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  6686 registros de dano herói->herói
+  3882 usos de skill/item de 5031 no combat log
+OK 9063123733
+  replay http://replay201.valve.net/570/9063040455_77911444.dem.bz2 -> HTTP 200 application/octet-stream 41157802 inicio=b'(\xb5/\xfd\x00`L>\x0f\x9ex^'
+  9063040455: 146760 eventos; tipos [('actions', 61002), ('DOTA_COMBATLOG_DAMAGE', 26500), ('interval', 22430), ('DOTA_COMBATLOG_MODIFIER_ADD', 10335), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 10305), ('DOTA_COMBATLOG_XP', 3421), ('DOTA_COMBATLOG_HEAL', 3191), ('DOTA_COMBATLOG_DEATH', 2962)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_PhantomLancer", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 12, "variant": 0, "facet_hero_id": 12, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 
+  exemplo de habilidade: {"time": -78, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_invoker", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "invoker_quas"}
+  2518 registros de dano herói->herói
+  1707 usos de skill/item de 2357 no combat log
+OK 9063040455
+2 mapas novos
