@@ -2477,3 +2477,12 @@ Fila: [9064885417] (pedidos do site: [9064885417])
   1856 usos de skill/item de 2928 no combat log
 OK 9064885417
 1 mapas novos
+Fila: [9064831493]
+  replay http://replay193.valve.net/570/9064831493_1940862584.dem.bz2 -> HTTP 200 application/octet-stream 49316814 inicio=b'(\xb5/\xfd\x00`\xf4A\x0f^\x85\x9e'
+  9064831493: 187630 eventos; tipos [('actions', 79160), ('DOTA_COMBATLOG_DAMAGE', 31153), ('interval', 27050), ('DOTA_COMBATLOG_MODIFIER_ADD', 13802), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 13725), ('DOTA_COMBATLOG_XP', 4623), ('DOTA_COMBATLOG_HEAL', 4239), ('DOTA_COMBATLOG_ABILITY', 4108)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_DarkSeer", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 55, "variant": 0, "facet_hero_id": 55, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "r
+  exemplo de habilidade: {"time": -79, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_weaver", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "weaver_shukuchi"}
+  3120 registros de dano herói->herói
+  4214 usos de skill/item de 5134 no combat log
+OK 9064831493
+1 mapas novos
