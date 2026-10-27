@@ -2468,3 +2468,12 @@ OK 9063727873
   2337 usos de skill/item de 3695 no combat log
 OK 9063691146
 3 mapas novos
+Fila: [9064885417] (pedidos do site: [9064885417])
+  replay http://replay201.valve.net/570/9064885417_237272528.dem.bz2 -> HTTP 200 application/octet-stream 75157426 inicio=b'(\xb5/\xfd\x00`\xfc\x06\x0fN\xed\x9d'
+  9064885417: 240964 eventos; tipos [('actions', 84897), ('DOTA_COMBATLOG_DAMAGE', 45648), ('interval', 38030), ('DOTA_COMBATLOG_MODIFIER_ADD', 20403), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 20397), ('DOTA_COMBATLOG_HEAL', 7712), ('DOTA_COMBATLOG_XP', 7413), ('DOTA_COMBATLOG_DEATH', 5788)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_SpiritBreaker", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 71, "variant": 0, "facet_hero_id": 71, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 
+  exemplo de habilidade: {"time": -49, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_spirit_breaker", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  3430 registros de dano herói->herói
+  1856 usos de skill/item de 2928 no combat log
+OK 9064885417
+1 mapas novos
