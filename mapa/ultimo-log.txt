@@ -2524,3 +2524,12 @@ OK 9065044491
 1 mapas novos
 Fila: []
 0 mapas novos
+Fila: [9065069127] (pedidos do site: [9065069127])
+  replay http://replay201.valve.net/570/9065069127_1252889381.dem.bz2 -> HTTP 200 application/octet-stream 81705792 inicio=b'(\xb5/\xfd\x00`\x0c1\x0f\x0eU^'
+  9065069127: 318406 eventos; tipos [('actions', 129113), ('DOTA_COMBATLOG_DAMAGE', 68436), ('interval', 40710), ('DOTA_COMBATLOG_MODIFIER_ADD', 21249), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 21180), ('DOTA_COMBATLOG_HEAL', 9850), ('DOTA_COMBATLOG_XP', 8473), ('DOTA_COMBATLOG_DEATH', 6985)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Jakiro", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 64, "variant": 0, "facet_hero_id": 64, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ran
+  exemplo de habilidade: {"time": -41, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_jakiro", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  4726 registros de dano herói->herói
+  3047 usos de skill/item de 4629 no combat log
+OK 9065069127
+1 mapas novos
