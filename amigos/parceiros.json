@@ -1,11 +1,11 @@
 {
- "atualizadoEm": "2026-10-28T08:36:27Z",
+ "atualizadoEm": "2026-10-28T16:04:55Z",
  "desde": "2025-10-29",
- "partidasLidas": 549,
+ "partidasLidas": 550,
  "jogadores": {
   "1000265186": {
    "nome": "gustavoDotinhaPro",
-   "jogos": 91,
+   "jogos": 92,
    "vitorias": 44,
    "winRate": 48
   },
@@ -29,9 +29,9 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 155,
+   "jogos": 156,
    "vitorias": 77,
-   "winRate": 50
+   "winRate": 49
   },
   "241782761": {
    "nome": "[Pau]DeCamelo",
@@ -1826,7 +1826,7 @@
    "b": "1000265186",
    "nomeA": "Suéter",
    "nomeB": "gustavoDotinhaPro",
-   "jogos": 62,
+   "jogos": 63,
    "vitorias": 30,
    "winRate": 48,
    "rotas": [
@@ -1845,18 +1845,18 @@
      "winRate": 62
     },
     {
-     "posA": 5,
-     "posB": 1,
-     "jogos": 15,
-     "vitorias": 7,
-     "winRate": 47
-    },
-    {
      "posA": 3,
      "posB": 2,
      "jogos": 13,
      "vitorias": 6,
      "winRate": 46
+    },
+    {
+     "posA": 5,
+     "posB": 1,
+     "jogos": 16,
+     "vitorias": 7,
+     "winRate": 44
     },
     {
      "posA": 2,
@@ -1912,9 +1912,25 @@
      "jogos": 2,
      "vitorias": 0,
      "winRate": 0
+    },
+    {
+     "heroiA": 121,
+     "heroiB": 32,
+     "jogos": 5,
+     "vitorias": 2,
+     "winRate": 40
     }
    ],
    "partidas": [
+    {
+     "matchId": 9065111656,
+     "inicio": 1793151497,
+     "venceu": false,
+     "heroiA": 121,
+     "heroiB": 32,
+     "posA": 5,
+     "posB": 1
+    },
     {
      "matchId": 9063747866,
      "inicio": 1793071571,
@@ -1977,15 +1993,6 @@
      "heroiB": 94,
      "posA": 5,
      "posB": 1
-    },
-    {
-     "matchId": 9055995872,
-     "inicio": 1792632688,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 74,
-     "posA": 3,
-     "posB": 2
     }
    ]
   },
@@ -11813,6 +11820,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 32,
+    "pos": 1,
+    "jogos": 5,
+    "vitorias": 2
+   },
+   {
     "heroi": 21,
     "pos": 2,
     "jogos": 5,
@@ -11833,12 +11846,6 @@
    {
     "heroi": 76,
     "pos": 2,
-    "jogos": 4,
-    "vitorias": 2
-   },
-   {
-    "heroi": 32,
-    "pos": 1,
     "jogos": 4,
     "vitorias": 2
    },
@@ -12975,7 +12982,7 @@
    {
     "heroi": 121,
     "pos": 5,
-    "jogos": 14,
+    "jogos": 15,
     "vitorias": 7
    },
    {
@@ -25617,6 +25624,28 @@
      2,
      2,
      -1
+    ]
+   ]
+  },
+  {
+   "id": 9065111656,
+   "t": 1793151497,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     32,
+     1,
+     1,
+     1
+    ],
+    [
+     "81918076",
+     121,
+     5,
+     1,
+     1
     ]
    ]
   }
