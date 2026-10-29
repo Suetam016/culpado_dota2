@@ -2536,3 +2536,12 @@ OK 9065069127
 Fila: [9066331795]
 FALHOU 9066331795: sem replay_url (partida ainda não analisada pelo OpenDota)
 0 mapas novos
+Fila: [9066400079] (pedidos do site: [9066400079])
+  replay http://replay201.valve.net/570/9066400079_278464202.dem.bz2 -> HTTP 200 application/octet-stream 57101505 inicio=b'(\xb5/\xfd\x00`t:\x0f\x1eo\x9e'
+  9066400079: 225552 eventos; tipos [('actions', 92731), ('DOTA_COMBATLOG_DAMAGE', 49179), ('interval', 30040), ('DOTA_COMBATLOG_MODIFIER_ADD', 14333), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 14235), ('DOTA_COMBATLOG_HEAL', 7077), ('DOTA_COMBATLOG_XP', 4518), ('DOTA_COMBATLOG_DEATH', 4235)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Axe", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 2, "variant": 0, "facet_hero_id": 2, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "randomed
+  exemplo de habilidade: {"time": -38, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_leshrac", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_sentry"}
+  4781 registros de dano herói->herói
+  2129 usos de skill/item de 3274 no combat log
+OK 9066400079
+1 mapas novos
