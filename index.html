@@ -359,6 +359,22 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 </style>
 
 <style>
+.escolha{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(8,6,4,.78);backdrop-filter:blur(3px)}
+.escolha-cartao{width:min(640px,100%);max-height:calc(100vh - 32px);overflow:auto;background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line-strong);border-radius:14px;padding:22px;box-shadow:var(--shadow)}
+.escolha-cartao h2{margin:0;font-family:var(--font-display,Georgia,serif);color:var(--gold-2)}
+.escolha-sub{margin:6px 0 16px;color:var(--ink-2);font-size:14px}
+.escolha-opcoes{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.escolha-time .escolha-opcoes{grid-template-columns:1fr}.escolha-time .escolha-op{flex-wrap:wrap}
+.escolha-op{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-3);color:var(--ink);font:inherit;cursor:pointer}
+.escolha-op:hover,.escolha-op:focus-visible{border-color:var(--gold);outline:none}
+.escolha-txt{display:flex;flex-direction:column;min-width:0}.escolha-txt small{color:var(--muted);font-size:12px}
+.escolha-avatar{width:40px;height:40px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;background:var(--surface-2);color:var(--gold);font-weight:800}
+.escolha-avatar img{width:100%;height:100%;object-fit:cover}
+.escolha-visitante{border-style:dashed}
+.escolha-herois{display:flex;gap:4px;flex-wrap:wrap;width:100%}.escolha-herois .retrato{width:56px;height:32px;border-radius:4px;font-size:10px}
+.trocar-quem{background:none;border:0;padding:0;color:var(--gold);font:inherit;cursor:pointer;text-decoration:underline dotted}
+.fig-voce{margin-left:6px;font-size:11px;padding:2px 7px;border-radius:999px;background:var(--gold);color:var(--on-gold);vertical-align:middle;font-family:inherit}
+.figurinha.e-voce{outline:2px solid var(--gold);outline-offset:2px}
 .visitas-site{max-width:1100px;margin:0 auto;padding:4px 16px 28px;color:var(--muted);font-size:13px;text-align:center}
 .visitas-site b{color:var(--good-ink)}
 .visitas-site i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;animation:visitas-pulsa 2s infinite}
@@ -5196,8 +5212,13 @@ dados.amigos = AMIGOS;
 dados.rotas = await baseDeRotas();
 if (!vivo()) return;
 if (mapaJa && !dados.mapa) dados.mapa = mapaJa;
-Object.assign(estado, { id, dados, lado, exemplo, f3: dados.embutida ? 'pronto' : 'carregando' });
+Object.assign(estado, { id, dados, lado: lado || (mesma ? estado.lado : null), exemplo, f3: dados.embutida ? 'pronto' : 'carregando' });
 estado.resultado = analisarAgora();
+if (!lado && !exemplo && !SO_EMBUTIDO && !mesma) {
+const escolhido = await ladoDoVisitante(estado.resultado, id);
+if (!vivo()) return;
+if (escolhido && escolhido !== (estado.resultado.partida.ladoRadiant ? 'radiant' : 'dire')) { estado.lado = escolhido; estado.resultado = analisarAgora(); }
+}
 marcar('F1');
 avancarProgresso(2, dados.match.version == null ? 'Replay ainda não analisado: o resumo sai do placar e a análise já foi pedida' : null);
 if (!progresso) mostrarStatus('');
@@ -9289,7 +9310,7 @@ const frente = h('div', { class: 'fig-face fig-frente fig-simples' },
 h('div', { class: 'fig-topo' }, h('span', { class: 'fig-num' }, h('span', { class: 'sr-only' }, 'Nº '), h('span', {}, `${i + 1}`)),
 merito ? h('span', { class: 'fig-culpa merito' }, `${pct(merito.fatia)} do mérito`) : h('span', { class: 'fig-culpa' }, `${pct(v.fatia)} da culpa`)),
 h('div', { class: 'fig-rosto' }, fotoDe(p, true)),
-h('h3', { class: 'fig-nome' }, p.nome),
+h('h3', { class: 'fig-nome' }, p.nome, p.conta != null && String(p.conta) === quemSou() ? h('span', { class: 'fig-voce' }, 'você') : null),
 h('p', { class: 'fig-heroi' }, h('span', { class: 'fig-heroi-ico' }, retrato(p.heroi)), `${p.heroi.nome} · ${funcao}`),
 h('p', { class: 'fig-kda' }, h('b', {}, `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`), h('small', {}, ' K/D/A')),
 build.length ? h('div', { class: 'fig-build', 'aria-label': 'Build' }, build.map((c) => h('span', { title: c.nome }, iconeItem(c) || c.nome.slice(0, 3)))) : null,
@@ -9300,7 +9321,7 @@ const [rar] = eCulpado ? ['maldito'] : eCraque ? ['arcana'] : RARIDADES[Math.min
 const rodape = h('div', { class: 'fig-rodape' },
 h('button', { class: 'fig-ver', type: 'button', onclick: () => abrirDossie(p.idx), 'aria-label': `Ver o parecer completo de ${p.nome}` },
 iconeSvg('pergaminho', 20), h('span', { class: 'fig-ver-txt' }, h('strong', {}, 'Parecer completo')), iconeSvg('seta', 18)));
-return h('article', { class: `cartao figurinha rar-${rar}${eCulpado ? ' e-culpado' : ''}${eCraque ? ' e-craque' : ''}`, style: `--rar: var(--rar-${rar})` }, frente, rodape);
+return h('article', { class: `cartao figurinha rar-${rar}${eCulpado ? ' e-culpado' : ''}${eCraque ? ' e-craque' : ''}${p.conta != null && String(p.conta) === quemSou() ? ' e-voce' : ''}`, style: `--rar: var(--rar-${rar})` }, frente, rodape);
 }
 
 
@@ -11399,6 +11420,68 @@ avisoRanking.classList.add('av-rk-on');
 mostrar(2500);
 }
 
+// ---------- Quem é você: na primeira visita a pessoa diz se é do grupo (amigos.json) ou não. Fica só no navegador.
+// Amigo vê a partida pelo lado dele e a própria figurinha marcada; quem não é do grupo escolhe o time antes do veredito
+// (quando a partida não tem ninguém do grupo). A conta também vai no aviso de visita, para saber quem do grupo entrou.
+const CHAVE_QUEM = 'culpado-quem';
+function quemSou() { try { return localStorage.getItem(CHAVE_QUEM) || null; } catch (e) { return null; } }
+function guardarQuem(v) { try { localStorage.setItem(CHAVE_QUEM, v); } catch (e) { /* sem localStorage: pergunta de novo */ } }
+
+// janela de escolha: opções [{valor, rotulo, sub, img (nó), extra (nó)}] -> Promise com o valor escolhido
+function janelaDeEscolha(titulo, sub, opcoes, classe = '') {
+return new Promise((ok) => {
+const fundo = h('div', { class: `escolha ${classe}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': titulo });
+const fechar = (v) => { fundo.remove(); ok(v); };
+fundo.append(h('div', { class: 'escolha-cartao' },
+h('h2', {}, titulo), sub ? h('p', { class: 'escolha-sub' }, sub) : null,
+h('div', { class: 'escolha-opcoes' }, opcoes.map((o) => h('button', { type: 'button', class: `escolha-op${o.classe ? ` ${o.classe}` : ''}`, onclick: () => fechar(o.valor) },
+o.img || null, h('span', { class: 'escolha-txt' }, h('b', {}, o.rotulo), o.sub ? h('small', {}, o.sub) : null), o.extra || null)))));
+document.body.append(fundo);
+const primeiro = fundo.querySelector('button');
+if (primeiro) primeiro.focus();
+});
+}
+
+function escolherQuem() {
+const opcoes = Object.entries(AMIGOS).map(([conta, nome]) => {
+const img = h('span', { class: 'escolha-avatar' }, nome.slice(0, 1).toUpperCase());
+carregarPerfis().then((perfis) => {
+const av = perfis[conta] && perfis[conta].avatar;
+if (av) img.replaceChildren(h('img', { src: av, alt: '' }));
+});
+return { valor: conta, rotulo: nome, img };
+});
+opcoes.push({ valor: 'visitante', rotulo: 'Não sou do grupo', sub: 'só vim ver uma partida', classe: 'escolha-visitante' });
+return janelaDeEscolha('Quem é você?', 'Pra abrir as partidas pelo seu lado. Fica só neste navegador e dá pra trocar no rodapé.', opcoes, 'escolha-quem');
+}
+
+function escolherTime(r) {
+const radiant = r.partida.ladoRadiant ? r.nos : r.eles;
+const dire = r.partida.ladoRadiant ? r.eles : r.nos;
+const time = (lado, ps) => ({
+valor: lado, rotulo: ladoNome(lado === 'radiant'),
+sub: (lado === 'radiant') === (r.partida.ladoRadiant ? r.partida.venceu : !r.partida.venceu) ? 'venceu' : 'perdeu',
+extra: h('span', { class: 'escolha-herois' }, ps.map((p) => retrato(p.heroi))),
+});
+return janelaDeEscolha('Qual era o seu time?', 'Ninguém do grupo jogou essa partida: o tribunal julga o time que você escolher.',
+[time('radiant', radiant), time('dire', dire), { valor: null, rotulo: 'Só estou olhando', sub: 'julga quem perdeu', classe: 'escolha-visitante' }], 'escolha-time');
+}
+
+// lado da partida para quem está vendo: o próprio (amigo que jogou), o do grupo, ou o que o visitante escolher
+async function ladoDoVisitante(r, id) {
+let quem = quemSou();
+if (!quem && Object.keys(AMIGOS).length) { quem = await escolherQuem(); guardarQuem(quem); }
+const todos = [...r.nos, ...r.eles];
+const eu = todos.find((p) => p.conta != null && String(p.conta) === quem);
+if (eu) return (r.nos.includes(eu) === r.partida.ladoRadiant) ? 'radiant' : 'dire';
+if (todos.some((p) => p.conta != null && AMIGOS[p.conta])) return null; // o lado do grupo, como sempre
+const chave = `culpado-lado-${id}`;
+try { const salvo = localStorage.getItem(chave); if (salvo) return salvo === 'nenhum' ? null : salvo; } catch (e) { /* segue */ }
+const escolha = await escolherTime(r);
+try { localStorage.setItem(chave, escolha || 'nenhum'); } catch (e) { /* segue */ }
+return escolha;
+}
+
 // contador de visitas no Worker: um código aleatório por navegador (sem nome nem IP); a cada 2 min com a aba visível
 function contarVisita(url) {
 let id = null;
@@ -11411,12 +11494,18 @@ localStorage.setItem('culpado-visitante', id);
 } catch (e) { return; }
 if (!url || !id) return;
 const avisar = () => fetch(`${url}/visita`, { method: 'POST', headers: { 'content-type': 'application/json' },
-body: JSON.stringify({ id, pagina: 'painel' }), keepalive: true }).catch(() => null);
+body: JSON.stringify({ id, pagina: 'painel', quem: /^\d+$/.test(quemSou() || '') ? quemSou() : undefined }), keepalive: true }).catch(() => null);
 avisar().then(() => fetch(`${url}/visitas`, { cache: 'no-store' })).then((r) => (r && r.ok ? r.json() : null)).then((d) => {
 const el = document.getElementById('visitas-site');
 if (!d || !el) return;
 const pessoas = (n) => `${n} ${n === 1 ? 'pessoa' : 'pessoas'}`;
-el.innerHTML = `<i></i><b>${d.online} online agora</b> · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
+const nomes = (xs) => (xs || []).map((c) => AMIGOS[c]).filter(Boolean);
+const doGrupo = nomes(d.grupo && d.grupo.online);
+el.innerHTML = '';
+el.append(h('i'), h('b', {}, `${d.online} online agora${doGrupo.length ? ` (${doGrupo.join(', ')})` : ''}`),
+` · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias · `,
+h('button', { type: 'button', class: 'trocar-quem', onclick: async () => { guardarQuem(await escolherQuem()); location.reload(); } },
+quemSou() && AMIGOS[quemSou()] ? `você é ${AMIGOS[quemSou()]} (trocar)` : 'quem é você?'));
 el.title = (d.porDia || []).map((x) => `${x.dia.split('-').reverse().slice(0, 2).join('/')}: ${pessoas(x.pessoas)}`).join('\n');
 el.hidden = false;
 }).catch(() => null);

@@ -1118,6 +1118,7 @@ const diaBr = (ms) => new Date(ms - 3 * 3_600_000).toISOString().slice(0, 10); /
 function resumoVisitas(consulta, agora) {
   const contar = (onde, ...args) => Number((consulta(`SELECT COUNT(DISTINCT id) AS n FROM visita WHERE ${onde}`, ...args)[0] || {}).n || 0);
   const desde = (dias) => diaBr(agora - dias * DIA_MS);
+  const contas = (onde, ...args) => consulta(`SELECT DISTINCT quem FROM visita WHERE quem IS NOT NULL AND ${onde}`, ...args).map((r) => String(r.quem));
   return {
     online: contar('visto >= ?', agora - ONLINE_MS),
     hoje: contar('dia = ?', diaBr(agora)),
@@ -1127,6 +1128,12 @@ function resumoVisitas(consulta, agora) {
       .map((r) => ({ dia: r.dia, pessoas: Number(r.n) })),
     paginasHoje: Object.fromEntries(consulta('SELECT pagina, COUNT(DISTINCT id) AS n FROM visita WHERE dia = ? GROUP BY pagina', diaBr(agora))
       .map((r) => [r.pagina, Number(r.n)])),
+    // quem do grupo (o site pergunta "quem é você?" na primeira visita): contas da Steam, sem nome
+    grupo: {
+      online: contas('visto >= ?', agora - ONLINE_MS),
+      hoje: contas('dia = ?', diaBr(agora)),
+      semana: contas('dia >= ?', desde(6)),
+    },
   };
 }
 
@@ -1134,14 +1141,16 @@ export class Visitas {
   constructor(ctx) {
     this.sql = ctx.storage.sql;
     this.sql.exec('CREATE TABLE IF NOT EXISTS visita (dia TEXT NOT NULL, id TEXT NOT NULL, pagina TEXT NOT NULL, visto INTEGER NOT NULL, PRIMARY KEY (dia, id, pagina))');
+    // tabela de antes da identificação: ganha a coluna quem (conta da Steam de quem é do grupo)
+    try { this.sql.exec('ALTER TABLE visita ADD COLUMN quem TEXT'); } catch { /* já tem */ }
   }
 
   async fetch(req) {
     const agora = Date.now();
     if (req.method === 'POST') {
-      const { id, pagina } = await req.json();
-      this.sql.exec('INSERT INTO visita (dia, id, pagina, visto) VALUES (?, ?, ?, ?) ON CONFLICT (dia, id, pagina) DO UPDATE SET visto = excluded.visto',
-        diaBr(agora), id, pagina, agora);
+      const { id, pagina, quem = null } = await req.json();
+      this.sql.exec('INSERT INTO visita (dia, id, pagina, visto, quem) VALUES (?, ?, ?, ?, ?) ON CONFLICT (dia, id, pagina) DO UPDATE SET visto = excluded.visto, quem = COALESCE(excluded.quem, visita.quem)',
+        diaBr(agora), id, pagina, agora, quem);
       if (Math.random() < 0.02) this.sql.exec('DELETE FROM visita WHERE dia < ?', diaBr(agora - GUARDAR_VISITAS_DIAS * DIA_MS));
       return Response.json({ ok: true });
     }
@@ -1156,7 +1165,8 @@ async function rotaVisitas(req, env, origem, caminho) {
     let corpo = null;
     try { corpo = JSON.parse(texto || ''); } catch { /* inválido abaixo */ }
     if (!corpo || !ID_VISITANTE.test(String(corpo.id)) || !PAGINAS_VISITA.has(corpo.pagina)) return recusar(400, 'invalido', origem, env);
-    await sala.fetch('https://visitas/', { method: 'POST', body: JSON.stringify({ id: corpo.id, pagina: corpo.pagina }) });
+    const quem = /^\d{4,12}$/.test(String(corpo.quem || '')) ? String(corpo.quem) : null; // conta da Steam, ou nada
+    await sala.fetch('https://visitas/', { method: 'POST', body: JSON.stringify({ id: corpo.id, pagina: corpo.pagina, quem }) });
     return json(200, { ok: true }, origem, env);
   }
   if (req.method === 'GET' && caminho === '/visitas') {

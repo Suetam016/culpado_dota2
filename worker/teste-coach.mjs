@@ -1145,6 +1145,19 @@ test('visitas: conta pessoas diferentes por dia e quem está online', async () =
   assert.equal(d.porDia.length, 1);
 });
 
+test('visitas: quem é do grupo aparece pela conta, visitante não', async () => {
+  const env = { VISITAS: salaDeVisitas() };
+  const visita = (corpo) => worker.fetch(pedido(corpo, { caminho: '/visita' }), env);
+  assert.equal((await visita({ id: 'abc123def456', pagina: 'painel', quem: '81918076' })).status, 200);
+  assert.equal((await visita({ id: 'abc123def456', pagina: 'painel' })).status, 200); // aviso sem quem não apaga
+  assert.equal((await visita({ id: 'zzz999yyy888', pagina: 'ranking', quem: 'nome<script>' })).status, 200); // quem inválido vira visitante
+  assert.equal((await visita({ id: 'qqq111www222', pagina: 'ranking', quem: '96286191' })).status, 200);
+  const d = await (await worker.fetch(pedido(undefined, { caminho: '/visitas', metodo: 'GET' }), env)).json();
+  assert.equal(d.hoje, 3);
+  assert.deepEqual([...d.grupo.hoje].sort(), ['81918076', '96286191']);
+  assert.deepEqual([...d.grupo.online].sort(), ['81918076', '96286191']);
+});
+
 test('visitas: recusa código inválido, outra origem e sem o Durable Object', async () => {
   const env = { VISITAS: salaDeVisitas() };
   assert.equal((await worker.fetch(pedido({ id: 'curto', pagina: 'painel' }, { caminho: '/visita' }), env)).status, 400);

@@ -158,7 +158,7 @@ function renderizarRanking() {
 
   lista.forEach((j, i) => {
     const li = document.createElement('li');
-    li.className = 'jogador' + (i === 0 ? ' jogador-topo' : '');
+    li.className = 'jogador' + (i === 0 ? ' jogador-topo' : '') + (j.conta === quemSou() ? ' jogador-voce' : '');
     const selo = j.streak
       ? `<span class="selo selo-${j.streak.tipo}">${j.streak.tipo === 'culpado' ? '🚨' : '✨'} ${j.streak.n}× ${j.streak.tipo}</span>`
       : '';
@@ -172,7 +172,7 @@ function renderizarRanking() {
 
     li.innerHTML = `
       <div class="pos">${i + 1}</div>
-      <div class="nome">${esc(j.nome)}${selo}<small>${j.partidas} partidas${mmr}</small></div>
+      <div class="nome">${esc(j.nome)}${j.conta === quemSou() ? '<span class="voce">você</span>' : ''}${selo}<small>${j.partidas} partidas${mmr}</small></div>
       <div class="col-wr">
         <div class="wr-num">${j.winRate}% <span>${j.vitorias}V · ${j.partidas - j.vitorias}D</span></div>
         <div class="barra-wr"><div style="width:${j.winRate}%"></div></div>
@@ -1593,6 +1593,9 @@ function renderizarTimeFechado() {
 
 const AVISO_VISITA_MS = 2 * 60_000;
 
+// quem é a pessoa (escolhido na página da partida, mesmo navegador): a linha dela no ranking fica marcada
+function quemSou() { try { return localStorage.getItem('culpado-quem') || null; } catch (e) { return null; } }
+
 function idDoVisitante() {
   try {
     let id = localStorage.getItem('culpado-visitante');
@@ -1609,7 +1612,7 @@ async function contarVisitas() {
   const id = idDoVisitante();
   if (!url || !id) return;
   const avisar = () => fetch(`${url}/visita`, { method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ id, pagina: 'ranking' }), keepalive: true }).catch(() => null);
+    body: JSON.stringify({ id, pagina: 'ranking', quem: /^\d+$/.test(quemSou() || '') ? quemSou() : undefined }), keepalive: true }).catch(() => null);
   await avisar();
   // enquanto a aba está aberta e visível, conta como "online agora"
   setInterval(() => { if (!document.hidden) avisar(); }, AVISO_VISITA_MS);
@@ -1617,7 +1620,9 @@ async function contarVisitas() {
   if (!d) return;
   const el = $('visitas');
   const pessoas = n => `${n} ${n === 1 ? 'pessoa' : 'pessoas'}`;
-  el.innerHTML = `<span class="visitas-online"><i></i>${d.online} online agora</span> · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
+  const nomes = Object.fromEntries((ranking && ranking.ranking || []).map(j => [j.accountId, j.nome]));
+  const doGrupo = ((d.grupo && d.grupo.online) || []).map(c => nomes[c]).filter(Boolean);
+  el.innerHTML = `<span class="visitas-online"><i></i>${d.online} online agora${doGrupo.length ? ` (${doGrupo.map(esc).join(', ')})` : ''}</span> · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias`;
   el.title = (d.porDia || []).map(x => `${x.dia.split('-').reverse().slice(0, 2).join('/')}: ${pessoas(x.pessoas)}`).join('\n');
   el.hidden = false;
 }
