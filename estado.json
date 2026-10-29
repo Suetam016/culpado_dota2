@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-10-29T12:33:24Z",
+  "quando": "2026-10-29T14:21:00Z",
   "restante": {
-   "dia": 2945,
-   "minuto": 5
+   "dia": 2995,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -420,7 +420,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-10-29T12:33:04Z",
+   "em": "2026-10-29T14:20:55Z",
    "partidas": {
     "9045468893": 1792020329,
     "9045492744": 1792022924,
@@ -2238,53 +2238,8 @@
   "99113261": "Randy Bobandy",
   "99140295": "·NEO·GEO·"
  },
- "pendentes": {
-  "9066716613": {
-   "inicio": 1793261586,
-   "pedido_em": "2026-10-29T12:33:15Z",
-   "primeira_vez": "2026-10-29T12:33:14Z",
-   "proxima": "2026-10-29T13:03:14Z",
-   "tentativas": 0
-  },
-  "9066757847": {
-   "inicio": 1793264832,
-   "pedido_em": "2026-10-29T12:33:18Z",
-   "primeira_vez": "2026-10-29T12:33:16Z",
-   "proxima": "2026-10-29T13:03:16Z",
-   "tentativas": 0
-  },
-  "9066796422": {
-   "inicio": 1793267622,
-   "pedido_em": "2026-10-29T12:33:20Z",
-   "primeira_vez": "2026-10-29T12:33:19Z",
-   "proxima": "2026-10-29T13:03:19Z",
-   "tentativas": 0
-  },
-  "9066848919": {
-   "inicio": 1793270992,
-   "pedido_em": "2026-10-29T12:33:22Z",
-   "primeira_vez": "2026-10-29T12:33:21Z",
-   "proxima": "2026-10-29T13:03:21Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 12,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-10-22T20:07:33Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2988,
-    "minuto": 48
-   },
-   "sobra_do_dia": 2724
-  },
   {
    "basicas": 0,
    "chamadas": 11,
@@ -3033,6 +2988,22 @@
     "minuto": 5
    },
    "sobra_do_dia": 2745
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-10-29T14:20:55Z",
+   "novas": 4,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2995,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2757
   }
  ],
  "uso": {
@@ -3049,6 +3020,6 @@
   "2026-10-26": 117,
   "2026-10-27": 83,
   "2026-10-28": 44,
-  "2026-10-29": 38
+  "2026-10-29": 43
  }
 }
