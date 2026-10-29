@@ -1594,7 +1594,7 @@ function renderizarTimeFechado() {
 const AVISO_VISITA_MS = 2 * 60_000;
 
 // quem é a pessoa (escolhido na página da partida, mesmo navegador): a linha dela no ranking fica marcada
-function quemSou() { try { return localStorage.getItem('culpado-quem') || null; } catch (e) { return null; } }
+function quemSou() { try { return localStorage.getItem('culpado-eu') || null; } catch (e) { return null; } }
 
 function idDoVisitante() {
   try {

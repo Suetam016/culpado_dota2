@@ -11420,12 +11420,33 @@ avisoRanking.classList.add('av-rk-on');
 mostrar(2500);
 }
 
-// ---------- Quem é você: na primeira visita a pessoa diz se é do grupo (amigos.json) ou não. Fica só no navegador.
-// Amigo vê a partida pelo lado dele e a própria figurinha marcada; quem não é do grupo escolhe o time antes do veredito
-// (quando a partida não tem ninguém do grupo). A conta também vai no aviso de visita, para saber quem do grupo entrou.
-const CHAVE_QUEM = 'culpado-quem';
+// ---------- Quem é você: o site não pergunta de cara (qualquer um poderia dizer que é do grupo). Ele anota quais amigos
+// aparecem nas partidas que esta pessoa abre e, depois de 3 partidas do grupo, pergunta "você é …?" só com quem
+// esteve em quase todas elas. Fica só no navegador. Amigo identificado vê a partida pelo lado dele e a própria
+// figurinha marcada; quem não é do grupo escolhe o time antes do veredito quando a partida não tem ninguém do grupo.
+const CHAVE_QUEM = 'culpado-eu';
+const CHAVE_VISTAS = 'culpado-vistas';
+const VISTAS_PARA_PERGUNTAR = 3;
+try { localStorage.removeItem('culpado-quem'); } catch (e) { /* versão que perguntava de cara: escolha descartada */ }
 function quemSou() { try { return localStorage.getItem(CHAVE_QUEM) || null; } catch (e) { return null; } }
-function guardarQuem(v) { try { localStorage.setItem(CHAVE_QUEM, v); } catch (e) { /* sem localStorage: pergunta de novo */ } }
+function guardarQuem(v) { try { if (v) localStorage.setItem(CHAVE_QUEM, v); else localStorage.removeItem(CHAVE_QUEM); } catch (e) { /* sem localStorage */ } }
+function vistas() { try { return JSON.parse(localStorage.getItem(CHAVE_VISTAS) || '{}') || {}; } catch (e) { return {}; } }
+function registrarVista(r, id) {
+const doGrupo = [...r.nos, ...r.eles].filter((p) => p.conta != null && AMIGOS[p.conta]).map((p) => String(p.conta));
+if (!doGrupo.length) return;
+const v = vistas();
+v[id] = doGrupo;
+try { localStorage.setItem(CHAVE_VISTAS, JSON.stringify(v)); } catch (e) { /* segue */ }
+}
+// quem esteve em pelo menos 3 das partidas do grupo que a pessoa abriu e em 60%+ delas
+function candidatos() {
+const v = Object.values(vistas());
+if (v.length < VISTAS_PARA_PERGUNTAR) return [];
+const conta = {};
+v.forEach((xs) => new Set(xs).forEach((c) => { conta[c] = (conta[c] || 0) + 1; }));
+return Object.entries(conta).filter(([, n]) => n >= VISTAS_PARA_PERGUNTAR && n >= 0.6 * v.length)
+.sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c]) => c);
+}
 
 // janela de escolha: opções [{valor, rotulo, sub, img (nó), extra (nó)}] -> Promise com o valor escolhido
 function janelaDeEscolha(titulo, sub, opcoes, classe = '') {
@@ -11442,17 +11463,18 @@ if (primeiro) primeiro.focus();
 });
 }
 
-function escolherQuem() {
-const opcoes = Object.entries(AMIGOS).map(([conta, nome]) => {
+function perguntarSeE(cands) {
+const opcoes = cands.map((conta) => {
+const nome = AMIGOS[conta];
 const img = h('span', { class: 'escolha-avatar' }, nome.slice(0, 1).toUpperCase());
 carregarPerfis().then((perfis) => {
 const av = perfis[conta] && perfis[conta].avatar;
 if (av) img.replaceChildren(h('img', { src: av, alt: '' }));
 });
-return { valor: conta, rotulo: nome, img };
+return { valor: conta, rotulo: `Sou ${nome}`, img };
 });
-opcoes.push({ valor: 'visitante', rotulo: 'Não sou do grupo', sub: 'só vim ver uma partida', classe: 'escolha-visitante' });
-return janelaDeEscolha('Quem é você?', 'Pra abrir as partidas pelo seu lado. Fica só neste navegador e dá pra trocar no rodapé.', opcoes, 'escolha-quem');
+opcoes.push({ valor: 'visitante', rotulo: 'Nenhum desses', sub: 'não pergunta de novo', classe: 'escolha-visitante' });
+return janelaDeEscolha('Você é do grupo?', 'Pelas partidas que você abriu aqui, parece que você é um destes. Assim as partidas abrem pelo seu lado. Fica só neste navegador.', opcoes, 'escolha-quem');
 }
 
 function escolherTime(r) {
@@ -11469,8 +11491,12 @@ return janelaDeEscolha('Qual era o seu time?', 'Ninguém do grupo jogou essa par
 
 // lado da partida para quem está vendo: o próprio (amigo que jogou), o do grupo, ou o que o visitante escolher
 async function ladoDoVisitante(r, id) {
+registrarVista(r, id);
 let quem = quemSou();
-if (!quem && Object.keys(AMIGOS).length) { quem = await escolherQuem(); guardarQuem(quem); }
+if (!quem) {
+const cands = candidatos();
+if (cands.length) { quem = await perguntarSeE(cands); guardarQuem(quem); }
+}
 const todos = [...r.nos, ...r.eles];
 const eu = todos.find((p) => p.conta != null && String(p.conta) === quem);
 if (eu) return (r.nos.includes(eu) === r.partida.ladoRadiant) ? 'radiant' : 'dire';
@@ -11504,8 +11530,10 @@ const doGrupo = nomes(d.grupo && d.grupo.online);
 el.innerHTML = '';
 el.append(h('i'), h('b', {}, `${d.online} online agora${doGrupo.length ? ` (${doGrupo.join(', ')})` : ''}`),
 ` · ${pessoas(d.hoje)} no site hoje · ${pessoas(d.semana)} nos últimos 7 dias · ${pessoas(d.mes)} em 30 dias · `,
-h('button', { type: 'button', class: 'trocar-quem', onclick: async () => { guardarQuem(await escolherQuem()); location.reload(); } },
-quemSou() && AMIGOS[quemSou()] ? `você é ${AMIGOS[quemSou()]} (trocar)` : 'quem é você?'));
+quemSou() && AMIGOS[quemSou()]
+? h('button', { type: 'button', class: 'trocar-quem', onclick: () => { guardarQuem(null); try { localStorage.removeItem(CHAVE_VISTAS); } catch (e) { /* segue */ } location.reload(); } },
+`você é ${AMIGOS[quemSou()]} (não sou)`)
+: '');
 el.title = (d.porDia || []).map((x) => `${x.dia.split('-').reverse().slice(0, 2).join('/')}: ${pessoas(x.pessoas)}`).join('\n');
 el.hidden = false;
 }).catch(() => null);
