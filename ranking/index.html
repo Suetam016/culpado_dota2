@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=28">
+  <link rel="stylesheet" href="styles.css?v=29">
 </head>
 <body>
   <header class="topo">
@@ -22,6 +22,8 @@
   </header>
 
   <main class="pagina">
+    <div class="ranking-topo">
+    <div class="ranking-topo-esq">
     <div class="atualizacao" id="atualizacao">
       <p class="att-quando">Atualizado pela última vez em: <b id="att-data">—</b> <span id="att-rel"></span></p>
       <p class="att-pendentes" id="att-pendentes"></p>
@@ -65,6 +67,12 @@
       </div>
       <input type="range" id="periodo" min="0" max="5" step="1" value="5">
       <div class="periodo-marcas" id="periodo-marcas"></div>
+    </div>
+    </div>
+    <aside class="notas" id="notas" aria-labelledby="notas-titulo" hidden>
+      <h2 id="notas-titulo">Patch notes <small>o que mudou</small></h2>
+      <div class="notas-lista" id="notas-lista" tabindex="0"></div>
+    </aside>
     </div>
 
     <section class="aba-conteudo aba-conteudo-ativa" id="aba-ranking">
@@ -176,6 +184,6 @@
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
   <script src="../herois-tracos.js?v=2"></script>
-  <script src="app.js?v=31"></script>
+  <script src="app.js?v=32"></script>
 </body>
 </html>

@@ -908,3 +908,21 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 
 .jogador-voce { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), var(--shadow); }
 .voce { margin-left: 6px; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 999px; background: var(--gold); color: var(--on-gold); vertical-align: middle; }
+
+/* ---------- Patch notes: quadradinho com rolagem à direita do topo (lê ../patch-notes.json) ---------- */
+.ranking-topo { display: grid; gap: 18px; }
+.ranking-topo:has(.notas:not([hidden])) { grid-template-columns: minmax(0, 1fr) 290px; align-items: stretch; }
+.ranking-topo-esq { min-width: 0; }
+@media (min-width: 901px) { .notas { contain: size; } } /* a altura vem da coluna da esquerda; o resto rola */
+.notas { position: relative; margin: -8px 0 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+.notas h2 { margin: 0; padding: 10px 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-family: var(--font-display); font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--gold-2); border-bottom: 1px solid var(--line); }
+.notas h2 small { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; color: var(--muted); }
+.notas-lista { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px 14px 12px; scrollbar-width: thin; }
+.notas-dia { margin: 10px 0 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.notas-lista ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.notas-lista li { font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.notas-tag { display: inline-block; margin-right: 6px; padding: 1px 6px; border-radius: 4px; background: var(--surface-2); color: var(--gold); font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; vertical-align: 1px; }
+@media (max-width: 900px) {
+  .ranking-topo:has(.notas:not([hidden])) { grid-template-columns: 1fr; }
+  .notas { margin-top: 0; height: 220px; }
+}
