@@ -2717,3 +2717,12 @@ OK 9068562438
   2878 usos de skill/item de 3998 no combat log
 OK 9068443775
 2 mapas novos
+Fila: [9034433212] (pedidos do site: [9034433212])
+  replay http://replay202.valve.net/570/9034433212_1832662547.dem.bz2 -> HTTP 200 application/octet-stream 44046305 inicio=b'(\xb5/\xfd\x00`\xfc@\x0fn~^'
+  9034433212: 203631 eventos; tipos [('actions', 75260), ('DOTA_COMBATLOG_DAMAGE', 50311), ('interval', 24250), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 17475), ('DOTA_COMBATLOG_MODIFIER_ADD', 17432), ('DOTA_COMBATLOG_HEAL', 4638), ('DOTA_COMBATLOG_XP', 3716), ('DOTA_COMBATLOG_DEATH', 3520)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Rattletrap", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 51, "variant": 0, "facet_hero_id": 51, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, 
+  exemplo de habilidade: {"time": -66, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_juggernaut", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_quelling_blade"}
+  3402 registros de dano herói->herói
+  1628 usos de skill/item de 2421 no combat log
+OK 9034433212
+1 mapas novos
