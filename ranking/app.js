@@ -39,6 +39,7 @@ let ordem = 'culpados';
 const $ = id => document.getElementById(id);
 
 document.addEventListener('DOMContentLoaded', async () => {
+  mostrarPatchNotes();
   document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => mudarAba(b.dataset.aba)));
   document.querySelectorAll('[data-ordem]').forEach(b => b.addEventListener('click', () => {
     ordem = b.dataset.ordem;
@@ -1775,4 +1776,23 @@ function dataHora(iso) {
 
 function esc(texto) {
   return String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+/* ---------- Patch notes: novidades do site, em ../patch-notes.json (o dia mais novo primeiro) ---------- */
+function mostrarPatchNotes() {
+  const caixa = document.getElementById('notas');
+  const lista = document.getElementById('notas-lista');
+  if (!caixa || !lista) return;
+  const txt = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const dia = d => {
+    const [a, m, x] = String(d).split('-');
+    return x ? new Date(+a, m - 1, +x).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }).replace('.', '') : txt(d);
+  };
+  fetch('../patch-notes.json', { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).then(j => {
+    const dias = ((j && j.dias) || []).filter(d => d && (d.itens || []).length);
+    if (!dias.length) return;
+    lista.innerHTML = dias.map(d => `<p class="notas-dia">${dia(d.data)}</p><ul>${d.itens.map(i =>
+      `<li>${i.tag ? `<span class="notas-tag">${txt(i.tag)}</span>` : ''}${txt(i.texto)}</li>`).join('')}</ul>`).join('');
+    caixa.hidden = false;
+  }).catch(() => null);
 }
