@@ -45,7 +45,7 @@
 // tenta de novo com a entrada mínima e avisa nos Logs), e os nomes/cotas atuais dos modelos Gemini (por isso
 // GEMINI_MODELO é configurável e há reserva).
 
-const ORIGENS = ['https://suetam016.github.io', 'https://culpado.gg', 'https://www.culpado.gg', 'https://culpado.com.br', 'https://www.culpado.com.br'];
+const ORIGENS = ['https://suetam016.github.io', 'https://culpado.gg', 'https://www.culpado.gg', 'https://culpado.com.br', 'https://www.culpado.com.br', 'https://oculpado.com.br', 'https://www.oculpado.com.br'];
 
 // Gemma 4 26B (MoE, ~4B ativos): substituto oficial do gemma-3-12b (aposentado em 30/05/2026), 256K de
 // contexto, multilíngue, ~84 neurons por pergunta de ~8k tokens => ~119 perguntas/dia no plano grátis.
