@@ -9021,7 +9021,7 @@ candidatosSom.length = 0;
 let atual = null;
 let t = 0;
 let tocando = false;
-let vel = 1.5;
+let vel = 1;
 let ultimo = 0;
 let caixa = [0, 0, W, W];
 let tpsAtual = [];
@@ -9051,7 +9051,7 @@ const progresso = h('input', { type: 'range', class: 'm-progresso', min: 0, max:
 const marcas = h('div', { class: 'm-marcas', 'aria-hidden': 'true' });
 const trilha = h('div', { class: 'm-trilha' }, marcas, progresso);
 const tempo = h('span', { class: 'mapa-tempo' }, '0:00');
-const bVel = h('button', { type: 'button', class: 'mapa-botao m-ctl-vel', title: 'Velocidade' }, '1.5×');
+const bVel = h('button', { type: 'button', class: 'mapa-botao m-ctl-vel', title: 'Velocidade' }, '1×');
 const bDe = h('button', { type: 'button', class: 'mapa-botao m-ctl-de', 'aria-label': 'Ver de novo', title: 'Ver de novo' }, iconeSvg('denovo', 18));
 
 let volAntes = saida.vol || VOLUME_PADRAO;
@@ -9119,7 +9119,7 @@ ev.preventDefault();
 alternar();
 });
 bPlay.addEventListener('click', alternar);
-bVel.addEventListener('click', () => { vel = vel === 1.5 ? 3 : vel === 3 ? 0.75 : 1.5; bVel.textContent = `${vel}×`; });
+bVel.addEventListener('click', () => { vel = vel === 1 ? 1.5 : vel === 1.5 ? 3 : vel === 3 ? 0.75 : 1; bVel.textContent = `${vel}×`; });
 bDe.addEventListener('click', () => tocar(lances.indexOf(atual)));
 
 const irPara = (tt) => {
