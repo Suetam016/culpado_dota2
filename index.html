@@ -8750,9 +8750,10 @@ const longe = hits.map((d) => pos(d.t)[d.alvo]).filter(Boolean).sort((a, b) => d
 const para = longe ? mix(de, longe, 1 + 2 / Math.max(2, dist(de, longe))) : pontaPara(uso, 900);
 if (!de || !para) return null;
 const VOO = 0.7;
+const pegos = hits.map((d) => d.alvo);
 return {
 ini: uso.t, fim: uso.t + VOO + 0.5, chao: false,
-criar: () => { const g = s('g', { class: 'm-pedra' }); const poeira = s('line', { class: 'm-pedra-poeira' }); const rocha = s('g', {}, s('circle', { r: 1.5, class: 'm-pedra-rocha' }), s('path', { d: 'M-.9,-.4 L.1,.2 L.6,-.6 M.1,.2 L.3,1', class: 'm-pedra-racha' })); const baque = s('circle', { class: 'm-pedra-baque' }); g.append(poeira, rocha, baque); return { g, poeira, rocha, baque }; },
+criar: () => { const g = s('g', { class: 'm-pedra' }); const poeira = s('line', { class: 'm-pedra-poeira' }); const rocha = s('g', {}, s('circle', { r: 1.5, class: 'm-pedra-rocha' }), s('path', { d: 'M-.9,-.4 L.1,.2 L.6,-.6 M.1,.2 L.3,1', class: 'm-pedra-racha' })); const baque = s('circle', { class: 'm-pedra-baque' }); const golpes = pegos.map(() => s('circle', { class: 'm-pedra-baque' })); g.append(poeira, rocha, baque, ...golpes); return { g, poeira, rocha, baque, golpes }; },
 desenhar: (e, tt, F) => {
 const a = Q(de); const b = Q(para);
 const k = lim((tt - uso.t) / VOO);
@@ -8762,15 +8763,28 @@ at(e.poeira, { x1: rabo[0], y1: rabo[1], x2: p[0], y2: p[1], 'stroke-width': 2.4
 at(e.rocha, { transform: `translate(${p[0].toFixed(2)},${p[1].toFixed(2)}) rotate(${(k * 540).toFixed(0)}) scale(${(F.z * 1.4).toFixed(3)})`, opacity: k < 1 ? 1 : lim(1 - (tt - uso.t - VOO) / 0.5) });
 const kb = (tt - uso.t - VOO) / 0.5;
 at(e.baque, { cx: b[0], cy: b[1], r: (1 + lim(kb) * 4) * F.z, 'stroke-width': 0.4 * F.z, opacity: kb < 0 ? 0 : lim(1 - kb) });
+pegos.forEach((alvo, i) => { // a pedra passa por cima: estoura no herói quando chega nele
+const q = F.tok(alvo);
+const kAlvo = q ? Math.hypot(q[0] - a[0], q[1] - a[1]) / (Math.hypot(b[0] - a[0], b[1] - a[1]) || 1) : 2;
+const kg = (saiDe(k) - Math.min(1, kAlvo)) / 0.35;
+if (!q || kg < 0 || kg > 1) { e.golpes[i].setAttribute('opacity', 0); return; }
+at(e.golpes[i], { cx: q[0], cy: q[1], r: (R + kg * 3) * F.z, 'stroke-width': 0.6 * F.z, opacity: 1 - kg });
+});
 },
 };
 },
 earth_spirit_rolling_boulder: (uso) => {
 const ROLA = 1.4;
+const atropelados = acertosDe(uso, ROLA + 0.6);
 return {
 ini: uso.t, fim: uso.t + ROLA + 0.8, chao: true,
-criar: () => { const g = s('g', { class: 'm-rolamento' }); const sulco = s('path', { class: 'm-rol-sulco' }); const bola = s('circle', { class: 'm-rol-bola' }); g.append(sulco, bola); return { g, sulco, bola }; },
+criar: () => { const g = s('g', { class: 'm-rolamento' }); const sulco = s('path', { class: 'm-rol-sulco' }); const bola = s('circle', { class: 'm-rol-bola' }); const baques = atropelados.map(() => s('circle', { class: 'm-pedra-baque' })); g.append(sulco, bola, ...baques); return { g, sulco, bola, baques }; },
 desenhar: (e, tt, F) => {
+atropelados.forEach((d, i) => {
+const q = F.tok(d.alvo); const kb = (tt - Math.max(uso.t + 0.3, d.t)) / 0.5;
+if (!q || kb < 0 || kb > 1) { e.baques[i].setAttribute('opacity', 0); return; }
+at(e.baques[i], { cx: q[0], cy: q[1], r: (R + 0.5 + kb * 3) * F.z, 'stroke-width': 0.6 * F.z, opacity: 1 - kb });
+});
 const ate = Math.min(tt, uso.t + ROLA);
 at(e.sulco, { d: trilhaDe(uso.quem, Math.max(uso.t, ate - 1.2), ate) || 'M0,0', 'stroke-width': 3 * F.z, opacity: tt > uso.t + ROLA ? lim(1 - (tt - uso.t - ROLA) / 0.8) : 0.9 });
 const q = F.tok(uso.quem);
@@ -8809,6 +8823,20 @@ desenhar: (e, tt, F) => {
 const k = (tt - uso.t) / 1.4;
 at(e.pedra, { d: hexagono(1.5), transform: `translate(${c[0].toFixed(2)},${c[1].toFixed(2)}) scale(${(F.z * saiDe(lim(k / 0.15))).toFixed(3)})`, 'stroke-width': 0.3 });
 e.g.setAttribute('opacity', k < 0.6 ? 1 : lim((1 - k) / 0.4));
+},
+};
+},
+earth_spirit_petrify: (uso) => {
+if (uso.alvo == null) return null;
+const fim = uso.t + 2.5;
+return {
+ini: uso.t, fim, chao: false,
+criar: () => { const g = s('g', { class: 'm-petrify' }); const casca = s('path', { class: 'm-rem-pedra' }); g.append(casca); return { g, casca }; },
+desenhar: (e, tt, F) => {
+const q = F.tok(uso.alvo);
+if (!q) { e.g.setAttribute('opacity', 0); return; }
+at(e.casca, { d: `${hexagono(R + 1.1)}M-1.2,-.8L.2,.3L1,-.9M.2,.3L.5,1.6`, transform: `translate(${q[0].toFixed(2)},${q[1].toFixed(2)}) scale(${(F.z * saiDe(lim((tt - uso.t) / 0.25))).toFixed(3)})`, 'stroke-width': 0.4 });
+e.g.setAttribute('opacity', tt > fim - 0.4 ? lim((fim - tt) / 0.4) : 0.9);
 },
 };
 },
