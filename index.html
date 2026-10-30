@@ -12623,6 +12623,8 @@ const EXEMPLO_HOME = '9041118764';
 function sairDaHome() { document.documentElement.classList.remove('em-home'); }
 function abrirDaHome(id, opcoes) {
 sairDaHome();
+estado.revelado = null; // julgar pela home é de propósito: a roleta com som roda de novo, mesmo que a partida já tenha aparecido
+estado.resultado = null; // e a partida monta do zero (sem o modo "recarregando" de quando a mesma partida volta)
 try { history.pushState(null, '', `#${id}`); } catch (e) { /* frame sem history */ }
 el.input.value = id;
 window.scrollTo(0, 0);
