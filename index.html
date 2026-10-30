@@ -9,6 +9,7 @@
     var EX = ["9041118764", "9042378073", "9042245404", "9042493356"], PADRAO = "9041118764";
     var m = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/);
     var id = m && m[1];
+    if (!id && !window.claude) { document.documentElement.classList.add('em-home'); window.__pre = { home: true, rotas: null, config: fetch('config.json', { cache: 'no-cache' }).catch(function () { return null; }) }; return; }
     if (!id) { try { var u = JSON.parse(localStorage.getItem('culpado:ultimo') || 'null'); if (u && /^\d{6,}$/.test(String(u))) id = String(u); } catch (e) { /* sem localStorage */ } }
     if (!id) id = PADRAO;
     var exemplo = EX.indexOf(id) >= 0;
@@ -84,6 +85,38 @@
     <button class="som" id="som" type="button" aria-pressed="true" title="Som da revelação"><svg class="som-icone" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="som-ondas" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="som-x" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="som-txt">Som</span></button>
   </div>
 </header>
+<section class="home" id="home" aria-labelledby="home-titulo">
+  <div class="home-hero">
+    <p class="home-eyebrow">O tribunal das suas partidas de Dota 2</p>
+    <h2 id="home-titulo">Quem perdeu o jogo <em>pra vocês?</em></h2>
+    <p class="home-sub">Cole o ID da partida e o tribunal decide: o culpado, os craques e o replay dos lances no mapinha. De graça.</p>
+    <form class="home-busca" id="home-busca" role="search" autocomplete="off">
+      <label><span class="sr-only">ID da partida</span><input id="home-id" inputmode="numeric" placeholder="ID da partida, ex.: 9041118764"></label>
+      <button class="botao" type="submit">Julgar partida</button>
+    </form>
+    <p class="home-erro" id="home-erro" role="alert"></p>
+    <p class="home-ajuda">O ID aparece no fim da partida, no placar do Dota, e no seu histórico no OpenDota ou Dotabuff.</p>
+    <p class="home-atalhos"><button type="button" class="home-link" id="home-exemplo">Ver uma partida de exemplo</button><span id="home-ultima" hidden> · <button type="button" class="home-link" id="home-ultima-btn"></button></span></p>
+  </div>
+  <div class="home-cartoes">
+    <button type="button" class="home-cartao" data-ir="exemplo">
+      <span class="home-foto"><img src="img/home-veredito.jpg" alt="Boletim de ocorrência do culpado de uma partida" width="640" height="366" loading="lazy"></span>
+      <span class="home-cartao-txt"><strong>O veredito</strong><span>Um culpado, um documento: B.O., cartaz de procurado ou mandado da Interpol, conforme o tamanho do estrago.</span></span>
+    </button>
+    <button type="button" class="home-cartao" data-ir="replay">
+      <span class="home-foto"><img src="img/home-replay.jpg" alt="Replay animado do mapinha com os heróis" width="480" height="480" loading="lazy"></span>
+      <span class="home-cartao-txt"><strong>O replay no mapinha</strong><span>Os lances que decidiram o jogo, animados no mapa: o Play e o Throw of the Game, com som.</span></span>
+    </button>
+    <a class="home-cartao" href="ranking/">
+      <span class="home-foto"><img src="img/home-ranking.jpg" alt="Ranking do grupo de amigos Marocas" width="640" height="353" loading="lazy"></span>
+      <span class="home-cartao-txt"><strong>O ranking do grupo</strong><span>Quem é o mais culpado e o mais craque da turma, duplas que funcionam e o time fechado. Veja o do Marocas.</span></span>
+    </a>
+  </div>
+  <div class="home-grupo">
+    <div><strong>Quer o ranking do seu grupo?</strong><span>É de graça enquanto estamos em teste. Mande o nome do grupo e o perfil da Steam dos amigos.</span></div>
+    <button type="button" class="botao secundario" id="home-pedir-grupo">Quero o meu grupo</button>
+  </div>
+</section>
 <div class="status" id="status" aria-live="polite"></div>
 <main class="pagina" id="pagina">
   <!-- casca: aparece antes do JS; o painel troca tudo quando a partida chega -->
@@ -384,10 +417,47 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 @keyframes visitas-pulsa{70%{box-shadow:0 0 0 6px transparent}0%{box-shadow:0 0 0 0 var(--good)}}
 @media (prefers-reduced-motion:reduce){.visitas-site i{animation:none}}
 </style>
+<style>
+/* ---------- home: uma ação (colar a partida) e três destaques ---------- */
+.home{display:none}
+html.em-home .home{display:grid;gap:40px;max-width:1160px;margin:0 auto;padding:clamp(28px,7vw,72px) 20px 96px}
+html.em-home #pagina,html.em-home #status,html.em-home #busca{display:none}
+.home-hero{display:grid;justify-items:center;text-align:center;gap:14px}
+.home-eyebrow{margin:0;font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.home-hero h2{margin:0;font-family:var(--font-display);font-weight:900;font-size:clamp(2rem,6.4vw,3.6rem);line-height:1.05;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.home-hero h2 em{font-style:normal;color:var(--gold)}
+.home-sub{margin:0;max-width:56ch;font-size:clamp(1.05rem,2.6vw,1.25rem);color:var(--ink-2);text-wrap:pretty}
+.home-busca{display:flex;gap:8px;width:min(560px,100%);margin-top:10px}
+.home-busca label{flex:1 1 auto;min-width:0}
+.home-busca input{width:100%;height:54px;padding:0 16px;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;font-family:var(--font-mono);font-size:1.05rem;color:var(--ink)}
+.home-busca input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.home-busca .botao{height:54px;padding:0 22px;font-size:1.05rem;border-radius:10px}
+.home-erro{margin:0;min-height:0;color:var(--eles);font-size:14px}
+.home-erro:empty{display:none}
+.home-ajuda{margin:0;font-size:14px;color:var(--muted);max-width:52ch}
+.home-atalhos{margin:0;font-size:15px;color:var(--muted)}
+.home-link{background:none;border:0;padding:4px 2px;color:var(--gold-2);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.home-cartoes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.home-cartao{display:grid;grid-template-rows:auto 1fr;padding:0;overflow:hidden;text-align:left;font:inherit;color:inherit;text-decoration:none;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:12px;transition:transform .15s,border-color .15s}
+.home-cartao:hover,.home-cartao:focus-visible{transform:translateY(-3px);border-color:var(--gold)}
+.home-foto{display:block;aspect-ratio:16/10;overflow:hidden;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.home-foto img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.home-cartao-txt{display:grid;gap:6px;padding:14px 16px 18px}
+.home-cartao-txt strong{font-family:var(--font-display);font-size:1.15rem;color:var(--gold-2)}
+.home-cartao-txt span{color:var(--ink-2);font-size:15px;line-height:1.4}
+.home-grupo{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border:1px dashed var(--line-strong);border-radius:12px;background:var(--surface)}
+.home-grupo div{display:grid;gap:4px}
+.home-grupo strong{font-size:1.1rem}
+.home-grupo span{color:var(--ink-2);font-size:15px}
+.home-grupo .botao{flex:none}
+@media (max-width:820px){.home-cartoes{grid-template-columns:1fr}.home-cartao{grid-template-columns:132px 1fr;grid-template-rows:none}.home-foto{aspect-ratio:auto;height:100%;border-bottom:0;border-right:1px solid var(--line)}.home-cartao-txt{padding:12px 14px}.home-cartao-txt span{font-size:14px}}
+@media (max-width:520px){.home{gap:28px}.home-busca{flex-direction:column}.home-busca .botao{width:100%}.home-cartao{grid-template-columns:96px 1fr}.home-grupo{flex-direction:column;align-items:stretch;text-align:left}}
+.marca h1{cursor:pointer}
+</style>
 <script>
 (function () {
   var pre = window.__pre, alvo = document.getElementById('casca-id');
-  if (pre && alvo) alvo.textContent = pre.exemplo ? 'Partida de exemplo ' + pre.id : 'Partida ' + pre.id + ' · buscando no OpenDota…';
+  if (pre && !pre.home && alvo) alvo.textContent = pre.exemplo ? 'Partida de exemplo ' + pre.id : 'Partida ' + pre.id + ' · buscando no OpenDota…';
 })();
 </script>
 <script type="application/json" id="amigos">{"81918076":"Suéter","241782761":"[Pau]DeCamelo","1254464470":"Conhecido do Baia","111257540":"Kuscomem","1000265186":"gustavoDotinhaPro","83300280":"ptn","96286191":"charlinho","77621319":"Jalim","26668150":"3rvinha"}</script>
@@ -5321,6 +5391,7 @@ ev.preventDefault();
 const id = (el.input.value.match(/\d{6,}/) || [])[0];
 if (!id) { mostrarStatus('Cole o ID da partida: o número que aparece no fim do placar do Dota (ex.: 9041118764).', 'erro'); return; }
 el.input.value = id;
+document.documentElement.classList.remove('em-home');
 carregar(id);
 });
 
@@ -12547,6 +12618,76 @@ el.hidden = false;
 setInterval(() => { if (!document.hidden) avisar(); }, 2 * 60_000);
 }
 
+// Home: aparece quando o endereço não tem partida. Julgar sai da home; voltar (ou o título) volta para ela.
+const EXEMPLO_HOME = '9041118764';
+function sairDaHome() { document.documentElement.classList.remove('em-home'); }
+function abrirDaHome(id, opcoes) {
+sairDaHome();
+try { history.pushState(null, '', `#${id}`); } catch (e) { /* frame sem history */ }
+el.input.value = id;
+window.scrollTo(0, 0);
+return carregar(id, opcoes);
+}
+function voltarParaHome() {
+if (estado.carga) estado.carga.abort();
+document.documentElement.classList.add('em-home');
+mostrarStatus('');
+window.scrollTo(0, 0);
+}
+function montarHome(ultimo) {
+const home = document.getElementById('home');
+if (!home || SO_EMBUTIDO) return false;
+tirarCasca();
+document.documentElement.classList.add('em-home');
+if (home.dataset.pronta) return true;
+home.dataset.pronta = '1';
+const campo = document.getElementById('home-id');
+const erro = document.getElementById('home-erro');
+document.getElementById('home-busca').addEventListener('submit', (ev) => {
+ev.preventDefault();
+const id = (campo.value.match(/\d{6,}/) || [])[0];
+if (!id) { erro.textContent = 'Cole o ID da partida: o número que aparece no fim do placar do Dota (ex.: 9041118764).'; return; }
+erro.textContent = '';
+campo.value = id;
+abrirDaHome(id);
+});
+const exemplo = () => abrirDaHome(EXEMPLO_HOME, { exemplo: true });
+document.getElementById('home-exemplo').addEventListener('click', exemplo);
+home.querySelector('[data-ir="exemplo"]').addEventListener('click', exemplo);
+home.querySelector('[data-ir="replay"]').addEventListener('click', () => abrirDaHome(EXEMPLO_HOME, { exemplo: true }).then(() => {
+const lances = document.querySelector('[data-secao="lances"]');
+if (lances) setTimeout(() => lances.scrollIntoView({ behavior: 'smooth' }), 400);
+}));
+if (ultimo && /^\d{6,}$/.test(String(ultimo)) && String(ultimo) !== EXEMPLO_HOME) {
+const b = document.getElementById('home-ultima-btn');
+b.textContent = `Voltar para a última partida (${ultimo})`;
+b.addEventListener('click', () => abrirDaHome(String(ultimo)));
+document.getElementById('home-ultima').hidden = false;
+}
+document.getElementById('home-pedir-grupo').addEventListener('click', () => {
+const botao = document.querySelector('.fb-botao');
+const caixa = document.querySelector('.fb-caixa');
+const texto = document.querySelector('.fb-texto');
+if (!botao || !caixa || !texto) return;
+if (caixa.hidden) botao.click();
+texto.value = 'Quero o ranking do meu grupo!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
+texto.focus();
+texto.setSelectionRange(texto.value.indexOf('\n') + 16, texto.value.indexOf('\n') + 16);
+});
+return true;
+}
+window.addEventListener('popstate', () => {
+const [, id, lado] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];
+if (!id) { if (montarHome(ler('culpado:ultimo'))) voltarParaHome(); return; }
+sairDaHome();
+if (id !== estado.id) { el.input.value = id; carregar(id, { lado: lado || null }); }
+});
+document.querySelector('.marca h1')?.addEventListener('click', () => {
+if (SO_EMBUTIDO || !document.getElementById('home')) return;
+try { history.pushState(null, '', location.pathname + location.search); } catch (e) { /* frame sem history */ }
+if (montarHome(ler('culpado:ultimo'))) voltarParaHome();
+});
+
 function iniciar() {
 montarFeedback();
 urlDoCoach().then(contarVisita); // lê o config.json do coach em paralelo com a partida
@@ -12554,6 +12695,7 @@ rotasDoSite(); // e a base de rotas
 const [, doHash, ladoHash] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];
 const ultimo = ler('culpado:ultimo');
 const exemploId = EMBUTIDO.exemplo;
+if (!doHash && montarHome(ultimo)) return;
 if (doHash) { el.input.value = doHash; carregar(doHash, { lado: ladoHash || null }); return; }
 if (ultimo && !SO_EMBUTIDO) { el.input.value = ultimo; carregar(ultimo); return; }
 if (exemploId) { carregar(exemploId, { exemplo: true }); return; }
