@@ -207,7 +207,7 @@ def rodada(api: Api, jogadores: list[dict], saida: Path, por_jogador: int = POR_
             nome, tag = (urllib.parse.quote(x) for x in m.groups())
             r = api.get(f"https://{rota}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{nome}/{tag}")
             if not r:
-                print(f"{riot_id}: conta não encontrada")
+                print(f"::warning::{riot_id}: a Riot não achou essa conta (confira o nome e a tag em lol/jogadores.json)")
                 continue
             conta = contas[riot_id] = {"puuid": r["puuid"], "regiao": regiao}
         puuids[conta["puuid"]] = riot_id
