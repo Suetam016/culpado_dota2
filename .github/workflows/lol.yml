@@ -1,0 +1,59 @@
+name: LoL (protótipo)
+
+# Puxa as partidas de League of Legends dos jogadores de lol/jogadores.json pela API da Riot e publica em
+# lol/partidas/<id>.json + lol/indice.json (o site lê de lá). Precisa do segredo RIOT_API_KEY; sem ele, não faz nada.
+# A chave de desenvolvimento expira a cada 24 h: quando a Riot recusar, o run fica vermelho com o aviso.
+on:
+  schedule:
+    - cron: "41 */2 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["lol/jogadores.json", "lol/coletar.py", "lol/disparar", ".github/workflows/lol.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lol
+  cancel-in-progress: false
+
+jobs:
+  coleta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Tem a chave?
+        id: chave
+        run: |
+          if [ -z "$RIOT_API_KEY" ]; then
+            echo "::notice::Sem o segredo RIOT_API_KEY: nada a fazer."
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.chave.outputs.ok == '1'
+        with:
+          python-version: "3.12"
+      - name: Coletar
+        if: steps.chave.outputs.ok == '1'
+        run: python lol/coletar.py --jogadores lol/jogadores.json --saida lol | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Publicar
+        if: always() && steps.chave.outputs.ok == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lol/partidas lol/indice.json 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -m "LoL: partidas novas"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

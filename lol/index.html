@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quem é o culpado · LoL</title>
+<meta name="description" content="Protótipo do Culpado para League of Legends: quem entregou a partida, com os dados oficiais da Riot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://ddragon.leagueoflegends.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0e0c0a; --surface: #1a1612; --surface-2: #221c16; --surface-3: #2b231b; --line: #3a2f24; --line-strong: #5a4732;
+  --ink: #efe6d6; --ink-2: #c7b9a3; --muted: #8f8270; --gold: #e8b04a; --gold-2: #f6d27a; --on-gold: #1b1206;
+  --gold-wash: rgba(232, 176, 74, 0.10); --good: #3fae4f; --bad: #e5533d; --good-ink: #6fd17c; --bad-ink: #ff8f7a;
+  --good-wash: rgba(63, 174, 79, 0.16); --bad-wash: rgba(229, 83, 61, 0.16);
+  --azul: #5aa9e6; --vermelho: #e5533d;
+  --shadow: inset 0 1px 0 rgba(255, 230, 180, 0.06), 0 18px 40px -14px rgba(0, 0, 0, 0.75);
+  --font-body: "Alegreya Sans", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --radius: 14px; --radius-sm: 8px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #e9dfcb; --surface: #f6efdf; --surface-2: #efe4cc; --surface-3: #e6d8bb; --line: #d3c3a3; --line-strong: #b49b72;
+    --ink: #23190f; --ink-2: #4d3d2a; --muted: #6e5d47; --gold: #8a5a00; --gold-2: #a8730f; --on-gold: #fff7e6;
+    --gold-wash: rgba(138, 90, 0, 0.08); --good-ink: #1d6b29; --bad-ink: #a3241b;
+    --good-wash: rgba(29, 107, 41, 0.12); --bad-wash: rgba(179, 38, 30, 0.12); --azul: #1f6fb0; --vermelho: #b3261e;
+    --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 26px -14px rgba(60, 40, 15, 0.35);
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: radial-gradient(1200px 600px at 50% -200px, rgba(232, 176, 74, 0.08), transparent 70%), var(--bg);
+  color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; min-height: 100vh;
+}
+a { color: var(--gold-2); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; border-radius: var(--radius-sm); }
+.pagina { max-width: 860px; margin: 0 auto; padding: 20px 16px 64px; }
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.marca { font-family: var(--font-display); font-weight: 900; font-size: 1.25rem; letter-spacing: .02em; color: var(--ink); text-decoration: none; }
+.marca small { display: block; font-family: var(--font-body); font-weight: 500; font-size: .8rem; color: var(--muted); letter-spacing: 0; }
+.selo { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--on-gold); background: var(--gold); padding: 2px 8px; border-radius: 99px; }
+.voltar { color: var(--ink-2); font-size: .9rem; text-decoration: none; }
+.voltar:hover { color: var(--gold-2); }
+.cartao { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 16px; }
+h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.5rem, 5vw, 2.1rem); line-height: 1.15; margin-bottom: 6px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin-bottom: 12px; }
+.sub { color: var(--ink-2); }
+.aviso { background: var(--gold-wash); border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--ink-2); font-size: .92rem; margin-bottom: 16px; }
+
+/* lista de partidas */
+.partidas { display: grid; gap: 10px; }
+.partida { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; color: inherit;
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line-strong); border-radius: var(--radius-sm); }
+.partida:hover { border-color: var(--line-strong); }
+.partida.v { border-left-color: var(--good); }
+.partida.d { border-left-color: var(--bad); }
+.partida .nome { font-weight: 700; }
+.partida .meta { color: var(--muted); font-size: .85rem; }
+.partida .kda { font-family: var(--font-mono); font-size: .95rem; text-align: right; }
+.icone { width: 48px; height: 48px; border-radius: 10px; background: var(--surface-3); object-fit: cover; display: block; }
+.icone.g { width: 72px; height: 72px; border-radius: 14px; }
+.icone.p { width: 32px; height: 32px; border-radius: 8px; }
+
+/* veredito */
+.culpado { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center; }
+.culpado .rotulo { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--bad-ink); }
+.culpado .quem { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.4rem, 5vw, 1.9rem); line-height: 1.1; }
+.culpado .quem small { display: block; font-family: var(--font-body); font-weight: 500; font-size: .95rem; color: var(--ink-2); }
+.motivos { list-style: none; margin-top: 14px; display: grid; gap: 8px; }
+.motivos li { background: var(--surface-2); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; gap: 10px; align-items: baseline; }
+.motivos .pts { font-family: var(--font-mono); font-weight: 500; color: var(--bad-ink); min-width: 3.2em; }
+.motivos .pts.bom { color: var(--good-ink); }
+.ranking { display: grid; gap: 8px; }
+.linha { display: grid; grid-template-columns: 32px minmax(0, 1fr) 3.5em; align-items: center; gap: 10px; }
+.linha .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linha .nm small { color: var(--muted); font-weight: 500; }
+.barra { height: 8px; background: var(--surface-3); border-radius: 99px; overflow: hidden; margin-top: 3px; }
+.barra i { display: block; height: 100%; background: var(--bad); border-radius: 99px; }
+.linha .pc { font-family: var(--font-mono); text-align: right; color: var(--ink-2); }
+.linha.eu .nm { color: var(--gold-2); }
+details.porque { margin-top: 4px; grid-column: 2 / 4; }
+details.porque summary { cursor: pointer; color: var(--muted); font-size: .85rem; }
+details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9rem; }
+.grafico svg, .mapa svg { width: 100%; height: auto; display: block; }
+.legenda { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: .85rem; margin-top: 8px; }
+.legenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+.dupla { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 760px) { .dupla { grid-template-columns: 1fr 1fr; } .dupla .cartao { margin-bottom: 0; } }
+.vazio { color: var(--muted); text-align: center; padding: 24px 8px; }
+.rodape { color: var(--muted); font-size: .8rem; margin-top: 28px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <header class="topo">
+    <a class="marca" href="./">Quem é o culpado <small>League of Legends</small></a>
+    <div style="display:flex;gap:12px;align-items:center"><span class="selo">protótipo</span><a class="voltar" href="../">Dota 2 →</a></div>
+  </header>
+  <main id="app"><p class="vazio">Carregando…</p></main>
+  <p class="rodape">Dados da API oficial da Riot Games. O Culpado não é endossado pela Riot Games.</p>
+</div>
+<script src="julgar.js"></script>
+<script>
+(function () {
+  'use strict';
+  const L = window.CulpadoLoL;
+  const app = document.getElementById('app');
+  const FILAS = { 400: 'Normal', 420: 'Ranqueada solo', 430: 'Normal às cegas', 440: 'Ranqueada flex', 450: 'ARAM', 490: 'Partida rápida', 700: 'Clash', 1700: 'Arena', 1900: 'URF' };
+  const ROTAS = { TOP: 'topo', JUNGLE: 'selva', MIDDLE: 'meio', BOTTOM: 'atirador', UTILITY: 'suporte' };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  let versaoDD = null;
+  const ddVersao = fetch('https://ddragon.leagueoflegends.com/api/versions.json').then((r) => r.json()).then((v) => (versaoDD = v[0])).catch(() => null);
+  const ID_CAMPEAO = { FiddleSticks: 'Fiddlesticks' };
+  const icone = (campeao, cls) => versaoDD
+    ? `<img class="icone ${cls || ''}" alt="" loading="lazy" src="https://ddragon.leagueoflegends.com/cdn/${versaoDD}/img/champion/${esc(ID_CAMPEAO[campeao] || campeao)}.png" onerror="this.style.visibility='hidden'">`
+    : `<span class="icone ${cls || ''}"></span>`;
+  const nome = (j) => j.riotIdGameName || j.championName;
+  const data = (s) => new Date(s * 1000).toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const pegar = (u) => fetch(u, { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+
+  async function rota() {
+    await ddVersao;
+    const h = decodeURIComponent(location.hash.slice(1));
+    const [mid, quem] = h.split('@');
+    if (mid) return mostrarPartida(mid, quem);
+    return mostrarLista();
+  }
+
+  async function mostrarLista() {
+    const indice = await pegar('indice.json');
+    const partidas = (indice && indice.partidas) || [];
+    let html = '<section class="cartao"><h1>Quem entregou a partida?</h1><p class="sub">Protótipo com as partidas do grupo puxadas da API da Riot. Escolha uma partida para ver o veredito.</p></section>';
+    if (!partidas.length) {
+      html += '<p class="aviso">Ainda não tem partida coletada: a coleta roda no GitHub Actions assim que a chave da Riot estiver configurada. Enquanto isso, veja <a href="#EXEMPLO">uma partida de exemplo (fictícia)</a>.</p>';
+    } else {
+      html += '<div class="partidas">' + partidas.map((p) => {
+        const n = p.nossos[0];
+        if (!n) return '';
+        return `<a class="partida ${n.win ? 'v' : 'd'}" href="#${encodeURIComponent(p.id)}@${encodeURIComponent(n.riotId)}">
+          ${icone(n.campeao)}
+          <div><div class="nome">${esc(n.riotId.split('#')[0])} · ${esc(n.campeao)}</div>
+          <div class="meta">${n.win ? 'Vitória' : 'Derrota'} · ${esc(FILAS[p.fila] || 'Fila ' + p.fila)} · ${Math.round(p.duracao / 60)} min · ${data(p.inicio)}</div></div>
+          <div class="kda">${n.k}/${n.d}/${n.a}</div></a>`;
+      }).join('') + '</div>';
+    }
+    app.innerHTML = html;
+  }
+
+  async function mostrarPartida(mid, quem) {
+    const exemplo = mid === 'EXEMPLO';
+    const [partida, indice] = await Promise.all([pegar((exemplo ? 'exemplos/' : 'partidas/') + encodeURIComponent(mid) + '.json'), exemplo ? null : pegar('indice.json')]);
+    if (!partida) { app.innerHTML = '<p class="vazio">Partida não encontrada. <a href="./">Voltar</a></p>'; return; }
+    const contas = (indice && indice.jogadores) || {};
+    const puuid = exemplo ? 'p-mia' : (contas[quem] || {}).puuid;
+    const r = L.julgar(partida, puuid);
+    const c = r.culpado;
+    const eu = partida.jogadores.find((j) => j.puuid === puuid);
+    const titulo = r.venceu ? 'Ganharam, mas alguém quase entregou' : 'Perderam. A culpa é de…';
+    let html = '';
+    if (exemplo) html += '<p class="aviso">Partida de exemplo com dados fictícios, só para mostrar como fica. As de verdade aparecem quando a coleta rodar.</p>';
+    html += `<p style="margin-bottom:12px"><a class="voltar" href="./">← Partidas</a></p>
+      <section class="cartao">
+        <p class="sub">${esc(FILAS[partida.fila] || partida.modo)} · ${Math.round(partida.duracao / 60)} min · ${data(partida.inicio)}</p>
+        <h1>${titulo}</h1>
+        <div class="culpado" style="margin-top:14px">${icone(c.jogador.championName, 'g')}
+          <div><div class="rotulo">Culpado · ${Math.round(c.fatia * 100)}% da culpa</div>
+          <div class="quem">${esc(nome(c.jogador))}<small>${esc(c.jogador.championName)} · ${esc(ROTAS[c.jogador.teamPosition] || '')} · ${c.jogador.kills}/${c.jogador.deaths}/${c.jogador.assists}</small></div></div>
+        </div>
+        <ul class="motivos">${c.pesou.concat(c.atenuantes).map((m) => `<li><span class="pts ${m.pontos < 0 ? 'bom' : ''}">${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>
+      </section>
+      <section class="cartao"><h2>Divisão da culpa no time</h2><div class="ranking">${r.vereditos.map((v) => `
+        <div class="linha ${eu && v.jogador.id === eu.id ? 'eu' : ''}">${icone(v.jogador.championName, 'p')}
+          <div><div class="nm">${esc(nome(v.jogador))} <small>${esc(v.jogador.championName)}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
+          <div class="pc">${Math.round(v.fatia * 100)}%</div>
+          <details class="porque"><summary>por quê</summary><ul>${v.componentes.map((m) => `<li>${esc(m.label)} (${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}): ${esc(m.evidencia)}</li>`).join('') || '<li>Nada pesou.</li>'}</ul></details>
+        </div>`).join('')}</div>
+        <p class="legenda" style="margin-top:12px">Pontos = cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
+      </section>
+      <div class="dupla">
+        <section class="cartao grafico"><h2>Ouro do time, minuto a minuto</h2>${graficoOuro(partida, r)}</section>
+        <section class="cartao mapa"><h2>Onde o time morreu</h2>${mapaMortes(partida, r, c)}</section>
+      </div>`;
+    app.innerHTML = html;
+    window.scrollTo(0, 0);
+  }
+
+  function graficoOuro(partida, r) {
+    const serie = L.ouroDoTime(partida, r.timeNos);
+    if (serie.length < 2) return '<p class="vazio">Sem timeline.</p>';
+    const W = 400, H = 200, P = 28;
+    const max = Math.max(1000, ...serie.map((s) => Math.abs(s.dif)));
+    const x = (i) => P + (i / (serie.length - 1)) * (W - P - 8);
+    const y = (v) => H / 2 - (v / max) * (H / 2 - 14);
+    const pts = serie.map((s, i) => `${x(i).toFixed(1)},${y(s.dif).toFixed(1)}`).join(' ');
+    const area = `${x(0)},${H / 2} ${pts} ${x(serie.length - 1)},${H / 2}`;
+    const k = (v) => (Math.abs(v) >= 1000 ? (v / 1000).toFixed(0) + 'k' : v);
+    const ticks = [];
+    for (let m = 10; m < serie.length; m += 10) ticks.push(`<text x="${x(m)}" y="${H - 2}" text-anchor="middle" font-size="10" fill="var(--muted)">${m}'</text>`);
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Diferença de ouro do time por minuto">
+      <defs><clipPath id="cima"><rect x="0" y="0" width="${W}" height="${H / 2}"/></clipPath><clipPath id="baixo"><rect x="0" y="${H / 2}" width="${W}" height="${H / 2}"/></clipPath></defs>
+      <polygon points="${area}" fill="var(--good)" opacity=".22" clip-path="url(#cima)"/>
+      <polygon points="${area}" fill="var(--bad)" opacity=".22" clip-path="url(#baixo)"/>
+      <line x1="${P}" x2="${W - 8}" y1="${H / 2}" y2="${H / 2}" stroke="var(--line-strong)"/>
+      <polyline points="${pts}" fill="none" stroke="var(--gold)" stroke-width="2"/>
+      <text x="2" y="${y(max) + 4}" font-size="10" fill="var(--muted)">+${k(max)}</text>
+      <text x="2" y="${y(-max) + 4}" font-size="10" fill="var(--muted)">−${k(max)}</text>${ticks.join('')}
+    </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
+  }
+
+  function mapaMortes(partida, r, c) {
+    // Summoner's Rift: coordenadas de -120 a ~14900, y para cima
+    const MIN = -120, MAX = 14980, S = 300;
+    const px = (v) => ((v - MIN) / (MAX - MIN)) * S;
+    const ids = new Set(r.nos.map((j) => j.id));
+    const mortes = partida.eventos.filter((e) => e.tipo === 'abate' && ids.has(e.morreu) && e.x != null);
+    const img = versaoDD ? `<image href="https://ddragon.leagueoflegends.com/cdn/${versaoDD}/img/map/map11.png" x="0" y="0" width="${S}" height="${S}" opacity=".85"/>` : '';
+    const pontos = mortes.map((m) => {
+      const dele = m.morreu === c.jogador.id;
+      return `<circle cx="${px(m.x).toFixed(1)}" cy="${(S - px(m.y)).toFixed(1)}" r="${dele ? 6 : 4.5}" fill="${dele ? 'var(--bad)' : 'var(--azul)'}" stroke="#000" stroke-width="1"><title>${L.mmss(m.t)}</title></circle>`;
+    }).join('');
+    return `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Mapa com as mortes do time"><rect width="${S}" height="${S}" fill="var(--surface-3)" rx="8"/>${img}${pontos}</svg>
+      <p class="legenda"><span style="--c:var(--bad)">mortes do culpado</span><span style="--c:var(--azul)">resto do time</span></p>`;
+  }
+
+  window.addEventListener('hashchange', rota);
+  rota();
+})();
+</script>
+</body>
+</html>
