@@ -1,0 +1,47 @@
+name: Foto diária das visitas
+
+# Guarda no branch "dados" (visitas/<dia>.json) o que o Worker responde em /visitas: online, hoje, 7 e 30 dias,
+# pessoas por dia (14 dias) e contas do grupo. O Worker só guarda o resumo ao vivo, e o resumo semanal de
+# segunda (rodado fora do GitHub, sem acesso ao Worker) lê daqui.
+on:
+  schedule:
+    - cron: "50 2 * * *"   # 23:50 em Brasília: fecha o dia
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/visitas.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: coleta   # mesmo grupo da coleta: as duas escrevem no branch dados
+  cancel-in-progress: false
+
+jobs:
+  visitas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Baixar o branch dados
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash coleta/dados.sh preparar dados
+      - name: Ler o contador
+        run: |
+          coach="$(python3 -c 'import json; print(json.load(open("config.json"))["coach"])')"
+          dia="$(TZ=America/Sao_Paulo date +%F)"
+          mkdir -p dados/visitas
+          # o Worker só responde à origem do site
+          curl -fsS --retry 3 -H 'Origin: https://suetam016.github.io' "$coach/visitas" \
+            | python3 -c 'import json,sys,datetime; d=json.load(sys.stdin); d["lido_em"]=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"); print(json.dumps(d, ensure_ascii=False, indent=1))' \
+            > "dados/visitas/$dia.json"
+          cat "dados/visitas/$dia.json"
+      - name: Salvar no branch dados
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash coleta/dados.sh salvar dados "Visitas de $(TZ=America/Sao_Paulo date +%F)"

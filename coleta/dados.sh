@@ -78,7 +78,7 @@ salvar() {
   git config user.name "github-actions[bot]"
   git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
   local alvos=()
-  for f in partidas indice.json estado.json amigos.json README.md; do
+  for f in partidas visitas indice.json estado.json amigos.json README.md; do
     [ -e "$f" ] && alvos+=("$f")
   done
   if [ ${#alvos[@]} -eq 0 ]; then
