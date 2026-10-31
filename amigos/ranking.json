@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-10-30T22:33:21.659Z",
+  "atualizadoEm": "2026-10-31T05:45:03.352Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -17,14 +17,14 @@
     {
       "accountId": "241782761",
       "nome": "[Pau]DeCamelo",
-      "culpados": 33,
+      "culpados": 34,
       "craques": 30,
-      "partidas": 265,
+      "partidas": 268,
       "vitorias": 125,
       "winRate": 47,
       "streak": "culpado",
       "mmrGanho": 2975,
-      "mmrPerdido": 3425
+      "mmrPerdido": 3500
     },
     {
       "accountId": "26668150",
@@ -37,6 +37,18 @@
       "streak": "culpado",
       "mmrGanho": 275,
       "mmrPerdido": 500
+    },
+    {
+      "accountId": "111257540",
+      "nome": "Kuscomem",
+      "culpados": 8,
+      "craques": 4,
+      "partidas": 92,
+      "vitorias": 38,
+      "winRate": 41,
+      "streak": null,
+      "mmrGanho": 950,
+      "mmrPerdido": 1325
     },
     {
       "accountId": "77621319",
@@ -67,36 +79,24 @@
       "nome": "ptn",
       "culpados": 7,
       "craques": 0,
-      "partidas": 31,
+      "partidas": 32,
       "vitorias": 17,
-      "winRate": 55,
+      "winRate": 53,
       "streak": "culpado",
       "mmrGanho": 350,
-      "mmrPerdido": 325
-    },
-    {
-      "accountId": "111257540",
-      "nome": "Kuscomem",
-      "culpados": 7,
-      "craques": 4,
-      "partidas": 91,
-      "vitorias": 38,
-      "winRate": 42,
-      "streak": "craque",
-      "mmrGanho": 950,
-      "mmrPerdido": 1300
+      "mmrPerdido": 350
     },
     {
       "accountId": "1254464470",
       "nome": "Conhecido do Baia",
       "culpados": 6,
       "craques": 1,
-      "partidas": 85,
+      "partidas": 87,
       "vitorias": 37,
-      "winRate": 44,
+      "winRate": 43,
       "streak": null,
       "mmrGanho": 750,
-      "mmrPerdido": 1150
+      "mmrPerdido": 1200
     },
     {
       "accountId": "96286191",
@@ -3572,6 +3572,17 @@
         "heroi": 88,
         "culpa": 0.248,
         "merito": 0.117
+      },
+      {
+        "matchId": 9069396637,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793416939,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 29,
+        "culpa": 0.186,
+        "merito": 0.118
       }
     ],
     "96286191": [
@@ -5083,6 +5094,17 @@
         "heroi": 112,
         "culpa": 0.17,
         "merito": 0.218
+      },
+      {
+        "matchId": 9069353676,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1793412905,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 42,
+        "culpa": 0.237,
+        "merito": 0.13
       }
     ],
     "241782761": [
@@ -8000,6 +8022,39 @@
         "heroi": 75,
         "culpa": 0.292,
         "merito": 0.064
+      },
+      {
+        "matchId": 9069085355,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793392681,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": 0.173,
+        "merito": 0.217
+      },
+      {
+        "matchId": 9069353676,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793412905,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 44,
+        "culpa": 0.216,
+        "merito": 0.154
+      },
+      {
+        "matchId": 9069396637,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1793416939,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 36,
+        "culpa": 0.255,
+        "merito": 0.263
       }
     ],
     "1000265186": [
@@ -11304,6 +11359,28 @@
         "heroi": 123,
         "culpa": 0.177,
         "merito": 0.162
+      },
+      {
+        "matchId": 9069353676,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793412905,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 9,
+        "culpa": 0.205,
+        "merito": 0.155
+      },
+      {
+        "matchId": 9069396637,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793416939,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 123,
+        "culpa": 0.159,
+        "merito": 0.181
       }
     ]
   },
@@ -11340,7 +11417,7 @@
     },
     "241782761": {
       "avatar": "https://avatars.steamstatic.com/0f60b23488f593182554cbf7deaef8e7eed75965_full.jpg",
-      "rankTier": 45,
+      "rankTier": 44,
       "leaderboard": null
     },
     "1000265186": {
@@ -11350,9 +11427,9 @@
     },
     "1254464470": {
       "avatar": "https://avatars.steamstatic.com/f9b3cdb020596a3e1392d09b1cbae2e2ec291676_full.jpg",
-      "rankTier": 51,
+      "rankTier": 45,
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-10-30T21:36:39.659Z"
+  "perfisEm": "2026-10-31T05:45:03.279Z"
 }
