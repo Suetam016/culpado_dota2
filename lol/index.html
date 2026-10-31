@@ -87,6 +87,20 @@ h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; marg
 .linha .pc { font-family: var(--font-mono); text-align: right; color: var(--ink-2); }
 .linha.eu .nm { color: var(--gold-2); }
 details.porque { margin-top: 4px; grid-column: 2 / 4; }
+.tribunal { list-style: none; gap: 12px; }
+.trib { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; }
+.trib:first-child { border-color: var(--bad); }
+.trib .linha { grid-template-columns: 2em 32px minmax(0, 1fr) 3.5em; }
+.trib .pos { font-family: var(--font-display); font-weight: 900; color: var(--muted); }
+.trib:first-child .pos { color: var(--bad-ink); }
+.trib.eu .nm { color: var(--gold-2); }
+.trib .nm { white-space: normal; }
+.trib .nm small { display: block; }
+.trib-corpo { margin-top: 8px; display: grid; gap: 2px; font-size: .94rem; color: var(--ink-2); }
+.trib-rot { font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.trib-build:empty { display: none; }
+.trib .ver { background: none; border: 0; color: var(--gold-2); text-decoration: underline; cursor: pointer; padding: 0; font-size: .9rem; }
+.trib details.porque { grid-column: auto; margin-top: 6px; }
 details.porque summary { cursor: pointer; color: var(--muted); font-size: .85rem; }
 details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9rem; }
 .grafico svg, .mapa svg { width: 100%; height: auto; display: block; }
@@ -315,6 +329,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="resenha.js"></script>
 <script src="culpa.js"></script>
 <script src="build.js"></script>
+<script src="tribunal.js"></script>
 <script src="revelar.js"></script>
 <script>
 (function () {
@@ -393,13 +408,9 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       ${momentosHtml(cv, r)}
       <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
       ${lutasHtml(r)}
-      <section class="cartao"><h2>Divisão da culpa no time</h2><div class="ranking">${r.vereditos.map((v) => `
-        <div class="linha ${eu && v.jogador.id === eu.id ? 'eu' : ''}">${icone(v.jogador.championName, 'p')}
-          <div><div class="nm">${esc(nome(v.jogador))} <small>${esc(v.jogador.championName)}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
-          <div class="pc">${Math.round(v.fatia * 100)}%</div>
-          <details class="porque"><summary>por quê</summary><ul>${v.componentes.map((m) => `<li>${esc(m.label)} (${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}): ${esc(m.evidencia)}</li>`).join('') || '<li>Nada pesou.</li>'}</ul></details>
-        </div>`).join('')}</div>
-        <p class="legenda" style="margin-top:12px">Pontos = cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
+      <section class="cartao"><h2>O tribunal</h2><p class="sub" style="margin:-6px 0 12px">Para cada um: o lance que mais custou e uma coisa para fazer na próxima.</p>
+        <ol class="ranking tribunal">${r.vereditos.map((v, i) => tribunalHtml(v, i, cv, eu)).join('')}</ol>
+        <p class="legenda" style="margin-top:12px">Culpa em pontos: cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
       </section>
       <section class="cartao" id="cartao-build"><h2>A build</h2>
         <div class="abas build-quem">${r.nos.map((j) => `<button type="button" class="rp-chip ${j === (eu || c.jogador) ? 'on' : ''}" data-build="${j.id}">${esc(j.championName)}${eu && j.id === eu.id ? ' (você)' : j.id === c.jogador.id ? ' (culpado)' : ''}</button>`).join('')}</div>
@@ -506,6 +517,21 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
   }
 
+  // ---------------------------------------------------------------- tribunal
+  function tribunalHtml(v, i, cv, eu) {
+    const pa = window.TribunalLoL.parecer(v, cv, L, null);
+    const j = v.jogador;
+    return `<li class="trib ${eu && j.id === eu.id ? 'eu' : ''}">
+      <div class="linha"><span class="pos">${i + 1}º</span>${icone(j.championName, 'p')}
+        <div><div class="nm">${esc(nome(j))} <small>${esc(j.championName)} · ${j.kills}/${j.deaths}/${j.assists}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
+        <div class="pc">${Math.round(v.fatia * 100)}%</div></div>
+      <div class="trib-corpo">
+        ${pa.lance ? `<p class="trib-rot">O lance que mais custou</p><p>${esc(pa.lance.texto)}${pa.lance.t != null ? ` <button type="button" class="ver" data-ver="${pa.lance.t}">Ver no replay</button>` : ''}</p>` : ''}
+        <p class="trib-rot">Para a próxima</p><p>${esc(pa.dicas[0])}</p><p class="trib-build" data-trib-build="${j.id}"></p>
+        <details class="porque"><summary>a conta da culpa</summary><ul>${v.componentes.map((m) => `<li>${esc(m.label)} (${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}): ${esc(m.evidencia)}</li>`).join('') || '<li>Nada pesou.</li>'}</ul></details>
+      </div></li>`;
+  }
+
   // ---------------------------------------------------------------- build
   let dadosDoJogo = null;
   const carregarDadosDoJogo = () => (dadosDoJogo = dadosDoJogo || Promise.all([pegar('itens.json'), pegar('campeoes.json')])
@@ -520,6 +546,12 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     if (!document.body.contains(corpo)) return;
     if (!d.itens) { corpo.innerHTML = '<p class="vazio">Os dados dos itens ainda não foram baixados. Aparecem depois da próxima coleta.</p>'; return; }
     const mostrar = (j) => { corpo.innerHTML = buildHtml(partida, j, r, d); };
+    // a dica de build de cada um no tribunal
+    document.querySelectorAll('[data-trib-build]').forEach((el) => {
+      const j = partida.jogadores.find((x) => x.id === +el.dataset.tribBuild);
+      const sg = j && window.BuildLoL.ler(partida, j, r, d.itens, d.campeoes).sugestoes[0];
+      el.textContent = sg ? `Na build, faltou ${sg.nome}: ${sg.motivo}.` : '';
+    });
     document.querySelectorAll('[data-build]').forEach((b) => b.addEventListener('click', () => {
       document.querySelectorAll('[data-build]').forEach((x) => x.classList.toggle('on', x === b));
       mostrar(partida.jogadores.find((j) => j.id === +b.dataset.build));
