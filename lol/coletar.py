@@ -47,9 +47,13 @@ CAMPOS = (
     "visionScore", "wardsPlaced", "wardsKilled", "detectorWardsPlaced", "timeCCingOthers", "totalTimeSpentDead",
     "longestTimeSpentLiving", "summoner1Id", "summoner2Id", "gameEndedInSurrender", "gameEndedInEarlySurrender",
     "spell1Casts", "spell2Casts", "spell3Casts", "spell4Casts", "summoner1Casts", "summoner2Casts",
+    "physicalDamageDealtToChampions", "magicDamageDealtToChampions", "trueDamageDealtToChampions",
+    "physicalDamageTaken", "magicDamageTaken", "trueDamageTaken", "totalHeal", "totalHealsOnTeammates",
+    "totalDamageShieldedOnTeammates",
 )
-VERSAO = 3                # partidas gravadas com versão menor são baixadas de novo
-                          # (v2: uso de habilidades e skills; v3: pings, todas as conquistas, recibo das mortes, ouro no bolso)
+VERSAO = 4                # partidas gravadas com versão menor são baixadas de novo
+                          # (v2: uso de habilidades e skills; v3: pings, todas as conquistas, recibo das mortes, ouro no bolso;
+                          #  v4: dano físico/mágico/verdadeiro, cura, e o tipo do dano no recibo)
 PINGS = (
     "allInPings", "assistMePings", "basicPings", "commandPings", "dangerPings", "enemyMissingPings",
     "enemyVisionPings", "getBackPings", "holdPings", "needVisionPings", "onMyWayPings", "pushPings",
@@ -154,16 +158,19 @@ def compactar(partida: dict, timeline: dict | None) -> dict:
 
 
 def recibo(danos: list) -> list:
-    """Dano que a vítima levou antes de morrer, somado por fonte e habilidade: [[quem, fonte, habilidade, slot, dano]].
+    """Dano que a vítima levou antes de morrer, somado por fonte e habilidade:
+    [[quem, fonte, habilidade, slot, dano, físico, mágico, verdadeiro]].
     quem = participantId (0 para torre, tropa ou monstro), fonte = nome do campeão ou da torre/tropa."""
-    soma: dict[tuple, int] = {}
+    soma: dict[tuple, list] = {}
     for d in danos:
-        total = (d.get("physicalDamage") or 0) + (d.get("magicDamage") or 0) + (d.get("trueDamage") or 0)
-        if total <= 0:
+        tipos = [d.get("physicalDamage") or 0, d.get("magicDamage") or 0, d.get("trueDamage") or 0]
+        if sum(tipos) <= 0:
             continue
         chave = (d.get("participantId") or 0, d.get("name") or "", d.get("spellName") or "", d.get("spellSlot"))
-        soma[chave] = soma.get(chave, 0) + total
-    return sorted(([*k, v] for k, v in soma.items()), key=lambda x: -x[4])
+        acc = soma.setdefault(chave, [0, 0, 0])
+        for i in range(3):
+            acc[i] += tipos[i]
+    return sorted(([*k, sum(v), *v] for k, v in soma.items()), key=lambda x: -x[4])
 
 
 def compactar_evento(e: dict) -> dict | None:
@@ -278,6 +285,37 @@ def rodada(api: Api, jogadores: list[dict], saida: Path, por_jogador: int = POR_
     return novas
 
 
+DDRAGON = "https://ddragon.leagueoflegends.com"
+
+
+def baixar(url: str):
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read())
+
+
+def compactar_itens(itens: dict) -> dict:
+    """item.json do Data Dragon -> {id: {n: nome, g: preço total, t: tags, d: profundidade, f: vira outro item?}}, só os de Summoner's Rift."""
+    out = {}
+    for iid, it in (itens.get("data") or {}).items():
+        if not (it.get("maps") or {}).get("11") or not (it.get("gold") or {}).get("purchasable", True):
+            continue
+        out[iid] = {"n": it.get("name"), "g": (it.get("gold") or {}).get("total", 0), "t": it.get("tags") or [],
+                    "d": it.get("depth") or 1, "f": bool(it.get("into"))}
+    return out
+
+
+def dados_do_jogo(saida: Path, get=baixar) -> None:
+    """Nomes, preços e tags dos itens e as classes dos campeões, na versão atual do jogo (lol/itens.json e lol/campeoes.json).
+    O site lê daqui para ler a build sem depender do Data Dragon no navegador."""
+    versao = get(f"{DDRAGON}/api/versions.json")[0]
+    itens = get(f"{DDRAGON}/cdn/{versao}/data/pt_BR/item.json")
+    campeoes = get(f"{DDRAGON}/cdn/{versao}/data/pt_BR/champion.json")
+    gravar_json(saida / "itens.json", {"versao": versao, "itens": compactar_itens(itens)})
+    gravar_json(saida / "campeoes.json", {"versao": versao, "campeoes": {
+        c["id"]: {"n": c.get("name"), "t": c.get("tags") or []} for c in (campeoes.get("data") or {}).values()}})
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--jogadores", default="lol/jogadores.json")
@@ -288,6 +326,10 @@ def main(argv=None) -> int:
         print("::error::Falta o segredo RIOT_API_KEY (Settings > Secrets and variables > Actions).")
         return 1
     jogadores = ler_json(Path(a.jogadores), [])
+    try:
+        dados_do_jogo(Path(a.saida))
+    except Exception as e:  # noqa: BLE001 - sem os dados do jogo o site só não lê a build
+        print(f"::warning::Não deu para baixar os itens do Data Dragon: {e}")
     try:
         rodada(Api(chave), jogadores, Path(a.saida))
     except ChaveInvalida as e:
