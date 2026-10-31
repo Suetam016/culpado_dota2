@@ -27,7 +27,8 @@ def partida_falsa(mid="BR1_1", puuid_nosso="p-mia", nome="MiaMid", tag="BR1", se
             "goldEarned": 0, "totalMinionsKilled": 150, "neutralMinionsKilled": 10,
             "totalDamageDealtToChampions": rnd.randint(8000, 30000), "totalDamageTaken": rnd.randint(10000, 30000),
             "damageDealtToObjectives": rnd.randint(1000, 9000), "damageDealtToBuildings": rnd.randint(0, 5000),
-            "visionScore": rnd.randint(8, 60), "wardsPlaced": 8, "wardsKilled": 2, "detectorWardsPlaced": 1,
+            "physicalDamageDealtToChampions": 9000, "magicDamageDealtToChampions": 4000, "trueDamageDealtToChampions": 500,
+            "totalHeal": 3000, "visionScore": rnd.randint(8, 60), "wardsPlaced": 8, "wardsKilled": 2, "detectorWardsPlaced": 1,
             "timeCCingOthers": 10, "totalTimeSpentDead": 60, "longestTimeSpentLiving": 500,
             "summoner1Id": 4, "summoner2Id": 14, "spell1Casts": 50, "spell2Casts": 20, "spell3Casts": 30,
             "spell4Casts": 0 if nosso else 4, "summoner1Casts": 3, "summoner2Casts": 2, "item0": 3031, "item1": 3006,
@@ -120,8 +121,9 @@ class TesteColeta(unittest.TestCase):
         self.assertEqual(c["jogadores"][2]["pings"]["retreat"], 0)
         self.assertEqual(c["quadros"][5]["p"]["1"][6], 105)              # ouro no bolso
         abate = next(e for e in c["eventos"] if e["tipo"] == "abate")
-        self.assertEqual(abate["recibo"][0][1:], ["%s" % abate["recibo"][0][1], "q", 0, 500])
-        self.assertEqual(abate["recibo"][1], [0, "Turret", "", None, 100])
+        self.assertEqual(abate["recibo"][0][1:], ["%s" % abate["recibo"][0][1], "q", 0, 500, 300, 200, 0])
+        self.assertEqual(abate["recibo"][1], [0, "Turret", "", None, 100, 100, 0, 0])
+        self.assertEqual(c["jogadores"][0]["magicDamageDealtToChampions"], 4000)
         self.assertEqual(c["jogadores"][0]["itens"][:2], [3031, 3006])
         self.assertEqual(len(c["quadros"]), 29)
         self.assertEqual(len(c["quadros"][5]["p"]["1"]), 7)
@@ -166,6 +168,34 @@ class TesteColeta(unittest.TestCase):
             self.assertEqual(coletar.rodada(api, jog, saida), 1)      # baixou de novo
             self.assertEqual(json.loads(arq.read_text())["v"], coletar.VERSAO)
             self.assertEqual(coletar.rodada(api, jog, saida), 0)      # e não repete
+
+    def test_dados_do_jogo(self):
+        respostas = {
+            "versions.json": ["15.21.1", "15.20.1"],
+            "item.json": {"data": {
+                "3075": {"name": "Armadura de Espinhos", "gold": {"total": 2450, "purchasable": True}, "tags": ["Armor"], "depth": 3,
+                         "maps": {"11": True, "12": True}},
+                "1001": {"name": "Botas", "gold": {"total": 300, "purchasable": True}, "tags": ["Boots"], "maps": {"11": True},
+                         "into": ["3047"]},
+                "9999": {"name": "Só no ARAM", "gold": {"total": 100}, "maps": {"11": False, "12": True}},
+                "8888": {"name": "Não se compra", "gold": {"total": 0, "purchasable": False}, "maps": {"11": True}}}},
+            "champion.json": {"data": {"Ahri": {"id": "Ahri", "name": "Ahri", "tags": ["Mage", "Assassin"]}}},
+        }
+        urls = []
+
+        def get(url):
+            urls.append(url)
+            return respostas[url.rsplit("/", 1)[1]]
+        with tempfile.TemporaryDirectory() as d:
+            coletar.dados_do_jogo(Path(d), get)
+            itens = json.loads((Path(d) / "itens.json").read_text())
+            campeoes = json.loads((Path(d) / "campeoes.json").read_text())
+        self.assertEqual(itens["versao"], "15.21.1")
+        self.assertEqual(sorted(itens["itens"]), ["1001", "3075"])
+        self.assertEqual(itens["itens"]["3075"], {"n": "Armadura de Espinhos", "g": 2450, "t": ["Armor"], "d": 3, "f": False})
+        self.assertTrue(itens["itens"]["1001"]["f"])
+        self.assertEqual(campeoes["campeoes"]["Ahri"]["t"], ["Mage", "Assassin"])
+        self.assertIn("/cdn/15.21.1/data/pt_BR/item.json", urls[1])
 
     def test_sem_chave(self):
         import os
