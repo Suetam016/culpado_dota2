@@ -154,10 +154,14 @@ function retratoTex(nome, cor, caras = {}) {
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image(); img.crossOrigin = 'anonymous';
   img.onload = () => { const w = img.naturalWidth, h = img.naturalHeight, sz = Math.min(w, h) * .92; g.clearRect(0, 0, 256, 256); g.drawImage(img, (w - sz) / 2, (h - sz) * .2, sz, sz, 0, 0, 256, 256); tex.needsUpdate = true; };
-  // retrato carregado: a linha de montagem gera uma cara por emoção (feliz, triste, dor...), uma textura cada
-  img.addEventListener('load', () => { try { if (!window.Emocoes) return; const cs = Emocoes.gerar(img, { tamanho: 256, moldura: cor });
-    for (const k in cs) { const tx = new THREE.CanvasTexture(cs[k]); tx.colorSpace = THREE.SRGBColorSpace; caras[k] = tx; } caras.prontas = true; } catch (e) { } });
-  img.src = CDN + nome + '.png?';
+  // retrato servido pelo próprio site (img/herois), sem depender de CORS do CDN da Steam; o CDN fica só de reserva
+  // emoções: versões do retrato editadas por IA em img/herois/emocoes/<heroi>_<emocao>.webp ou .png, carregadas se existirem
+  img.addEventListener('load', () => { caras.normal = tex; caras.prontas = true;
+    for (const em of (window.Emocoes?.NOMES || [])) { if (em === 'normal') continue;
+      const tenta = ext => texLoader.load(`../img/herois/emocoes/${nome}_${em}.${ext}`, tx => { tx.colorSpace = THREE.SRGBColorSpace; caras[em] = tx; }, undefined, () => ext === 'webp' && tenta('png'));
+      tenta('webp'); } });
+  img.onerror = () => { if (!img.src.startsWith(CDN)) img.src = CDN + nome + '.png?'; };
+  img.src = '../img/herois/' + nome + '.png';
   return tex;
 }
 // anel de vida: arco de toro que começa no topo; as geometrias ficam em cache por degrau de 2,5%
