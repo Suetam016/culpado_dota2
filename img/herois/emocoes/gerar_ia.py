@@ -35,6 +35,10 @@ PROMPTS = {
 }
 
 
+class SemCota(Exception):
+    """A chave não tem cota para o modelo de imagem (plano gratuito ou sem faturamento)."""
+
+
 def gerar(retrato: Path, emocao: str, chave: str) -> bytes:
     corpo = {"contents": [{"parts": [{"text": PROMPTS[emocao]},
                                      {"inline_data": {"mime_type": "image/png", "data": base64.b64encode(retrato.read_bytes()).decode()}}]}],
@@ -50,10 +54,14 @@ def gerar(retrato: Path, emocao: str, chave: str) -> bytes:
                     return base64.b64decode(dado["data"])
             raise RuntimeError("resposta sem imagem: " + json.dumps(resp)[:300])
         except urllib.error.HTTPError as e:
+            corpo_erro = e.read().decode("utf-8", "replace")
+            if e.code == 429 and ("limit: 0" in corpo_erro or "free_tier" in corpo_erro or "billing" in corpo_erro.lower()):
+                raise SemCota(corpo_erro[:400])
             if e.code in (429, 500, 503) and tentativa < 3:
+                print(f"  HTTP {e.code}, tentando de novo em {20 * (tentativa + 1)} s", flush=True)
                 time.sleep(20 * (tentativa + 1))
                 continue
-            raise RuntimeError(f"HTTP {e.code}: {e.read()[:300]!r}")
+            raise RuntimeError(f"HTTP {e.code}: {corpo_erro[:300]}")
 
 
 def main():
@@ -77,6 +85,10 @@ def main():
                 try:
                     img.write_bytes(gerar(retrato, emocao, chave))
                     feitos += 1
+                    print(f"- {heroi} {emocao}: ok", flush=True)
+                except SemCota as e:
+                    print(f"\nA chave do Gemini não tem cota para gerar imagens (o modelo de imagem exige faturamento ativo no Google AI Studio). Resposta: {e}")
+                    sys.exit(1)
                 except Exception as e:  # um herói ruim não derruba o lote
                     print(f"- {heroi} {emocao}: falhou ({e})")
                     falhas += 1

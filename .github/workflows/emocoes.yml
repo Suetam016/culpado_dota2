@@ -34,7 +34,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.GEMNI_API_KEY }}
           EMOCOES: ${{ inputs.emocoes }}
-        run: python img/herois/emocoes/gerar_ia.py "${{ inputs.herois }}" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: python -u img/herois/emocoes/gerar_ia.py "${{ inputs.herois }}" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Salvar
         if: always()
         run: |
