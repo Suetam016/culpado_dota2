@@ -13119,6 +13119,7 @@ return escolha;
 
 // contador de visitas no Worker: um código aleatório por navegador (sem nome nem IP); a cada 2 min com a aba visível
 function contarVisita(url) {
+if (navigator.webdriver) return; // navegador de robô (testes com Playwright etc.) não é visita
 let id = null;
 try {
 id = localStorage.getItem('culpado-visitante');

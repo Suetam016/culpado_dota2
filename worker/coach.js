@@ -1115,8 +1115,14 @@ const DIA_MS = 86_400_000;
 const diaBr = (ms) => new Date(ms - 3 * 3_600_000).toISOString().slice(0, 10); // dia no horário de Brasília
 
 // consulta(sql, ...args) -> linhas
+// Uma pessoa = a conta da Steam de quem se identificou (em qualquer dia, em qualquer navegador) ou, sem conta, o
+// código do navegador: quem do grupo abre no celular e no PC conta uma vez só.
+const PESSOA = 'COALESCE(quem, (SELECT MAX(v2.quem) FROM visita v2 WHERE v2.id = visita.id), id)';
+
 function resumoVisitas(consulta, agora) {
-  const contar = (onde, ...args) => Number((consulta(`SELECT COUNT(DISTINCT id) AS n FROM visita WHERE ${onde}`, ...args)[0] || {}).n || 0);
+  const contarPor = (chave) => (onde, ...args) => Number((consulta(`SELECT COUNT(DISTINCT ${chave}) AS n FROM visita WHERE ${onde}`, ...args)[0] || {}).n || 0);
+  const contar = contarPor(PESSOA);
+  const navegadores = contarPor('id');
   const desde = (dias) => diaBr(agora - dias * DIA_MS);
   const contas = (onde, ...args) => consulta(`SELECT DISTINCT quem FROM visita WHERE quem IS NOT NULL AND ${onde}`, ...args).map((r) => String(r.quem));
   return {
@@ -1124,10 +1130,12 @@ function resumoVisitas(consulta, agora) {
     hoje: contar('dia = ?', diaBr(agora)),
     semana: contar('dia >= ?', desde(6)),
     mes: contar('dia >= ?', desde(29)),
-    porDia: consulta('SELECT dia, COUNT(DISTINCT id) AS n FROM visita WHERE dia >= ? GROUP BY dia ORDER BY dia', desde(13))
+    porDia: consulta(`SELECT dia, COUNT(DISTINCT ${PESSOA}) AS n FROM visita WHERE dia >= ? GROUP BY dia ORDER BY dia`, desde(13))
       .map((r) => ({ dia: r.dia, pessoas: Number(r.n) })),
-    paginasHoje: Object.fromEntries(consulta('SELECT pagina, COUNT(DISTINCT id) AS n FROM visita WHERE dia = ? GROUP BY pagina', diaBr(agora))
+    paginasHoje: Object.fromEntries(consulta(`SELECT pagina, COUNT(DISTINCT ${PESSOA}) AS n FROM visita WHERE dia = ? GROUP BY pagina`, diaBr(agora))
       .map((r) => [r.pagina, Number(r.n)])),
+    // sem juntar ninguém: um por navegador (como era antes)
+    navegadores: { hoje: navegadores('dia = ?', diaBr(agora)), semana: navegadores('dia >= ?', desde(6)), mes: navegadores('dia >= ?', desde(29)) },
     // quem do grupo (o site pergunta "quem é você?" na primeira visita): contas da Steam, sem nome
     grupo: {
       online: contas('visto >= ?', agora - ONLINE_MS),
@@ -1143,6 +1151,7 @@ export class Visitas {
     this.sql.exec('CREATE TABLE IF NOT EXISTS visita (dia TEXT NOT NULL, id TEXT NOT NULL, pagina TEXT NOT NULL, visto INTEGER NOT NULL, PRIMARY KEY (dia, id, pagina))');
     // tabela de antes da identificação: ganha a coluna quem (conta da Steam de quem é do grupo)
     try { this.sql.exec('ALTER TABLE visita ADD COLUMN quem TEXT'); } catch { /* já tem */ }
+    this.sql.exec('CREATE INDEX IF NOT EXISTS visita_id ON visita (id)'); // para achar a conta de cada navegador
   }
 
   async fetch(req) {

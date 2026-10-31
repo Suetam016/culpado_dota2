@@ -1609,6 +1609,7 @@ function idDoVisitante() {
 }
 
 async function contarVisitas() {
+  if (navigator.webdriver) return; // navegador de robô (testes com Playwright etc.) não é visita
   const url = await urlDoCoach();
   const id = idDoVisitante();
   if (!url || !id) return;
