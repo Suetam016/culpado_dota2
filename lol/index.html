@@ -87,6 +87,20 @@ h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; marg
 .linha .pc { font-family: var(--font-mono); text-align: right; color: var(--ink-2); }
 .linha.eu .nm { color: var(--gold-2); }
 details.porque { margin-top: 4px; grid-column: 2 / 4; }
+.rotas { display: grid; gap: 12px; }
+@media (min-width: 640px) { .rotas { grid-template-columns: 1fr 1fr; } }
+.rota { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; text-align: center; }
+.rota h3 { font-family: var(--font-display); font-size: 1rem; }
+.rota svg { width: 100%; max-width: 300px; display: block; margin: 0 auto; }
+.b-base { fill: var(--line-strong); } .b-braco { fill: var(--gold); } .b-pino { fill: var(--gold-2); stroke: var(--on-gold); stroke-width: 1.5; }
+.b-fio { stroke: var(--muted); stroke-width: 1; } .b-prato { fill: var(--surface-3); stroke: var(--line-strong); }
+.b-peso { stroke-width: 2; fill: var(--surface); } .b-peso.nos { stroke: var(--azul); } .b-peso.eles { stroke: var(--vermelho); }
+.b-sigla { font-size: 8px; font-weight: 700; fill: var(--ink-2); }
+.rota-quem { font-size: .88rem; } .rota-quem .nos { color: var(--azul); font-weight: 700; } .rota-quem .eles { color: var(--vermelho); font-weight: 700; } .rota-quem small { color: var(--muted); }
+.rota-veredito { font-family: var(--font-display); font-weight: 700; margin-top: 2px; }
+.rota.ganhou .rota-veredito { color: var(--good-ink); } .rota.perdeu .rota-veredito { color: var(--bad-ink); }
+.rota-num { font-size: .86rem; color: var(--ink-2); }
+.rota-num b { font-family: var(--font-mono); font-weight: 500; }
 .tribunal { list-style: none; gap: 12px; }
 .trib { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; }
 .trib:first-child { border-color: var(--bad); }
@@ -330,6 +344,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="culpa.js"></script>
 <script src="build.js"></script>
 <script src="tribunal.js"></script>
+<script src="rotas.js"></script>
 <script src="revelar.js"></script>
 <script>
 (function () {
@@ -408,6 +423,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       ${momentosHtml(cv, r)}
       <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
       ${lutasHtml(r)}
+      ${rotasHtml(partida, r)}
       <section class="cartao"><h2>O tribunal</h2><p class="sub" style="margin:-6px 0 12px">Para cada um: o lance que mais custou e uma coisa para fazer na próxima.</p>
         <ol class="ranking tribunal">${r.vereditos.map((v, i) => tribunalHtml(v, i, cv, eu)).join('')}</ol>
         <p class="legenda" style="margin-top:12px">Culpa em pontos: cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
@@ -515,6 +531,47 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       <text x="2" y="${y(max) + 4}" font-size="10" fill="var(--muted)">+${k(max)}</text>
       <text x="2" y="${y(-max) + 4}" font-size="10" fill="var(--muted)">−${k(max)}</text>${ticks.join('')}
     </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
+  }
+
+  // ---------------------------------------------------------------- fase de rotas
+  function rotasHtml(partida, r) {
+    const rs = window.RotasLoL.rotas(partida, r.timeNos);
+    if (!rs.length) return '';
+    return `<section class="cartao"><h2>Fase de rotas</h2><p class="sub" style="margin:-6px 0 12px">Cada rota até os ${rs[0].minutoFim} min, lado contra lado. Quem tem mais ouro pesa mais e desce.</p>
+      <div class="rotas">${rs.map(balancaHtml).join('')}</div></section>`;
+  }
+
+  let idBalanca = 0;
+  function balancaHtml(l) {
+    const W = 300, H = 150, cx = 150, cy = 44, meio = 100;
+    const ang = Math.max(-16, Math.min(16, (l.peso / 2000) * 16));
+    const sinal = (n) => (n > 0 ? '+' : n < 0 ? '−' : '') + L.fmt(Math.abs(n));
+    const prato = (lado, time, cls) => {
+      const x0 = cx + lado * meio, yb = cy + 40;
+      const pesos = time.map((j, k) => {
+        const xx = x0 + (time.length > 1 ? (k ? 12 : -12) : 0), yy = yb - 12;
+        const id = `bp${++idBalanca}`;
+        const img = versaoDD ? `<clipPath id="${id}"><circle cx="${xx}" cy="${yy}" r="11"/></clipPath><image href="https://ddragon.leagueoflegends.com/cdn/${esc(versaoDD)}/img/champion/${esc(ID_CAMPEAO[j.championName] || j.championName)}.png" x="${xx - 11}" y="${yy - 11}" width="22" height="22" clip-path="url(#${id})"/>` : '';
+        return `<circle cx="${xx}" cy="${yy}" r="12" class="b-peso ${cls}"/><text x="${xx}" y="${yy + 3}" text-anchor="middle" class="b-sigla">${esc(j.championName.slice(0, 3))}</text>${img}`;
+      }).join('');
+      return `<g transform="rotate(${ang.toFixed(1)} ${x0} ${cy})">${[-22, 0, 22].map((dx) => `<line x1="${x0}" x2="${x0 + dx}" y1="${cy + 2}" y2="${yb}" class="b-fio"/>`).join('')}
+        <path d="M${x0 - 26},${yb} Q${x0},${yb + 20} ${x0 + 26},${yb} Z" class="b-prato"/>${pesos}</g>`;
+    };
+    const quem = (t) => t.map((j) => j.championName).join(' e ');
+    const veredito = l.resultado === 'ganhou' ? (l.esmagou ? 'Vocês esmagaram a rota' : 'Vocês ganharam a rota')
+      : l.resultado === 'perdeu' ? (l.esmagou ? 'Vocês foram esmagados' : 'Vocês perderam a rota') : 'Rota empatada';
+    return `<div class="rota ${l.resultado}"><h3>${esc(l.nome)}</h3>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(l.nome)}: ${sinal(l.m14.ouro)} de ouro aos ${l.minutoFim} min">
+        <path d="M${cx - 12},${H - 22} L${cx - 4},${cy + 6} L${cx + 4},${cy + 6} L${cx + 12},${H - 22} Z" class="b-base"/>
+        <rect x="${cx - 40}" y="${H - 22}" width="80" height="10" rx="2" class="b-base"/>
+        <g transform="rotate(${(-ang).toFixed(1)} ${cx} ${cy})"><rect x="${cx - meio - 4}" y="${cy - 2.5}" width="${2 * meio + 8}" height="5" rx="2.5" class="b-braco"/>
+          ${prato(-1, l.nos, 'nos')}${prato(1, l.eles, 'eles')}</g>
+        <circle cx="${cx}" cy="${cy}" r="5" class="b-pino"/>
+      </svg>
+      <p class="rota-quem"><span class="nos">${esc(quem(l.nos))}</span> <small>x</small> <span class="eles">${esc(quem(l.eles))}</span></p>
+      <p class="rota-veredito">${veredito}</p>
+      <p class="rota-num">Aos ${l.minutoFim} min: <b>${sinal(l.m14.ouro)}</b> de ouro, ${sinal(l.m14.xp)} de experiência, ${sinal(l.m14.cs)} de farm.${l.abates.nos || l.abates.eles ? ` Abates na rota: ${l.abates.nos} x ${l.abates.eles}.` : ''}</p>
+    </div>`;
   }
 
   // ---------------------------------------------------------------- tribunal
