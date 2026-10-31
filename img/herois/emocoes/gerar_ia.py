@@ -110,6 +110,8 @@ def gerar_gratis(retrato: Path, emocao: str, heroi: str) -> bytes:
                     tipo, dado = r.headers.get("Content-Type", ""), r.read()
             except urllib.error.HTTPError as e:
                 corpo = e.read().decode("utf-8", "replace")[:200]
+                if e.code == 402 and "balance" in corpo.lower():
+                    raise SemCota("acabou o crédito (pollen) da chave do Pollinations: " + corpo)
                 if e.code in (402, 429, 500, 502, 503) and tentativa < 2:
                     print(f"  HTTP {e.code} em {url.split('?')[0][:40]}..., nova tentativa", flush=True)
                     time.sleep(int(e.headers.get("Retry-After") or 60))
