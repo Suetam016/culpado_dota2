@@ -333,6 +333,12 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 .build-sug .icone.it { margin: 0; }
 .build-sug strong { display: block; } .build-sug small { color: var(--ink-2); }
 .build-nada { color: var(--ink-2); margin-top: 12px; }
+.compartilhar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.bt-share { background: var(--gold); color: var(--on-gold); border: 0; border-radius: 99px; padding: 9px 18px; font-weight: 800; cursor: pointer; }
+.bt-share:disabled { opacity: .6; cursor: progress; }
+.bt-sec { background: none; border: 1px solid var(--line-strong); color: var(--ink-2); border-radius: 99px; padding: 8px 14px; cursor: pointer; }
+.bt-sec:hover { color: var(--gold-2); border-color: var(--gold); }
+.share-aviso { flex-basis: 100%; font-size: .88rem; color: var(--ink-2); min-height: 1.2em; }
 .doc-de-novo { background: none; border: 1px solid var(--line-strong); color: var(--ink-2); border-radius: 99px; padding: 6px 14px; cursor: pointer; font-size: .9rem; margin-top: 8px; }
 .doc-de-novo:hover { color: var(--gold-2); border-color: var(--gold); }
 @media (max-width: 420px) { .doc-meio { grid-template-columns: 80px minmax(0, 1fr); } .doc-foto .icone { width: 80px; height: 100px; } }
@@ -355,6 +361,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="tribunal.js"></script>
 <script src="rotas.js"></script>
 <script src="merito.js"></script>
+<script src="cartaz.js"></script>
 <script src="revelar.js"></script>
 <script>
 (function () {
@@ -432,8 +439,8 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         </div>
         <ul class="motivos">${k.brilhou.slice(0, 3).map((m) => `<li><span class="pts bom">+${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>`).join('')}
         <p class="quase">Quem quase entregou: <b>${esc(nome(c.jogador))}</b> (${esc(c.jogador.championName)}, ${Math.round(c.fatia * 100)}% da culpa). ${c.pesou[0] ? esc(c.pesou[0].evidencia) : ''}</p>
-        <button type="button" class="doc-de-novo" id="ver-revelacao">★ Ver a revelação de novo</button>`
-        : `${docHtml(c, partida, r, doc)}<button type="button" class="doc-de-novo" id="ver-revelacao">⚖ Ver a revelação de novo</button>`}
+        <button type="button" class="doc-de-novo" id="ver-revelacao">★ Ver a revelação de novo</button>${compartilharHtml()}`
+        : `${docHtml(c, partida, r, doc)}<button type="button" class="doc-de-novo" id="ver-revelacao">⚖ Ver a revelação de novo</button>${compartilharHtml()}`}
       </section>
       ${momentosHtml(cv, r)}
       <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
@@ -465,6 +472,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     preencherHabilidades(partida);
     iniciarBuild(partida, r, eu || c.jogador);
     window.scrollTo(0, 0);
+    iniciarCompartilhar(dadosDoCartaz(partida, r, c, doc, craques, elos));
     if (doc || craques.length) {
       const abrir = () => window.RevelarLoL(doc ? {
         jogadores: r.vereditos.map((v) => ({ id: v.jogador.id, rosto: icone(v.jogador.championName), peso: v.fatia })),
@@ -483,6 +491,69 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       try { visto = localStorage.getItem(chave) === '1'; localStorage.setItem(chave, '1'); } catch (e) { /* sem armazenamento: abre sempre */ }
       if (!visto && !exemplo) abrir();
     }
+  }
+
+  // ---------------------------------------------------------------- cartaz para compartilhar
+  const compartilharHtml = () => `<div class="compartilhar"><button type="button" class="bt-share" id="bt-share">Compartilhar o cartaz</button>
+    <button type="button" class="bt-sec" id="bt-baixar">Baixar imagem</button><button type="button" class="bt-sec" id="bt-link">Copiar link</button>
+    <p class="share-aviso" id="share-aviso" role="status" aria-live="polite"></p></div>`;
+
+  function dadosDoCartaz(partida, r, c, doc, craques, elos) {
+    const iconeUrl = (j) => (versaoDD ? `https://ddragon.leagueoflegends.com/cdn/${versaoDD}/img/champion/${ID_CAMPEAO[j.championName] || j.championName}.png` : null);
+    if (craques.length) {
+      const k = craques[0];
+      const nomes = craques.map((x) => nome(x.jogador)).join(' e ');
+      return { papel: 'vitoria', org: 'Vitória', titulo: craques.length > 1 ? 'Craques' : 'Craque', faixa: '★ Herói da partida ★', nome: nomes,
+        vulgo: `${k.jogador.championName} · ${k.jogador.kills}/${k.jogador.deaths}/${k.jogador.assists}`, iconeUrl: iconeUrl(k.jogador),
+        linhas: k.brilhou.slice(0, 3).map((b) => ({ crime: b.evidencia })), numero: `${Math.round(k.fatia * 100)}%`,
+        numeroRotulo: `do mérito da vitória · jogou como ${elos.get(k.jogador.id).nome}`,
+        texto: `${nomes} (${k.jogador.championName}) levou ${Math.round(k.fatia * 100)}% do mérito da vitória.` };
+    }
+    const TOPO = { wanted: ['', 'Procura-se', `★ ${doc.faixa} ★`], bo: ['Boletim de Ocorrência', 'B.O.', `Nº ${doc.numero}`],
+      interpol: ['Interpol · Difusão vermelha', 'Procurado', null], haia: ['Tribunal de Haia', 'Mandado', 'de prisão'],
+      tpi: ['Tribunal Penal Internacional', 'Procurado', `por ${doc.crime.toLowerCase()}`] };
+    const [org, titulo, faixa] = TOPO[doc.papel];
+    const j = c.jogador;
+    return { papel: doc.papel, org, titulo, faixa, nome: nome(j), vulgo: `vulgo “${doc.alcunha}” · ${j.championName}`, iconeUrl: iconeUrl(j),
+      linhas: doc.acusacoes.map((a) => ({ crime: a.crime, prova: a.evidencia })),
+      numero: doc.entregue > 0 ? doc.entregue.toLocaleString('pt-BR') : `${Math.round(c.fatia * 100)}%`,
+      numeroRotulo: doc.entregue > 0 ? `de ouro entregue aos inimigos · ${Math.round(c.fatia * 100)}% da culpa` : 'da culpa do time',
+      texto: `${doc.papel === 'wanted' ? 'Procura-se' : 'Procurado'}: ${nome(j)} (${j.championName}), com ${Math.round(c.fatia * 100)}% da culpa do time.` };
+  }
+
+  function iniciarCompartilhar(d) {
+    const bShare = document.getElementById('bt-share');
+    if (!bShare) return;
+    const aviso = document.getElementById('share-aviso');
+    const avisar = (t) => { aviso.textContent = t; clearTimeout(avisar.tm); if (t) avisar.tm = setTimeout(() => { aviso.textContent = ''; }, 6000); };
+    const link = location.href;
+    const arquivo = `culpado-lol-${(location.hash.slice(1).split('@')[0] || 'partida').replace(/[^\w-]/g, '')}.jpg`;
+    let gerada = null;
+    const gerar = () => (gerada = gerada || window.CartazLoL.imagem(d));
+    const baixar = (blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = arquivo; document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    };
+    const copiar = async (t) => { try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; } };
+    bShare.addEventListener('click', async () => {
+      bShare.disabled = true;
+      try {
+        const blob = await gerar();
+        const f = typeof File === 'function' ? new File([blob], arquivo, { type: 'image/jpeg' }) : null;
+        if (f && navigator.canShare && navigator.canShare({ files: [f] })) {
+          try { await navigator.share({ files: [f], title: 'Quem é o culpado?', text: `${d.texto} ${link}` }); avisar('Pronto, cartaz enviado.'); return; }
+          catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+        baixar(blob);
+        avisar((await copiar(`${d.texto} ${link}`)) ? 'Imagem baixada e texto com o link copiado: é só colar no grupo.' : 'Imagem baixada.');
+      } catch (e) { avisar('Não deu para gerar a imagem agora.'); } finally { bShare.disabled = false; }
+    });
+    document.getElementById('bt-baixar').addEventListener('click', async () => {
+      try { baixar(await gerar()); avisar('Imagem baixada.'); } catch (e) { avisar('Não deu para gerar a imagem agora.'); }
+    });
+    document.getElementById('bt-link').addEventListener('click', async () => avisar((await copiar(link)) ? 'Link copiado.' : 'Não deu para copiar o link.'));
   }
 
   // o papel da culpa: Procura-se ou B.O., Interpol, Haia ou Tribunal Penal Internacional
