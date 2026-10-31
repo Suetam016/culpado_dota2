@@ -16,6 +16,7 @@
     DRAGON: 'dragão', ELDER_DRAGON: 'Dragão Ancião', BARON_NASHOR: 'Barão', RIFTHERALD: 'Arauto', HORDE: 'Vastilarva',
     ATAKHAN: 'Atakhan', TOWER_BUILDING: 'torre', INHIBITOR_BUILDING: 'inibidor',
   };
+  const PLURAL_OBJETIVO = { DRAGON: 'dragões', TOWER_BUILDING: 'torres', INHIBITOR_BUILDING: 'inibidores', HORDE: 'Vastilarvas' };
   const LABELS = {
     mortes: 'Mortes', sozinho: 'Morreu sozinho', objetivos: 'Objetivos entregues', rota: 'Rota',
     visao: 'Visão', abates: 'Abates e assistências',
@@ -128,7 +129,7 @@
     if (key === 'objetivos') {
       const cont = {};
       for (const i of v.infos) cont[i.chave] = (cont[i.chave] || 0) + 1;
-      const lista = Object.entries(cont).map(([k, n]) => (n > 1 ? `${n}× ${NOME_OBJETIVO[k]}` : NOME_OBJETIVO[k])).join(', ');
+      const lista = Object.entries(cont).map(([k, n]) => (n > 1 ? `${n} ${PLURAL_OBJETIVO[k] || NOME_OBJETIVO[k]}` : NOME_OBJETIVO[k])).join(', ');
       return `Inimigos pegaram ${lista} logo depois de você morrer.`;
     }
     if (key === 'rota') {

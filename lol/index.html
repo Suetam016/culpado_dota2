@@ -70,9 +70,9 @@ h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; marg
 .icone.p { width: 32px; height: 32px; border-radius: 8px; }
 
 /* veredito */
-.culpado { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center; }
+.culpado { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; }
 .culpado .rotulo { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--bad-ink); }
-.culpado .quem { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.4rem, 5vw, 1.9rem); line-height: 1.1; }
+.culpado .quem { overflow-wrap: anywhere; font-family: var(--font-display); font-weight: 900; font-size: clamp(1.4rem, 5vw, 1.9rem); line-height: 1.1; }
 .culpado .quem small { display: block; font-family: var(--font-body); font-weight: 500; font-size: .95rem; color: var(--ink-2); }
 .motivos { list-style: none; margin-top: 14px; display: grid; gap: 8px; }
 .motivos li { background: var(--surface-2); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; gap: 10px; align-items: baseline; }
@@ -113,7 +113,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
   'use strict';
   const L = window.CulpadoLoL;
   const app = document.getElementById('app');
-  const FILAS = { 400: 'Normal', 420: 'Ranqueada solo', 430: 'Normal às cegas', 440: 'Ranqueada flex', 450: 'ARAM', 490: 'Partida rápida', 700: 'Clash', 1700: 'Arena', 1900: 'URF' };
+  const FILAS = { 400: 'Normal', 420: 'Ranqueada solo', 430: 'Normal às cegas', 440: 'Ranqueada flex', 450: 'ARAM', 480: 'Partida rápida', 490: 'Partida rápida', 700: 'Clash', 1700: 'Arena', 1900: 'URF' };
   const ROTAS = { TOP: 'topo', JUNGLE: 'selva', MIDDLE: 'meio', BOTTOM: 'atirador', UTILITY: 'suporte' };
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let versaoDD = null;
@@ -136,7 +136,8 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 
   async function mostrarLista() {
     const indice = await pegar('indice.json');
-    const partidas = (indice && indice.partidas) || [];
+    // remake (partida cancelada nos primeiros minutos) não tem culpado
+    const partidas = ((indice && indice.partidas) || []).filter((p) => p.duracao >= 300);
     let html = '<section class="cartao"><h1>Quem entregou a partida?</h1><p class="sub">Protótipo com as partidas do grupo puxadas da API da Riot. Escolha uma partida para ver o veredito.</p></section>';
     if (!partidas.length) {
       html += '<p class="aviso">Ainda não tem partida coletada: a coleta roda no GitHub Actions assim que a chave da Riot estiver configurada. Enquanto isso, veja <a href="#EXEMPLO">uma partida de exemplo (fictícia)</a>.</p>';
@@ -158,6 +159,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     const exemplo = mid === 'EXEMPLO';
     const [partida, indice] = await Promise.all([pegar((exemplo ? 'exemplos/' : 'partidas/') + encodeURIComponent(mid) + '.json'), exemplo ? null : pegar('indice.json')]);
     if (!partida) { app.innerHTML = '<p class="vazio">Partida não encontrada. <a href="./">Voltar</a></p>'; return; }
+    if (partida.duracao < 300) { app.innerHTML = '<p class="vazio">Partida cancelada nos primeiros minutos (remake): não tem culpado. <a href="./">Voltar</a></p>'; return; }
     const contas = (indice && indice.jogadores) || {};
     const puuid = exemplo ? 'p-mia' : (contas[quem] || {}).puuid;
     const r = L.julgar(partida, puuid);
