@@ -92,8 +92,21 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 .grafico svg, .mapa svg { width: 100%; height: auto; display: block; }
 .legenda { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: .85rem; margin-top: 8px; }
 .legenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; background: var(--c); }
-.dupla { display: grid; grid-template-columns: 1fr; gap: 16px; }
-@media (min-width: 760px) { .dupla { grid-template-columns: 1fr 1fr; } .dupla .cartao { margin-bottom: 0; } }
+.rp-mapa { max-width: 560px; margin: 0 auto; }
+.rp-mapa svg { width: 100%; height: auto; display: block; border-radius: 10px; touch-action: manipulation; }
+.rp-ctrl { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; max-width: 560px; margin: 12px auto 0; }
+.rp-play { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--gold); color: var(--on-gold); font-size: 1.1rem; cursor: pointer; }
+.rp-ctrl input[type=range] { width: 100%; accent-color: var(--gold); }
+.rp-hora { font-family: var(--font-mono); font-size: .95rem; min-width: 3.2em; text-align: right; }
+.rp-linha { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: 560px; margin: 10px auto 0; font-size: .85rem; color: var(--muted); }
+.rp-chip { border: 1px solid var(--line-strong); background: var(--surface-2); border-radius: 99px; padding: 3px 10px; cursor: pointer; font-size: .85rem; }
+.rp-chip.on { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+.rp-chip.morte { border-color: var(--bad); color: var(--bad-ink); }
+.rp-feed { list-style: none; max-width: 560px; margin: 10px auto 0; display: grid; gap: 4px; min-height: 6.4em; }
+.rp-feed li { display: flex; gap: 8px; align-items: baseline; font-size: .9rem; color: var(--ink-2); }
+.rp-feed li b { font-family: var(--font-mono); font-weight: 500; color: var(--muted); min-width: 3em; }
+.rp-feed li.mau { color: var(--bad-ink); }
+.rp-feed li.bom { color: var(--good-ink); }
 .vazio { color: var(--muted); text-align: center; padding: 24px 8px; }
 .rodape { color: var(--muted); font-size: .8rem; margin-top: 28px; text-align: center; }
 </style>
@@ -108,6 +121,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
   <p class="rodape">Dados da API oficial da Riot Games. O Culpado não é endossado pela Riot Games.</p>
 </div>
 <script src="julgar.js"></script>
+<script src="replay.js"></script>
 <script>
 (function () {
   'use strict';
@@ -178,6 +192,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         </div>
         <ul class="motivos">${c.pesou.concat(c.atenuantes).map((m) => `<li><span class="pts ${m.pontos < 0 ? 'bom' : ''}">${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>
       </section>
+      <section class="cartao"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
       <section class="cartao"><h2>Divisão da culpa no time</h2><div class="ranking">${r.vereditos.map((v) => `
         <div class="linha ${eu && v.jogador.id === eu.id ? 'eu' : ''}">${icone(v.jogador.championName, 'p')}
           <div><div class="nm">${esc(nome(v.jogador))} <small>${esc(v.jogador.championName)}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
@@ -186,11 +201,9 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         </div>`).join('')}</div>
         <p class="legenda" style="margin-top:12px">Pontos = cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
       </section>
-      <div class="dupla">
-        <section class="cartao grafico"><h2>Ouro do time, minuto a minuto</h2>${graficoOuro(partida, r)}</section>
-        <section class="cartao mapa"><h2>Onde o time morreu</h2>${mapaMortes(partida, r, c)}</section>
-      </div>`;
+      <section class="cartao grafico"><h2>Ouro do time, minuto a minuto</h2>${graficoOuro(partida, r)}</section>`;
     app.innerHTML = html;
+    iniciarReplay(partida, r, c);
     window.scrollTo(0, 0);
   }
 
@@ -217,19 +230,122 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
   }
 
-  function mapaMortes(partida, r, c) {
-    // Summoner's Rift: coordenadas de -120 a ~14900, y para cima
-    const MIN = -120, MAX = 14980, S = 300;
-    const px = (v) => ((v - MIN) / (MAX - MIN)) * S;
+  // ---------------------------------------------------------------- replay no mapinha
+  // Summoner's Rift: coordenadas de -120 a ~14980, com y para cima
+  const MAPA = { MIN: -120, MAX: 14980, S: 300 };
+  const px = (v) => ((v - MAPA.MIN) / (MAPA.MAX - MAPA.MIN)) * MAPA.S;
+  const VELOCIDADES = [10, 30, 60];
+  let replay = null;   // estado do replay da partida aberta
+
+  function replayHtml(partida, r, c) {
+    const S = MAPA.S;
+    const img = versaoDD ? `<image href="https://ddragon.leagueoflegends.com/cdn/${versaoDD}/img/map/map11.png" x="0" y="0" width="${S}" height="${S}"/>` : '';
     const ids = new Set(r.nos.map((j) => j.id));
-    const mortes = partida.eventos.filter((e) => e.tipo === 'abate' && ids.has(e.morreu) && e.x != null);
-    const img = versaoDD ? `<image href="https://ddragon.leagueoflegends.com/cdn/${versaoDD}/img/map/map11.png" x="0" y="0" width="${S}" height="${S}" opacity=".85"/>` : '';
-    const pontos = mortes.map((m) => {
-      const dele = m.morreu === c.jogador.id;
-      return `<circle cx="${px(m.x).toFixed(1)}" cy="${(S - px(m.y)).toFixed(1)}" r="${dele ? 6 : 4.5}" fill="${dele ? 'var(--bad)' : 'var(--azul)'}" stroke="#000" stroke-width="1"><title>${L.mmss(m.t)}</title></circle>`;
+    const bonecos = partida.jogadores.map((j) => {
+      const cor = ids.has(j.id) ? 'var(--azul)' : 'var(--vermelho)';
+      const culpado = j.id === c.jogador.id;
+      const foto = versaoDD ? `<image href="https://ddragon.leagueoflegends.com/cdn/${versaoDD}/img/champion/${esc(ID_CAMPEAO[j.championName] || j.championName)}.png" x="-9" y="-9" width="18" height="18" clip-path="url(#rp-circ)"/>` : '';
+      return `<g id="rp-j${j.id}" style="display:none"><circle r="9.5" fill="var(--surface-3)"/>${foto}<circle r="${culpado ? 11 : 10}" fill="none" stroke="${culpado ? 'var(--gold-2)' : cor}" stroke-width="${culpado ? 3 : 2}"/><title>${esc(nome(j))} (${esc(j.championName)})</title></g>`;
     }).join('');
-    return `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Mapa com as mortes do time"><rect width="${S}" height="${S}" fill="var(--surface-3)" rx="8"/>${img}${pontos}</svg>
-      <p class="legenda"><span style="--c:var(--bad)">mortes do culpado</span><span style="--c:var(--azul)">resto do time</span></p>`;
+    const mortesCulpado = partida.eventos.filter((e) => e.tipo === 'abate' && e.morreu === c.jogador.id);
+    const pulos = mortesCulpado.map((m) => `<button class="rp-chip morte" data-pulo="${Math.max(0, m.t - 12)}">${L.mmss(m.t)}</button>`).join('');
+    return `<div class="rp-mapa"><svg id="rp-svg" viewBox="0 0 ${S} ${S}" role="img" aria-label="Replay da partida no mapa">
+        <defs><clipPath id="rp-circ"><circle r="9"/></clipPath></defs>
+        <rect width="${S}" height="${S}" fill="#1f3b22" rx="10"/>${esquema(r.timeNos)}${img}<g id="rp-ev"></g><g id="rp-jog">${bonecos}</g></svg></div>
+      <div class="rp-ctrl"><button class="rp-play" id="rp-play" aria-label="Tocar">▶</button>
+        <input type="range" id="rp-t" min="0" max="${partida.duracao}" step="1" value="0" aria-label="Tempo da partida">
+        <span class="rp-hora" id="rp-hora">0:00</span></div>
+      <div class="rp-linha">Velocidade ${VELOCIDADES.map((v) => `<button class="rp-chip${v === 30 ? ' on' : ''}" data-vel="${v}">${v}x</button>`).join('')}</div>
+      ${pulos ? `<div class="rp-linha">Mortes de ${esc(nome(c.jogador))}: ${pulos}</div>` : ''}
+      <ol class="rp-feed" id="rp-feed"></ol>
+      <p class="legenda">A Riot só dá a posição de cada um uma vez por minuto e no segundo de cada abate. Entre esses pontos o caminho é estimado. Azul: seu time. Vermelho: os inimigos. Anel dourado: o culpado.</p>`;
+  }
+
+  // desenho simples do mapa (rotas, rio e bases), por baixo da imagem oficial, para quando ela não carrega
+  function esquema(timeNos) {
+    const p = (x, y) => `${px(x).toFixed(1)},${(MAPA.S - px(y)).toFixed(1)}`;
+    const azul = window.ReplayLoL.BASE[100], verm = window.ReplayLoL.BASE[200];
+    const rota = (pts) => `<polyline points="${pts.map(([x, y]) => p(x, y)).join(' ')}" fill="none" stroke="#c9b98f" stroke-opacity=".35" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`;
+    return `<polyline points="${p(-120, 14980)} ${p(14980, -120)}" stroke="#4f8fbf" stroke-opacity=".35" stroke-width="14"/>`
+      + rota([[1200, 1600], [1200, 13600], [13300, 13600]]) + rota([[1600, 1200], [13600, 1200], [13600, 13300]]) + rota([[1500, 1500], [13400, 13400]])
+      + `<circle cx="${px(azul.x)}" cy="${MAPA.S - px(azul.y)}" r="22" fill="${timeNos === 100 ? 'var(--azul)' : 'var(--vermelho)'}" opacity=".35"/><circle cx="${px(verm.x)}" cy="${MAPA.S - px(verm.y)}" r="22" fill="${timeNos === 200 ? 'var(--azul)' : 'var(--vermelho)'}" opacity=".35"/>`;
+  }
+
+  function iniciarReplay(partida, r, c) {
+    if (replay && replay.raf) cancelAnimationFrame(replay.raf);
+    const dados = window.ReplayLoL.preparar(partida, r.timeNos);
+    const el = (id) => document.getElementById(id);
+    const st = replay = { t: 0, tocando: false, vel: 30, raf: 0, ultimo: 0, feedN: -1 };
+    const nos = dados.jogadores.map((j) => ({ j, g: el('rp-j' + j.id) }));
+    const S = MAPA.S;
+
+    function desenhar() {
+      const t = st.t;
+      for (const { j, g } of nos) {
+        const p = window.ReplayLoL.posicao(j, t);
+        if (!p.vivo) { g.style.display = 'none'; continue; }
+        g.style.display = '';
+        g.setAttribute('transform', `translate(${px(p.x).toFixed(1)},${(S - px(p.y)).toFixed(1)})`);
+      }
+      // eventos dos últimos 40 s de jogo, apagando aos poucos
+      let ev = '';
+      for (const e of dados.eventos) {
+        if (e.t > t) break;
+        const idade = t - e.t;
+        if (idade > 40) continue;
+        const o = (1 - idade / 40).toFixed(2), x = px(e.x), y = S - px(e.y);
+        const cor = e.bom ? 'var(--good)' : 'var(--bad)';
+        ev += e.tipo === 'abate'
+          ? `<g opacity="${o}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><circle r="${8 + idade / 4}" fill="none" stroke="${cor}" stroke-width="1.5"/><path d="M-4,-4L4,4M4,-4L-4,4" stroke="${cor}" stroke-width="2.5"/></g>`
+          : `<g opacity="${o}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><rect x="-6" y="-6" width="12" height="12" transform="rotate(45)" fill="${cor}" stroke="#000"/></g>`;
+      }
+      el('rp-ev').innerHTML = ev;
+      el('rp-hora').textContent = L.mmss(t);
+      el('rp-t').value = Math.round(t);
+      // feed: os 4 últimos eventos até agora
+      let n = 0;
+      while (n < dados.eventos.length && dados.eventos[n].t <= t) n++;
+      if (n !== st.feedN) {
+        st.feedN = n;
+        el('rp-feed').innerHTML = dados.eventos.slice(Math.max(0, n - 4), n).reverse()
+          .map((e) => `<li class="${e.bom ? 'bom' : 'mau'}"><b>${L.mmss(e.t)}</b><span>${esc(e.texto)}</span></li>`).join('')
+          || '<li><span>Os eventos aparecem aqui conforme a partida passa.</span></li>';
+      }
+    }
+
+    function quadro(agora) {
+      if (!st.tocando || replay !== st) return;
+      const dt = st.ultimo ? (agora - st.ultimo) / 1000 : 0;
+      st.ultimo = agora;
+      st.t = Math.min(dados.duracao, st.t + dt * st.vel);
+      desenhar();
+      if (st.t >= dados.duracao) return tocar(false);
+      st.raf = requestAnimationFrame(quadro);
+    }
+
+    function tocar(sim) {
+      st.tocando = sim;
+      st.ultimo = 0;
+      el('rp-play').textContent = sim ? '❚❚' : '▶';
+      el('rp-play').setAttribute('aria-label', sim ? 'Pausar' : 'Tocar');
+      if (sim) {
+        if (st.t >= dados.duracao) st.t = 0;
+        st.raf = requestAnimationFrame(quadro);
+      }
+    }
+
+    el('rp-play').addEventListener('click', () => tocar(!st.tocando));
+    el('rp-t').addEventListener('input', (e) => { st.t = +e.target.value; desenhar(); });
+    document.querySelectorAll('[data-vel]').forEach((b) => b.addEventListener('click', () => {
+      st.vel = +b.dataset.vel;
+      document.querySelectorAll('[data-vel]').forEach((x) => x.classList.toggle('on', x === b));
+    }));
+    document.querySelectorAll('[data-pulo]').forEach((b) => b.addEventListener('click', () => {
+      st.t = +b.dataset.pulo;
+      desenhar();
+      tocar(true);
+    }));
+    desenhar();
   }
 
   window.addEventListener('hashchange', rota);
