@@ -19,7 +19,7 @@
   const PLURAL_OBJETIVO = { DRAGON: 'dragões', TOWER_BUILDING: 'torres', INHIBITOR_BUILDING: 'inibidores', HORDE: 'Vastilarvas' };
   const LABELS = {
     mortes: 'Mortes', sozinho: 'Morreu sozinho', objetivos: 'Objetivos entregues', rota: 'Rota',
-    visao: 'Visão', abates: 'Abates e assistências',
+    visao: 'Visão', ult: 'Ultimate', abates: 'Abates e assistências',
   };
 
   const fmt = (n) => Math.round(n).toLocaleString('pt-BR');
@@ -89,6 +89,8 @@
         if (a != null && b != null && Math.abs(a - b) >= 300) add('rota', 0.5 * (b - a), { dif: a - b, rival, minuto: minutoRota });
       }
 
+      if (j.spell4Casts === 0 && partida.duracao >= 15 * 60) add('ult', 300, { minutos: Math.round(partida.duracao / 60) });
+
       if (j.teamPosition === 'UTILITY' && rival && rival.visionScore > 0 && j.visionScore < 0.6 * rival.visionScore) {
         add('visao', 15 * (rival.visionScore - j.visionScore), { meu: j.visionScore, dele: rival.visionScore, rival });
       }
@@ -142,6 +144,7 @@
       const i = v.infos[0];
       return `Placar de visão ${i.meu}, contra ${i.dele} do suporte inimigo (${i.rival.championName}).`;
     }
+    if (key === 'ult') return `Não usou a ultimate nenhuma vez em ${v.infos[0].minutos} min de jogo.`;
     if (key === 'abates') return `${j.kills}/${j.deaths}/${j.assists}: abates e assistências que renderam ${fmt(-v.ouro)} de ouro ao time.`;
     return '';
   }
@@ -152,7 +155,95 @@
     return partida.quadros.map((q) => ({ t: q.t, dif: soma(ids, ([id, s]) => s * ((q.p[String(id)] || [])[2] || 0)) }));
   }
 
-  const api = { julgar, ouroDoTime, mmss, fmt, NOME_OBJETIVO, VALOR_OBJETIVO };
+
+  // ---------------------------------------------------------------- chance de vitória
+  // Modelo simples (não treinado, como o do Dota ainda não dá com poucas partidas): ouro pesa menos no fim de jogo,
+  // torres, inibidores, dragões e Barão/Ancião ativos contam a favor de quem tem.
+  const PESO = { ouro: 0.45, torre: 0.15, inibidor: 0.5, dragao: 0.12, barao: 0.9, anciao: 1.2, abate: 0.03 };
+  const DURA_BARAO = 180, DURA_ANCIAO = 150, JANELA_LANCE_S = 45;
+
+  function ouroNoSegundo(partida, timeNos, t) {
+    const q = partida.quadros;
+    if (!q.length) return 0;
+    const dif = (f) => soma(partida.jogadores, (j) => (j.teamId === timeNos ? 1 : -1) * ((f.p[String(j.id)] || [])[2] || 0));
+    const i = Math.min(q.length - 1, Math.floor(t / 60));
+    const a = q[i], b = q[Math.min(q.length - 1, i + 1)];
+    if (a === b || b.t === a.t) return dif(a);
+    return dif(a) + (dif(b) - dif(a)) * Math.min(1, Math.max(0, (t - a.t) / (b.t - a.t)));
+  }
+
+  // estado do jogo no segundo t, do ponto de vista do nosso time; `ate` decide se o evento no próprio segundo t conta
+  function estado(partida, timeNos, t, incluirT = true) {
+    const conta = (e) => (incluirT ? e.t <= t : e.t < t);
+    const e = { t, ouro: ouroNoSegundo(partida, timeNos, t), torres: 0, inibidores: 0, dragoes: 0, barao: 0, anciao: 0, abates: 0 };
+    const time = (id) => (partida.jogadores.find((j) => j.id === id) || {}).teamId;
+    for (const ev of partida.eventos) {
+      if (!conta(ev)) continue;
+      if (ev.tipo === 'abate') e.abates += time(ev.morreu) === timeNos ? -1 : 1;
+      else if (ev.tipo === 'estrutura') {
+        const s = ev.dono === timeNos ? -1 : 1;
+        if (ev.estrutura === 'TOWER_BUILDING') e.torres += s;
+        else if (ev.estrutura === 'INHIBITOR_BUILDING') e.inibidores += s;
+      } else if (ev.tipo === 'monstro') {
+        const s = ev.time === timeNos ? 1 : -1;
+        if (ev.monstro === 'DRAGON' && ev.sub === 'ELDER_DRAGON') { if (t - ev.t < DURA_ANCIAO) e.anciao += s; }
+        else if (ev.monstro === 'DRAGON') e.dragoes += s;
+        else if (ev.monstro === 'BARON_NASHOR' && t - ev.t < DURA_BARAO) e.barao += s;
+      }
+    }
+    return e;
+  }
+
+  function chance(e) {
+    const min = e.t / 60;
+    const z = (PESO.ouro * e.ouro) / 1000 / (1 + min / 20) + PESO.torre * e.torres + PESO.inibidor * e.inibidores
+      + PESO.dragao * e.dragoes + PESO.barao * e.barao + PESO.anciao * e.anciao + PESO.abate * e.abates;
+    return 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
+  }
+
+  // curva por minuto e os lances (morte + objetivos que vieram logo depois) com quanto mudaram a chance
+  function chanceDeVitoria(partida, timeNos) {
+    const fim = partida.duracao;
+    const curva = [];
+    for (let t = 0; t < fim; t += 60) curva.push({ t, p: chance(estado(partida, timeNos, t)) });
+    const venceu = (partida.jogadores.find((j) => j.teamId === timeNos) || {}).win;
+    curva.push({ t: fim, p: venceu ? 1 : 0 });
+
+    const porId = new Map(partida.jogadores.map((j) => [j.id, j]));
+    const lances = [];
+    for (const m of partida.eventos.filter((e) => e.tipo === 'abate')) {
+      const vitima = porId.get(m.morreu);
+      if (!vitima) continue;
+      const nossaMorte = vitima.teamId === timeNos;
+      const antes = chance(estado(partida, timeNos, m.t, false));
+      // os objetivos que o time de quem matou pegou nos 45 s seguintes entram no lance
+      const fimLance = Math.min(fim - 1, m.t + JANELA_LANCE_S);
+      const objetivos = partida.eventos.filter((e) => e.t >= m.t && e.t <= fimLance && (
+        (e.tipo === 'monstro' && (e.time === timeNos) !== nossaMorte) ||
+        (e.tipo === 'estrutura' && (e.dono === timeNos) === nossaMorte)));
+      const depois = chance(estado(partida, timeNos, objetivos.length ? objetivos[objetivos.length - 1].t : m.t));
+      lances.push({ t: m.t, morte: m, vitima, matou: porId.get(m.matou), nossaMorte, antes, depois, delta: depois - antes, objetivos });
+    }
+    // dois abates no mesmo lance: fica o primeiro (o que abriu a luta) com o efeito do lance todo
+    lances.sort((a, b) => a.t - b.t);
+    const throwDoJogo = lances.filter((l) => l.nossaMorte && l.delta <= -0.03).sort((a, b) => a.delta - b.delta)[0] || null;
+    const playDoJogo = lances.filter((l) => !l.nossaMorte && l.matou && l.matou.teamId === timeNos && l.delta >= 0.03).sort((a, b) => b.delta - a.delta)[0] || null;
+    return { curva, lances, throwDoJogo, playDoJogo };
+  }
+
+  const NOMES_OBJ_CURTO = { DRAGON: 'dragão', BARON_NASHOR: 'Barão', RIFTHERALD: 'Arauto', HORDE: 'Vastilarva', ATAKHAN: 'Atakhan',
+    TOWER_BUILDING: 'torre', INHIBITOR_BUILDING: 'inibidor' };
+  function descreverObjetivos(objs) {
+    const cont = {};
+    for (const o of objs) {
+      const k = o.tipo === 'monstro' ? (o.sub === 'ELDER_DRAGON' ? 'Dragão Ancião' : NOMES_OBJ_CURTO[o.monstro]) : NOMES_OBJ_CURTO[o.estrutura];
+      if (k) cont[k] = (cont[k] || 0) + 1;
+    }
+    const lista = Object.entries(cont).map(([k, n]) => (n > 1 ? `${n} ${PLURAL_OBJETIVO[{ 'dragão': 'DRAGON', torre: 'TOWER_BUILDING', inibidor: 'INHIBITOR_BUILDING', Vastilarva: 'HORDE' }[k]] || k}` : k));
+    return lista.length > 1 ? `${lista.slice(0, -1).join(', ')} e ${lista[lista.length - 1]}` : lista[0] || '';
+  }
+
+  const api = { julgar, ouroDoTime, chanceDeVitoria, descreverObjetivos, mmss, fmt, NOME_OBJETIVO, VALOR_OBJETIVO };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.CulpadoLoL = api;
 })(typeof window !== 'undefined' ? window : globalThis);
