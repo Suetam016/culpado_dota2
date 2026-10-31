@@ -31,7 +31,9 @@ def partida_falsa(mid="BR1_1", puuid_nosso="p-mia", nome="MiaMid", tag="BR1", se
             "timeCCingOthers": 10, "totalTimeSpentDead": 60, "longestTimeSpentLiving": 500,
             "summoner1Id": 4, "summoner2Id": 14, "spell1Casts": 50, "spell2Casts": 20, "spell3Casts": 30,
             "spell4Casts": 0 if nosso else 4, "summoner1Casts": 3, "summoner2Casts": 2, "item0": 3031, "item1": 3006,
-            "challenges": {"killParticipation": 0.5, "teamDamagePercentage": 0.2, "kda": 2.1, "extraQueNaoUsamos": 1},
+            "challenges": {"killParticipation": 0.512345, "teamDamagePercentage": 0.2, "kda": 2.1, "epicMonsterSteals": 1,
+                           "legendaryItemUsed": [3031]},
+            "enemyMissingPings": 47 if nosso else 1, "pushPings": 3,
         })
     eventos_por_min = {m: [] for m in range(minutos + 1)}
     for _ in range(30):
@@ -47,7 +49,14 @@ def partida_falsa(mid="BR1_1", puuid_nosso="p-mia", nome="MiaMid", tag="BR1", se
         eventos_por_min[t // 60].append({"type": "CHAMPION_KILL", "timestamp": t * 1000, "killerId": matador,
                                          "victimId": vitima, "assistingParticipantIds": assist,
                                          "position": {"x": rnd.randint(500, 14000), "y": rnd.randint(500, 14000)},
-                                         "bounty": 300, "shutdownBounty": 0})
+                                         "bounty": 300, "shutdownBounty": 0,
+                                         "victimDamageReceived": [
+                                             {"participantId": matador, "name": CAMPEOES[matador - 1], "spellName": "q", "spellSlot": 0,
+                                              "physicalDamage": 300, "magicDamage": 0, "trueDamage": 0},
+                                             {"participantId": matador, "name": CAMPEOES[matador - 1], "spellName": "q", "spellSlot": 0,
+                                              "physicalDamage": 0, "magicDamage": 200, "trueDamage": 0},
+                                             {"participantId": 0, "name": "Turret", "spellName": "", "spellSlot": None,
+                                              "physicalDamage": 100, "magicDamage": 0, "trueDamage": 0}]})
     for t, time_, tipo in ((600, 200, "DRAGON"), (1100, 200, "DRAGON"), (1500, 200, "BARON_NASHOR"), (800, 100, "HORDE")):
         eventos_por_min[t // 60].append({"type": "ELITE_MONSTER_KILL", "timestamp": t * 1000, "killerTeamId": time_,
                                          "killerId": 7, "monsterType": tipo})
@@ -66,7 +75,7 @@ def partida_falsa(mid="BR1_1", puuid_nosso="p-mia", nome="MiaMid", tag="BR1", se
             ouro = 500 + m * (380 if i >= 5 else 340) + rnd.randint(-200, 200)
             pf[str(i + 1)] = {"position": {"x": rnd.randint(500, 14000), "y": rnd.randint(500, 14000)},
                               "totalGold": ouro, "xp": m * 400, "minionsKilled": m * 6, "jungleMinionsKilled": 0,
-                              "level": min(18, 1 + m // 2)}
+                              "level": min(18, 1 + m // 2), "currentGold": 100 + m}
         frames.append({"timestamp": m * 60000, "participantFrames": pf, "events": eventos_por_min[m]})
     for i, p in enumerate(participantes):
         p["goldEarned"] = frames[-1]["participantFrames"][str(i + 1)]["totalGold"]
@@ -104,10 +113,18 @@ class TesteColeta(unittest.TestCase):
         c = coletar.compactar(*partida_falsa())
         self.assertEqual(c["id"], "BR1_1")
         self.assertEqual(len(c["jogadores"]), 10)
-        self.assertNotIn("extraQueNaoUsamos", c["jogadores"][0]["challenges"])
+        ch = c["jogadores"][0]["challenges"]
+        self.assertEqual((ch["killParticipation"], ch["epicMonsterSteals"]), (0.512, 1))
+        self.assertNotIn("legendaryItemUsed", ch)                       # listas ficam de fora
+        self.assertEqual(c["jogadores"][2]["pings"]["enemyMissing"], 47)
+        self.assertEqual(c["jogadores"][2]["pings"]["retreat"], 0)
+        self.assertEqual(c["quadros"][5]["p"]["1"][6], 105)              # ouro no bolso
+        abate = next(e for e in c["eventos"] if e["tipo"] == "abate")
+        self.assertEqual(abate["recibo"][0][1:], ["%s" % abate["recibo"][0][1], "q", 0, 500])
+        self.assertEqual(abate["recibo"][1], [0, "Turret", "", None, 100])
         self.assertEqual(c["jogadores"][0]["itens"][:2], [3031, 3006])
         self.assertEqual(len(c["quadros"]), 29)
-        self.assertEqual(len(c["quadros"][5]["p"]["1"]), 6)
+        self.assertEqual(len(c["quadros"][5]["p"]["1"]), 7)
         tipos = {e["tipo"] for e in c["eventos"]}
         self.assertEqual(tipos, {"abate", "monstro", "estrutura"})   # WARD_PLACED fica de fora
         self.assertEqual(c["inicio"], 1761850000 + 7 * 3600)
