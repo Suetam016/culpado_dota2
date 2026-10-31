@@ -401,8 +401,10 @@ function frame(ts) {
     if (U.caras.prontas) { const crit = DANO.some(e => e.tgt === s && e.amt > 400 && t >= e.t && t < e.t + .4), em = Emocoes.emocaoEm(D.retrato[s], t, crit);
       if (em !== U.em && U.caras[em]) { U.em = em; U.face.map = U.caras[em]; U.face.transparent = true; U.face.needsUpdate = true; U.trocou = now; }
       if (!congelado(s, t)) an = Emocoes.animar(U.em, now); const k = (now - U.trocou) / .12; tr = k < .5 ? 1 - .3 * k : k < 1 ? .85 + .5 * (k - .5) : k < 1.6 ? 1.1 - (k - 1) / 6 : 1; }
-    cab.rotation.z += an.rot; cab.position.y = U.cabY + an.dy;
-    cab.scale.set((1 + amassa + Math.abs(U.mola) * .2) * an.sx * (2 - tr), (1 - amassa + Math.abs(U.mola) * .2) * an.sy * tr, 1);
+    // emoção diferente de "normal" aumenta o cabeção 1,2x (ease de ~150 ms) para ler nos planos abertos
+    U.zoom = (U.zoom || 1) + ((U.caras.prontas && U.em !== 'normal' ? 1.2 : 1) - (U.zoom || 1)) * Math.min(1, dt / .05);
+    cab.rotation.z += an.rot; cab.position.y = U.cabY + an.dy + (U.zoom - 1) * .3;
+    cab.scale.set((1 + amassa + Math.abs(U.mola) * .2) * an.sx * (2 - tr) * U.zoom, (1 - amassa + Math.abs(U.mola) * .2) * an.sy * tr * U.zoom, U.zoom);
     cab.visible = !(s === PUDGE && morto);
     if (morto) { fig.rotation.x = -Math.min(1.45, (t - DEAD[s]) * 4); fig.position.y = .07; }
     cab.position.x = an.dx; cab.position.z = .05;
