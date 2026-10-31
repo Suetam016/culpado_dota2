@@ -40,14 +40,6 @@ REGIOES = {
 
 RE_RIOT_ID = re.compile(r"^(.{3,16})#([A-Za-z0-9]{2,5})$")
 
-# o que a página usa do bloco "challenges" de cada jogador
-CHALLENGES = (
-    "killParticipation", "soloKills", "teamDamagePercentage", "damageTakenOnTeamPercentage", "goldPerMinute",
-    "visionScorePerMinute", "laneMinionsFirst10Minutes", "maxCsAdvantageOnLaneOpponent", "maxLevelLeadLaneOpponent",
-    "turretPlatesTaken", "controlWardsPlaced", "wardTakedowns", "skillshotsDodged", "skillshotsHit",
-    "takedownsFirstXMinutes", "deathsByEnemyChamps", "survivedSingleDigitHpCount", "effectiveHealAndShielding",
-    "damagePerMinute", "kda",
-)
 CAMPOS = (
     "puuid", "riotIdGameName", "riotIdTagline", "championName", "championId", "teamId", "teamPosition",
     "win", "kills", "deaths", "assists", "champLevel", "goldEarned", "totalMinionsKilled", "neutralMinionsKilled",
@@ -56,7 +48,13 @@ CAMPOS = (
     "longestTimeSpentLiving", "summoner1Id", "summoner2Id", "gameEndedInSurrender", "gameEndedInEarlySurrender",
     "spell1Casts", "spell2Casts", "spell3Casts", "spell4Casts", "summoner1Casts", "summoner2Casts",
 )
-VERSAO = 2                # partidas gravadas com versão menor são baixadas de novo (v2: uso de habilidades e skills)
+VERSAO = 3                # partidas gravadas com versão menor são baixadas de novo
+                          # (v2: uso de habilidades e skills; v3: pings, todas as conquistas, recibo das mortes, ouro no bolso)
+PINGS = (
+    "allInPings", "assistMePings", "basicPings", "commandPings", "dangerPings", "enemyMissingPings",
+    "enemyVisionPings", "getBackPings", "holdPings", "needVisionPings", "onMyWayPings", "pushPings",
+    "retreatPings", "visionClearedPings",
+)
 
 
 class ChaveInvalida(Exception):
@@ -103,7 +101,10 @@ def compactar(partida: dict, timeline: dict | None) -> dict:
         j["id"] = p.get("participantId")
         j["itens"] = [p.get(f"item{i}", 0) for i in range(7)]
         ch = p.get("challenges") or {}
-        j["challenges"] = {k: ch[k] for k in CHALLENGES if k in ch}
+        # todas as conquistas (viram medalhas); números com muitas casas são arredondados
+        j["challenges"] = {k: (round(v, 3) if isinstance(v, float) else v) for k, v in ch.items()
+                           if isinstance(v, (int, float))}
+        j["pings"] = {k[:-5]: p.get(k, 0) for k in PINGS}
         jogadores.append(j)
 
     times = []
@@ -121,7 +122,8 @@ def compactar(partida: dict, timeline: dict | None) -> dict:
             for pid, f in (q.get("participantFrames") or {}).items():
                 pos = f.get("position") or {}
                 linha[pid] = [pos.get("x"), pos.get("y"), f.get("totalGold"), f.get("xp"),
-                              (f.get("minionsKilled") or 0) + (f.get("jungleMinionsKilled") or 0), f.get("level")]
+                              (f.get("minionsKilled") or 0) + (f.get("jungleMinionsKilled") or 0), f.get("level"),
+                              f.get("currentGold")]
             quadros.append({"t": round((q.get("timestamp") or 0) / 1000), "p": linha})
             for e in q.get("events", []):
                 pid, t = e.get("participantId"), round((e.get("timestamp") or 0) / 1000)
@@ -151,6 +153,19 @@ def compactar(partida: dict, timeline: dict | None) -> dict:
     }
 
 
+def recibo(danos: list) -> list:
+    """Dano que a vítima levou antes de morrer, somado por fonte e habilidade: [[quem, fonte, habilidade, slot, dano]].
+    quem = participantId (0 para torre, tropa ou monstro), fonte = nome do campeão ou da torre/tropa."""
+    soma: dict[tuple, int] = {}
+    for d in danos:
+        total = (d.get("physicalDamage") or 0) + (d.get("magicDamage") or 0) + (d.get("trueDamage") or 0)
+        if total <= 0:
+            continue
+        chave = (d.get("participantId") or 0, d.get("name") or "", d.get("spellName") or "", d.get("spellSlot"))
+        soma[chave] = soma.get(chave, 0) + total
+    return sorted(([*k, v] for k, v in soma.items()), key=lambda x: -x[4])
+
+
 def compactar_evento(e: dict) -> dict | None:
     t = round((e.get("timestamp") or 0) / 1000)
     tipo = e.get("type")
@@ -158,7 +173,8 @@ def compactar_evento(e: dict) -> dict | None:
     if tipo == "CHAMPION_KILL":
         return {"t": t, "tipo": "abate", "matou": e.get("killerId"), "morreu": e.get("victimId"),
                 "assist": e.get("assistingParticipantIds") or [], "x": pos.get("x"), "y": pos.get("y"),
-                "recompensa": (e.get("bounty") or 0) + (e.get("shutdownBounty") or 0)}
+                "recompensa": (e.get("bounty") or 0) + (e.get("shutdownBounty") or 0),
+                "recibo": recibo(e.get("victimDamageReceived") or [])}
     if tipo == "ELITE_MONSTER_KILL":
         return {"t": t, "tipo": "monstro", "time": e.get("killerTeamId"), "quem": e.get("killerId"),
                 "monstro": e.get("monsterType"), "sub": e.get("monsterSubType")}
