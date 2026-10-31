@@ -171,6 +171,111 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 .destaque { background: var(--gold-wash); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 10px; color: var(--ink); }
 .vazio { color: var(--muted); text-align: center; padding: 24px 8px; }
 .rodape { color: var(--muted); font-size: .8rem; margin-top: 28px; text-align: center; }
+
+/* revelação: as 5 cartas girando, como no Dota */
+.lrev { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  background: radial-gradient(circle at 50% 45%, #2a1d0f, #060504 70%); color: #f4ead8; animation: lrev-entra .3s ease; --raridade: #e4ae39; }
+.lrev.saindo { opacity: 0; transition: opacity .45s; }
+@keyframes lrev-entra { from { opacity: 0; } }
+.lrev.policia::after, .lrev.nuclear::after { content: ""; position: fixed; inset: 0; pointer-events: none; }
+.lrev.policia::after { animation: lrev-giroflex .55s steps(1) infinite; }
+.lrev.nuclear::after { animation: lrev-nuclear 4.7s ease-in-out infinite; }
+@keyframes lrev-giroflex { 0% { box-shadow: inset 0 0 120px 10px rgba(229, 40, 40, .55); } 50% { box-shadow: inset 0 0 120px 10px rgba(40, 90, 255, .55); } }
+@keyframes lrev-nuclear { 0%, 100% { background: rgba(180, 0, 0, .05); } 45%, 65% { background: rgba(200, 10, 0, .32); } }
+.lrev-titulo { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.3rem, 5vw, 2rem); letter-spacing: .04em; text-align: center; padding: 0 16px; }
+.lrev.revelado .lrev-titulo { color: var(--raridade); }
+.lrev-palco { position: relative; width: min(760px, 96vw); height: clamp(170px, 30vw, 230px); display: grid; place-items: center; }
+.lrev-fila { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: clamp(6px, 2vw, 16px); perspective: 900px; }
+.lrev-carta { flex: 0 0 auto; width: clamp(54px, 15vw, 118px); transition: width .4s cubic-bezier(.4, 0, .2, 1) .12s, margin .4s .12s, opacity .3s, transform .35s cubic-bezier(.5, -.4, .6, 1); }
+.lrev-gira { position: relative; width: 100%; aspect-ratio: 3 / 4; transform-style: preserve-3d; will-change: transform; }
+.lrev-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 10px; overflow: hidden; background: #1b1f27; box-shadow: 0 0 0 2px #3a3f4c, 0 10px 22px rgba(0, 0, 0, .6); }
+.lrev-frente .icone { width: 100%; height: 100%; border-radius: 0; object-fit: cover; }
+.lrev-verso { transform: rotateY(180deg); display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, #3a2a12, #120d07 75%); color: #e3b448; font-size: clamp(1.6rem, 5vw, 2.6rem);
+  box-shadow: 0 0 0 2px #6b5326, inset 0 0 0 4px #1f170c, inset 0 0 0 5px #6b5326; }
+.lrev-x { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 900; color: #e5533d; text-shadow: 0 2px 8px #000; opacity: 0; }
+.lrev-carta.fora { width: 0; margin: 0 calc(-1 * clamp(3px, 1vw, 8px)); opacity: 0; transform: scale(.25) translateY(-30px); }
+.lrev-carta.fora .lrev-x { opacity: 1; }
+.lrev-carta.vencedor { width: clamp(96px, 24vw, 170px); transition: width .45s cubic-bezier(.2, .9, .3, 1.3); }
+.lrev-carta.vencedor .lrev-frente { box-shadow: 0 0 0 4px var(--raridade), 0 0 34px var(--raridade), 0 0 90px color-mix(in srgb, var(--raridade) 55%, transparent); }
+.lrev-raios { position: absolute; left: 50%; top: 50%; width: min(560px, 92vw); aspect-ratio: 1; transform: translate(-50%, -50%) scale(.2); border-radius: 50%; opacity: 0; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--raridade) 70%, transparent) 0 6deg, transparent 6deg 18deg);
+  -webkit-mask: radial-gradient(circle, #000 18%, transparent 68%); mask: radial-gradient(circle, #000 18%, transparent 68%); transition: opacity .4s, transform .6s cubic-bezier(.2, .9, .3, 1); }
+.lrev.revelado .lrev-raios { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: lrev-gira 6s linear infinite; }
+@keyframes lrev-gira { to { transform: translate(-50%, -50%) scale(1) rotate(360deg); } }
+.lrev-nome { min-height: 1.5em; text-align: center; padding: 0 16px; font-family: var(--font-display); font-weight: 900; font-size: clamp(1.4rem, 6vw, 2.4rem); overflow-wrap: anywhere; }
+.lrev-selo { min-height: 1.4em; font-family: var(--font-display); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; text-align: center; padding: 0 12px;
+  color: var(--raridade); text-shadow: 0 0 18px var(--raridade); opacity: 0; transform: translateY(6px); transition: opacity .35s .15s, transform .35s .15s; }
+.lrev.revelado .lrev-selo { opacity: 1; transform: none; }
+.lrev-pular { position: absolute; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .25); color: #f4ead8; padding: 8px 18px; border-radius: 99px; cursor: pointer; }
+.lrev-tocar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 5; font-weight: 700; font-size: 1.1rem; padding: 16px 26px; border-radius: 999px;
+  border: 2px solid var(--raridade); background: #120d08ee; color: #fff; cursor: pointer; box-shadow: 0 0 30px var(--raridade); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .lrev.revelado .lrev-raios, .lrev.policia::after, .lrev.nuclear::after { animation: none; } .lrev-carta, .lrev-raios { transition: none; } }
+
+/* o documento da culpa: um papel por nível de gravidade. É um objeto físico: mesmas cores no tema claro e no escuro */
+.doc { --papel: #efe3c8; --tinta: #2a1d10; --tinta-2: #5b4630; --linha-doc: #b9a17a; --destaque: #8a1c12;
+  position: relative; background: var(--papel); color: var(--tinta); border-radius: 6px; padding: 20px 18px 18px; margin: 14px 0 6px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .4) inset, 0 16px 34px -12px rgba(0, 0, 0, .7); overflow: hidden; }
+.doc-cab { text-align: center; border-bottom: 2px solid var(--linha-doc); padding-bottom: 10px; margin-bottom: 14px; }
+.doc-cab .org { font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); }
+.doc-cab .tit { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.7rem, 8vw, 2.6rem); line-height: 1.05; letter-spacing: .03em; text-transform: uppercase; }
+.doc-cab .num { font-family: var(--font-mono); font-size: .8rem; color: var(--tinta-2); }
+.doc-cab .faixa { font-family: var(--font-display); font-weight: 700; font-size: .95rem; color: var(--destaque); margin-top: 4px; }
+.doc-meio { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: start; }
+.doc-foto { position: relative; }
+.doc-foto .icone { width: 96px; height: 120px; border-radius: 4px; border: 3px solid var(--tinta); background: #c9b58e; object-fit: cover; }
+.doc-foto small { display: block; text-align: center; font-size: .66rem; color: var(--tinta-2); margin-top: 2px; }
+.doc-nome { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.25rem, 5vw, 1.6rem); line-height: 1.1; overflow-wrap: anywhere; }
+.doc-vulgo { font-style: italic; color: var(--tinta-2); margin-bottom: 6px; }
+.doc-campos { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 4px 12px; font-size: .86rem; }
+.doc-campos div { border-bottom: 1px dotted var(--linha-doc); padding-bottom: 2px; min-width: 0; overflow-wrap: anywhere; }
+.doc-campos b { display: block; font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-2); font-weight: 800; }
+.doc-bloco { margin-top: 14px; }
+.doc-rot { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--destaque); margin-bottom: 6px; }
+.doc-crimes { list-style: none; display: grid; gap: 8px; counter-reset: crime; }
+.doc-crimes li { counter-increment: crime; padding-left: 28px; position: relative; line-height: 1.3; }
+.doc-crimes li::before { content: counter(crime); position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--tinta); color: var(--papel);
+  font-size: .75rem; font-weight: 800; display: grid; place-items: center; }
+.doc-crimes strong { font-weight: 800; }
+.doc-crimes small { display: block; color: var(--tinta-2); font-size: .86rem; margin-top: 1px; }
+.doc-texto { color: var(--tinta-2); line-height: 1.4; }
+.doc-recompensa { text-align: center; margin-top: 16px; }
+.doc-recompensa .valor { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 9vw, 2.6rem); line-height: 1; color: var(--destaque); }
+.doc-recompensa small { display: block; color: var(--tinta-2); }
+.doc-rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--linha-doc); font-size: .82rem; color: var(--tinta-2); }
+.doc-carimbo { font-family: var(--font-display); font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: var(--destaque); border: 3px solid var(--destaque);
+  padding: 2px 10px; border-radius: 4px; transform: rotate(-8deg); opacity: .85; }
+.doc-alerta { margin-top: 14px; padding: 10px 12px; border-radius: 4px; font-weight: 700; }
+/* Procura-se: cartaz do faroeste */
+.doc-wanted { --papel: #e8d2a0; background: radial-gradient(circle at 30% 20%, #f1dfb3, #ddc189 70%, #c9a86b); text-align: center; }
+.doc-wanted .doc-meio { grid-template-columns: 1fr; justify-items: center; }
+.doc-wanted .doc-foto .icone { width: 132px; height: 132px; filter: sepia(.7) contrast(1.05); }
+.doc-wanted .doc-campos { display: none; }
+.doc-wanted .doc-crimes li { padding-left: 0; } .doc-wanted .doc-crimes li::before { display: none; }
+/* Boletim de Ocorrência */
+.doc-bo { --papel: #f7f5ef; --tinta: #1b2433; --tinta-2: #4a5568; --linha-doc: #9aa6b8; --destaque: #1d3f78; }
+.doc-bo .doc-cab { text-align: left; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: end; border-bottom-color: #1d3f78; }
+.doc-bo .doc-cab .tit { font-family: var(--font-body); font-size: 1.25rem; letter-spacing: .02em; color: #1d3f78; }
+.doc-bo .doc-carimbo { color: #a3241b; border-color: #a3241b; }
+/* Interpol: difusão vermelha */
+.doc-interpol { --papel: #10213f; --tinta: #eef2fa; --tinta-2: #aab6cc; --linha-doc: #3a5584; --destaque: #ff6b5b; }
+.doc-interpol .doc-cab { background: #b3261e; margin: -20px -18px 14px; padding: 12px 18px; border-bottom: 0; }
+.doc-interpol .doc-cab .org, .doc-interpol .doc-cab .num { color: #ffd9d4; }
+.doc-interpol .doc-foto .icone { border-color: #eef2fa; }
+.doc-interpol .doc-alerta { background: rgba(255, 107, 91, .14); border: 1px solid #ff6b5b; color: #ffd9d4; }
+/* Haia: mandado de prisão */
+.doc-haia { --papel: #eaf1f8; --tinta: #10263f; --tinta-2: #46607d; --linha-doc: #8aa7c4; --destaque: #1d5fa3; }
+.doc-haia .doc-cab { border-bottom: 3px double #1d5fa3; }
+.doc-haia .doc-cab .tit { color: #1d5fa3; font-size: clamp(1.4rem, 6vw, 2rem); }
+.doc-haia .doc-decisao { margin-top: 14px; font-style: italic; color: var(--tinta-2); border-left: 3px solid #1d5fa3; padding-left: 10px; }
+/* Tribunal Penal Internacional: o pior */
+.doc-tpi { --papel: #0d0b08; --tinta: #f3e6c4; --tinta-2: #b9a77d; --linha-doc: #6b5326; --destaque: #e8b04a; box-shadow: 0 0 0 2px #6b5326, 0 0 40px -6px rgba(232, 176, 74, .45), 0 16px 34px -12px rgba(0, 0, 0, .8); }
+.doc-tpi .doc-cab .tit { color: #e8b04a; }
+.doc-tpi .doc-foto .icone { border-color: #e8b04a; }
+.doc-tpi .doc-carimbo { color: #ff4b3a; border-color: #ff4b3a; font-size: 1.1rem; }
+.doc-tpi .doc-alerta { background: rgba(255, 75, 58, .12); border: 1px solid #ff4b3a; color: #ffd0c8; }
+.doc-de-novo { background: none; border: 1px solid var(--line-strong); color: var(--ink-2); border-radius: 99px; padding: 6px 14px; cursor: pointer; font-size: .9rem; margin-top: 8px; }
+.doc-de-novo:hover { color: var(--gold-2); border-color: var(--gold); }
+@media (max-width: 420px) { .doc-meio { grid-template-columns: 80px minmax(0, 1fr); } .doc-foto .icone { width: 80px; height: 100px; } }
 </style>
 </head>
 <body>
@@ -185,6 +290,8 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="julgar.js"></script>
 <script src="replay.js"></script>
 <script src="resenha.js"></script>
+<script src="culpa.js"></script>
+<script src="revelar.js"></script>
 <script>
 (function () {
   'use strict';
@@ -245,17 +352,19 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     partidaAtual = partida;
     const cv = L.chanceDeVitoria(partida, r.timeNos);
     const titulo = r.venceu ? 'Ganharam, mas alguém quase entregou' : 'Perderam. A culpa é de…';
+    const doc = r.venceu ? null : window.CulpaLoL.documento(c, partida);
     let html = '';
     if (exemplo) html += '<p class="aviso">Partida de exemplo com dados fictícios, só para mostrar como fica. As de verdade aparecem quando a coleta rodar.</p>';
     html += `<p style="margin-bottom:12px"><a class="voltar" href="./">← Partidas</a></p>
       <section class="cartao">
         <p class="sub">${esc(FILAS[partida.fila] || partida.modo)} · ${Math.round(partida.duracao / 60)} min · ${data(partida.inicio)}${rendicao(partida, r)}</p>
         <h1>${titulo}</h1>
-        <div class="culpado" style="margin-top:14px">${icone(c.jogador.championName, 'g')}
+        ${r.venceu ? `<div class="culpado" style="margin-top:14px">${icone(c.jogador.championName, 'g')}
           <div><div class="rotulo">Culpado · ${Math.round(c.fatia * 100)}% da culpa</div>
           <div class="quem">${esc(nome(c.jogador))}<small>${esc(c.jogador.championName)} · ${esc(ROTAS[c.jogador.teamPosition] || '')} · ${c.jogador.kills}/${c.jogador.deaths}/${c.jogador.assists}</small></div></div>
         </div>
-        <ul class="motivos">${c.pesou.concat(c.atenuantes).map((m) => `<li><span class="pts ${m.pontos < 0 ? 'bom' : ''}">${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>
+        <ul class="motivos">${c.pesou.concat(c.atenuantes).map((m) => `<li><span class="pts ${m.pontos < 0 ? 'bom' : ''}">${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>`
+        : `${docHtml(c, partida, r, doc)}<button type="button" class="doc-de-novo" id="ver-revelacao">⚖ Ver a revelação de novo</button>`}
       </section>
       ${momentosHtml(cv, r)}
       <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
@@ -286,6 +395,64 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     }));
     preencherHabilidades(partida);
     window.scrollTo(0, 0);
+    if (doc) {
+      const abrir = () => window.RevelarLoL({
+        jogadores: r.vereditos.map((v) => ({ id: v.jogador.id, rosto: icone(v.jogador.championName), peso: v.fatia })),
+        culpado: c.jogador.id, nome: nome(c.jogador), nivel: doc.nivel, cor: doc.cor, crime: doc.crime, som: true,
+      });
+      document.getElementById('ver-revelacao').addEventListener('click', abrir);
+      // a revelação abre sozinha na primeira vez que a partida é aberta neste navegador
+      const chave = 'culpado-lol:revelado:' + mid;
+      let visto = false;
+      try { visto = localStorage.getItem(chave) === '1'; localStorage.setItem(chave, '1'); } catch (e) { /* sem armazenamento: abre sempre */ }
+      if (!visto && !exemplo) abrir();
+    }
+  }
+
+  // o papel da culpa: Procura-se ou B.O., Interpol, Haia ou Tribunal Penal Internacional
+  function docHtml(c, partida, r, d) {
+    const j = c.jogador;
+    const pct = `${Math.round(c.fatia * 100)}%`;
+    const ouro = d.entregue > 0 ? `${d.entregue.toLocaleString('pt-BR')} de ouro` : '—';
+    const crimes = (comArtigo) => `<ol class="doc-crimes">${d.acusacoes.map((a) => `<li><strong>${esc(comArtigo && !/^Art\. /.test(a.crime) ? `Art. ${a.artigo} · ${a.crime}` : a.crime)}</strong>${a.evidencia ? `<small>${esc(a.evidencia)}</small>` : ''}</li>`).join('')}</ol>`;
+    const campo = (rot, val) => `<div><b>${rot}</b>${esc(val)}</div>`;
+    const campos = [campo('Campeão', j.championName), campo('Rota', ROTAS[j.teamPosition] || '—'), campo('KDA', `${j.kills}/${j.deaths}/${j.assists}`),
+      campo('Culpa', pct), campo('Ouro entregue', ouro)].join('');
+    const foto = (leg) => `<div class="doc-foto">${icone(j.championName)}${leg ? `<small>${leg}</small>` : ''}</div>`;
+    const quem = `<p class="doc-nome">${esc(nome(j))}</p><p class="doc-vulgo">vulgo “${esc(d.alcunha)}”</p>`;
+    const recompensa = d.entregue > 0
+      ? `<div class="doc-recompensa"><p class="valor">${d.entregue.toLocaleString('pt-BR')}</p><small>de ouro de recompensa: o que entregou aos inimigos</small></div>`
+      : `<div class="doc-recompensa"><small>Recompensa: ${esc(d.recompensa)}</small></div>`;
+    const lado = r.timeNos === 100 ? 'Azuis' : 'Vermelhos';
+    const quando = new Date(partida.inicio * 1000);
+    const corpo = {
+      wanted: () => `<header class="doc-cab"><p class="tit">Procura-se</p><p class="faixa">★ ${esc(d.faixa)} ★</p></header>
+        <div class="doc-meio">${foto()}<div>${quem}</div></div>
+        <div class="doc-bloco"><p class="doc-rot">Procurado por</p>${crimes(false)}</div>
+        <div class="doc-bloco"><p class="doc-rot">Visto pela última vez</p><p class="doc-texto">${esc(d.paradeiro.charAt(0).toUpperCase() + d.paradeiro.slice(1))}.</p></div>
+        ${recompensa}<footer class="doc-rodape"><span>Informações ao Xerife do Condado dos ${lado}</span><span>${esc(d.rodape)}</span></footer>`,
+      bo: () => `<header class="doc-cab"><div><p class="org">Secretaria da Segurança Pública de Runeterra</p><p class="tit">Boletim de Ocorrência</p></div><p class="num">Nº ${esc(d.numero)}</p></header>
+        <div class="doc-meio">${foto('foto 3x4')}<div>${quem}<div class="doc-campos">${campos}${campo('Data do fato', quando.toLocaleDateString('pt-BR'))}</div></div></div>
+        <div class="doc-bloco"><p class="doc-rot">Natureza</p>${crimes(true)}</div>
+        <div class="doc-bloco"><p class="doc-rot">Histórico</p><p class="doc-texto">Relatam as vítimas, ainda na tela de derrota, que o autor foi ${esc(d.paradeiro)}. ${esc(d.fecho)}</p></div>
+        <footer class="doc-rodape"><span>${esc(d.escrivao)}, de plantão</span><span class="doc-carimbo">Registrado</span></footer>`,
+      interpol: () => `<header class="doc-cab"><p class="org">Interpol · Difusão vermelha</p><p class="tit">Procurado</p><p class="num">Ref. ${esc(d.numero)}</p></header>
+        <div class="doc-meio">${foto()}<div>${quem}<div class="doc-campos">${campos}</div></div></div>
+        <div class="doc-bloco"><p class="doc-rot">Acusações</p>${crimes(false)}</div>
+        <p class="doc-alerta">${esc(d.alerta)}</p>
+        <footer class="doc-rodape"><span>Visto pela última vez: ${esc(d.paradeiro)}</span></footer>`,
+      haia: () => `<header class="doc-cab"><p class="org">Tribunal de Haia · Câmara de Instrução</p><p class="tit">Mandado de prisão</p><p class="num">Processo ${esc(d.numero)}</p></header>
+        <div class="doc-meio">${foto()}<div>${quem}<div class="doc-campos">${campos}</div></div></div>
+        <div class="doc-bloco"><p class="doc-rot">Crimes contra a humanidade</p>${crimes(false)}</div>
+        <p class="doc-decisao">${esc(d.decisao)} Pena sugerida: ${esc(d.pena)}.</p>
+        <footer class="doc-rodape"><span>${esc(d.escrivao)}, escrivania da Câmara</span><span class="doc-carimbo">Expeça-se</span></footer>`,
+      tpi: () => `<header class="doc-cab"><p class="org">Tribunal Penal Internacional</p><p class="tit">Procurado</p><p class="faixa">por ${esc(d.crime.toLowerCase())}</p></header>
+        <div class="doc-meio">${foto()}<div>${quem}<div class="doc-campos">${campos}</div></div></div>
+        <div class="doc-bloco"><p class="doc-rot">Acusações</p>${crimes(false)}</div>
+        <p class="doc-alerta">Pena: ${esc(d.pena)}.</p>
+        ${recompensa}<footer class="doc-rodape"><span>${esc(d.decisao)}</span><span class="doc-carimbo">${esc(d.crime)}</span></footer>`,
+    };
+    return `<article class="doc doc-${d.papel}" style="--raridade:${d.cor}">${corpo[d.papel]()}</article>`;
   }
 
   function graficoOuro(partida, r) {
