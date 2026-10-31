@@ -2861,3 +2861,12 @@ OK 9070413901
 Fila: [9070632031]
 FALHOU 9070632031: sem replay_url (partida ainda não analisada pelo OpenDota)
 0 mapas novos
+Fila: [9070796717] (pedidos do site: [9070796717])
+  replay http://replay202.valve.net/570/9070796717_892786145.dem.bz2 -> HTTP 200 application/octet-stream 61825655 inicio=b'(\xb5/\xfd\x00`\x94\n\x0f\x1e\xf9\x1d'
+  9070796717: 214768 eventos; tipos [('actions', 87525), ('DOTA_COMBATLOG_DAMAGE', 39518), ('interval', 32660), ('DOTA_COMBATLOG_MODIFIER_ADD', 13874), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 13832), ('DOTA_COMBATLOG_HEAL', 7222), ('DOTA_COMBATLOG_XP', 5676), ('DOTA_COMBATLOG_DEATH', 5458)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_EarthSpirit", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 107, "variant": 0, "facet_hero_id": 107, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 
+  exemplo de habilidade: {"time": -63, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_earth_spirit", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  4345 registros de dano herói->herói
+  1989 usos de skill/item de 3198 no combat log
+OK 9070796717
+1 mapas novos
