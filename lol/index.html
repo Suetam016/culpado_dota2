@@ -133,6 +133,42 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 .tile.zero .ic { outline: 2px solid var(--bad); }
 .tile.sep { width: 2px; }
 .ordem { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); margin-top: 4px; letter-spacing: .04em; word-break: break-all; }
+.recibo { display: grid; gap: 5px; margin-top: 6px; }
+.recibo .tot { font-size: .9rem; color: var(--ink-2); }
+.recibo .rl { display: grid; grid-template-columns: minmax(0, 1fr) 3.6em; gap: 8px; align-items: center; font-size: .85rem; }
+.recibo .rl .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recibo .rl .nm small { color: var(--muted); }
+.recibo .rl .bar { grid-column: 1 / 3; height: 5px; border-radius: 99px; background: var(--surface-3); overflow: hidden; margin-top: -3px; }
+.recibo .rl .bar i { display: block; height: 100%; background: var(--bad); }
+.recibo .rl .v { font-family: var(--font-mono); text-align: right; }
+.rp-recibo { max-width: 560px; margin: 10px auto 0; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bad-wash); border: 1px solid var(--bad); }
+.rp-recibo:empty { display: none; }
+.rp-recibo .tt { font-weight: 700; color: var(--bad-ink); }
+.lutas { display: grid; gap: 10px; }
+.luta { border: 1px solid var(--line); border-left: 4px solid var(--line-strong); border-radius: var(--radius-sm); padding: 10px 12px; background: var(--surface-2); display: grid; gap: 4px; }
+.luta.venceu { border-left-color: var(--good); }
+.luta.perdeu { border-left-color: var(--bad); }
+.luta .cab { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.luta .cab b { font-family: var(--font-mono); font-weight: 500; }
+.luta .placar { font-weight: 800; }
+.luta.venceu .placar { color: var(--good-ink); }
+.luta.perdeu .placar { color: var(--bad-ink); }
+.luta .det { color: var(--ink-2); font-size: .9rem; }
+.luta button { justify-self: start; }
+.medalhas { display: grid; gap: 12px; }
+.med-j { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; }
+.med-j .nm { font-weight: 700; }
+.med-j.eu .nm { color: var(--gold-2); }
+.med-lista { list-style: none; display: grid; gap: 3px; margin-top: 4px; }
+.med-lista li { font-size: .9rem; color: var(--ink-2); }
+.med-lista li b { color: var(--good-ink); }
+.med-lista li.mau b { color: var(--bad-ink); }
+.pings { display: grid; gap: 8px; margin-top: 6px; }
+.ping-l { display: grid; grid-template-columns: 32px minmax(0, 1fr) 2.6em; gap: 10px; align-items: center; }
+.ping-l .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ping-l .tp { font-size: .8rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ping-l .n { font-family: var(--font-mono); text-align: right; }
+.destaque { background: var(--gold-wash); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 10px; color: var(--ink); }
 .vazio { color: var(--muted); text-align: center; padding: 24px 8px; }
 .rodape { color: var(--muted); font-size: .8rem; margin-top: 28px; text-align: center; }
 </style>
@@ -148,6 +184,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 </div>
 <script src="julgar.js"></script>
 <script src="replay.js"></script>
+<script src="resenha.js"></script>
 <script>
 (function () {
   'use strict';
@@ -205,13 +242,14 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     const r = L.julgar(partida, puuid);
     const c = r.culpado;
     const eu = partida.jogadores.find((j) => j.puuid === puuid);
+    partidaAtual = partida;
     const cv = L.chanceDeVitoria(partida, r.timeNos);
     const titulo = r.venceu ? 'Ganharam, mas alguém quase entregou' : 'Perderam. A culpa é de…';
     let html = '';
     if (exemplo) html += '<p class="aviso">Partida de exemplo com dados fictícios, só para mostrar como fica. As de verdade aparecem quando a coleta rodar.</p>';
     html += `<p style="margin-bottom:12px"><a class="voltar" href="./">← Partidas</a></p>
       <section class="cartao">
-        <p class="sub">${esc(FILAS[partida.fila] || partida.modo)} · ${Math.round(partida.duracao / 60)} min · ${data(partida.inicio)}</p>
+        <p class="sub">${esc(FILAS[partida.fila] || partida.modo)} · ${Math.round(partida.duracao / 60)} min · ${data(partida.inicio)}${rendicao(partida, r)}</p>
         <h1>${titulo}</h1>
         <div class="culpado" style="margin-top:14px">${icone(c.jogador.championName, 'g')}
           <div><div class="rotulo">Culpado · ${Math.round(c.fatia * 100)}% da culpa</div>
@@ -221,6 +259,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       </section>
       ${momentosHtml(cv, r)}
       <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
+      ${lutasHtml(r)}
       <section class="cartao"><h2>Divisão da culpa no time</h2><div class="ranking">${r.vereditos.map((v) => `
         <div class="linha ${eu && v.jogador.id === eu.id ? 'eu' : ''}">${icone(v.jogador.championName, 'p')}
           <div><div class="nm">${esc(nome(v.jogador))} <small>${esc(v.jogador.championName)}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
@@ -232,6 +271,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       <section class="cartao grafico"><h2 id="graf-titulo">Chance de vitória</h2>
         <div class="abas"><button class="rp-chip on" data-graf="chance">Chance de vitória</button><button class="rp-chip" data-graf="ouro">Ouro</button></div>
         <div id="graf-corpo">${graficoChance(cv)}</div></section>
+      ${resenhaHtml(partida, r, eu)}
       <section class="cartao"><h2>Uso de habilidades</h2>${habilidadesHtml(partida, r, eu)}</section>`;
     app.innerHTML = html;
     iniciarReplay(partida, r, c);
@@ -271,6 +311,64 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
   }
 
+  // ---------------------------------------------------------------- recibo, lutas e resenha
+  let partidaAtual = null;
+  const nomesHab = {};   // campeão -> nomes de Q, W, E, R (Data Dragon em português)
+
+  function reciboHtml(abate) {
+    const R = window.ResenhaLoL.recibo(abate, (c) => nomesHab[c]);
+    if (!R.total) return '';
+    const max = R.linhas[0].dano || 1;
+    const quem = R.porQuem.slice(0, 3).map(([f, d]) => `${esc(f)} ${Math.round((d / R.total) * 100)}%`).join(', ');
+    return `<div class="recibo"><div class="tot">Levou ${L.fmt(R.total)} de dano: ${quem}.</div>${R.linhas.map((l) => `
+      <div class="rl"><span class="nm">${esc(l.fonte)}${l.golpe ? ` <small>${esc(l.golpe)}</small>` : ''}</span><span class="v">${L.fmt(l.dano)}</span>
+      <span class="bar"><i style="width:${Math.round((l.dano / max) * 100)}%"></i></span></div>`).join('')}</div>`;
+  }
+
+  function rendicao(partida, r) {
+    const j = partida.jogadores.find((x) => x.gameEndedInEarlySurrender || x.gameEndedInSurrender);
+    if (!j) return '';
+    const quem = r.venceu ? 'os inimigos' : 'vocês';
+    return j.gameEndedInEarlySurrender ? ` · ${quem} se renderam cedo` : ` · ${quem} se renderam`;
+  }
+
+  function lutasHtml(r) {
+    if (!r.lutas.length) return '';
+    const nomeObj = (os) => L.descreverObjetivos(os);
+    return `<section class="cartao"><h2>Lutas</h2><div class="lutas">${r.lutas.map((l) => {
+      const res = { venceu: 'Vocês ganharam', perdeu: 'Vocês perderam', empate: 'Empate' }[l.resultado];
+      const abriu = l.abriuNosso
+        ? `${esc(nome(l.abriu))} (${esc(l.abriu.championName)}) abriu a luta morrendo.`
+        : `Abriu com ${esc(l.abriu.championName)} deles morrendo.`;
+      const aus = l.ausentes.length ? ` Não foram: ${l.ausentes.map((a) => esc(nome(a))).join(', ')}.` : '';
+      const dep = l.objetivosNos.length ? ` Depois vocês pegaram ${esc(nomeObj(l.objetivosNos))}.`
+        : l.objetivosEles.length ? ` Depois eles pegaram ${esc(nomeObj(l.objetivosEles))}.` : '';
+      return `<div class="luta ${l.resultado}"><div class="cab"><b>${L.mmss(l.inicio)}</b><span>${esc(l.lugar)}</span>
+          <span class="placar">${res} ${l.mortesEles} x ${l.mortesNos}</span></div>
+        <div class="det">${abriu}${aus}${dep}</div>
+        <button class="rp-chip" data-ver="${l.inicio}">▶ Ver no replay</button></div>`;
+    }).join('')}</div><p class="legenda" style="margin-top:10px">Luta = 3 abates ou mais perto um do outro. Placar: abates de vocês x mortes de vocês.</p></section>`;
+  }
+
+  function resenhaHtml(partida, r, eu) {
+    const Rz = window.ResenhaLoL;
+    const pg = Rz.pings(partida.jogadores);
+    const med = r.nos.map((j) => ({ j, m: Rz.medalhas(partida, j, pg) })).filter((x) => x.m.length);
+    const medHtml = med.length ? `<div class="medalhas">${med.map(({ j, m }) => `
+      <div class="med-j ${eu && j.id === eu.id ? 'eu' : ''}">${icone(j.championName, 'p')}<div><div class="nm">${esc(nome(j))}</div>
+        <ul class="med-lista">${m.map((x) => `<li class="${x.bom ? '' : 'mau'}"><b>${esc(x.titulo)}:</b> ${esc(x.texto)}</li>`).join('')}</ul></div></div>`).join('')}</div>` : '';
+    const ids = new Set(r.nos.map((j) => j.id));
+    const linhas = pg.linhas.filter((l) => ids.has(l.jogador.id));
+    const rei = pg.reiDoInterrogacao;
+    const pingHtml = linhas.length ? `<h3 style="margin-top:18px;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Pings do time</h3>
+      ${rei ? `<p class="destaque" style="margin-top:8px">${esc(nome(rei.jogador))} (${esc(rei.jogador.championName)}) pingou "?" ${rei.interrogacoes} vezes${ids.has(rei.jogador.id) ? '' : ' (e é do outro time)'}.</p>` : ''}
+      <div class="pings">${linhas.map((l) => `<div class="ping-l">${icone(l.jogador.championName, 'p')}
+        <div><div class="nm">${esc(nome(l.jogador))}</div><div class="tp">${l.tipos.slice(0, 4).map((t) => `${esc(t.nome)} ${t.n}`).join(' · ') || 'nenhum'}</div></div>
+        <div class="n">${l.total}</div></div>`).join('')}</div>` : '';
+    if (!medHtml && !pingHtml) return '';
+    return `<section class="cartao"><h2>Resenha</h2>${medHtml}${pingHtml}</section>`;
+  }
+
   // ---------------------------------------------------------------- throw e play of the game
   function momentosHtml(cv, r) {
     const pc = (x) => `${Math.round(x * 100)}%`;
@@ -285,6 +383,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         <div class="quem">${icone(quem.championName, 'p')}<span>${esc(nome(quem))}</span></div>
         <div>${texto}</div>
         <div class="chance">Chance de vitória: ${pc(l.antes)} → ${pc(l.depois)}</div>
+        ${tipo === 'throw' && l.morte.recibo && l.morte.recibo.length ? `<div data-recibo="${partidaAtual.eventos.indexOf(l.morte)}">${reciboHtml(l.morte)}</div>` : ''}
         <button class="rp-chip" data-ver="${l.t}">▶ Ver no replay</button></div>`;
     };
     const html = cartao(cv.throwDoJogo, 'throw') + cartao(cv.playDoJogo, 'play');
@@ -358,7 +457,10 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         const sp = info.spells[+el.dataset.slot];
         if (sp) { el.innerHTML = `<img alt="" src="${base}/img/spell/${esc(sp.image.full)}">`; el.parentNode.title = `${TECLAS[+el.dataset.slot]}: ${sp.name}`; }
       });
+      nomesHab[camp] = info.spells.map((x) => x.name);
     }
+    document.querySelectorAll('[data-recibo]').forEach((el) => { el.innerHTML = reciboHtml(partida.eventos[+el.dataset.recibo]); });
+    if (replay) replay.recibo = null;
   }
 
   // ---------------------------------------------------------------- replay no mapinha
@@ -389,6 +491,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       <div class="rp-linha">Velocidade ${VELOCIDADES.map((v) => `<button class="rp-chip${v === 30 ? ' on' : ''}" data-vel="${v}">${v}x</button>`).join('')}</div>
       ${pulos ? `<div class="rp-linha">Mortes de ${esc(nome(c.jogador))}: ${pulos}</div>` : ''}
       <ol class="rp-feed" id="rp-feed"></ol>
+      <div class="rp-recibo" id="rp-recibo"></div>
       <p class="legenda">A Riot só dá a posição de cada um uma vez por minuto e no segundo de cada abate. Entre esses pontos o caminho é estimado. Azul: seu time. Vermelho: os inimigos. Anel dourado: o culpado.</p>`;
   }
 
@@ -436,6 +539,16 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       // feed: os 4 últimos eventos até agora
       let n = 0;
       while (n < dados.eventos.length && dados.eventos[n].t <= t) n++;
+      // recibo da última morte do time nos últimos 15 s de jogo
+      const ultMorte = [...dados.eventos.slice(0, n)].reverse().find((e) => e.tipo === 'abate' && !e.bom && t - e.t <= 15);
+      const chaveRecibo = ultMorte ? ultMorte.t + '-' + ultMorte.morreu : '';
+      if (chaveRecibo !== st.recibo) {
+        st.recibo = chaveRecibo;
+        const ab = ultMorte && partida.eventos.find((e) => e.tipo === 'abate' && e.t === ultMorte.t && e.morreu === ultMorte.morreu);
+        const vit = ab && partida.jogadores.find((j) => j.id === ab.morreu);
+        el('rp-recibo').innerHTML = ab && ab.recibo && ab.recibo.length
+          ? `<div class="tt">${esc(nome(vit))} (${esc(vit.championName)}) morreu aos ${L.mmss(ab.t)}</div>${reciboHtml(ab)}` : '';
+      }
       if (n !== st.feedN) {
         st.feedN = n;
         el('rp-feed').innerHTML = dados.eventos.slice(Math.max(0, n - 4), n).reverse()
