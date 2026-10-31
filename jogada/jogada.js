@@ -144,6 +144,8 @@ function geoOf(pt) {
 }
 const contorno = new THREE.MeshBasicMaterial({ color: 0x0b0806, side: THREE.BackSide });
 const texLoader = new THREE.TextureLoader(); texLoader.setCrossOrigin('anonymous');
+// emoção do emocaoEm -> nome da folha que a linha de montagem gera
+const FOLHA = { feliz: 'rindo', dor: 'sofrendo', assustado: 'apavorado', triste: 'chorando', morto: 'nocauteado', bravo: 'sofrendo' };
 function retratoTex(nome, cor, caras = {}) {
   // placeholder com a sigla enquanto o retrato carrega (ou se o CDN falhar)
   const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
@@ -155,11 +157,9 @@ function retratoTex(nome, cor, caras = {}) {
   const img = new Image(); img.crossOrigin = 'anonymous';
   img.onload = () => { const w = img.naturalWidth, h = img.naturalHeight, sz = Math.min(w, h) * .92; g.clearRect(0, 0, 256, 256); g.drawImage(img, (w - sz) / 2, (h - sz) * .2, sz, sz, 0, 0, 256, 256); tex.needsUpdate = true; };
   // retrato servido pelo próprio site (img/herois), sem depender de CORS do CDN da Steam; o CDN fica só de reserva
-  // emoções: versões do retrato editadas por IA em img/herois/emocoes/<heroi>_<emocao>.webp ou .png, carregadas se existirem
+  // emoções: folhas de 14 quadros (256x256 lado a lado) geradas por IA a partir do retrato, em img/herois/emocoes/<heroi>_<emocao>_folha.png
   img.addEventListener('load', () => { caras.normal = tex; caras.prontas = true;
-    for (const em of (window.Emocoes?.NOMES || [])) { if (em === 'normal') continue;
-      const tenta = ext => texLoader.load(`../img/herois/emocoes/${nome}_${em}.${ext}`, tx => { tx.colorSpace = THREE.SRGBColorSpace; caras[em] = tx; }, undefined, () => ext === 'webp' && tenta('png'));
-      tenta('webp'); } });
+    for (const em of new Set(Object.values(FOLHA))) texLoader.load(`../img/herois/emocoes/${nome}_${em}_folha.png`, tx => { tx.colorSpace = THREE.SRGBColorSpace; tx.repeat.set(1 / 14, 1); tx.wrapS = THREE.ClampToEdgeWrapping; caras[em] = tx; }, undefined, () => { }); });
   img.onerror = () => { if (!img.src.startsWith(CDN)) img.src = CDN + nome + '.png?'; };
   img.src = '../img/herois/' + nome + '.png';
   return tex;
@@ -403,7 +403,10 @@ function frame(ts) {
     // emoção do retrato: troca a cara com um squash de 120 ms e aplica o movimento da emoção
     let an = { sx: 1, sy: 1, rot: 0, dx: 0, dy: 0 }, tr = 1;
     if (U.caras.prontas) { const crit = DANO.some(e => e.tgt === s && e.amt > 400 && t >= e.t && t < e.t + .4), em = Emocoes.emocaoEm(D.retrato[s], t, crit);
-      if (em !== U.em && U.caras[em]) { U.em = em; U.face.map = U.caras[em]; U.face.transparent = true; U.face.needsUpdate = true; U.trocou = now; }
+      const alvo = em === 'normal' ? 'normal' : FOLHA[em], tx = U.caras[alvo] ? alvo : 'normal', emV = tx === 'normal' ? 'normal' : em;
+      if (emV !== U.em) { U.em = emV; U.face.map = U.caras[tx]; U.face.transparent = true; U.face.needsUpdate = true; U.trocou = now; }
+      // folha animada a 12 fps: 2 quadros do retrato normal e depois a emoção em loop
+      if (tx !== 'normal') { const q = Math.floor((now - U.trocou) * 12); U.face.map.offset.x = (q < 14 ? q : 2 + (q - 2) % 12) / 14; }
       if (!congelado(s, t)) an = Emocoes.animar(U.em, now); const k = (now - U.trocou) / .12; tr = k < .5 ? 1 - .3 * k : k < 1 ? .85 + .5 * (k - .5) : k < 1.6 ? 1.1 - (k - 1) / 6 : 1; }
     // emoção diferente de "normal" aumenta o cabeção 1,2x (ease de ~150 ms) para ler nos planos abertos
     U.zoom = (U.zoom || 1) + ((U.caras.prontas && U.em !== 'normal' ? 1.2 : 1) - (U.zoom || 1)) * Math.min(1, dt / .05);
