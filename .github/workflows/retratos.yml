@@ -1,0 +1,36 @@
+name: Retratos dos heróis
+
+# Baixa os retratos dos heróis para img/herois/, para a jogada 3D usar sem depender do CORS do CDN da Steam.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * 1"
+  push:
+    paths: ["img/herois/baixar.py", ".github/workflows/retratos.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retratos
+  cancel-in-progress: false
+
+jobs:
+  retratos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Baixar retratos
+        run: python img/herois/baixar.py | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img/herois
+          git diff --cached --quiet && exit 0
+          git commit -m "Retratos dos heróis"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
