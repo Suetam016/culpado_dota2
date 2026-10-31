@@ -35,17 +35,19 @@
     };
   }
 
-  // opcoes: { jogadores: [{ id, rosto (html), peso }], culpado: id, nome, nivel, cor, crime, som (bool) }
+  // opcoes: { jogadores: [{ id, rosto (html), peso }], culpado: id, nome, nivel, cor, crime, som (bool),
+  //          e na vitória: finais (ids que ficam), titulo, final (o título no fim), alarme: false }
   function revelar(o) {
     return new Promise((resolve) => {
       const reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const ordemSaida = o.jogadores.filter((p) => p.id !== o.culpado).sort((a, b) => a.peso - b.peso);
+      const finais = o.finais || [o.culpado];
+      const ordemSaida = o.jogadores.filter((p) => !finais.includes(p.id)).sort((a, b) => a.peso - b.peso);
 
       const ov = el('div', 'lrev');
       ov.setAttribute('role', 'dialog');
       ov.setAttribute('aria-label', 'Revelação do culpado');
       ov.style.setProperty('--raridade', o.cor);
-      const titulo = el('p', 'lrev-titulo', 'O tribunal está reunido');
+      const titulo = el('p', 'lrev-titulo', o.titulo || 'O tribunal está reunido');
       const raios = el('div', 'lrev-raios');
       const fila = el('div', 'lrev-fila');
       const palco = el('div', 'lrev-palco');
@@ -70,7 +72,7 @@
       const relogios = [];
       let audio = o.som ? new Audio(AUDIO_ABERTURA) : null;
       if (audio) audio.volume = VOLUME;
-      const alarme = o.som ? alarmeDoNivel(o.nivel) : null;
+      const alarme = o.som && o.alarme !== false ? alarmeDoNivel(o.nivel) : null;
       let alarmeTocando = null;
       let tocando = false;
       const calar = () => {
@@ -120,11 +122,11 @@
       const mostrarFinal = () => {
         ov.classList.add('revelado');
         if (o.nivel >= 1 && alarme) ov.classList.add(o.nivel >= 4 ? 'nuclear' : 'policia');
-        titulo.textContent = 'Culpado!';
+        titulo.textContent = o.final || 'Culpado!';
         nome.textContent = o.nome;
         nome.setAttribute('aria-live', 'polite');
         selo.textContent = `★ ${o.crime} ★`;
-        cartas.forEach((c) => c.el.classList.toggle('vencedor', c.p.id === o.culpado));
+        cartas.forEach((c) => c.el.classList.toggle('vencedor', finais.includes(c.p.id)));
         const dur = alarme ? alarme.tocar() : 0;
         alarmeTocando = alarme;
         // no Procura-se e no Tribunal o alarme entra no lugar do fim da abertura
@@ -134,7 +136,7 @@
       };
 
       if (reduz) {
-        cartas.forEach((c) => { if (c.p.id !== o.culpado) c.el.hidden = true; });
+        cartas.forEach((c) => { if (!finais.includes(c.p.id)) c.el.hidden = true; });
         pronto.then(() => { if (!fim) mostrarFinal(); });
         return;
       }
