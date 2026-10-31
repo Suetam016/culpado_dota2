@@ -107,6 +107,32 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 .rp-feed li b { font-family: var(--font-mono); font-weight: 500; color: var(--muted); min-width: 3em; }
 .rp-feed li.mau { color: var(--bad-ink); }
 .rp-feed li.bom { color: var(--good-ink); }
+.momentos { display: grid; gap: 12px; }
+@media (min-width: 640px) { .momentos { grid-template-columns: 1fr 1fr; } }
+.momento { border-radius: var(--radius-sm); padding: 14px; border: 1px solid var(--line); background: var(--surface-2); display: grid; gap: 6px; align-content: start; }
+.momento.throw { border-color: var(--bad); background: var(--bad-wash); }
+.momento.play { border-color: var(--good); background: var(--good-wash); }
+.momento .rot { font-family: var(--font-display); font-weight: 900; font-size: 1.05rem; }
+.momento.throw .rot { color: var(--bad-ink); }
+.momento.play .rot { color: var(--good-ink); }
+.momento .quem { display: flex; gap: 10px; align-items: center; font-weight: 700; }
+.momento .chance { font-family: var(--font-mono); font-size: .95rem; }
+.momento button { justify-self: start; }
+.abas { display: flex; gap: 6px; margin-bottom: 10px; }
+.habs { display: grid; gap: 14px; }
+.habs h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; }
+.hab-j { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; align-items: start; }
+.hab-j .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hab-j .nm small { color: var(--muted); font-weight: 500; }
+.hab-j.eu .nm { color: var(--gold-2); }
+.tiles { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.tile { width: 36px; text-align: center; font-family: var(--font-mono); font-size: .8rem; color: var(--ink-2); }
+.tile .ic { width: 30px; height: 30px; margin: 0 auto 2px; border-radius: 6px; background: var(--surface-3); display: grid; place-items: center; font-family: var(--font-body); font-weight: 800; font-size: .8rem; color: var(--muted); overflow: hidden; }
+.tile .ic img { width: 100%; height: 100%; display: block; }
+.tile.zero { color: var(--bad-ink); }
+.tile.zero .ic { outline: 2px solid var(--bad); }
+.tile.sep { width: 2px; }
+.ordem { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); margin-top: 4px; letter-spacing: .04em; word-break: break-all; }
 .vazio { color: var(--muted); text-align: center; padding: 24px 8px; }
 .rodape { color: var(--muted); font-size: .8rem; margin-top: 28px; text-align: center; }
 </style>
@@ -179,6 +205,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     const r = L.julgar(partida, puuid);
     const c = r.culpado;
     const eu = partida.jogadores.find((j) => j.puuid === puuid);
+    const cv = L.chanceDeVitoria(partida, r.timeNos);
     const titulo = r.venceu ? 'Ganharam, mas alguém quase entregou' : 'Perderam. A culpa é de…';
     let html = '';
     if (exemplo) html += '<p class="aviso">Partida de exemplo com dados fictícios, só para mostrar como fica. As de verdade aparecem quando a coleta rodar.</p>';
@@ -192,7 +219,8 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         </div>
         <ul class="motivos">${c.pesou.concat(c.atenuantes).map((m) => `<li><span class="pts ${m.pontos < 0 ? 'bom' : ''}">${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>
       </section>
-      <section class="cartao"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
+      ${momentosHtml(cv, r)}
+      <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
       <section class="cartao"><h2>Divisão da culpa no time</h2><div class="ranking">${r.vereditos.map((v) => `
         <div class="linha ${eu && v.jogador.id === eu.id ? 'eu' : ''}">${icone(v.jogador.championName, 'p')}
           <div><div class="nm">${esc(nome(v.jogador))} <small>${esc(v.jogador.championName)}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
@@ -201,9 +229,22 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         </div>`).join('')}</div>
         <p class="legenda" style="margin-top:12px">Pontos = cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
       </section>
-      <section class="cartao grafico"><h2>Ouro do time, minuto a minuto</h2>${graficoOuro(partida, r)}</section>`;
+      <section class="cartao grafico"><h2 id="graf-titulo">Chance de vitória</h2>
+        <div class="abas"><button class="rp-chip on" data-graf="chance">Chance de vitória</button><button class="rp-chip" data-graf="ouro">Ouro</button></div>
+        <div id="graf-corpo">${graficoChance(cv)}</div></section>
+      <section class="cartao"><h2>Uso de habilidades</h2>${habilidadesHtml(partida, r, eu)}</section>`;
     app.innerHTML = html;
     iniciarReplay(partida, r, c);
+    document.querySelectorAll('[data-graf]').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('[data-graf]').forEach((x) => x.classList.toggle('on', x === b));
+      document.getElementById('graf-corpo').innerHTML = b.dataset.graf === 'ouro' ? graficoOuro(partida, r) : graficoChance(cv);
+      document.getElementById('graf-titulo').textContent = b.dataset.graf === 'ouro' ? 'Ouro do time, minuto a minuto' : 'Chance de vitória';
+    }));
+    document.querySelectorAll('[data-ver]').forEach((b) => b.addEventListener('click', () => {
+      document.getElementById('cartao-replay').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (replay && replay.pular) replay.pular(Math.max(0, +b.dataset.ver - 10));
+    }));
+    preencherHabilidades(partida);
     window.scrollTo(0, 0);
   }
 
@@ -228,6 +269,96 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       <text x="2" y="${y(max) + 4}" font-size="10" fill="var(--muted)">+${k(max)}</text>
       <text x="2" y="${y(-max) + 4}" font-size="10" fill="var(--muted)">−${k(max)}</text>${ticks.join('')}
     </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
+  }
+
+  // ---------------------------------------------------------------- throw e play of the game
+  function momentosHtml(cv, r) {
+    const pc = (x) => `${Math.round(x * 100)}%`;
+    const cartao = (l, tipo) => {
+      if (!l) return '';
+      const obj = L.descreverObjetivos(l.objetivos);
+      const quem = tipo === 'throw' ? l.vitima : l.matou;
+      const texto = tipo === 'throw'
+        ? `${esc(nome(l.vitima))} (${esc(l.vitima.championName)}) morreu aos ${L.mmss(l.t)}${l.matou ? ` para ${esc(l.matou.championName)}` : ''}${obj ? ` e logo depois os inimigos pegaram ${esc(obj)}` : ''}.`
+        : `${esc(nome(l.matou))} (${esc(l.matou.championName)}) pegou ${esc(l.vitima.championName)} aos ${L.mmss(l.t)}${obj ? ` e o time emendou ${esc(obj)}` : ''}.`;
+      return `<div class="momento ${tipo}"><div class="rot">${tipo === 'throw' ? 'Throw of the Game' : 'Play of the Game'}</div>
+        <div class="quem">${icone(quem.championName, 'p')}<span>${esc(nome(quem))}</span></div>
+        <div>${texto}</div>
+        <div class="chance">Chance de vitória: ${pc(l.antes)} → ${pc(l.depois)}</div>
+        <button class="rp-chip" data-ver="${l.t}">▶ Ver no replay</button></div>`;
+    };
+    const html = cartao(cv.throwDoJogo, 'throw') + cartao(cv.playDoJogo, 'play');
+    return html ? `<section class="cartao"><h2>Momentos da partida</h2><div class="momentos">${html}</div></section>` : '';
+  }
+
+  function graficoChance(cv) {
+    const serie = cv.curva;
+    if (serie.length < 2) return '<p class="vazio">Sem timeline.</p>';
+    const W = 400, H = 200, P = 30, fim = serie[serie.length - 1].t || 1;
+    const x = (t) => P + (t / fim) * (W - P - 8);
+    const y = (p) => 10 + (1 - p) * (H - 30);
+    const pts = serie.map((s) => `${x(s.t).toFixed(1)},${y(s.p).toFixed(1)}`).join(' ');
+    const area = `${x(0)},${y(0.5)} ${pts} ${x(fim)},${y(0.5)}`;
+    const ticks = [];
+    for (let m = 10; m * 60 < fim; m += 10) ticks.push(`<text x="${x(m * 60)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="var(--muted)">${m}'</text>`);
+    const marca = (l, cor) => (l ? `<circle cx="${x(l.t).toFixed(1)}" cy="${y(l.depois).toFixed(1)}" r="5" fill="${cor}" stroke="var(--surface)" stroke-width="2"><title>${L.mmss(l.t)}</title></circle>` : '');
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Chance de vitória minuto a minuto">
+      <defs><clipPath id="cc-cima"><rect x="0" y="0" width="${W}" height="${y(0.5)}"/></clipPath><clipPath id="cc-baixo"><rect x="0" y="${y(0.5)}" width="${W}" height="${H}"/></clipPath></defs>
+      <polygon points="${area}" fill="var(--good)" opacity=".22" clip-path="url(#cc-cima)"/>
+      <polygon points="${area}" fill="var(--bad)" opacity=".22" clip-path="url(#cc-baixo)"/>
+      <line x1="${P}" x2="${W - 8}" y1="${y(0.5)}" y2="${y(0.5)}" stroke="var(--line-strong)" stroke-dasharray="3 3"/>
+      <polyline points="${pts}" fill="none" stroke="var(--gold)" stroke-width="2"/>
+      ${marca(cv.throwDoJogo, 'var(--bad)')}${marca(cv.playDoJogo, 'var(--good)')}
+      <text x="2" y="${y(1) + 4}" font-size="10" fill="var(--muted)">100%</text>
+      <text x="2" y="${y(0.5) + 4}" font-size="10" fill="var(--muted)">50%</text>
+      <text x="2" y="${y(0) + 4}" font-size="10" fill="var(--muted)">0%</text>${ticks.join('')}
+    </svg><p class="legenda"><span style="--c:var(--bad)">Throw of the Game</span><span style="--c:var(--good)">Play of the Game</span></p>
+    <p class="legenda">Estimativa pelo ouro, torres, inibidores, dragões e Barão de cada minuto. Ainda não é um modelo treinado como o do Dota.</p>`;
+  }
+
+  // ---------------------------------------------------------------- uso de habilidades
+  const FEITICOS = { 1: 'Purificar', 3: 'Exaustão', 4: 'Flash', 6: 'Fantasma', 7: 'Curar', 11: 'Golpear', 12: 'Teleporte', 13: 'Clareza', 14: 'Incendiar', 21: 'Barreira', 32: 'Marcar' };
+  const TECLAS = ['Q', 'W', 'E', 'R'];
+
+  function habilidadesHtml(partida, r, eu) {
+    if (partida.jogadores[0].spell1Casts == null) return '<p class="vazio">Esta partida foi coletada antes de guardarmos o uso de habilidades. Ela é atualizada na próxima coleta.</p>';
+    const bloco = (titulo, js) => `<div><h3>${titulo}</h3>${js.map((j) => {
+      const casts = [j.spell1Casts, j.spell2Casts, j.spell3Casts, j.spell4Casts];
+      const ordem = (j.skills || []).map(([, s]) => TECLAS[s - 1] || '?').join(' ');
+      return `<div class="hab-j ${eu && j.id === eu.id ? 'eu' : ''}" style="margin-top:10px">${icone(j.championName, 'p')}<div>
+        <div class="nm">${esc(nome(j))} <small>${esc(j.championName)}</small></div>
+        <div class="tiles">${casts.map((n, i) => `<div class="tile${i === 3 && n === 0 ? ' zero' : ''}" title="${TECLAS[i]}"><div class="ic" data-camp="${esc(j.championName)}" data-slot="${i}">${TECLAS[i]}</div>${n}</div>`).join('')}
+          <div class="tile sep"></div>
+          ${[[j.summoner1Id, j.summoner1Casts], [j.summoner2Id, j.summoner2Casts]].map(([id, n]) => `<div class="tile" title="${esc(FEITICOS[id] || '')}"><div class="ic" data-feitico="${id}">${esc((FEITICOS[id] || '?').slice(0, 2))}</div>${n == null ? '' : n}</div>`).join('')}</div>
+        ${ordem ? `<div class="ordem">Ordem: ${ordem}</div>` : ''}</div></div>`;
+    }).join('')}</div>`;
+    return `<div class="habs">${bloco('Seu time', r.nos)}${bloco('Inimigos', r.eles)}</div>
+      <p class="legenda" style="margin-top:12px">Quantas vezes cada um usou Q, W, E, R e os feitiços. Em vermelho: ultimate que não saiu nenhuma vez. A Riot não diz em que momento cada habilidade foi usada, só o total.</p>`;
+  }
+
+  const cacheDD = {};
+  const pegarDD = (u) => (cacheDD[u] = cacheDD[u] || fetch(u).then((x) => (x.ok ? x.json() : null)).catch(() => null));
+  async function preencherHabilidades(partida) {
+    if (!versaoDD) return;
+    const base = `https://ddragon.leagueoflegends.com/cdn/${versaoDD}`;
+    const feiticos = await pegarDD(`${base}/data/pt_BR/summoner.json`);
+    if (feiticos && feiticos.data) {
+      const porChave = Object.fromEntries(Object.values(feiticos.data).map((f) => [f.key, f]));
+      document.querySelectorAll('[data-feitico]').forEach((el) => {
+        const f = porChave[el.dataset.feitico];
+        if (f) { el.innerHTML = `<img alt="" src="${base}/img/spell/${esc(f.image.full)}">`; el.parentNode.title = f.name; }
+      });
+    }
+    for (const camp of new Set(partida.jogadores.map((j) => j.championName))) {
+      const id = ID_CAMPEAO[camp] || camp;
+      const d = await pegarDD(`${base}/data/pt_BR/champion/${encodeURIComponent(id)}.json`);
+      const info = d && d.data && Object.values(d.data)[0];
+      if (!info) continue;
+      document.querySelectorAll(`[data-camp="${CSS.escape(camp)}"]`).forEach((el) => {
+        const sp = info.spells[+el.dataset.slot];
+        if (sp) { el.innerHTML = `<img alt="" src="${base}/img/spell/${esc(sp.image.full)}">`; el.parentNode.title = `${TECLAS[+el.dataset.slot]}: ${sp.name}`; }
+      });
+    }
   }
 
   // ---------------------------------------------------------------- replay no mapinha
@@ -334,6 +465,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       }
     }
 
+    st.pular = (t) => { st.t = t; desenhar(); tocar(true); };
     el('rp-play').addEventListener('click', () => tocar(!st.tocando));
     el('rp-t').addEventListener('input', (e) => { st.t = +e.target.value; desenhar(); });
     document.querySelectorAll('[data-vel]').forEach((b) => b.addEventListener('click', () => {
