@@ -1,0 +1,135 @@
+{
+  "heroi": "pudge",
+  "nome": "Pudge",
+  "cabeca": {
+    "retrato": "pudge",
+    "escala": 1.6,
+    "moldura": "#e5533d"
+  },
+  "corpo": {
+    "largura": 1.25,
+    "altura": 0.8,
+    "cor_roupa": "#6b4a2f",
+    "cor_pele": "#c4a690",
+    "acessorio": [
+      "gancho",
+      "cutelo"
+    ],
+    "material": "carne e ferro"
+  },
+  "cores_heroi": [
+    "#7ee84a",
+    "#c0262d",
+    "#b8bec4"
+  ],
+  "spells": {
+    "item_tpscroll": {
+      "nome": "Town Portal Scroll",
+      "arquetipo": "teleporte",
+      "cores": [
+        "#ffb070",
+        "#e5533d",
+        "#fff1d6"
+      ],
+      "duracao_ms": 3000,
+      "escala": 1,
+      "particulas": 60,
+      "impacto": {
+        "tremor": 0.05,
+        "flash": true
+      },
+      "som": "tp_canal",
+      "som_impacto": "tp_chegada",
+      "nota": "anel no chão + coluna de luz que cresce durante o canal; na chegada o herói aparece com squash"
+    },
+    "pudge_meat_hook": {
+      "nome": "Meat Hook",
+      "arquetipo": "gancho",
+      "cores": [
+        "#b8bec4",
+        "#80868c",
+        "#ffd28a"
+      ],
+      "duracao_ms": 1900,
+      "escala": 1.1,
+      "particulas": 120,
+      "impacto": {
+        "tremor": 0.6,
+        "flash": true
+      },
+      "som": "pudge_meat_hook",
+      "som_impacto": "pudge_hook_acerto",
+      "som_fim": "pudge_hook_puxa",
+      "destaque": true,
+      "nota": "antecipação de 140 ms (braço recua), corrente com elos girando, 40 faíscas no acerto, hitstop de 90 ms, depois arrasta o alvo até a mão"
+    },
+    "pudge_rot": {
+      "nome": "Rot",
+      "arquetipo": "aura",
+      "cores": [
+        "#7ee84a",
+        "#3f7a1f"
+      ],
+      "duracao_ms": 6000,
+      "escala": 1,
+      "particulas": 160,
+      "impacto": {
+        "tremor": 0,
+        "flash": false
+      },
+      "som": "pudge_rot",
+      "nota": "nuvem verde baixa com borda opaca e bolhas; inimigo dentro pisca verde a cada 0,5 s; a fumaça não cobre a cabeça"
+    },
+    "pudge_dismember": {
+      "nome": "Dismember",
+      "arquetipo": "canalizacao",
+      "cores": [
+        "#c0262d",
+        "#ff6a5a"
+      ],
+      "duracao_ms": 3600,
+      "escala": 1,
+      "particulas": 140,
+      "impacto": {
+        "tremor": 0.3,
+        "flash": true
+      },
+      "som": "pudge_dismember",
+      "nota": "alvo suspenso 0,4 acima do chão, 5 a 7 fios de carne até o Pudge; a cada 1 s um pulso vermelho percorre os fios e a cabeça do alvo amassa"
+    },
+    "pudge_flesh_heap": {
+      "nome": "Meat Shield (Flesh Heap)",
+      "arquetipo": "escudo",
+      "cores": [
+        "#c8ff7a",
+        "#8a5a3a"
+      ],
+      "duracao_ms": 2500,
+      "escala": 1,
+      "particulas": 40,
+      "impacto": {
+        "tremor": 0,
+        "flash": false
+      },
+      "som": "pudge_flesh_heap",
+      "nota": "corpo infla 10% por 200 ms; bolha translúcida com contorno, cor diferente da Rot"
+    },
+    "morte": {
+      "nome": "Morte",
+      "arquetipo": "morte",
+      "cores": [
+        "#c0262d",
+        "#2a1a14"
+      ],
+      "duracao_ms": 1600,
+      "escala": 1,
+      "particulas": 50,
+      "impacto": {
+        "tremor": 0.4,
+        "flash": true
+      },
+      "som": "morte",
+      "nota": "hitstop de 120 ms; o cabeção solta do corpo, sobe 0,6, gira 1,5 volta e cai quicando 2 vezes (cada quique 40% menor); o corpo tomba para trás e afunda na base; aro do time apaga; 12 pedaços de carne no chão"
+    }
+  }
+}
