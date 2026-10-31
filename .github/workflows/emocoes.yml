@@ -1,0 +1,46 @@
+name: Emoções dos retratos (IA)
+
+# Gera, com o modelo de imagem do Gemini, os retratos rindo, chorando, sofrendo, apavorado e nocauteado,
+# e monta o GIF e a folha de quadros que a jogada usa. Precisa do segredo GEMINI_API_KEY.
+# Custo aproximado: 5 imagens por herói; o que já existe em img/herois/emocoes/ia/ não é gerado de novo.
+on:
+  workflow_dispatch:
+    inputs:
+      herois:
+        description: "Heróis separados por vírgula, ou 'todos'"
+        default: "pudge,faceless_void,terrorblade"
+      emocoes:
+        description: "Emoções (vírgula)"
+        default: "rindo,chorando,sofrendo,apavorado,nocauteado"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: emocoes
+  cancel-in-progress: false
+
+jobs:
+  emocoes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - name: Gerar emoções
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EMOCOES: ${{ inputs.emocoes }}
+        run: python img/herois/emocoes/gerar_ia.py "${{ inputs.herois }}" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img/herois/emocoes
+          git diff --cached --quiet && exit 0
+          git commit -m "Emoções dos retratos (IA)"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
