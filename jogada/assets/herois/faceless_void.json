@@ -1,0 +1,100 @@
+{
+  "heroi": "faceless_void",
+  "nome": "Faceless Void",
+  "cabeca": {
+    "retrato": "faceless_void",
+    "escala": 1.6,
+    "moldura": "#4f9dff"
+  },
+  "corpo": {
+    "largura": 0.95,
+    "altura": 0.95,
+    "cor_roupa": "#6b5a96",
+    "cor_pele": "#b8995a",
+    "acessorio": [
+      "maca"
+    ],
+    "material": "tempo e ouro"
+  },
+  "cores_heroi": [
+    "#9a7dff",
+    "#4fd0ff",
+    "#b8995a"
+  ],
+  "spells": {
+    "item_tpscroll": {
+      "nome": "Town Portal Scroll",
+      "arquetipo": "teleporte",
+      "cores": [
+        "#7fc8ff",
+        "#4f9dff",
+        "#e8f6ff"
+      ],
+      "duracao_ms": 3000,
+      "escala": 1,
+      "particulas": 60,
+      "impacto": {
+        "tremor": 0,
+        "flash": false
+      },
+      "som": "tp_canal",
+      "som_impacto": "tp_cancelado",
+      "nota": "neste lance o TP é cancelado pelo Hook: o anel quebra em pedaços e a coluna apaga de uma vez"
+    },
+    "faceless_void_time_walk": {
+      "nome": "Time Walk",
+      "arquetipo": "blink",
+      "cores": [
+        "#9a7dff",
+        "#4fd0ff"
+      ],
+      "duracao_ms": 900,
+      "escala": 1,
+      "particulas": 120,
+      "impacto": {
+        "tremor": 0,
+        "flash": true
+      },
+      "som": "faceless_void_time_walk",
+      "nota": "desliza em 400 ms deixando 6 cópias roxas e ponteiros de relógio; anel de relógio no ponto de chegada; sem coluna de luz, para não confundir com TP"
+    },
+    "faceless_void_chronosphere": {
+      "nome": "Chronosphere",
+      "arquetipo": "domo",
+      "cores": [
+        "#2a1f5a",
+        "#9a7dff",
+        "#4fd0ff"
+      ],
+      "duracao_ms": 4000,
+      "escala": 1.3,
+      "particulas": 80,
+      "impacto": {
+        "tremor": 0.8,
+        "flash": true
+      },
+      "som": "faceless_void_chronosphere",
+      "destaque": true,
+      "nota": "domo cresce em 250 ms; dentro tudo fica dessaturado e parado menos o Void; hitstop de 120 ms; no fim o domo racha e some em 300 ms"
+    },
+    "ataque": {
+      "nome": "Ataque com crítico",
+      "arquetipo": "golpe",
+      "cores": [
+        "#b8995a",
+        "#9a7dff",
+        "#ffffff"
+      ],
+      "duracao_ms": 450,
+      "escala": 1,
+      "particulas": 24,
+      "impacto": {
+        "tremor": 0.25,
+        "flash": true
+      },
+      "som": "void_ataque",
+      "som_impacto": "void_critico",
+      "nota": "antecipação de 120 ms (maça sobe), golpe em arco de 90 graus com rastro roxo, estrela de impacto no alvo; acima de 400 de dano vira crítico: arco 1,3x maior, hitstop de 80 ms e o som de crítico"
+    }
+  }
+}
