@@ -19,7 +19,7 @@
   const PLURAL_OBJETIVO = { DRAGON: 'dragões', TOWER_BUILDING: 'torres', INHIBITOR_BUILDING: 'inibidores', HORDE: 'Vastilarvas' };
   const LABELS = {
     mortes: 'Mortes', sozinho: 'Morreu sozinho', objetivos: 'Objetivos entregues', rota: 'Rota',
-    visao: 'Visão', ult: 'Ultimate', abates: 'Abates e assistências',
+    visao: 'Visão', ult: 'Ultimate', abriu: 'Abriu a luta morrendo', ausente: 'Não foi para a luta', abates: 'Abates e assistências',
   };
 
   const fmt = (n) => Math.round(n).toLocaleString('pt-BR');
@@ -47,6 +47,66 @@
   }
 
   // ponto de vista: o time do jogador `puuid` (ou o time que perdeu, se não achar)
+
+  // ---------------------------------------------------------------- lutas
+  // Abates a menos de 20 s e 3.500 unidades do anterior formam uma luta (3 abates ou mais; menos que isso é troca).
+  const LUTA_GAP_S = 20, LUTA_DIST = 3500, LONGE_DA_LUTA = 5000;
+  const COVIL_DRAGAO = { x: 9866, y: 4414 }, COVIL_BARAO = { x: 5007, y: 10471 };
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+
+  function lugar(p) {
+    if (dist(p, COVIL_DRAGAO) < 2200) return 'no dragão';
+    if (dist(p, COVIL_BARAO) < 2200) return 'no Barão';
+    if (p.x < 2600 && p.y < 2600) return 'na base azul';
+    if (p.x > 12300 && p.y > 12300) return 'na base vermelha';
+    if ((p.x < 2600 && p.y > 9000) || (p.y > 12300 && p.x < 6000)) return 'no topo';
+    if ((p.y < 2600 && p.x > 9000) || (p.x > 12300 && p.y < 6000)) return 'no bot';
+    if (Math.abs(p.x - p.y) < 1700) return 'no meio';
+    if (Math.abs(p.x + p.y - 14800) < 1600) return 'no rio';
+    return 'na selva';
+  }
+
+  function posNoMinuto(partida, id, t) {
+    const q = partida.quadros[Math.min(partida.quadros.length - 1, Math.round(t / 60))];
+    const f = q && q.p[String(id)];
+    return f && f[0] != null ? { x: f[0], y: f[1] } : null;
+  }
+
+  function lutas(partida, timeNos) {
+    const porId = new Map(partida.jogadores.map((j) => [j.id, j]));
+    const abates = partida.eventos.filter((e) => e.tipo === 'abate' && e.x != null).sort((a, b) => a.t - b.t);
+    const grupos = [];
+    for (const a of abates) {
+      const g = grupos[grupos.length - 1];
+      if (g && a.t - g[g.length - 1].t <= LUTA_GAP_S && g.some((b) => dist(a, b) <= LUTA_DIST)) g.push(a);
+      else grupos.push([a]);
+    }
+    return grupos.filter((g) => g.length >= 3).map((g) => {
+      const inicio = g[0].t, fim = g[g.length - 1].t;
+      const centro = { x: soma(g, (a) => a.x) / g.length, y: soma(g, (a) => a.y) / g.length };
+      const nossa = (id) => (porId.get(id) || {}).teamId === timeNos;
+      const mortesNos = g.filter((a) => nossa(a.morreu)).length;
+      const mortesEles = g.length - mortesNos;
+      const resultado = mortesEles > mortesNos ? 'venceu' : mortesEles < mortesNos ? 'perdeu' : 'empate';
+      const envolvidos = new Set();
+      for (const a of g) { envolvidos.add(a.morreu); if (a.matou) envolvidos.add(a.matou); for (const x of a.assist || []) envolvidos.add(x); }
+      // quem do time estava vivo, longe e não participou
+      const ausentes = partida.jogadores.filter((j) => j.teamId === timeNos && !envolvidos.has(j.id)).filter((j) => {
+        const p = posNoMinuto(partida, j.id, inicio);
+        return p && dist(p, centro) > LONGE_DA_LUTA;
+      });
+      const primeira = g[0];
+      const objetivos = partida.eventos.filter((e) => e.t >= inicio && e.t <= fim + JANELA_OBJETIVO_S
+        && (e.tipo === 'monstro' || (e.tipo === 'estrutura' && VALOR_OBJETIVO[e.estrutura])));
+      const deQuem = (e) => (e.tipo === 'monstro' ? e.time : e.dono === 100 ? 200 : 100);
+      return {
+        inicio, fim, centro, lugar: lugar(centro), abates: g, mortesNos, mortesEles, resultado, ausentes,
+        abriu: porId.get(primeira.morreu), abriuNosso: nossa(primeira.morreu),
+        objetivosNos: objetivos.filter((e) => deQuem(e) === timeNos), objetivosEles: objetivos.filter((e) => deQuem(e) !== timeNos),
+      };
+    });
+  }
+
   function julgar(partida, puuid) {
     const jogs = partida.jogadores;
     const eu = jogs.find((j) => j.puuid === puuid);
@@ -57,6 +117,7 @@
     const abates = partida.eventos.filter((e) => e.tipo === 'abate');
     const objetivos = partida.eventos.map((e) => ({ e, o: objetivoDoEvento(e) })).filter((x) => x.o && x.o.time !== timeNos);
     const minutoRota = Math.min(MINUTO_ROTA, partida.quadros.length - 1);
+    const asLutas = lutas(partida, timeNos);
 
     const vereditos = nos.map((j) => {
       const c = {};
@@ -89,6 +150,12 @@
         if (a != null && b != null && Math.abs(a - b) >= 300) add('rota', 0.5 * (b - a), { dif: a - b, rival, minuto: minutoRota });
       }
 
+      // luta perdida: quem abriu morrendo e quem estava longe sem participar
+      for (const l of asLutas.filter((x) => x.resultado === 'perdeu')) {
+        if (l.abriuNosso && l.abriu.id === j.id) add('abriu', 250, { t: l.inicio, lugar: l.lugar, placar: `${l.mortesEles} x ${l.mortesNos}` });
+        if (l.ausentes.some((a) => a.id === j.id)) add('ausente', 150, { t: l.inicio, lugar: l.lugar, placar: `${l.mortesEles} x ${l.mortesNos}` });
+      }
+
       if (j.spell4Casts === 0 && partida.duracao >= 15 * 60) add('ult', 300, { minutos: Math.round(partida.duracao / 60) });
 
       if (j.teamPosition === 'UTILITY' && rival && rival.visionScore > 0 && j.visionScore < 0.6 * rival.visionScore) {
@@ -119,7 +186,7 @@
       v.atenuantes = v.componentes.filter((x) => x.pontos < 0).slice(0, 2);
     }
     vereditos.sort((a, b) => b.bruto - a.bruto);
-    return { timeNos, venceu: nos[0].win, nos, eles, vereditos, culpado: vereditos[0] };
+    return { timeNos, venceu: nos[0].win, nos, eles, vereditos, culpado: vereditos[0], lutas: asLutas };
   }
 
   function evidencia(key, v, j, mortes) {
@@ -143,6 +210,12 @@
     if (key === 'visao') {
       const i = v.infos[0];
       return `Placar de visão ${i.meu}, contra ${i.dele} do suporte inimigo (${i.rival.championName}).`;
+    }
+    if (key === 'abriu' || key === 'ausente') {
+      const ls = v.infos.map((i) => `${mmss(i.t)} ${i.lugar} (${i.placar})`).slice(0, 3).join('; ');
+      return key === 'abriu'
+        ? `Foi o primeiro a morrer em ${plural(v.infos.length, 'luta perdida', 'lutas perdidas')}: ${ls}.`
+        : `Estava longe e não participou de ${plural(v.infos.length, 'luta perdida', 'lutas perdidas')}: ${ls}.`;
     }
     if (key === 'ult') return `Não usou a ultimate nenhuma vez em ${v.infos[0].minutos} min de jogo.`;
     if (key === 'abates') return `${j.kills}/${j.deaths}/${j.assists}: abates e assistências que renderam ${fmt(-v.ouro)} de ouro ao time.`;
@@ -243,7 +316,7 @@
     return lista.length > 1 ? `${lista.slice(0, -1).join(', ')} e ${lista[lista.length - 1]}` : lista[0] || '';
   }
 
-  const api = { julgar, ouroDoTime, chanceDeVitoria, descreverObjetivos, mmss, fmt, NOME_OBJETIVO, VALOR_OBJETIVO };
+  const api = { julgar, lutas, lugar, ouroDoTime, chanceDeVitoria, descreverObjetivos, mmss, fmt, NOME_OBJETIVO, VALOR_OBJETIVO };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.CulpadoLoL = api;
 })(typeof window !== 'undefined' ? window : globalThis);
