@@ -1158,6 +1158,22 @@ test('visitas: quem é do grupo aparece pela conta, visitante não', async () =>
   assert.deepEqual([...d.grupo.online].sort(), ['81918076', '96286191']);
 });
 
+test('visitas: a mesma conta em dois navegadores conta uma pessoa, inclusive o aviso de antes de se identificar', async () => {
+  const env = { VISITAS: salaDeVisitas() };
+  const visita = (corpo) => worker.fetch(pedido(corpo, { caminho: '/visita' }), env);
+  await visita({ id: 'celular12345', pagina: 'painel' }); // ainda sem dizer quem é
+  await visita({ id: 'celular12345', pagina: 'ranking', quem: '81918076' });
+  await visita({ id: 'computador12', pagina: 'painel', quem: '81918076' });
+  await visita({ id: 'estranho1234', pagina: 'painel' });
+  const d = await (await worker.fetch(pedido(undefined, { caminho: '/visitas', metodo: 'GET' }), env)).json();
+  assert.equal(d.hoje, 2);
+  assert.equal(d.semana, 2);
+  assert.equal(d.online, 2);
+  assert.deepEqual(d.paginasHoje, { painel: 2, ranking: 1 });
+  assert.deepEqual(d.navegadores, { hoje: 3, semana: 3, mes: 3 });
+  assert.equal(d.porDia[0].pessoas, 2);
+});
+
 test('visitas: recusa código inválido, outra origem e sem o Durable Object', async () => {
   const env = { VISITAS: salaDeVisitas() };
   assert.equal((await worker.fetch(pedido({ id: 'curto', pagina: 'painel' }, { caminho: '/visita' }), env)).status, 400);
