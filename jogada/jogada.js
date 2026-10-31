@@ -144,7 +144,7 @@ function geoOf(pt) {
 }
 const contorno = new THREE.MeshBasicMaterial({ color: 0x0b0806, side: THREE.BackSide });
 const texLoader = new THREE.TextureLoader(); texLoader.setCrossOrigin('anonymous');
-function retratoTex(nome, cor) {
+function retratoTex(nome, cor, caras = {}) {
   // placeholder com a sigla enquanto o retrato carrega (ou se o CDN falhar)
   const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
   const sigla = nome.split('_').map(w => w[0]).join('').toUpperCase().slice(0, 2) + (nome.includes('_') ? '' : nome[1].toUpperCase());
@@ -154,7 +154,10 @@ function retratoTex(nome, cor) {
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image(); img.crossOrigin = 'anonymous';
   img.onload = () => { const w = img.naturalWidth, h = img.naturalHeight, sz = Math.min(w, h) * .92; g.clearRect(0, 0, 256, 256); g.drawImage(img, (w - sz) / 2, (h - sz) * .2, sz, sz, 0, 0, 256, 256); tex.needsUpdate = true; };
-  img.src = CDN + nome + '.png';
+  // retrato carregado: a linha de montagem gera uma cara por emoção (feliz, triste, dor...), uma textura cada
+  img.addEventListener('load', () => { try { if (!window.Emocoes) return; const cs = Emocoes.gerar(img, { tamanho: 256, moldura: cor });
+    for (const k in cs) { const tx = new THREE.CanvasTexture(cs[k]); tx.colorSpace = THREE.SRGBColorSpace; caras[k] = tx; } caras.prontas = true; } catch (e) { } });
+  img.src = CDN + nome + '.png?';
   return tex;
 }
 // anel de vida: arco de toro que começa no topo; as geometrias ficam em cache por degrau de 2,5%
@@ -174,7 +177,7 @@ function construir(i) {
   // cabeção: disco grosso com o retrato na frente e atrás, borda na cor do time
   const esc = A.cabeca.escala || 1.6, R = .27 * esc / 1.6 * 1.25;
   const cab = new THREE.Group(); cab.position.set(0, nome === 'pudge' ? .9 : .98, .05); fig.add(cab);
-  const tex = retratoTex(nome, A.cabeca.moldura);
+  const caras = {}, tex = retratoTex(nome, A.cabeca.moldura, caras);
   const lado = new THREE.MeshToonMaterial({ color: new THREE.Color(A.cabeca.moldura || TEAMC[TEAM(i)]), gradientMap: TONS }), face = new THREE.MeshBasicMaterial({ map: tex });
   mats.push(lado); lado.userData.base = new THREE.Color(0); lado.userData.cor = lado.color.clone();
   const disco = new THREE.Mesh(new THREE.CylinderGeometry(R, R, .09, 48), lado); disco.rotation.x = PI / 2; disco.castShadow = true; cab.add(disco);
@@ -189,7 +192,7 @@ function construir(i) {
   const base = new THREE.Mesh(new THREE.CylinderGeometry(.42, .45, .07, 40), new THREE.MeshToonMaterial({ color: 0x2a231c, gradientMap: TONS })); base.position.y = .035; base.receiveShadow = true; root.add(base);
   const rim = new THREE.Mesh(new THREE.TorusGeometry(.445, .02, 8, 48), new THREE.MeshBasicMaterial({ color: TEAMC[TEAM(i)] })); rim.rotation.x = PI / 2; rim.position.y = .06; root.add(rim);
   const ob = new THREE.Mesh(base.geometry, contorno); ob.position.copy(base.position); ob.scale.setScalar(1.05); root.add(ob);
-  root.userData = { fig, mats, cab, vidaArc, base: [base, rim, ob], rotY: 0, mola: 0, molaV: 0 };
+  root.userData = { fig, mats, cab, vidaArc, caras, face, cabY: cab.position.y, em: 'normal', trocou: -9, base: [base, rim, ob], rotY: 0, mola: 0, molaV: 0 };
   return root;
 }
 function tingir(h, cor, k) { h.userData.mats.forEach(m => { m.color.copy(m.userData.cor).lerp(cor, k); }); }
@@ -310,16 +313,34 @@ let camMorte = null, primeira = true, last = performance.now(), tremor = 0;
 const mmss = t => { const g = Math.floor(D.t0 + t); return Math.floor(g / 60) + ':' + String(g % 60).padStart(2, '0'); };
 const scrub = $('#scrub'); scrub.max = DUR; scrub.oninput = () => { clock.t = +scrub.value; clock.prev = clock.t; primeira = true; camMorte = null; pararSons(); };
 const setPlay = p => { clock.playing = p; if (!p) pararSons(); $('#play').textContent = p ? 'Pausar' : 'Tocar'; };
-$('#play').onclick = () => { window.SFX?.desbloquear?.(); setPlay(!clock.playing); };
+$('#play').onclick = () => { abrirAudio(); setPlay(!clock.playing); };
 const palco = $('#palco');
 const telaCheia = () => { try { if (!document.fullscreenElement) (palco.requestFullscreen || palco.webkitRequestFullscreen)?.call(palco)?.catch?.(() => { }); else document.exitFullscreen?.(); } catch (e) { } };
 $('#cheia').onclick = telaCheia;
 document.addEventListener('fullscreenchange', () => { $('#cheia').textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia'; fit(); });
-$('#comecar').onclick = () => { if (matchMedia('(pointer: coarse)').matches || innerWidth < 900) { if (!document.fullscreenElement) telaCheia(); } window.SFX?.desbloquear?.(); $('#capa').hidden = true; clock.t = 0; clock.prev = 0; primeira = true; setPlay(true); };
+$('#comecar').onclick = () => { if (matchMedia('(pointer: coarse)').matches || innerWidth < 900) { if (!document.fullscreenElement) telaCheia(); } abrirAudio(); $('#capa').hidden = true; clock.t = 0; clock.prev = 0; primeira = true; setPlay(true); };
 $('#speed').onchange = e => clock.speed = +e.target.value;
 $('#tini').textContent = mmss(0); $('#tfim').textContent = mmss(DUR);
 const somLigado = () => $('#som').checked;
 
+const MP3 = { item_tpscroll: 'tpscroll', pudge_meat_hook: 'pudge_meat_hook', pudge_rot: 'pudge_rot', pudge_dismember: 'pudge_dismember', faceless_void_time_walk: 'faceless_void_time_walk', faceless_void_chronosphere: 'faceless_void_chronosphere', critico: 'faceless_void_time_lock' };
+const AUD = { ctx: null, saida: null, buf: {} };
+function abrirAudio() {
+  window.SFX?.desbloquear?.();
+  if (!AUD.ctx) { try { AUD.ctx = new (window.AudioContext || window.webkitAudioContext)(); AUD.saida = AUD.ctx.createGain(); AUD.saida.gain.value = .8; AUD.saida.connect(AUD.ctx.destination); } catch (e) { return; }
+    fetch('../sons/indice.json').then(r => r.ok ? r.json() : {}).catch(() => ({})).then(ind => { for (const k in MP3) { const arq = ind[MP3[k]] || MP3[k] + '.mp3';
+      fetch('../sons/' + arq).then(r => r.ok ? r.arrayBuffer() : Promise.reject()).then(b => new Promise((ok, no) => AUD.ctx.decodeAudioData(b, ok, no))).then(buf => AUD.buf[k] = buf).catch(() => { }); } }); }
+  if (AUD.ctx.state === 'suspended') AUD.ctx.resume();
+}
+// devolve null se o mp3 ainda não chegou, para cair no som sintetizado
+function tocarMp3(k, { dur = 0, vol = 1 } = {}) {
+  const buf = AUD.buf[k]; if (!buf || !AUD.ctx) return null;
+  const f = AUD.ctx.createBufferSource(), g = AUD.ctx.createGain(), t0 = AUD.ctx.currentTime; f.buffer = buf; f.playbackRate.value = window.SFX && SFX.velocidade < 1 ? .62 : 1;
+  if (dur > buf.duration / f.playbackRate.value) f.loop = true;
+  g.gain.value = vol; f.connect(g).connect(AUD.saida); f.start();
+  if (dur) { g.gain.setValueAtTime(vol, t0 + Math.max(.05, dur - .15)); g.gain.linearRampToValueAtTime(0, t0 + dur); f.stop(t0 + dur + .05); }
+  return { parar() { try { g.gain.setTargetAtTime(0, AUD.ctx.currentTime, .05); f.stop(AUD.ctx.currentTime + .3); } catch (e) { } } };
+}
 // sons contínuos (TP, Rot, Dismember) ficam guardados para parar quando o evento acaba, no scrub ou na pausa
 const tocando = new Map();
 function pararSons() { for (const h of tocando.values()) h.parar(); tocando.clear(); }
@@ -328,12 +349,12 @@ function sons(t0, t1) {
   if (!somLigado() || t1 <= t0 || t1 - t0 > .5) return;
   for (const e of EV) {
     const sp = SP(e.k, e.s);
-    if (e.a > t0 && e.a <= t1) tocando.set(e, tocar(sp.som || e.k, { duracao_ms: (e.b - e.a) * 1000 / (escala(t1) || 1) }));
-    if (e.acerto > t0 && e.acerto <= t1) { tocar(sp.som_impacto); tocar(sp.som_fim); }
+    if (e.a > t0 && e.a <= t1) { const dur = (e.b - e.a) / (escala(t1) || 1); tocando.set(e, (MP3[e.k] && tocarMp3(e.k, { dur: ['pudge_rot', 'pudge_dismember', 'item_tpscroll'].includes(e.k) ? dur : 0 })) || tocar(sp.som || e.k, { duracao_ms: dur * 1000 })); }
+    if (e.acerto > t0 && e.acerto <= t1) tocar(sp.som_impacto, { volume: .7 });
     if (e.b > t0 && e.b <= t1) { tocando.get(e)?.parar(); tocando.delete(e); if (e.k === 'item_tpscroll') tocar(sp.som_impacto); }
   }
   const at = SP('ataque', VOID);
-  for (const d of DANO) if (d.src === VOID && d.t > t0 && d.t <= t1 && d.amt >= 160) tocar(d.amt > 400 ? at.som_impacto : at.som);
+  for (const d of DANO) if (d.src === VOID && d.t > t0 && d.t <= t1 && d.amt >= 160) { if (d.amt > 400) { tocarMp3('critico', { vol: .9 }); tocar(at.som_impacto, { volume: .6 }); } else tocar(at.som, { volume: .7 }); }
 }
 
 function frame(ts) {
@@ -375,10 +396,16 @@ function frame(ts) {
     cab.rotation.set(0, yawCam - h.rotation.y, (congelado(s, t) ? 0 : Math.sin(fz * 2.3 + s) * .06) + U.mola * .5); const sq = recentes(DANO, t, .2).filter(e => e.tgt === s && e.amt >= 100).pop(); let amassa = 0;
     if (sq && !congelado(s, t)) { const k = (t - sq.t) / .2; amassa = k < .4 ? .15 * Math.sin(k / .4 * PI / 2) : .15 * Math.cos((k - .4) / .6 * PI) * (1 - k); }
     if (s === VOID && ativo(DM, t)) { const pul = (now - DM.a) % 1; if (pul < .15) amassa = Math.max(amassa, .15 * Math.sin(pul / .15 * PI)); }
-    cab.scale.set(1 + amassa + Math.abs(U.mola) * .2, 1 - amassa + Math.abs(U.mola) * .2, 1);
+    // emoção do retrato: troca a cara com um squash de 120 ms e aplica o movimento da emoção
+    let an = { sx: 1, sy: 1, rot: 0, dx: 0, dy: 0 }, tr = 1;
+    if (U.caras.prontas) { const crit = DANO.some(e => e.tgt === s && e.amt > 400 && t >= e.t && t < e.t + .4), em = Emocoes.emocaoEm(D.retrato[s], t, crit);
+      if (em !== U.em && U.caras[em]) { U.em = em; U.face.map = U.caras[em]; U.face.transparent = true; U.face.needsUpdate = true; U.trocou = now; }
+      if (!congelado(s, t)) an = Emocoes.animar(U.em, now); const k = (now - U.trocou) / .12; tr = k < .5 ? 1 - .3 * k : k < 1 ? .85 + .5 * (k - .5) : k < 1.6 ? 1.1 - (k - 1) / 6 : 1; }
+    cab.rotation.z += an.rot; cab.position.y = U.cabY + an.dy;
+    cab.scale.set((1 + amassa + Math.abs(U.mola) * .2) * an.sx * (2 - tr), (1 - amassa + Math.abs(U.mola) * .2) * an.sy * tr, 1);
     cab.visible = !(s === PUDGE && morto);
     if (morto) { fig.rotation.x = -Math.min(1.45, (t - DEAD[s]) * 4); fig.position.y = .07; }
-    cab.position.x = 0; cab.position.z = .05;
+    cab.position.x = an.dx; cab.position.z = .05;
     { const va = U.vidaArc, n = Math.round(vida(s, t) * 40); if (va.userData.n !== n) { va.userData.n = n; va.geometry = arcoVida(n / 40, va.userData.R); } }
     if (!morto) vivos.push(p);
   });
