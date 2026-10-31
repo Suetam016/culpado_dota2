@@ -362,6 +362,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="rotas.js"></script>
 <script src="merito.js"></script>
 <script src="cartaz.js"></script>
+<script src="sons.js"></script>
 <script src="revelar.js"></script>
 <script>
 (function () {
@@ -909,7 +910,8 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       <div class="rp-ctrl"><button class="rp-play" id="rp-play" aria-label="Tocar">▶</button>
         <input type="range" id="rp-t" min="0" max="${partida.duracao}" step="1" value="0" aria-label="Tempo da partida">
         <span class="rp-hora" id="rp-hora">0:00</span></div>
-      <div class="rp-linha">Velocidade ${VELOCIDADES.map((v) => `<button class="rp-chip${v === 30 ? ' on' : ''}" data-vel="${v}">${v}x</button>`).join('')}</div>
+      <div class="rp-linha">Velocidade ${VELOCIDADES.map((v) => `<button class="rp-chip${v === 30 ? ' on' : ''}" data-vel="${v}">${v}x</button>`).join('')}
+        <button class="rp-chip" id="rp-som" aria-pressed="${window.SonsLoL.ligado()}">${window.SonsLoL.ligado() ? '🔊 Som' : '🔇 Sem som'}</button></div>
       ${pulos ? `<div class="rp-linha">Mortes de ${esc(nome(c.jogador))}: ${pulos}</div>` : ''}
       <ol class="rp-feed" id="rp-feed"></ol>
       <div class="rp-recibo" id="rp-recibo"></div>
@@ -982,7 +984,10 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       if (!st.tocando || replay !== st) return;
       const dt = st.ultimo ? (agora - st.ultimo) / 1000 : 0;
       st.ultimo = agora;
+      const antes = st.t;
       st.t = Math.min(dados.duracao, st.t + dt * st.vel);
+      // sons só tocando para frente (pular ou arrastar a barra não toca nada)
+      window.SonsLoL.tocar(dados.eventos.filter((e) => e.t > antes && e.t <= st.t));
       desenhar();
       if (st.t >= dados.duracao) return tocar(false);
       st.raf = requestAnimationFrame(quadro);
@@ -994,6 +999,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       el('rp-play').textContent = sim ? '❚❚' : '▶';
       el('rp-play').setAttribute('aria-label', sim ? 'Pausar' : 'Tocar');
       if (sim) {
+        window.SonsLoL.preparar();
         if (st.t >= dados.duracao) st.t = 0;
         st.raf = requestAnimationFrame(quadro);
       }
@@ -1001,6 +1007,11 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 
     st.pular = (t) => { st.t = t; desenhar(); tocar(true); };
     el('rp-play').addEventListener('click', () => tocar(!st.tocando));
+    el('rp-som').addEventListener('click', (e) => {
+      const on = window.SonsLoL.alternar();
+      e.currentTarget.textContent = on ? '🔊 Som' : '🔇 Sem som';
+      e.currentTarget.setAttribute('aria-pressed', String(on));
+    });
     el('rp-t').addEventListener('input', (e) => { st.t = +e.target.value; desenhar(); });
     document.querySelectorAll('[data-vel]').forEach((b) => b.addEventListener('click', () => {
       st.vel = +b.dataset.vel;
