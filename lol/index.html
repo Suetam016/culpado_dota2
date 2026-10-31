@@ -102,6 +102,15 @@ details.porque { margin-top: 4px; grid-column: 2 / 4; }
 .rota-num { font-size: .86rem; color: var(--ink-2); }
 .rota-num b { font-family: var(--font-mono); font-weight: 500; }
 .tribunal { list-style: none; gap: 12px; }
+.tribunal.vitoria .trib:first-child { border-color: var(--good); }
+.tribunal.vitoria .trib:first-child .pos { color: var(--good-ink); }
+.tribunal.vitoria .barra i { background: var(--good); }
+.trib .pc small { display: block; font-size: .65rem; color: var(--muted); }
+.elo { font-size: .9rem; color: var(--ink-2); margin-top: 6px; }
+.elo-escudo { display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--elo-txt, #fff); background: var(--elo);
+  padding: 1px 8px; border-radius: 4px; margin: 0 4px; }
+.culpado.craque .rotulo { color: var(--good-ink); }
+.quase { margin-top: 14px; color: var(--ink-2); font-size: .94rem; border-top: 1px dashed var(--line-strong); padding-top: 10px; }
 .trib { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; }
 .trib:first-child { border-color: var(--bad); }
 .trib .linha { grid-template-columns: 2em 32px minmax(0, 1fr) 3.5em; }
@@ -345,6 +354,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="build.js"></script>
 <script src="tribunal.js"></script>
 <script src="rotas.js"></script>
+<script src="merito.js"></script>
 <script src="revelar.js"></script>
 <script>
 (function () {
@@ -405,31 +415,36 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     const eu = partida.jogadores.find((j) => j.puuid === puuid);
     partidaAtual = partida;
     const cv = L.chanceDeVitoria(partida, r.timeNos);
-    const titulo = r.venceu ? 'Ganharam, mas alguém quase entregou' : 'Perderam. A culpa é de…';
+    const titulo = r.venceu ? 'Vitória! Quem carregou?' : 'Perderam. A culpa é de…';
     const doc = r.venceu ? null : window.CulpaLoL.documento(c, partida);
+    const mer = r.venceu ? window.MeritoLoL.merito(partida, r.timeNos, cv) : null;
+    const elos = window.MeritoLoL.elos(partida);
+    const craques = mer ? mer.craques : [];
     let html = '';
     if (exemplo) html += '<p class="aviso">Partida de exemplo com dados fictícios, só para mostrar como fica. As de verdade aparecem quando a coleta rodar.</p>';
     html += `<p style="margin-bottom:12px"><a class="voltar" href="./">← Partidas</a></p>
       <section class="cartao">
         <p class="sub">${esc(FILAS[partida.fila] || partida.modo)} · ${Math.round(partida.duracao / 60)} min · ${data(partida.inicio)}${rendicao(partida, r)}</p>
         <h1>${titulo}</h1>
-        ${r.venceu ? `<div class="culpado" style="margin-top:14px">${icone(c.jogador.championName, 'g')}
-          <div><div class="rotulo">Culpado · ${Math.round(c.fatia * 100)}% da culpa</div>
-          <div class="quem">${esc(nome(c.jogador))}<small>${esc(c.jogador.championName)} · ${esc(ROTAS[c.jogador.teamPosition] || '')} · ${c.jogador.kills}/${c.jogador.deaths}/${c.jogador.assists}</small></div></div>
+        ${r.venceu ? `${craques.map((k) => `<div class="culpado craque" style="margin-top:14px">${icone(k.jogador.championName, 'g')}
+          <div><div class="rotulo">${craques.length > 1 ? 'Craques' : 'Craque'} da partida · ${Math.round(k.fatia * 100)}% do mérito</div>
+          <div class="quem">${esc(nome(k.jogador))}<small>${esc(k.jogador.championName)} · ${esc(ROTAS[k.jogador.teamPosition] || '')} · ${k.jogador.kills}/${k.jogador.deaths}/${k.jogador.assists} · jogou como ${esc(elos.get(k.jogador.id).nome)}</small></div></div>
         </div>
-        <ul class="motivos">${c.pesou.concat(c.atenuantes).map((m) => `<li><span class="pts ${m.pontos < 0 ? 'bom' : ''}">${m.pontos > 0 ? '+' : ''}${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>`
+        <ul class="motivos">${k.brilhou.slice(0, 3).map((m) => `<li><span class="pts bom">+${m.pontos.toLocaleString('pt-BR')}</span><span>${esc(m.evidencia)}</span></li>`).join('')}</ul>`).join('')}
+        <p class="quase">Quem quase entregou: <b>${esc(nome(c.jogador))}</b> (${esc(c.jogador.championName)}, ${Math.round(c.fatia * 100)}% da culpa). ${c.pesou[0] ? esc(c.pesou[0].evidencia) : ''}</p>
+        <button type="button" class="doc-de-novo" id="ver-revelacao">★ Ver a revelação de novo</button>`
         : `${docHtml(c, partida, r, doc)}<button type="button" class="doc-de-novo" id="ver-revelacao">⚖ Ver a revelação de novo</button>`}
       </section>
       ${momentosHtml(cv, r)}
       <section class="cartao" id="cartao-replay"><h2>Replay da partida</h2>${replayHtml(partida, r, c)}</section>
       ${lutasHtml(r)}
       ${rotasHtml(partida, r)}
-      <section class="cartao"><h2>O tribunal</h2><p class="sub" style="margin:-6px 0 12px">Para cada um: o lance que mais custou e uma coisa para fazer na próxima.</p>
-        <ol class="ranking tribunal">${r.vereditos.map((v, i) => tribunalHtml(v, i, cv, eu)).join('')}</ol>
+      <section class="cartao"><h2>${r.venceu ? 'O parecer de cada um' : 'O tribunal'}</h2><p class="sub" style="margin:-6px 0 12px">${r.venceu ? 'Do que mais carregou para o que menos, com o elo em que cada um jogou, o lance que mais custou e uma coisa para fazer na próxima.' : 'Para cada um: o lance que mais custou e uma coisa para fazer na próxima.'}</p>
+        <ol class="ranking tribunal ${r.venceu ? 'vitoria' : ''}">${(mer ? mer.lista.map((m) => r.vereditos.find((v) => v.jogador === m.jogador)) : r.vereditos).map((v, i) => tribunalHtml(v, i, cv, eu, mer && mer.lista.find((m) => m.jogador === v.jogador), elos.get(v.jogador.id))).join('')}</ol>
         <p class="legenda" style="margin-top:12px">Culpa em pontos: cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
       </section>
       <section class="cartao" id="cartao-build"><h2>A build</h2>
-        <div class="abas build-quem">${r.nos.map((j) => `<button type="button" class="rp-chip ${j === (eu || c.jogador) ? 'on' : ''}" data-build="${j.id}">${esc(j.championName)}${eu && j.id === eu.id ? ' (você)' : j.id === c.jogador.id ? ' (culpado)' : ''}</button>`).join('')}</div>
+        <div class="abas build-quem">${r.nos.map((j) => `<button type="button" class="rp-chip ${j === (eu || c.jogador) ? 'on' : ''}" data-build="${j.id}">${esc(j.championName)}${eu && j.id === eu.id ? ' (você)' : craques.some((k) => k.jogador.id === j.id) ? ' (craque)' : !r.venceu && j.id === c.jogador.id ? ' (culpado)' : ''}</button>`).join('')}</div>
         <div id="build-corpo"><p class="vazio">Carregando os itens…</p></div></section>
       <section class="cartao grafico"><h2 id="graf-titulo">Chance de vitória</h2>
         <div class="abas"><button class="rp-chip on" data-graf="chance">Chance de vitória</button><button class="rp-chip" data-graf="ouro">Ouro</button></div>
@@ -450,10 +465,16 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
     preencherHabilidades(partida);
     iniciarBuild(partida, r, eu || c.jogador);
     window.scrollTo(0, 0);
-    if (doc) {
-      const abrir = () => window.RevelarLoL({
+    if (doc || craques.length) {
+      const abrir = () => window.RevelarLoL(doc ? {
         jogadores: r.vereditos.map((v) => ({ id: v.jogador.id, rosto: icone(v.jogador.championName), peso: v.fatia })),
         culpado: c.jogador.id, nome: nome(c.jogador), nivel: doc.nivel, cor: doc.cor, crime: doc.crime, som: true,
+      } : {
+        // vitória: as cartas param em quem carregou, sem sirene
+        jogadores: mer.lista.map((m) => ({ id: m.jogador.id, rosto: icone(m.jogador.championName), peso: m.fatia })),
+        culpado: craques[0].jogador.id, nome: craques.map((k) => nome(k.jogador)).join(' e '), nivel: 3, cor: '#e4ae39', crime: 'Herói da partida', som: true,
+        alarme: false, titulo: 'Vitória! Quem carregou?', final: craques.length > 1 ? 'Craques da partida!' : 'Craque da partida!',
+        finais: craques.map((k) => k.jogador.id),
       });
       document.getElementById('ver-revelacao').addEventListener('click', abrir);
       // a revelação abre sozinha na primeira vez que a partida é aberta neste navegador
@@ -575,13 +596,14 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
   }
 
   // ---------------------------------------------------------------- tribunal
-  function tribunalHtml(v, i, cv, eu) {
+  function tribunalHtml(v, i, cv, eu, merito, elo) {
     const pa = window.TribunalLoL.parecer(v, cv, L, null);
     const j = v.jogador;
     return `<li class="trib ${eu && j.id === eu.id ? 'eu' : ''}">
       <div class="linha"><span class="pos">${i + 1}º</span>${icone(j.championName, 'p')}
-        <div><div class="nm">${esc(nome(j))} <small>${esc(j.championName)} · ${j.kills}/${j.deaths}/${j.assists}</small></div><div class="barra"><i style="width:${Math.round(v.fatia * 100)}%"></i></div></div>
-        <div class="pc">${Math.round(v.fatia * 100)}%</div></div>
+        <div><div class="nm">${esc(nome(j))} <small>${esc(j.championName)} · ${j.kills}/${j.deaths}/${j.assists}</small></div><div class="barra"><i style="width:${Math.round((merito ? merito.fatia : v.fatia) * 100)}%"></i></div></div>
+        <div class="pc">${merito ? `${Math.round(merito.fatia * 100)}%<small>mérito</small>` : `${Math.round(v.fatia * 100)}%`}</div></div>
+      ${merito && elo ? `<p class="elo">Jogou como <span class="elo-escudo" style="--elo:${elo.cor};--elo-txt:${[2, 3, 9].includes(elo.indice) ? '#1b1206' : '#fff'}">${esc(elo.nome)}</span>${merito.brilhou[0] ? ` ${esc(merito.brilhou[0].evidencia)}` : ''}</p>` : ''}
       <div class="trib-corpo">
         ${pa.lance ? `<p class="trib-rot">O lance que mais custou</p><p>${esc(pa.lance.texto)}${pa.lance.t != null ? ` <button type="button" class="ver" data-ver="${pa.lance.t}">Ver no replay</button>` : ''}</p>` : ''}
         <p class="trib-rot">Para a próxima</p><p>${esc(pa.dicas[0])}</p><p class="trib-build" data-trib-build="${j.id}"></p>
