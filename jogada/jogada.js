@@ -261,9 +261,9 @@ const ROTN = nPart('pudge_rot', 90), rot = new THREE.InstancedMesh(new THREE.Sph
 const rotRing = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.32, 64).rotateX(-PI / 2), new THREE.MeshBasicMaterial({ color: C('pudge_rot', 1), transparent: true })); rotRing.visible = false; add(rotRing);
 const DISN = nPart('pudge_dismember', 60), dism = new THREE.InstancedMesh(new THREE.SphereGeometry(.045, 6, 4), glow(C('pudge_dismember', 0)), DISN); dism.visible = false; add(dism);
 const dismRing = new THREE.Mesh(new THREE.RingGeometry(.5, .7, 48).rotateX(-PI / 2), glow(C('pudge_dismember', 1), .7)); dismRing.visible = false; add(dismRing);
-const shield = new THREE.Mesh(new THREE.SphereGeometry(.5, 32, 20), new THREE.MeshBasicMaterial({ color: C('pudge_flesh_heap', 0), side: THREE.BackSide, transparent: true, opacity: .8 })); shield.visible = false; add(shield);
+const shield = new THREE.Mesh(new THREE.TorusGeometry(.62, .035, 8, 48).rotateX(PI / 2), new THREE.MeshToonMaterial({ color: C('pudge_flesh_heap', 0), gradientMap: TONS, transparent: true })); shield.visible = false; add(shield);
 const walkTrail = new THREE.Mesh(new THREE.BoxGeometry(1, .06, .25), glow(C('faceless_void_time_walk', 0), .7)); walkTrail.visible = false; add(walkTrail);
-const ghostMat = new THREE.MeshToonMaterial({ color: C('faceless_void_time_walk', 0), gradientMap: TONS, transparent: true, opacity: .55, depthWrite: false });
+const ghostMat = new THREE.MeshBasicMaterial({ color: C('faceless_void_time_walk', 0), transparent: true, opacity: .35, depthWrite: false });
 const chegada = new THREE.Mesh(new THREE.RingGeometry(.3, .55, 40).rotateX(-PI / 2), glow(C('faceless_void_time_walk', 1), .9)); chegada.visible = false; add(chegada);
 // Chronosphere: domo com faixas que giram e relógio no chão
 const domoMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { uT: { value: 0 }, uA: { value: 0 }, c1: { value: C('faceless_void_chronosphere', 0) }, c2: { value: C('faceless_void_chronosphere', 1) }, c3: { value: C('faceless_void_chronosphere', 2) } },
@@ -285,6 +285,7 @@ const corte = new THREE.Mesh(new THREE.RingGeometry(.55, .75, 32, 1, 0, PI * .9)
 const herois = [...Array(NHER)].map((_, i) => { const h = construir(i); h.scale.setScalar(i === PUDGE ? 1.25 : 1.15); scene.add(h); return h; });
 const fantasmas = [...Array(6)].map(() => { const f0 = herois[VOID].userData.fig, g = f0.clone(true); g.children[f0.children.indexOf(f0.userData.cab ?? herois[VOID].userData.cab)].visible = false; g.traverse(o => { if (o.isMesh) { if (o.material === contorno) o.visible = false; else o.material = ghostMat; o.castShadow = false; } }); g.scale.setScalar(1); g.visible = false; scene.add(g); return g; });
 const DM = ev('pudge_dismember')[0], SH = ev('pudge_flesh_heap')[0];
+const CHIPS = [{ s: VOID, t: HOOK.acerto, txt: 'fisgado' }, { s: VOID, t: DM.a, txt: 'preso' }, { s: VOID, t: 13.7, txt: 'escapou' }, { s: PUDGE, t: SH.a, txt: 'escudo' }, { s: PUDGE, t: CHRONO.a + .1, txt: 'congelado' }, { s: TB, t: CHRONO.a + .1, txt: 'congelado' }];
 const cabecaSolta = { ativo: false, p: new THREE.Vector3(), v: new THREE.Vector3(), r: new THREE.Vector3() };
 
 // ===================== HUD =====================
@@ -305,9 +306,9 @@ const HITSTOP = [{ t: HOOK.acerto, d: .09 }, ...DANO.filter(e => e.src === VOID 
 const parado = t => HITSTOP.some(h => t >= h.t && t < h.t + h.d);
 const escala = t => { if (parado(t)) return .08; if (!cine()) return 1; let w = 0; for (const d of DESTAQUES) w = Math.max(w, smooth(d.a - .3, d.a, t) * (1 - smooth(d.b, d.b + .3, t)) * (1 - d.lento)); return 1 - w; };
 const camAlvo = new THREE.Vector3(), camPos = new THREE.Vector3();
-let primeira = true, last = performance.now(), tremor = 0;
+let camMorte = null, primeira = true, last = performance.now(), tremor = 0;
 const mmss = t => { const g = Math.floor(D.t0 + t); return Math.floor(g / 60) + ':' + String(g % 60).padStart(2, '0'); };
-const scrub = $('#scrub'); scrub.max = DUR; scrub.oninput = () => { clock.t = +scrub.value; clock.prev = clock.t; primeira = true; pararSons(); };
+const scrub = $('#scrub'); scrub.max = DUR; scrub.oninput = () => { clock.t = +scrub.value; clock.prev = clock.t; primeira = true; camMorte = null; pararSons(); };
 const setPlay = p => { clock.playing = p; if (!p) pararSons(); $('#play').textContent = p ? 'Pausar' : 'Tocar'; };
 $('#play').onclick = () => { window.SFX?.desbloquear?.(); setPlay(!clock.playing); };
 const palco = $('#palco');
@@ -364,10 +365,11 @@ function frame(ts) {
     U.molaV += (-U.mola * 60 - U.molaV * 6) * dt; U.mola += U.molaV * dt;
     fig.scale.setScalar(s === PUDGE ? 1 + .1 * Math.sin(Math.min(1, Math.max(0, (t - SH.a) / .2)) * PI) : 1);
     const flashBranco = (s === VOID && t >= HOOK.acerto && t < HOOK.acerto + .06) || DANO.some(e => e.tgt === s && e.amt > 400 && t >= e.t && t < e.t + .06) || (s === PUDGE && t >= DEAD[s] && t < DEAD[s] + .06);
-    flash(h, flashBranco ? 1 : hit ? .35 : 0);
+    flash(h, flashBranco ? .8 : hit ? .2 : 0);
     // dentro da Chronosphere tudo perde cor e escurece, menos o Void
     const naRot = s !== PUDGE && ev('pudge_rot').some(e => ativo(e, t)) && p.distanceTo(P[PUDGE]) < 1.35 && !congelado(s, t) && (now % .5) < .12;
     tingir(h, congelado(s, t) ? new THREE.Color('#4a4856') : naRot ? new THREE.Color('#7ee84a') : new THREE.Color('#8a78d8'), congelado(s, t) ? .75 : naRot ? .5 : (morto ? .6 : 0));
+    if (morto) tingir(h, new THREE.Color('#3a2a26'), .55);
     // cabeção sempre de frente para a câmera, com mola
     const cab = U.cab; const yawCam = Math.atan2(camera.position.x - p.x, camera.position.z - p.z);
     cab.rotation.set(0, yawCam - h.rotation.y, (congelado(s, t) ? 0 : Math.sin(fz * 2.3 + s) * .06) + U.mola * .5); const sq = recentes(DANO, t, .2).filter(e => e.tgt === s && e.amt >= 100).pop(); let amassa = 0;
@@ -383,9 +385,9 @@ function frame(ts) {
   { const dir = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).setY(0).normalize(), olhar = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 2).setY(0).normalize();
     const ator = ((recentes(DANO, t, .6).filter(e => e.amt >= 100).pop() || {}).src) ?? (EV.filter(e => ativo(e, t) && e.k !== 'item_tpscroll').pop() || {}).s;
     for (let a = 0; a < NHER; a++) for (let b = a + 1; b < NHER; b++) { if (!herois[a].visible || !herois[b].visible || t >= DEAD[a] || t >= DEAD[b]) continue;
-      const d = P[b].clone().sub(P[a]); if (Math.abs(d.dot(dir)) > .9 || d.length() > 1.6) continue;
+      const d = P[b].clone().sub(P[a]); if (Math.abs(d.dot(dir)) > 1.2 || d.length() > 1.8) continue;
       const lado = d.dot(dir) >= 0 ? 1 : -1;
-      [[a, -lado], [b, lado]].forEach(([s, sg]) => { const h = herois[s], w = dir.clone().multiplyScalar(.35 * sg).add(olhar.clone().multiplyScalar(s === ator ? .35 : 0)); w.applyAxisAngle(new THREE.Vector3(0, 1, 0), -h.rotation.y); h.userData.cab.position.x += w.x; h.userData.cab.position.z += w.z; }); } }
+      [[a, -lado], [b, lado]].forEach(([s, sg]) => { const h = herois[s], w = dir.clone().multiplyScalar(.45 * sg).add(olhar.clone().multiplyScalar(s === ator ? .35 : 0)); w.applyAxisAngle(new THREE.Vector3(0, 1, 0), -h.rotation.y); h.userData.cab.position.x += w.x; h.userData.cab.position.z += w.z; }); } }
   // cabeça do Pudge rolando depois da morte
   if (t >= DEAD[PUDGE]) { const k = t - DEAD[PUDGE], base = P[PUDGE]; const dir = frente(VOID, PUDGE, DEAD[PUDGE]);
     const cab = herois[PUDGE].userData.cab; if (!cabecaSolta.mesh) { cabecaSolta.mesh = cab.clone(true); scene.add(cabecaSolta.mesh); }
@@ -411,7 +413,7 @@ function frame(ts) {
   if (sOn) { const f = (t - HOOK.acerto) / .6, c = wp(...pos(VOID, HOOK.acerto)).setY(Hh(...pos(VOID, HOOK.acerto)) + .6); for (let i = 0; i < 40; i++) { V4.copy(sparkDir[i]).multiplyScalar(f * 1.5).add(c); V4.y -= f * f * 1.2; sparks.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(1 - f))); } sparks.instanceMatrix.needsUpdate = true; }
   // Rot (congela junto dentro da Chronosphere)
   const rE = ev('pudge_rot').find(e => ativo(e, t)); rot.visible = rotRing.visible = !!rE && t < DEAD[PUDGE];
-  if (rot.visible) { const c = P[PUDGE], tr = congelado(PUDGE, t) ? CHRONO.a : now; rotRing.position.copy(c).setY(c.y + .05); rotRing.material.opacity = .9;
+  if (rot.visible) { const c = P[PUDGE], tr = congelado(PUDGE, t) ? CHRONO.a : now; rot.material.color.copy(C('pudge_rot', 0)).lerp(new THREE.Color('#5a5866'), congelado(PUDGE, t) ? .8 : 0); rotRing.material.color.copy(C('pudge_rot', 1)).lerp(new THREE.Color('#5a5866'), congelado(PUDGE, t) ? .8 : 0); rotRing.position.copy(c).setY(c.y + .05); rotRing.material.opacity = .9;
     for (let i = 0; i < ROTN; i++) { const a = i * 2.399 + tr * (.6 + h2(i, 4) * .6), r = .55 + .75 * h2(i, 5), y = ((tr * .35 + h2(i, 6)) % 1); V4.set(c.x + Math.cos(a) * r, c.y + .04 + y * .22, c.z + Math.sin(a) * r);
       rot.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(.04 + .07 * y * (1 - y) * 4 * h2(i, 7)))); } rot.instanceMatrix.needsUpdate = true; }
   // Dismember
@@ -420,11 +422,11 @@ function frame(ts) {
     for (let i = 0; i < DISN; i++) { const k = (now * .9 + i / DISN) % 1, fio = i % 4; V4.copy(a).lerp(b, k); V4.x += Math.sin(k * PI * 3 + fio * 1.6) * .12 * Math.sin(k * PI); V4.y += Math.sin(k * PI) * .25 + Math.cos(k * 9 + fio) * .05;
       dism.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(.6 + .8 * Math.sin(k * PI)))); } dism.instanceMatrix.needsUpdate = true; }
   // Meat Shield
-  const shOn = ativo(SH, t); shield.visible = shOn; if (shOn) { const f = (t - SH.a) / (SH.b - SH.a); shield.position.copy(P[PUDGE]).setY(P[PUDGE].y + .42); shield.scale.set(1.25, 1.0, 1.25).multiplyScalar(1 + .03 * Math.sin(now * 6)); shield.material.opacity = .8 * (1 - f * f); }
+  const shOn = ativo(SH, t); shield.visible = shOn; if (shOn) { const f = (t - SH.a) / (SH.b - SH.a); shield.position.copy(P[PUDGE]).setY(P[PUDGE].y + .4 + .08 * Math.sin(now * 4)); shield.scale.setScalar(1 + .03 * Math.sin(now * 6)); shield.material.opacity = 1 - f * f; }
   // Time Walk
   const TW = ev('faceless_void_time_walk').find(w => t >= w.a && t < w.b + .5);
   fantasmas.forEach((g, i) => { g.visible = !!TW && t > TW.a + i * (TW.b - TW.a) / 6; if (!g.visible) return; const p = wp(...pos(VOID, TW.de)).lerp(wp(...pos(VOID, TW.para)), i / 6); g.position.copy(p).setY(p.y + .08); g.rotation.y = herois[VOID].rotation.y; });
-  ghostMat.opacity = TW ? .55 * (1 - smooth(TW.b + .2, TW.b + .5, t)) : 0;
+  ghostMat.opacity = TW ? .35 * (1 - smooth(TW.b + .2, TW.b + .5, t)) : 0;
   chegada.visible = !!TW && t >= TW.b - .06 && t < TW.b + .35; if (chegada.visible) { const k = (t - TW.b + .06) / .41, c = wp(...pos(VOID, TW.para)); chegada.position.copy(c).setY(c.y + .06); chegada.scale.setScalar(.6 + k * 1.4); chegada.material.opacity = t < TW.b ? 1 : .8 * (1 - k); }
   walkTrail.visible = !!TW; if (TW) { const a = wp(...pos(VOID, TW.de)), b = wp(...pos(VOID, TW.para)); walkTrail.position.copy(a).lerp(b, .5).setY((a.y + b.y) / 2 + .1); walkTrail.scale.x = Math.max(.01, a.distanceTo(b)); walkTrail.lookAt(b.x, walkTrail.position.y, b.z); walkTrail.rotateY(PI / 2); walkTrail.material.opacity = .35 * (1 - smooth(TW.b, TW.b + .5, t)); }
   // Chronosphere
@@ -446,6 +448,7 @@ function frame(ts) {
     // câmera perpendicular à linha do gancho, para a corrente atravessar a tela
     if (dq && dq.plano === 'hook') { const f = frente(PUDGE, VOID, Math.min(t, 9)), meio = P[PUDGE].clone().lerp(wp(...pos(VOID, 9)), .5); camAlvo.copy(meio).setY(meio.y + .6); camPos.copy(meio).add(new THREE.Vector3(-f.z, 0, f.x).multiplyScalar(4.6)).sub(f.clone().multiplyScalar(.8)).setY(meio.y + 2.6); }
     else if (dq && dq.plano === 'chrono') { const a = (t - dq.a) * .35 + .6; camAlvo.copy(centroC).setY(centroC.y + .8); camPos.copy(centroC).add(new THREE.Vector3(Math.cos(a) * 6.4, 5.6, Math.sin(a) * 6.4)); }
+    else if (t >= DEAD[PUDGE] && t < DEAD[PUDGE] + 2.2) { if (!camMorte) camMorte = { a: controls.target.clone(), p: camera.position.clone() }; camAlvo.copy(camMorte.a); camPos.copy(camMorte.p); }
     else { const c = vivos.length ? vivos.reduce((a, b) => a.add(b), new THREE.Vector3()).multiplyScalar(1 / vivos.length) : P[VOID].clone(); let sp = 0; vivos.forEach(v => sp = Math.max(sp, v.distanceTo(c)));
       camAlvo.copy(c).setY(c.y + .5); camPos.copy(camAlvo).add(new THREE.Vector3(.3, .9, .9).normalize().multiplyScalar(Math.min(14, 6.5 + sp * 1.2))); }
     const e = primeira ? 1 : 1 - Math.pow(dq ? .03 : .15, dt); primeira = false; controls.target.lerp(camAlvo, e); camera.position.lerp(camPos, e);
@@ -459,6 +462,10 @@ function frame(ts) {
   for (const e of recentes(DANO, t, 1)) { if (!visivelHeroi(e.tgt, t) || e.amt < 50) continue; const f = t - e.t, h = herois[e.tgt]; const v = h.position.clone(); v.y += 1.6 + f * .6; v.x += (h2(e.t * 10 | 0, e.amt) - .5) * .9; const [x, y, z] = proj(v); if (z > 1) continue;
     const big = e.amt >= 400; og.globalAlpha = 1 - f * f; og.font = `900 ${Math.max(13, W / 52) * (big ? 1.5 : 1) * (1 + .4 * Math.max(0, 1 - f * 6))}px "Alegreya Sans", sans-serif`; og.textAlign = 'center'; og.lineWidth = 4; og.strokeStyle = '#0b0806';
     og.fillStyle = big ? '#ffcf5a' : e.src === PUDGE && e.amt > 300 ? '#ffcf5a' : '#ff8a70'; const txt = (big ? '' : '-') + e.amt + (big ? '!' : ''); og.strokeText(txt, x, y); og.fillText(txt, x, y); og.globalAlpha = 1; }
+  for (const c of CHIPS) { const f = t - c.t; if (f < 0 || f > 1.1 || !herois[c.s].visible) continue; const v = herois[c.s].position.clone(); v.y -= .05; const [x, y, z] = proj(v); if (z > 1) continue;
+    og.globalAlpha = Math.min(1, f * 8, (1.1 - f) * 5); og.font = `700 ${Math.max(12, W / 80)}px "IBM Plex Mono", monospace`; og.textAlign = 'center'; og.textBaseline = 'middle'; const w = og.measureText(c.txt).width + 16, hh = Math.max(12, W / 80) + 10;
+    og.fillStyle = 'rgba(14,12,10,.85)'; og.strokeStyle = TEAM(c.s) ? '#e5533d' : '#4f9dff'; og.lineWidth = 2; og.beginPath(); og.roundRect(x - w / 2, y + 8, w, hh, hh / 2); og.fill(); og.stroke();
+    og.fillStyle = '#efe6d6'; og.fillText(c.txt, x, y + 8 + hh / 2); og.textBaseline = 'alphabetic'; og.globalAlpha = 1; }
   const lbK = dq ? smooth(dq.a - .4, dq.a, t) * (1 - smooth(dq.b, dq.b + .3, t)) : 0;
   if (lbK > 0) { const lb = lbK * Hp * .13; og.fillStyle = '#000'; og.fillRect(0, 0, W, lb); og.fillRect(0, Hp - lb, W, lb);
     const f = smooth(dq.a, dq.a + .3, t) * (1 - smooth(dq.b - .2, dq.b + .2, t)); og.globalAlpha = f; og.textAlign = 'center';
