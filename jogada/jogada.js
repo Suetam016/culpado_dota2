@@ -147,13 +147,19 @@ const texLoader = new THREE.TextureLoader(); texLoader.setCrossOrigin('anonymous
 function retratoTex(nome, cor) {
   // placeholder com a sigla enquanto o retrato carrega (ou se o CDN falhar)
   const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
-  g.fillStyle = cor; g.fillRect(0, 0, 256, 256); g.fillStyle = '#fff'; g.font = '700 70px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(nome.slice(0, 4).toUpperCase(), 128, 132);
+  const sigla = nome.split('_').map(w => w[0]).join('').toUpperCase().slice(0, 2) + (nome.includes('_') ? '' : nome[1].toUpperCase());
+  const gr = g.createRadialGradient(110, 90, 20, 128, 128, 140); gr.addColorStop(0, '#3a2f24'); gr.addColorStop(1, '#14100c'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  g.strokeStyle = cor; g.lineWidth = 10; g.beginPath(); g.arc(128, 128, 112, 0, PI * 2); g.stroke();
+  g.fillStyle = '#efe6d6'; g.font = '700 96px Cinzel, Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(sigla.slice(0, 2), 128, 136);
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image(); img.crossOrigin = 'anonymous';
-  img.onload = () => { const w = img.naturalWidth, h = img.naturalHeight, sz = Math.min(w, h); g.drawImage(img, (w - sz) / 2 - sz * .02, 0, sz, sz, 0, 0, 256, 256); tex.needsUpdate = true; };
+  img.onload = () => { const w = img.naturalWidth, h = img.naturalHeight, sz = Math.min(w, h) * .92; g.clearRect(0, 0, 256, 256); g.drawImage(img, (w - sz) / 2, (h - sz) * .2, sz, sz, 0, 0, 256, 256); tex.needsUpdate = true; };
   img.src = CDN + nome + '.png';
   return tex;
 }
+// anel de vida: arco de toro que começa no topo; as geometrias ficam em cache por degrau de 2,5%
+const ARCOS = new Map();
+function arcoVida(v, R) { const n = Math.max(0, Math.round(v * 40)), key = n + ':' + R.toFixed(3); if (!ARCOS.has(key)) ARCOS.set(key, n ? new THREE.TorusGeometry(R + .005, .045, 8, Math.max(4, n * 2), PI * 2 * n / 40).rotateZ(PI / 2) : new THREE.BufferGeometry()); return ARCOS.get(key); }
 function construir(i) {
   const nome = D.retrato[i], A = ASSETS.herois[nome], cor = A.corpo;
   const root = new THREE.Group(), fig = new THREE.Group(); root.add(fig); fig.position.y = .07;
@@ -175,14 +181,15 @@ function construir(i) {
   // o retrato vai num círculo plano na frente e atrás (UV reto, sem girar a foto)
   const fGeo = new THREE.CircleGeometry(R * .96, 48), frenteF = new THREE.Mesh(fGeo, face), tras = new THREE.Mesh(fGeo, face);
   frenteF.position.z = .047; tras.position.z = -.047; tras.rotation.y = PI; cab.add(frenteF, tras);
-  const aro = new THREE.Mesh(new THREE.TorusGeometry(R, .035, 10, 48), lado); cab.add(aro);
+  const aro = new THREE.Mesh(new THREE.TorusGeometry(R, .03, 8, 48), new THREE.MeshBasicMaterial({ color: 0x241c15 })); cab.add(aro);
+  const vidaArc = new THREE.Mesh(arcoVida(1, R), new THREE.MeshBasicMaterial({ color: TEAMC[TEAM(i)] })); vidaArc.position.z = .02; vidaArc.userData.R = R; vidaArc.userData.n = 40; cab.add(vidaArc);
   const ol = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.12, R * 1.12, .07, 48), contorno); ol.rotation.x = PI / 2; cab.add(ol);
   const pesc = new THREE.Mesh(new THREE.CylinderGeometry(.05, .07, .14, 10), mat({ c: cor.pele })); pesc.position.set(0, cab.position.y - .17, .02); fig.add(pesc);
   // base de miniatura
   const base = new THREE.Mesh(new THREE.CylinderGeometry(.42, .45, .07, 40), new THREE.MeshToonMaterial({ color: 0x2a231c, gradientMap: TONS })); base.position.y = .035; base.receiveShadow = true; root.add(base);
   const rim = new THREE.Mesh(new THREE.TorusGeometry(.445, .02, 8, 48), new THREE.MeshBasicMaterial({ color: TEAMC[TEAM(i)] })); rim.rotation.x = PI / 2; rim.position.y = .06; root.add(rim);
   const ob = new THREE.Mesh(base.geometry, contorno); ob.position.copy(base.position); ob.scale.setScalar(1.05); root.add(ob);
-  root.userData = { fig, mats, cab, base: [base, rim, ob], rotY: 0, mola: 0, molaV: 0 };
+  root.userData = { fig, mats, cab, vidaArc, base: [base, rim, ob], rotY: 0, mola: 0, molaV: 0 };
   return root;
 }
 function tingir(h, cor, k) { h.userData.mats.forEach(m => { m.color.copy(m.userData.cor).lerp(cor, k); }); }
@@ -247,24 +254,25 @@ const tps = ev('item_tpscroll').map(e => ({ e, g: mkTP('item_tpscroll', e.s) }))
 const hookHead = new THREE.Group(); { const mt = new THREE.MeshToonMaterial({ color: C('pudge_meat_hook', 0), gradientMap: TONS });
   const a = new THREE.Mesh(new THREE.TorusGeometry(.16, .035, 10, 24, 4.4), mt); a.rotation.set(PI / 2, 0, PI * .8); const c = new THREE.Mesh(new THREE.ConeGeometry(.06, .16, 10), mt); c.position.set(.14, 0, .05); c.rotation.set(0, 0, -PI / 2); hookHead.add(a, c); }
 hookHead.visible = false; add(hookHead);
-const ELOS = 80, chain = new THREE.InstancedMesh(new THREE.TorusGeometry(.055, .016, 6, 12), new THREE.MeshToonMaterial({ color: 0x80868c, gradientMap: TONS }), ELOS); chain.castShadow = true; chain.visible = false; add(chain);
-const sparks = new THREE.InstancedMesh(new THREE.SphereGeometry(.04, 6, 4), glow(C('pudge_meat_hook', 1)), 50); sparks.visible = false; add(sparks);
-const sparkDir = [...Array(50)].map((_, i) => new THREE.Vector3(Math.cos(i * 2.4), .4 + h2(i, 1), Math.sin(i * 2.4)).normalize().multiplyScalar(1 + 2 * h2(i, 2)));
-const ROTN = nPart('pudge_rot', 90), rot = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 10, 8), new THREE.MeshBasicMaterial({ color: C('pudge_rot', 0), transparent: true, opacity: .12, depthWrite: false, blending: THREE.AdditiveBlending }), ROTN); rot.visible = false; add(rot);
-const rotRing = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.35, 64).rotateX(-PI / 2), glow(C('pudge_rot', 1), .5)); rotRing.visible = false; add(rotRing);
+const ELOS = 80, chain = new THREE.InstancedMesh(new THREE.TorusGeometry(.07, .032, 6, 12), new THREE.MeshToonMaterial({ color: 0x80868c, gradientMap: TONS }), ELOS); chain.castShadow = true; chain.visible = false; add(chain);
+const sparks = new THREE.InstancedMesh(new THREE.SphereGeometry(.04, 6, 4), glow(C('pudge_meat_hook', 1)), 40); sparks.visible = false; add(sparks);
+const sparkDir = [...Array(40)].map((_, i) => new THREE.Vector3(Math.cos(i * 2.4), .4 + h2(i, 1), Math.sin(i * 2.4)).normalize().multiplyScalar(1 + 2 * h2(i, 2)));
+const ROTN = nPart('pudge_rot', 90), rot = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 10, 8), new THREE.MeshToonMaterial({ color: C('pudge_rot', 0), gradientMap: TONS, transparent: true, opacity: .5, depthWrite: false }), ROTN); rot.visible = false; add(rot);
+const rotRing = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.32, 64).rotateX(-PI / 2), new THREE.MeshBasicMaterial({ color: C('pudge_rot', 1), transparent: true })); rotRing.visible = false; add(rotRing);
 const DISN = nPart('pudge_dismember', 60), dism = new THREE.InstancedMesh(new THREE.SphereGeometry(.045, 6, 4), glow(C('pudge_dismember', 0)), DISN); dism.visible = false; add(dism);
 const dismRing = new THREE.Mesh(new THREE.RingGeometry(.5, .7, 48).rotateX(-PI / 2), glow(C('pudge_dismember', 1), .7)); dismRing.visible = false; add(dismRing);
-const shield = new THREE.Mesh(new THREE.SphereGeometry(.8, 32, 20), new THREE.MeshToonMaterial({ color: C('pudge_flesh_heap', 0), gradientMap: TONS, transparent: true, opacity: .3, depthWrite: false })); shield.visible = false; add(shield);
+const shield = new THREE.Mesh(new THREE.SphereGeometry(.5, 32, 20), new THREE.MeshBasicMaterial({ color: C('pudge_flesh_heap', 0), side: THREE.BackSide, transparent: true, opacity: .8 })); shield.visible = false; add(shield);
 const walkTrail = new THREE.Mesh(new THREE.BoxGeometry(1, .06, .25), glow(C('faceless_void_time_walk', 0), .7)); walkTrail.visible = false; add(walkTrail);
-const ghostMat = new THREE.MeshBasicMaterial({ color: C('faceless_void_time_walk', 0), transparent: true, opacity: .25, blending: THREE.AdditiveBlending, depthWrite: false });
+const ghostMat = new THREE.MeshToonMaterial({ color: C('faceless_void_time_walk', 0), gradientMap: TONS, transparent: true, opacity: .55, depthWrite: false });
+const chegada = new THREE.Mesh(new THREE.RingGeometry(.3, .55, 40).rotateX(-PI / 2), glow(C('faceless_void_time_walk', 1), .9)); chegada.visible = false; add(chegada);
 // Chronosphere: domo com faixas que giram e relógio no chão
 const domoMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, uniforms: { uT: { value: 0 }, uA: { value: 0 }, c1: { value: C('faceless_void_chronosphere', 0) }, c2: { value: C('faceless_void_chronosphere', 1) }, c3: { value: C('faceless_void_chronosphere', 2) } },
   vertexShader: 'varying vec3 vP; varying vec3 vN; void main(){ vP=position; vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
   fragmentShader: `uniform float uT,uA; uniform vec3 c1,c2,c3; varying vec3 vP; varying vec3 vN;
     void main(){ float lat=asin(clamp(vP.y/length(vP),-1.,1.)); float lon=atan(vP.z,vP.x);
-      float faixa=step(.82,fract(lat*6.-uT*.25))+step(.9,fract(lon*3./3.1416+uT*.12));
-      float fr=pow(1.-abs(vN.z),2.);
-      vec3 c=mix(c2,c1,fr)+faixa*c3*.6; gl_FragColor=vec4(c,(.16+.45*fr+.35*faixa)*uA); }` });
+      float faixa=step(.86,fract(lat*3.-uT*.25))+step(.93,fract(lon*1.5/3.1416+uT*.12));
+      float fr=pow(1.-abs(vN.z),2.); float borda=smoothstep(.72,.9,1.-abs(vN.z));
+      vec3 c=mix(c2,c1,fr)+faixa*c3*.6; c+=borda*c3*.5; gl_FragColor=vec4(c,(.14+.3*fr+.35*faixa+.5*borda)*uA); }` });
 const domo = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24, 0, PI * 2, 0, PI / 2), domoMat); domo.visible = false; add(domo);
 const relogio = (() => { const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d'); g.strokeStyle = '#c8b8ff'; g.lineWidth = 10; g.beginPath(); g.arc(256, 256, 240, 0, 7); g.stroke(); g.lineWidth = 4; g.beginPath(); g.arc(256, 256, 200, 0, 7); g.stroke();
   for (let i = 0; i < 12; i++) { const a = i / 12 * PI * 2; g.lineWidth = i % 3 ? 5 : 12; g.beginPath(); g.moveTo(256 + Math.cos(a) * 205, 256 + Math.sin(a) * 205); g.lineTo(256 + Math.cos(a) * 235, 256 + Math.sin(a) * 235); g.stroke(); }
@@ -275,14 +283,11 @@ const corte = new THREE.Mesh(new THREE.RingGeometry(.55, .75, 32, 1, 0, PI * .9)
 
 // ===================== heróis =====================
 const herois = [...Array(NHER)].map((_, i) => { const h = construir(i); h.scale.setScalar(i === PUDGE ? 1.25 : 1.15); scene.add(h); return h; });
-const fantasmas = [...Array(6)].map(() => { const g = herois[VOID].userData.fig.clone(true); g.traverse(o => { if (o.isMesh) { o.material = ghostMat; o.castShadow = false; } }); g.scale.setScalar(1.15); g.visible = false; scene.add(g); return g; });
+const fantasmas = [...Array(6)].map(() => { const f0 = herois[VOID].userData.fig, g = f0.clone(true); g.children[f0.children.indexOf(f0.userData.cab ?? herois[VOID].userData.cab)].visible = false; g.traverse(o => { if (o.isMesh) { if (o.material === contorno) o.visible = false; else o.material = ghostMat; o.castShadow = false; } }); g.scale.setScalar(1); g.visible = false; scene.add(g); return g; });
+const DM = ev('pudge_dismember')[0], SH = ev('pudge_flesh_heap')[0];
 const cabecaSolta = { ativo: false, p: new THREE.Vector3(), v: new THREE.Vector3(), r: new THREE.Vector3() };
 
 // ===================== HUD =====================
-const hud = $('#herois');
-const cards = [...Array(NHER)].map((_, i) => { const d = document.createElement('div'); d.className = 'card t' + TEAM(i);
-  d.innerHTML = `<img alt="" src="${CDN + D.retrato[i]}.png" onerror="this.outerHTML='<div class=ph>${D.nomes[i].slice(0, 2)}</div>'"><div class="ci"><b>${D.nomes[i]}</b><div class="hp"><i></i></div><span class="st"></span></div>`; hud.appendChild(d);
-  return { d, bar: d.querySelector('.hp i'), st: d.querySelector('.st') }; });
 const marcas = $('#marcas');
 [...EV.filter(e => e.k !== 'item_tpscroll' || e.s !== VOID).map(e => ({ t: e.a, txt: (USOS.find(u => Math.abs(u.t - e.a) < 1.2 && u.s === e.s)?.nome) || (e.k === 'morte' ? 'Pudge morre' : e.k), d: false })), ...DESTAQUES.map(d => ({ t: d.a, txt: d.titulo, d: true }))]
   .forEach(m => { const s = document.createElement('span'); s.className = m.d ? 'mk dq' : 'mk'; s.style.left = (m.t / DUR * 100) + '%'; s.title = m.txt; marcas.appendChild(s); });
@@ -296,14 +301,20 @@ new ResizeObserver(fit).observe(stage); fit();
 const clock = { t: 0, playing: false, speed: 1, prev: 0 };
 const cine = () => $('#cine').checked;
 const destaque = t => DESTAQUES.find(d => t >= d.a - .4 && t <= d.b + .3);
-const escala = t => { if (!cine()) return 1; let w = 0; for (const d of DESTAQUES) w = Math.max(w, smooth(d.a - .3, d.a, t) * (1 - smooth(d.b, d.b + .3, t)) * (1 - d.lento)); return 1 - w; };
+const HITSTOP = [{ t: HOOK.acerto, d: .09 }, ...DANO.filter(e => e.src === VOID && e.amt > 400).map(e => ({ t: e.t, d: .08 })), { t: DEAD[PUDGE], d: .12 }];
+const parado = t => HITSTOP.some(h => t >= h.t && t < h.t + h.d);
+const escala = t => { if (parado(t)) return .08; if (!cine()) return 1; let w = 0; for (const d of DESTAQUES) w = Math.max(w, smooth(d.a - .3, d.a, t) * (1 - smooth(d.b, d.b + .3, t)) * (1 - d.lento)); return 1 - w; };
 const camAlvo = new THREE.Vector3(), camPos = new THREE.Vector3();
 let primeira = true, last = performance.now(), tremor = 0;
 const mmss = t => { const g = Math.floor(D.t0 + t); return Math.floor(g / 60) + ':' + String(g % 60).padStart(2, '0'); };
 const scrub = $('#scrub'); scrub.max = DUR; scrub.oninput = () => { clock.t = +scrub.value; clock.prev = clock.t; primeira = true; pararSons(); };
 const setPlay = p => { clock.playing = p; if (!p) pararSons(); $('#play').textContent = p ? 'Pausar' : 'Tocar'; };
 $('#play').onclick = () => { window.SFX?.desbloquear?.(); setPlay(!clock.playing); };
-$('#comecar').onclick = () => { window.SFX?.desbloquear?.(); $('#capa').hidden = true; clock.t = 0; clock.prev = 0; primeira = true; setPlay(true); };
+const palco = $('#palco');
+const telaCheia = () => { try { if (!document.fullscreenElement) (palco.requestFullscreen || palco.webkitRequestFullscreen)?.call(palco)?.catch?.(() => { }); else document.exitFullscreen?.(); } catch (e) { } };
+$('#cheia').onclick = telaCheia;
+document.addEventListener('fullscreenchange', () => { $('#cheia').textContent = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia'; fit(); });
+$('#comecar').onclick = () => { if (matchMedia('(pointer: coarse)').matches || innerWidth < 900) { if (!document.fullscreenElement) telaCheia(); } window.SFX?.desbloquear?.(); $('#capa').hidden = true; clock.t = 0; clock.prev = 0; primeira = true; setPlay(true); };
 $('#speed').onchange = e => clock.speed = +e.target.value;
 $('#tini').textContent = mmss(0); $('#tfim').textContent = mmss(DUR);
 const somLigado = () => $('#som').checked;
@@ -342,8 +353,8 @@ function frame(ts) {
     let dA = alvoY - h.userData.rotY; dA = Math.atan2(Math.sin(dA), Math.cos(dA)); if (!congelado(s, t)) h.userData.rotY += dA * Math.min(1, dt * 10); h.rotation.y = h.userData.rotY;
     const U = h.userData, fig = U.fig, fz = congelado(s, t) ? CHRONO.a : now;
     fig.position.y = .07 + (andando ? Math.abs(Math.sin(fz * 11)) * .05 : 0); fig.rotation.set(andando ? .08 : 0, 0, andando ? Math.sin(fz * 11) * .04 : 0);
-    if (s === PUDGE && t >= HOOK.a && t < HOOK.a + .4) fig.rotation.x = .25;
-    const DM = ev('pudge_dismember')[0];
+    if (s === PUDGE && t >= HOOK.a - .14 && t < HOOK.a) fig.rotation.x = -.3 * smooth(HOOK.a - .14, HOOK.a - .04, t);
+    if (s === PUDGE && t >= HOOK.a && t < HOOK.a + .4) fig.rotation.x = .3 * (1 - smooth(HOOK.a + .1, HOOK.a + .4, t));
     if (s === PUDGE && ativo(DM, t)) fig.rotation.x = .18 + Math.sin(now * 9) * .05;
     if (s === VOID && ativo(DM, t)) { fig.position.y = .42 + Math.sin(now * 3) * .03; fig.rotation.z = Math.sin(now * 23) * .08; fig.rotation.x = -.3; }
     // golpe do Void: avanço curto a cada acerto
@@ -351,15 +362,30 @@ function frame(ts) {
     const hit = recentes(DANO, t, .14).some(e => e.tgt === s);
     if (hit && !congelado(s, t)) U.molaV += 6 * dt * 10;
     U.molaV += (-U.mola * 60 - U.molaV * 6) * dt; U.mola += U.molaV * dt;
-    flash(h, hit ? .4 : 0);
-    tingir(h, new THREE.Color('#8a78d8'), congelado(s, t) ? .55 : (morto ? .6 : 0));
+    fig.scale.setScalar(s === PUDGE ? 1 + .1 * Math.sin(Math.min(1, Math.max(0, (t - SH.a) / .2)) * PI) : 1);
+    const flashBranco = (s === VOID && t >= HOOK.acerto && t < HOOK.acerto + .06) || DANO.some(e => e.tgt === s && e.amt > 400 && t >= e.t && t < e.t + .06) || (s === PUDGE && t >= DEAD[s] && t < DEAD[s] + .06);
+    flash(h, flashBranco ? 1 : hit ? .35 : 0);
+    // dentro da Chronosphere tudo perde cor e escurece, menos o Void
+    const naRot = s !== PUDGE && ev('pudge_rot').some(e => ativo(e, t)) && p.distanceTo(P[PUDGE]) < 1.35 && !congelado(s, t) && (now % .5) < .12;
+    tingir(h, congelado(s, t) ? new THREE.Color('#4a4856') : naRot ? new THREE.Color('#7ee84a') : new THREE.Color('#8a78d8'), congelado(s, t) ? .75 : naRot ? .5 : (morto ? .6 : 0));
     // cabeção sempre de frente para a câmera, com mola
     const cab = U.cab; const yawCam = Math.atan2(camera.position.x - p.x, camera.position.z - p.z);
-    cab.rotation.set(0, yawCam - h.rotation.y, (congelado(s, t) ? 0 : Math.sin(fz * 2.3 + s) * .06) + U.mola * .5); cab.scale.setScalar(1 + Math.abs(U.mola) * .4);
+    cab.rotation.set(0, yawCam - h.rotation.y, (congelado(s, t) ? 0 : Math.sin(fz * 2.3 + s) * .06) + U.mola * .5); const sq = recentes(DANO, t, .2).filter(e => e.tgt === s && e.amt >= 100).pop(); let amassa = 0;
+    if (sq && !congelado(s, t)) { const k = (t - sq.t) / .2; amassa = k < .4 ? .15 * Math.sin(k / .4 * PI / 2) : .15 * Math.cos((k - .4) / .6 * PI) * (1 - k); }
+    if (s === VOID && ativo(DM, t)) { const pul = (now - DM.a) % 1; if (pul < .15) amassa = Math.max(amassa, .15 * Math.sin(pul / .15 * PI)); }
+    cab.scale.set(1 + amassa + Math.abs(U.mola) * .2, 1 - amassa + Math.abs(U.mola) * .2, 1);
     cab.visible = !(s === PUDGE && morto);
     if (morto) { fig.rotation.x = -Math.min(1.45, (t - DEAD[s]) * 4); fig.position.y = .07; }
+    cab.position.x = 0; cab.position.z = .05;
+    { const va = U.vidaArc, n = Math.round(vida(s, t) * 40); if (va.userData.n !== n) { va.userData.n = n; va.geometry = arcoVida(n / 40, va.userData.R); } }
     if (!morto) vivos.push(p);
   });
+  { const dir = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).setY(0).normalize(), olhar = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 2).setY(0).normalize();
+    const ator = ((recentes(DANO, t, .6).filter(e => e.amt >= 100).pop() || {}).src) ?? (EV.filter(e => ativo(e, t) && e.k !== 'item_tpscroll').pop() || {}).s;
+    for (let a = 0; a < NHER; a++) for (let b = a + 1; b < NHER; b++) { if (!herois[a].visible || !herois[b].visible || t >= DEAD[a] || t >= DEAD[b]) continue;
+      const d = P[b].clone().sub(P[a]); if (Math.abs(d.dot(dir)) > .9 || d.length() > 1.6) continue;
+      const lado = d.dot(dir) >= 0 ? 1 : -1;
+      [[a, -lado], [b, lado]].forEach(([s, sg]) => { const h = herois[s], w = dir.clone().multiplyScalar(.35 * sg).add(olhar.clone().multiplyScalar(s === ator ? .35 : 0)); w.applyAxisAngle(new THREE.Vector3(0, 1, 0), -h.rotation.y); h.userData.cab.position.x += w.x; h.userData.cab.position.z += w.z; }); } }
   // cabeça do Pudge rolando depois da morte
   if (t >= DEAD[PUDGE]) { const k = t - DEAD[PUDGE], base = P[PUDGE]; const dir = frente(VOID, PUDGE, DEAD[PUDGE]);
     const cab = herois[PUDGE].userData.cab; if (!cabecaSolta.mesh) { cabecaSolta.mesh = cab.clone(true); scene.add(cabecaSolta.mesh); }
@@ -377,29 +403,30 @@ function frame(ts) {
   if (hookOn) { const mao = P[PUDGE].clone().add(frente(PUDGE, VOID, Math.min(t, 9)).multiplyScalar(.5)).setY(P[PUDGE].y + .5);
     const alvoH = t < HOOK.acerto ? mao.clone().lerp(wp(...pos(VOID, HOOK.acerto)).setY(Hh(...pos(VOID, HOOK.acerto)) + .6), (t - HOOK.a) / (HOOK.acerto - HOOK.a)) : P[VOID].clone().setY(P[VOID].y + .6);
     hookHead.position.copy(alvoH); hookHead.lookAt(mao); hookHead.rotateY(PI);
-    const L = alvoH.distanceTo(mao), n = Math.min(ELOS, Math.ceil(L / .09)); const rq = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(mao, alvoH, new THREE.Vector3(0, 1, 0)));
+    const L = alvoH.distanceTo(mao), n = Math.min(ELOS, Math.ceil(L / .11)); const rq = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(mao, alvoH, new THREE.Vector3(0, 1, 0)));
     for (let i = 0; i < ELOS; i++) { if (i >= n) { chain.setMatrixAt(i, M4.makeScale(0, 0, 0)); continue; } const k = i / n; V4.copy(mao).lerp(alvoH, k); V4.y += Math.sin(k * PI) * .06;
       Q4.copy(rq).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), i % 2 ? PI / 2 : 0)); chain.setMatrixAt(i, M4.compose(V4, Q4, S4.set(1, 1, 1))); }
     chain.instanceMatrix.needsUpdate = true; }
   const sOn = t >= HOOK.acerto && t < HOOK.acerto + .6; sparks.visible = sOn;
-  if (sOn) { const f = (t - HOOK.acerto) / .6, c = wp(...pos(VOID, HOOK.acerto)).setY(Hh(...pos(VOID, HOOK.acerto)) + .6); for (let i = 0; i < 50; i++) { V4.copy(sparkDir[i]).multiplyScalar(f * 1.5).add(c); V4.y -= f * f * 1.2; sparks.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(1 - f))); } sparks.instanceMatrix.needsUpdate = true; }
+  if (sOn) { const f = (t - HOOK.acerto) / .6, c = wp(...pos(VOID, HOOK.acerto)).setY(Hh(...pos(VOID, HOOK.acerto)) + .6); for (let i = 0; i < 40; i++) { V4.copy(sparkDir[i]).multiplyScalar(f * 1.5).add(c); V4.y -= f * f * 1.2; sparks.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(1 - f))); } sparks.instanceMatrix.needsUpdate = true; }
   // Rot (congela junto dentro da Chronosphere)
   const rE = ev('pudge_rot').find(e => ativo(e, t)); rot.visible = rotRing.visible = !!rE && t < DEAD[PUDGE];
-  if (rot.visible) { const c = P[PUDGE], tr = congelado(PUDGE, t) ? CHRONO.a : now; rotRing.position.copy(c).setY(c.y + .05); rotRing.material.opacity = .3 + .15 * Math.sin(tr * 5);
-    for (let i = 0; i < ROTN; i++) { const a = i * 2.399 + tr * (.6 + h2(i, 4) * .6), r = .55 + .75 * h2(i, 5), y = ((tr * .35 + h2(i, 6)) % 1); V4.set(c.x + Math.cos(a) * r, c.y + .05 + y * .7, c.z + Math.sin(a) * r);
-      rot.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(.06 + .12 * y * (1 - y) * 4 * h2(i, 7)))); } rot.instanceMatrix.needsUpdate = true; }
+  if (rot.visible) { const c = P[PUDGE], tr = congelado(PUDGE, t) ? CHRONO.a : now; rotRing.position.copy(c).setY(c.y + .05); rotRing.material.opacity = .9;
+    for (let i = 0; i < ROTN; i++) { const a = i * 2.399 + tr * (.6 + h2(i, 4) * .6), r = .55 + .75 * h2(i, 5), y = ((tr * .35 + h2(i, 6)) % 1); V4.set(c.x + Math.cos(a) * r, c.y + .04 + y * .22, c.z + Math.sin(a) * r);
+      rot.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(.04 + .07 * y * (1 - y) * 4 * h2(i, 7)))); } rot.instanceMatrix.needsUpdate = true; }
   // Dismember
-  const DM = ev('pudge_dismember')[0], dOn = ativo(DM, t); dism.visible = dismRing.visible = dOn;
+  const dOn = ativo(DM, t); dism.visible = dismRing.visible = dOn;
   if (dOn) { const a = P[VOID].clone().setY(P[VOID].y + .8), b = P[PUDGE].clone().setY(P[PUDGE].y + 1.0); dismRing.position.copy(P[VOID]).setY(P[VOID].y + .05); dismRing.rotation.y = now * 2;
     for (let i = 0; i < DISN; i++) { const k = (now * .9 + i / DISN) % 1, fio = i % 4; V4.copy(a).lerp(b, k); V4.x += Math.sin(k * PI * 3 + fio * 1.6) * .12 * Math.sin(k * PI); V4.y += Math.sin(k * PI) * .25 + Math.cos(k * 9 + fio) * .05;
       dism.setMatrixAt(i, M4.compose(V4, Q4.identity(), S4.setScalar(.6 + .8 * Math.sin(k * PI)))); } dism.instanceMatrix.needsUpdate = true; }
   // Meat Shield
-  const SH = ev('pudge_flesh_heap')[0], shOn = ativo(SH, t); shield.visible = shOn; if (shOn) { const f = (t - SH.a) / (SH.b - SH.a); shield.position.copy(P[PUDGE]).setY(P[PUDGE].y + .75); shield.scale.setScalar(.95 + .1 * Math.sin(now * 6)); shield.material.opacity = .3 * (1 - f * f); }
+  const shOn = ativo(SH, t); shield.visible = shOn; if (shOn) { const f = (t - SH.a) / (SH.b - SH.a); shield.position.copy(P[PUDGE]).setY(P[PUDGE].y + .42); shield.scale.set(1.25, 1.0, 1.25).multiplyScalar(1 + .03 * Math.sin(now * 6)); shield.material.opacity = .8 * (1 - f * f); }
   // Time Walk
-  const TW = ev('faceless_void_time_walk').find(w => t >= w.a && t < w.b + .8);
+  const TW = ev('faceless_void_time_walk').find(w => t >= w.a && t < w.b + .5);
   fantasmas.forEach((g, i) => { g.visible = !!TW && t > TW.a + i * (TW.b - TW.a) / 6; if (!g.visible) return; const p = wp(...pos(VOID, TW.de)).lerp(wp(...pos(VOID, TW.para)), i / 6); g.position.copy(p).setY(p.y + .08); g.rotation.y = herois[VOID].rotation.y; });
-  ghostMat.opacity = TW ? .25 * (1 - smooth(TW.b, TW.b + .8, t)) : 0;
-  walkTrail.visible = !!TW; if (TW) { const a = wp(...pos(VOID, TW.de)), b = wp(...pos(VOID, TW.para)); walkTrail.position.copy(a).lerp(b, .5).setY((a.y + b.y) / 2 + .1); walkTrail.scale.x = Math.max(.01, a.distanceTo(b)); walkTrail.lookAt(b.x, walkTrail.position.y, b.z); walkTrail.rotateY(PI / 2); walkTrail.material.opacity = .7 * (1 - smooth(TW.b, TW.b + .8, t)); }
+  ghostMat.opacity = TW ? .55 * (1 - smooth(TW.b + .2, TW.b + .5, t)) : 0;
+  chegada.visible = !!TW && t >= TW.b - .06 && t < TW.b + .35; if (chegada.visible) { const k = (t - TW.b + .06) / .41, c = wp(...pos(VOID, TW.para)); chegada.position.copy(c).setY(c.y + .06); chegada.scale.setScalar(.6 + k * 1.4); chegada.material.opacity = t < TW.b ? 1 : .8 * (1 - k); }
+  walkTrail.visible = !!TW; if (TW) { const a = wp(...pos(VOID, TW.de)), b = wp(...pos(VOID, TW.para)); walkTrail.position.copy(a).lerp(b, .5).setY((a.y + b.y) / 2 + .1); walkTrail.scale.x = Math.max(.01, a.distanceTo(b)); walkTrail.lookAt(b.x, walkTrail.position.y, b.z); walkTrail.rotateY(PI / 2); walkTrail.material.opacity = .35 * (1 - smooth(TW.b, TW.b + .5, t)); }
   // Chronosphere
   const cOn = t >= CHRONO.a && t < CHRONO.b + .6; domo.visible = relogio.visible = cOn;
   const centroC = wp(...pos(PUDGE, CHRONO.a + .5)).lerp(wp(...pos(VOID, CHRONO.a + .5)), .5);
@@ -416,7 +443,8 @@ function frame(ts) {
   // câmera
   const dq = cine() ? destaque(t) : null;
   if (performance.now() > userAte) {
-    if (dq && dq.plano === 'hook') { const f = frente(PUDGE, VOID, Math.min(t, 9)); camAlvo.copy(P[PUDGE]).lerp(wp(...pos(VOID, 9)), .45).setY(P[PUDGE].y + .7); camPos.copy(P[PUDGE]).sub(f.clone().multiplyScalar(3.0)).add(new THREE.Vector3(-f.z, 0, f.x).multiplyScalar(2.6)).setY(P[PUDGE].y + 3.4); }
+    // câmera perpendicular à linha do gancho, para a corrente atravessar a tela
+    if (dq && dq.plano === 'hook') { const f = frente(PUDGE, VOID, Math.min(t, 9)), meio = P[PUDGE].clone().lerp(wp(...pos(VOID, 9)), .5); camAlvo.copy(meio).setY(meio.y + .6); camPos.copy(meio).add(new THREE.Vector3(-f.z, 0, f.x).multiplyScalar(4.6)).sub(f.clone().multiplyScalar(.8)).setY(meio.y + 2.6); }
     else if (dq && dq.plano === 'chrono') { const a = (t - dq.a) * .35 + .6; camAlvo.copy(centroC).setY(centroC.y + .8); camPos.copy(centroC).add(new THREE.Vector3(Math.cos(a) * 6.4, 5.6, Math.sin(a) * 6.4)); }
     else { const c = vivos.length ? vivos.reduce((a, b) => a.add(b), new THREE.Vector3()).multiplyScalar(1 / vivos.length) : P[VOID].clone(); let sp = 0; vivos.forEach(v => sp = Math.max(sp, v.distanceTo(c)));
       camAlvo.copy(c).setY(c.y + .5); camPos.copy(camAlvo).add(new THREE.Vector3(.3, .9, .9).normalize().multiplyScalar(Math.min(14, 6.5 + sp * 1.2))); }
@@ -426,19 +454,16 @@ function frame(ts) {
   const sh = new THREE.Vector3((Math.random() - .5), (Math.random() - .5), 0).multiplyScalar(tremor * .25); camera.position.add(sh);
   sun.position.copy(controls.target).add(new THREE.Vector3(-6, 10, 5)); sun.target.position.copy(controls.target);
   composer.render(); camera.position.sub(sh);
-  // HUD
-  cards.forEach((c, s) => { const v = vida(s, t); c.bar.style.width = (v * 100) + '%'; c.d.classList.toggle('morto', t >= DEAD[s]); c.d.classList.toggle('fora', !visivelHeroi(s, t) && t < DEAD[s]);
-    c.st.textContent = t >= DEAD[s] ? 'morto' : congelado(s, t) && visivelHeroi(s, t) ? 'congelado' : (s === VOID && ativo(DM, t)) ? 'preso no Dismember' : (s === VOID && t >= HOOK.acerto && t < 10) ? 'fisgado' : !visivelHeroi(s, t) ? 'a caminho' : ''; });
   og.clearRect(0, 0, W, Hp);
   const proj = (v) => { v.project(camera); return [(v.x * .5 + .5) * W, (-v.y * .5 + .5) * Hp, v.z]; };
   for (const e of recentes(DANO, t, 1)) { if (!visivelHeroi(e.tgt, t) || e.amt < 50) continue; const f = t - e.t, h = herois[e.tgt]; const v = h.position.clone(); v.y += 1.6 + f * .6; v.x += (h2(e.t * 10 | 0, e.amt) - .5) * .9; const [x, y, z] = proj(v); if (z > 1) continue;
     const big = e.amt >= 400; og.globalAlpha = 1 - f * f; og.font = `900 ${Math.max(13, W / 52) * (big ? 1.5 : 1) * (1 + .4 * Math.max(0, 1 - f * 6))}px "Alegreya Sans", sans-serif`; og.textAlign = 'center'; og.lineWidth = 4; og.strokeStyle = '#0b0806';
     og.fillStyle = big ? '#ffcf5a' : e.src === PUDGE && e.amt > 300 ? '#ffcf5a' : '#ff8a70'; const txt = (big ? '' : '-') + e.amt + (big ? '!' : ''); og.strokeText(txt, x, y); og.fillText(txt, x, y); og.globalAlpha = 1; }
   const lbK = dq ? smooth(dq.a - .4, dq.a, t) * (1 - smooth(dq.b, dq.b + .3, t)) : 0;
-  if (lbK > 0) { const lb = lbK * Hp * .1; og.fillStyle = '#000'; og.fillRect(0, 0, W, lb); og.fillRect(0, Hp - lb, W, lb);
+  if (lbK > 0) { const lb = lbK * Hp * .13; og.fillStyle = '#000'; og.fillRect(0, 0, W, lb); og.fillRect(0, Hp - lb, W, lb);
     const f = smooth(dq.a, dq.a + .3, t) * (1 - smooth(dq.b - .2, dq.b + .2, t)); og.globalAlpha = f; og.textAlign = 'center';
-    og.fillStyle = '#e8b04a'; og.font = `900 ${Hp * .085}px Cinzel, serif`; og.lineWidth = 6; og.strokeStyle = '#0b0806'; og.strokeText(dq.titulo, W / 2 + (1 - f) * 40, Hp - lb - Hp * .09); og.fillText(dq.titulo, W / 2 + (1 - f) * 40, Hp - lb - Hp * .09);
-    og.fillStyle = '#efe6d6'; og.font = `600 ${Hp * .035}px "Alegreya Sans", sans-serif`; og.fillText(dq.sub, W / 2, Hp - lb - Hp * .04); og.globalAlpha = 1; }
+    og.textBaseline = 'middle'; og.fillStyle = '#e8b04a'; og.font = `900 ${Hp * .075}px Cinzel, serif`; og.fillText(dq.titulo, W / 2 + (1 - f) * 40, Hp - lb / 2);
+    og.fillStyle = '#efe6d6'; og.font = `600 ${Hp * .035}px "Alegreya Sans", sans-serif`; og.fillText(dq.sub, W / 2, lb / 2); og.textBaseline = 'alphabetic'; og.globalAlpha = 1; }
   if (t >= DEAD[PUDGE] && t < DEAD[PUDGE] + 2.6) { const f = smooth(DEAD[PUDGE], DEAD[PUDGE] + .3, t) * (1 - smooth(DEAD[PUDGE] + 2.1, DEAD[PUDGE] + 2.6, t)); og.globalAlpha = f; og.textAlign = 'center';
     og.fillStyle = 'rgba(14,12,10,.75)'; og.fillRect(0, Hp * .12, W, Hp * .13); og.fillStyle = '#e5533d'; og.font = `900 ${Hp * .065}px Cinzel, serif`; og.fillText('PUDGE CAIU', W / 2, Hp * .19);
     og.fillStyle = '#c7b9a3'; og.font = `500 ${Hp * .032}px "Alegreya Sans", sans-serif`; og.fillText('o Void transformou a fuga em abate', W / 2, Hp * .235); og.globalAlpha = 1; }
