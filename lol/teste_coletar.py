@@ -29,7 +29,8 @@ def partida_falsa(mid="BR1_1", puuid_nosso="p-mia", nome="MiaMid", tag="BR1", se
             "damageDealtToObjectives": rnd.randint(1000, 9000), "damageDealtToBuildings": rnd.randint(0, 5000),
             "visionScore": rnd.randint(8, 60), "wardsPlaced": 8, "wardsKilled": 2, "detectorWardsPlaced": 1,
             "timeCCingOthers": 10, "totalTimeSpentDead": 60, "longestTimeSpentLiving": 500,
-            "summoner1Id": 4, "summoner2Id": 14, "item0": 3031, "item1": 3006,
+            "summoner1Id": 4, "summoner2Id": 14, "spell1Casts": 50, "spell2Casts": 20, "spell3Casts": 30,
+            "spell4Casts": 0 if nosso else 4, "summoner1Casts": 3, "summoner2Casts": 2, "item0": 3031, "item1": 3006,
             "challenges": {"killParticipation": 0.5, "teamDamagePercentage": 0.2, "kda": 2.1, "extraQueNaoUsamos": 1},
         })
     eventos_por_min = {m: [] for m in range(minutos + 1)}
@@ -55,6 +56,9 @@ def partida_falsa(mid="BR1_1", puuid_nosso="p-mia", nome="MiaMid", tag="BR1", se
                                          "buildingType": "TOWER_BUILDING", "towerType": "OUTER_TURRET",
                                          "laneType": "MID_LANE", "position": {"x": 5000, "y": 5000}})
     eventos_por_min[3].append({"type": "WARD_PLACED", "timestamp": 180000, "creatorId": 1})
+    eventos_por_min[0].append({"type": "SKILL_LEVEL_UP", "timestamp": 1000, "participantId": 3, "skillSlot": 1, "levelUpType": "NORMAL"})
+    eventos_por_min[6].append({"type": "SKILL_LEVEL_UP", "timestamp": 360000, "participantId": 3, "skillSlot": 4, "levelUpType": "NORMAL"})
+    eventos_por_min[0].append({"type": "ITEM_PURCHASED", "timestamp": 5000, "participantId": 3, "itemId": 1056})
     frames = []
     for m in range(minutos + 1):
         pf = {}
@@ -107,6 +111,11 @@ class TesteColeta(unittest.TestCase):
         tipos = {e["tipo"] for e in c["eventos"]}
         self.assertEqual(tipos, {"abate", "monstro", "estrutura"})   # WARD_PLACED fica de fora
         self.assertEqual(c["inicio"], 1761850000 + 7 * 3600)
+        self.assertEqual(c["v"], coletar.VERSAO)
+        mia = c["jogadores"][2]
+        self.assertEqual(mia["skills"], [[1, 1], [360, 4]])
+        self.assertEqual(mia["compras"], [[5, 1056]])
+        self.assertEqual((mia["spell1Casts"], mia["spell4Casts"], mia["summoner1Casts"]), (50, 0, 3))
 
     def test_rodada_e_idempotencia(self):
         api = ApiFalsa([partida_falsa("BR1_1", semente=1), partida_falsa("BR1_2", semente=2)])
@@ -125,6 +134,21 @@ class TesteColeta(unittest.TestCase):
             self.assertEqual(coletar.rodada(api, jog[:1], saida), 0)
             self.assertFalse(any("by-riot-id" in u for u in api.urls))
             self.assertEqual(len(api.urls), 1)
+
+    def test_refaz_partidas_antigas(self):
+        api = ApiFalsa([partida_falsa("BR1_1", semente=1)])
+        with tempfile.TemporaryDirectory() as d:
+            saida = Path(d)
+            jog = [{"riotId": "MiaMid#BR1"}]
+            coletar.rodada(api, jog, saida)
+            arq = saida / "partidas" / "BR1_1.json"
+            velha = json.loads(arq.read_text())
+            velha["v"] = 1
+            arq.write_text(json.dumps(velha))
+            api.urls.clear()
+            self.assertEqual(coletar.rodada(api, jog, saida), 1)      # baixou de novo
+            self.assertEqual(json.loads(arq.read_text())["v"], coletar.VERSAO)
+            self.assertEqual(coletar.rodada(api, jog, saida), 0)      # e não repete
 
     def test_sem_chave(self):
         import os

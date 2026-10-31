@@ -54,7 +54,9 @@ CAMPOS = (
     "totalDamageDealtToChampions", "totalDamageTaken", "damageDealtToObjectives", "damageDealtToBuildings",
     "visionScore", "wardsPlaced", "wardsKilled", "detectorWardsPlaced", "timeCCingOthers", "totalTimeSpentDead",
     "longestTimeSpentLiving", "summoner1Id", "summoner2Id", "gameEndedInSurrender", "gameEndedInEarlySurrender",
+    "spell1Casts", "spell2Casts", "spell3Casts", "spell4Casts", "summoner1Casts", "summoner2Casts",
 )
+VERSAO = 2                # partidas gravadas com versão menor são baixadas de novo (v2: uso de habilidades e skills)
 
 
 class ChaveInvalida(Exception):
@@ -111,6 +113,8 @@ def compactar(partida: dict, timeline: dict | None) -> dict:
                       "objetivos": {k: (v or {}).get("kills", 0) for k, v in obj.items()}})
 
     quadros, eventos = [], []
+    skills = {j["id"]: [] for j in jogadores}     # ordem em que subiu cada habilidade: [segundo, 1=Q 2=W 3=E 4=R]
+    compras = {j["id"]: [] for j in jogadores}    # [segundo, item]
     if timeline:
         for q in timeline["info"].get("frames", []):
             linha = {}
@@ -120,11 +124,20 @@ def compactar(partida: dict, timeline: dict | None) -> dict:
                               (f.get("minionsKilled") or 0) + (f.get("jungleMinionsKilled") or 0), f.get("level")]
             quadros.append({"t": round((q.get("timestamp") or 0) / 1000), "p": linha})
             for e in q.get("events", []):
+                pid, t = e.get("participantId"), round((e.get("timestamp") or 0) / 1000)
+                if e.get("type") == "SKILL_LEVEL_UP" and pid in skills and e.get("levelUpType") == "NORMAL":
+                    skills[pid].append([t, e.get("skillSlot")])
+                elif e.get("type") == "ITEM_PURCHASED" and pid in compras:
+                    compras[pid].append([t, e.get("itemId")])
                 c = compactar_evento(e)
                 if c:
                     eventos.append(c)
 
+    for j in jogadores:
+        j["skills"], j["compras"] = skills[j["id"]], compras[j["id"]]
+
     return {
+        "v": VERSAO,
         "id": partida["metadata"]["matchId"],
         "inicio": round((info.get("gameStartTimestamp") or info.get("gameCreation") or 0) / 1000),
         "duracao": info.get("gameDuration"),
@@ -217,6 +230,13 @@ def rodada(api: Api, jogadores: list[dict], saida: Path, por_jogador: int = POR_
         for mid in ids:
             if mid not in conhecidas and all(mid != f for f, _ in fila):
                 fila.append((mid, rota))
+
+    # partidas gravadas por uma versão antiga do script: baixa de novo, depois das novas
+    for mid in conhecidas:
+        c = ler_json(saida / "partidas" / f"{mid}.json", None)
+        plataforma = mid.split("_")[0].lower()
+        if c and c.get("v", 1) < VERSAO and plataforma in REGIOES and all(mid != f for f, _ in fila):
+            fila.append((mid, REGIOES[plataforma]))
 
     novas = 0
     for mid, rota in fila[:max_novas]:
