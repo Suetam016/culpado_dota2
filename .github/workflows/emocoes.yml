@@ -1,7 +1,7 @@
 name: Emoções dos retratos (IA)
 
 # Gera, com o modelo de imagem do Gemini, os retratos rindo, chorando, sofrendo, apavorado e nocauteado,
-# e monta o GIF e a folha de quadros que a jogada usa. Precisa do segredo GEMINI_API_KEY.
+# e monta o GIF e a folha de quadros que a jogada usa. Precisa do segredo GEMINI_API_KEY (ou GEMNI_API_KEY, o nome criado no repo).
 # Custo aproximado: 5 imagens por herói; o que já existe em img/herois/emocoes/ia/ não é gerado de novo.
 on:
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
       - run: pip install pillow
       - name: Gerar emoções
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.GEMNI_API_KEY }}
           EMOCOES: ${{ inputs.emocoes }}
         run: python img/herois/emocoes/gerar_ia.py "${{ inputs.herois }}" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Salvar
