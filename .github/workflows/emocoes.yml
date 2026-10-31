@@ -1,6 +1,6 @@
 name: Emoções dos retratos (IA)
 
-# Gera, com o modelo de imagem do Gemini, os retratos rindo, chorando, sofrendo, apavorado e nocauteado,
+# Gera, com IA (Pollinations grátis por padrão, ou Gemini), os retratos rindo, chorando, sofrendo, apavorado e nocauteado,
 # e monta o GIF e a folha de quadros que a jogada usa. Precisa do segredo GEMINI_API_KEY (ou GEMNI_API_KEY, o nome criado no repo).
 # Custo aproximado: 5 imagens por herói; o que já existe em img/herois/emocoes/ia/ não é gerado de novo.
 on:
@@ -9,6 +9,9 @@ on:
       herois:
         description: "Heróis separados por vírgula, ou 'todos'"
         default: "pudge,faceless_void,terrorblade"
+      provedor:
+        description: "gratis (Pollinations, sem chave) ou gemini (precisa de faturamento)"
+        default: "gratis"
       emocoes:
         description: "Emoções (vírgula)"
         default: "rindo,chorando,sofrendo,apavorado,nocauteado"
@@ -23,7 +26,7 @@ concurrency:
 jobs:
   emocoes:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,6 +37,8 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.GEMNI_API_KEY }}
           EMOCOES: ${{ inputs.emocoes }}
+          PROVEDOR: ${{ inputs.provedor }}
+          POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
         run: python -u img/herois/emocoes/gerar_ia.py "${{ inputs.herois }}" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Salvar
         if: always()
