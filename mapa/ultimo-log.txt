@@ -2830,3 +2830,13 @@ Fila: [9070427911] (pedidos do site: [9070427911])
   1494 usos de skill/item de 2425 no combat log
 OK 9070427911
 1 mapas novos
+Fila: [9070413901, 9070344749]
+FALHOU 9070413901: sem replay_url (partida ainda não analisada pelo OpenDota)
+  replay http://replay201.valve.net/570/9070344749_1451826620.dem.bz2 -> HTTP 200 application/octet-stream 39749840 inicio=b'(\xb5/\xfd\x00`\xdc6\x0f\xeeY\xde'
+  9070344749: 144730 eventos; tipos [('actions', 58324), ('DOTA_COMBATLOG_DAMAGE', 30514), ('interval', 23450), ('DOTA_COMBATLOG_MODIFIER_ADD', 7726), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 7695), ('DOTA_COMBATLOG_HEAL', 4978), ('DOTA_COMBATLOG_XP', 3214), ('DOTA_COMBATLOG_DEATH', 2852)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Spectre", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 67, "variant": 0, "facet_hero_id": 67, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ra
+  exemplo de habilidade: {"time": -83, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_vengefulspirit", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  2818 registros de dano herói->herói
+  1024 usos de skill/item de 2077 no combat log
+OK 9070344749
+1 mapas novos
