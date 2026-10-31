@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-10-31T17:45:03.728Z",
+  "atualizadoEm": "2026-10-31T21:38:37.671Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -7,24 +7,24 @@
       "nome": "gustavoDotinhaPro",
       "culpados": 48,
       "craques": 57,
-      "partidas": 215,
+      "partidas": 216,
       "vitorias": 107,
       "winRate": 50,
       "streak": null,
       "mmrGanho": 2625,
-      "mmrPerdido": 2700
+      "mmrPerdido": 2725
     },
     {
       "accountId": "241782761",
       "nome": "[Pau]DeCamelo",
       "culpados": 34,
       "craques": 31,
-      "partidas": 273,
-      "vitorias": 127,
+      "partidas": 277,
+      "vitorias": 129,
       "winRate": 47,
       "streak": null,
-      "mmrGanho": 3025,
-      "mmrPerdido": 3575
+      "mmrGanho": 3075,
+      "mmrPerdido": 3625
     },
     {
       "accountId": "26668150",
@@ -43,11 +43,11 @@
       "nome": "Kuscomem",
       "culpados": 8,
       "craques": 4,
-      "partidas": 93,
-      "vitorias": 38,
+      "partidas": 94,
+      "vitorias": 39,
       "winRate": 41,
       "streak": null,
-      "mmrGanho": 950,
+      "mmrGanho": 975,
       "mmrPerdido": 1350
     },
     {
@@ -67,36 +67,36 @@
       "nome": "Suéter",
       "culpados": 7,
       "craques": 7,
-      "partidas": 178,
-      "vitorias": 88,
+      "partidas": 180,
+      "vitorias": 89,
       "winRate": 49,
       "streak": "craque",
-      "mmrGanho": 2075,
-      "mmrPerdido": 2200
+      "mmrGanho": 2100,
+      "mmrPerdido": 2225
     },
     {
       "accountId": "83300280",
       "nome": "ptn",
       "culpados": 7,
       "craques": 0,
-      "partidas": 33,
-      "vitorias": 18,
-      "winRate": 55,
+      "partidas": 34,
+      "vitorias": 19,
+      "winRate": 56,
       "streak": "culpado",
-      "mmrGanho": 375,
+      "mmrGanho": 400,
       "mmrPerdido": 350
     },
     {
       "accountId": "1254464470",
       "nome": "Conhecido do Baia",
       "culpados": 6,
-      "craques": 1,
-      "partidas": 89,
-      "vitorias": 38,
+      "craques": 2,
+      "partidas": 91,
+      "vitorias": 39,
       "winRate": 43,
-      "streak": null,
-      "mmrGanho": 775,
-      "mmrPerdido": 1225
+      "streak": "craque",
+      "mmrGanho": 800,
+      "mmrPerdido": 1250
     },
     {
       "accountId": "96286191",
@@ -3229,6 +3229,28 @@
         "heroi": 107,
         "culpa": 0.211,
         "merito": 0.225
+      },
+      {
+        "matchId": 9070513422,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793472051,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.197,
+        "merito": 0.213
+      },
+      {
+        "matchId": 9070632597,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793476930,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.175,
+        "merito": 0.24
       }
     ],
     "83300280": [
@@ -3594,6 +3616,17 @@
         "heroi": 99,
         "culpa": 0.129,
         "merito": 0.159
+      },
+      {
+        "matchId": 9070513422,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793472051,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 2,
+        "culpa": 0.281,
+        "merito": 0.095
       }
     ],
     "96286191": [
@@ -5127,6 +5160,17 @@
         "heroi": 42,
         "culpa": 0.237,
         "merito": 0.13
+      },
+      {
+        "matchId": 9070513422,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793472051,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 119,
+        "culpa": 0.249,
+        "merito": 0.147
       }
     ],
     "241782761": [
@@ -8132,6 +8176,50 @@
         "heroi": 95,
         "culpa": 0.124,
         "merito": 0.242
+      },
+      {
+        "matchId": 9069836884,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793446591,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 76,
+        "culpa": 0.119,
+        "merito": 0.358
+      },
+      {
+        "matchId": 9070117895,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793457515,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 10,
+        "culpa": 0.175,
+        "merito": 0.126
+      },
+      {
+        "matchId": 9070344749,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793465631,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 76,
+        "culpa": 0.187,
+        "merito": 0.23
+      },
+      {
+        "matchId": 9070513422,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793472051,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 4,
+        "culpa": 0.104,
+        "merito": 0.242
       }
     ],
     "1000265186": [
@@ -10499,6 +10587,17 @@
         "heroi": 74,
         "culpa": 0.255,
         "merito": 0.188
+      },
+      {
+        "matchId": 9069862813,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793447731,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": 0.242,
+        "merito": 0.247
       }
     ],
     "1254464470": [
@@ -11480,6 +11579,28 @@
         "heroi": 123,
         "culpa": 0.231,
         "merito": 0.145
+      },
+      {
+        "matchId": 9070513422,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1793472051,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 30,
+        "culpa": 0.169,
+        "merito": 0.303
+      },
+      {
+        "matchId": 9070632597,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793476930,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 123,
+        "culpa": 0.183,
+        "merito": 0.285
       }
     ]
   },
@@ -11530,5 +11651,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-10-31T12:33:37.429Z"
+  "perfisEm": "2026-10-31T21:38:37.604Z"
 }
