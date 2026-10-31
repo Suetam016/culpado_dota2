@@ -1,12 +1,12 @@
 {
- "atualizadoEm": "2026-10-31T05:45:07Z",
+ "atualizadoEm": "2026-10-31T12:33:42Z",
  "desde": "2025-11-01",
- "partidasLidas": 569,
+ "partidasLidas": 573,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
-   "jogos": 87,
-   "vitorias": 37,
+   "jogos": 89,
+   "vitorias": 38,
    "winRate": 43
   },
   "1000265186": {
@@ -29,15 +29,15 @@
   },
   "241782761": {
    "nome": "[Pau]DeCamelo",
-   "jogos": 140,
-   "vitorias": 65,
-   "winRate": 46
+   "jogos": 141,
+   "vitorias": 66,
+   "winRate": 47
   },
   "111257540": {
    "nome": "Kuscomem",
-   "jogos": 69,
+   "jogos": 70,
    "vitorias": 31,
-   "winRate": 45
+   "winRate": 44
   },
   "77621319": {
    "nome": "Jalim",
@@ -53,9 +53,9 @@
   },
   "83300280": {
    "nome": "ptn",
-   "jogos": 32,
-   "vitorias": 17,
-   "winRate": 53
+   "jogos": 33,
+   "vitorias": 18,
+   "winRate": 55
   }
  },
  "pares": [
@@ -546,6 +546,123 @@
    ]
   },
   {
+   "a": "83300280",
+   "b": "1254464470",
+   "nomeA": "ptn",
+   "nomeB": "Conhecido do Baia",
+   "jogos": 15,
+   "vitorias": 9,
+   "winRate": 60,
+   "rotas": [
+    {
+     "posA": 3,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
+     "posA": 3,
+     "posB": 4,
+     "jogos": 10,
+     "vitorias": 6,
+     "winRate": 60
+    },
+    {
+     "posA": 4,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 1,
+     "winRate": 50
+    }
+   ],
+   "rotasPiores": [],
+   "herois": [
+    {
+     "heroiA": 2,
+     "heroiB": 123,
+     "jogos": 5,
+     "vitorias": 3,
+     "winRate": 60
+    }
+   ],
+   "heroisPiores": [],
+   "partidas": [
+    {
+     "matchId": 9069436111,
+     "inicio": 1793420659,
+     "venceu": true,
+     "heroiA": 99,
+     "heroiB": 123,
+     "posA": 3,
+     "posB": 4
+    },
+    {
+     "matchId": 9069396637,
+     "inicio": 1793416939,
+     "venceu": false,
+     "heroiA": 29,
+     "heroiB": 123,
+     "posA": 3,
+     "posB": 4
+    },
+    {
+     "matchId": 9063656098,
+     "inicio": 1793061302,
+     "venceu": false,
+     "heroiA": 88,
+     "heroiB": 123,
+     "posA": 4,
+     "posB": 5
+    },
+    {
+     "matchId": 9063627402,
+     "inicio": 1793058056,
+     "venceu": true,
+     "heroiA": 88,
+     "heroiB": 75,
+     "posA": 4,
+     "posB": 5
+    },
+    {
+     "matchId": 9063599534,
+     "inicio": 1793055231,
+     "venceu": false,
+     "heroiA": 69,
+     "heroiB": 25,
+     "posA": 3,
+     "posB": 4
+    },
+    {
+     "matchId": 9063567259,
+     "inicio": 1793052486,
+     "venceu": true,
+     "heroiA": 2,
+     "heroiB": 84,
+     "posA": 3,
+     "posB": 4
+    },
+    {
+     "matchId": 9057466937,
+     "inicio": 1792728321,
+     "venceu": true,
+     "heroiA": 29,
+     "heroiB": 30,
+     "posA": 3,
+     "posB": 4
+    },
+    {
+     "matchId": 9057442189,
+     "inicio": 1792725641,
+     "venceu": true,
+     "heroiA": 2,
+     "heroiB": 123,
+     "posA": 3,
+     "posB": 4
+    }
+   ]
+  },
+  {
    "a": "26668150",
    "b": "77621319",
    "nomeA": "3rvinha",
@@ -783,123 +900,6 @@
      "heroiB": 145,
      "posA": 3,
      "posB": 1
-    }
-   ]
-  },
-  {
-   "a": "83300280",
-   "b": "1254464470",
-   "nomeA": "ptn",
-   "nomeB": "Conhecido do Baia",
-   "jogos": 14,
-   "vitorias": 8,
-   "winRate": 57,
-   "rotas": [
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 2,
-     "winRate": 100
-    },
-    {
-     "posA": 3,
-     "posB": 4,
-     "jogos": 9,
-     "vitorias": 5,
-     "winRate": 56
-    },
-    {
-     "posA": 4,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    }
-   ],
-   "rotasPiores": [],
-   "herois": [
-    {
-     "heroiA": 2,
-     "heroiB": 123,
-     "jogos": 5,
-     "vitorias": 3,
-     "winRate": 60
-    }
-   ],
-   "heroisPiores": [],
-   "partidas": [
-    {
-     "matchId": 9069396637,
-     "inicio": 1793416939,
-     "venceu": false,
-     "heroiA": 29,
-     "heroiB": 123,
-     "posA": 3,
-     "posB": 4
-    },
-    {
-     "matchId": 9063656098,
-     "inicio": 1793061302,
-     "venceu": false,
-     "heroiA": 88,
-     "heroiB": 123,
-     "posA": 4,
-     "posB": 5
-    },
-    {
-     "matchId": 9063627402,
-     "inicio": 1793058056,
-     "venceu": true,
-     "heroiA": 88,
-     "heroiB": 75,
-     "posA": 4,
-     "posB": 5
-    },
-    {
-     "matchId": 9063599534,
-     "inicio": 1793055231,
-     "venceu": false,
-     "heroiA": 69,
-     "heroiB": 25,
-     "posA": 3,
-     "posB": 4
-    },
-    {
-     "matchId": 9063567259,
-     "inicio": 1793052486,
-     "venceu": true,
-     "heroiA": 2,
-     "heroiB": 84,
-     "posA": 3,
-     "posB": 4
-    },
-    {
-     "matchId": 9057466937,
-     "inicio": 1792728321,
-     "venceu": true,
-     "heroiA": 29,
-     "heroiB": 30,
-     "posA": 3,
-     "posB": 4
-    },
-    {
-     "matchId": 9057442189,
-     "inicio": 1792725641,
-     "venceu": true,
-     "heroiA": 2,
-     "heroiB": 123,
-     "posA": 3,
-     "posB": 4
-    },
-    {
-     "matchId": 9057420656,
-     "inicio": 1792723350,
-     "venceu": true,
-     "heroiA": 96,
-     "heroiB": 30,
-     "posA": 3,
-     "posB": 4
     }
    ]
   },
@@ -3044,6 +3044,159 @@
    ]
   },
   {
+   "a": "241782761",
+   "b": "1254464470",
+   "nomeA": "[Pau]DeCamelo",
+   "nomeB": "Conhecido do Baia",
+   "jogos": 47,
+   "vitorias": 20,
+   "winRate": 43,
+   "rotas": [
+    {
+     "posA": 1,
+     "posB": 4,
+     "jogos": 9,
+     "vitorias": 6,
+     "winRate": 67
+    },
+    {
+     "posA": 3,
+     "posB": 4,
+     "jogos": 6,
+     "vitorias": 4,
+     "winRate": 67
+    },
+    {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 1,
+     "winRate": 50
+    },
+    {
+     "posA": 2,
+     "posB": 4,
+     "jogos": 14,
+     "vitorias": 5,
+     "winRate": 36
+    },
+    {
+     "posA": 4,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 5,
+     "posB": 4,
+     "jogos": 3,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "posA": 1,
+     "posB": 5,
+     "jogos": 7,
+     "vitorias": 2,
+     "winRate": 29
+    },
+    {
+     "posA": 4,
+     "posB": 5,
+     "jogos": 3,
+     "vitorias": 1,
+     "winRate": 33
+    }
+   ],
+   "herois": [
+    {
+     "heroiA": 67,
+     "heroiB": 123,
+     "jogos": 4,
+     "vitorias": 3,
+     "winRate": 75
+    }
+   ],
+   "heroisPiores": [],
+   "partidas": [
+    {
+     "matchId": 9069436111,
+     "inicio": 1793420659,
+     "venceu": true,
+     "heroiA": 76,
+     "heroiB": 123,
+     "posA": 2,
+     "posB": 4
+    },
+    {
+     "matchId": 9069396637,
+     "inicio": 1793416939,
+     "venceu": false,
+     "heroiA": 36,
+     "heroiB": 123,
+     "posA": 2,
+     "posB": 4
+    },
+    {
+     "matchId": 9069353676,
+     "inicio": 1793412905,
+     "venceu": false,
+     "heroiA": 44,
+     "heroiB": 9,
+     "posA": 1,
+     "posB": 5
+    },
+    {
+     "matchId": 9067943607,
+     "inicio": 1793332249,
+     "venceu": false,
+     "heroiA": 75,
+     "heroiB": 123,
+     "posA": 2,
+     "posB": 4
+    },
+    {
+     "matchId": 9067919311,
+     "inicio": 1793329554,
+     "venceu": true,
+     "heroiA": 85,
+     "heroiB": 123,
+     "posA": 3,
+     "posB": 4
+    },
+    {
+     "matchId": 9067884042,
+     "inicio": 1793325695,
+     "venceu": true,
+     "heroiA": 67,
+     "heroiB": 123,
+     "posA": 1,
+     "posB": 4
+    },
+    {
+     "matchId": 9067844052,
+     "inicio": 1793321184,
+     "venceu": false,
+     "heroiA": 43,
+     "heroiB": 123,
+     "posA": 2,
+     "posB": 4
+    },
+    {
+     "matchId": 9063691146,
+     "inicio": 1793065342,
+     "venceu": false,
+     "heroiA": 68,
+     "heroiB": 27,
+     "posA": 5,
+     "posB": 4
+    }
+   ]
+  },
+  {
    "a": "81918076",
    "b": "1254464470",
    "nomeA": "Suéter",
@@ -3221,159 +3374,6 @@
      "heroiA": 107,
      "heroiB": 30,
      "posA": 3,
-     "posB": 5
-    }
-   ]
-  },
-  {
-   "a": "241782761",
-   "b": "1254464470",
-   "nomeA": "[Pau]DeCamelo",
-   "nomeB": "Conhecido do Baia",
-   "jogos": 46,
-   "vitorias": 19,
-   "winRate": 41,
-   "rotas": [
-    {
-     "posA": 1,
-     "posB": 4,
-     "jogos": 9,
-     "vitorias": 6,
-     "winRate": 67
-    },
-    {
-     "posA": 3,
-     "posB": 4,
-     "jogos": 6,
-     "vitorias": 4,
-     "winRate": 67
-    },
-    {
-     "posA": 2,
-     "posB": 5,
-     "jogos": 2,
-     "vitorias": 1,
-     "winRate": 50
-    },
-    {
-     "posA": 4,
-     "posB": 5,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "posA": 2,
-     "posB": 4,
-     "jogos": 13,
-     "vitorias": 4,
-     "winRate": 31
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 5,
-     "posB": 4,
-     "jogos": 3,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 1,
-     "posB": 5,
-     "jogos": 7,
-     "vitorias": 2,
-     "winRate": 29
-    },
-    {
-     "posA": 2,
-     "posB": 4,
-     "jogos": 13,
-     "vitorias": 4,
-     "winRate": 31
-    }
-   ],
-   "herois": [
-    {
-     "heroiA": 67,
-     "heroiB": 123,
-     "jogos": 4,
-     "vitorias": 3,
-     "winRate": 75
-    }
-   ],
-   "heroisPiores": [],
-   "partidas": [
-    {
-     "matchId": 9069396637,
-     "inicio": 1793416939,
-     "venceu": false,
-     "heroiA": 36,
-     "heroiB": 123,
-     "posA": 2,
-     "posB": 4
-    },
-    {
-     "matchId": 9069353676,
-     "inicio": 1793412905,
-     "venceu": false,
-     "heroiA": 44,
-     "heroiB": 9,
-     "posA": 1,
-     "posB": 5
-    },
-    {
-     "matchId": 9067943607,
-     "inicio": 1793332249,
-     "venceu": false,
-     "heroiA": 75,
-     "heroiB": 123,
-     "posA": 2,
-     "posB": 4
-    },
-    {
-     "matchId": 9067919311,
-     "inicio": 1793329554,
-     "venceu": true,
-     "heroiA": 85,
-     "heroiB": 123,
-     "posA": 3,
-     "posB": 4
-    },
-    {
-     "matchId": 9067884042,
-     "inicio": 1793325695,
-     "venceu": true,
-     "heroiA": 67,
-     "heroiB": 123,
-     "posA": 1,
-     "posB": 4
-    },
-    {
-     "matchId": 9067844052,
-     "inicio": 1793321184,
-     "venceu": false,
-     "heroiA": 43,
-     "heroiB": 123,
-     "posA": 2,
-     "posB": 4
-    },
-    {
-     "matchId": 9063691146,
-     "inicio": 1793065342,
-     "venceu": false,
-     "heroiA": 68,
-     "heroiB": 27,
-     "posA": 5,
-     "posB": 4
-    },
-    {
-     "matchId": 9063656098,
-     "inicio": 1793061302,
-     "venceu": false,
-     "heroiA": 70,
-     "heroiB": 123,
-     "posA": 1,
      "posB": 5
     }
    ]
@@ -3961,6 +3961,137 @@
    ]
   },
   {
+   "a": "83300280",
+   "b": "241782761",
+   "nomeA": "ptn",
+   "nomeB": "[Pau]DeCamelo",
+   "jogos": 16,
+   "vitorias": 6,
+   "winRate": 38,
+   "rotas": [
+    {
+     "posA": 4,
+     "posB": 1,
+     "jogos": 3,
+     "vitorias": 2,
+     "winRate": 67
+    },
+    {
+     "posA": 3,
+     "posB": 2,
+     "jogos": 4,
+     "vitorias": 2,
+     "winRate": 50
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 3,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "posA": 5,
+     "posB": 3,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "rotasPiores": [
+    {
+     "posA": 5,
+     "posB": 3,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
+     "posA": 3,
+     "posB": 1,
+     "jogos": 3,
+     "vitorias": 0,
+     "winRate": 0
+    }
+   ],
+   "herois": [],
+   "heroisPiores": [],
+   "partidas": [
+    {
+     "matchId": 9069436111,
+     "inicio": 1793420659,
+     "venceu": true,
+     "heroiA": 99,
+     "heroiB": 76,
+     "posA": 3,
+     "posB": 2
+    },
+    {
+     "matchId": 9069396637,
+     "inicio": 1793416939,
+     "venceu": false,
+     "heroiA": 29,
+     "heroiB": 36,
+     "posA": 3,
+     "posB": 2
+    },
+    {
+     "matchId": 9063656098,
+     "inicio": 1793061302,
+     "venceu": false,
+     "heroiA": 88,
+     "heroiB": 70,
+     "posA": 4,
+     "posB": 1
+    },
+    {
+     "matchId": 9063627402,
+     "inicio": 1793058056,
+     "venceu": true,
+     "heroiA": 88,
+     "heroiB": 102,
+     "posA": 4,
+     "posB": 1
+    },
+    {
+     "matchId": 9063599534,
+     "inicio": 1793055231,
+     "venceu": false,
+     "heroiA": 69,
+     "heroiB": 100,
+     "posA": 3,
+     "posB": 2
+    },
+    {
+     "matchId": 9063567259,
+     "inicio": 1793052486,
+     "venceu": true,
+     "heroiA": 2,
+     "heroiB": 67,
+     "posA": 3,
+     "posB": 2
+    },
+    {
+     "matchId": 9063123733,
+     "inicio": 1793031557,
+     "venceu": false,
+     "heroiA": 5,
+     "heroiB": 102,
+     "posA": 5,
+     "posB": 3
+    },
+    {
+     "matchId": 9063040455,
+     "inicio": 1793028352,
+     "venceu": false,
+     "heroiA": 2,
+     "heroiB": 53,
+     "posA": 3,
+     "posB": 1
+    }
+   ]
+  },
+  {
    "a": "26668150",
    "b": "83300280",
    "nomeA": "3rvinha",
@@ -4237,144 +4368,6 @@
    ]
   },
   {
-   "a": "83300280",
-   "b": "241782761",
-   "nomeA": "ptn",
-   "nomeB": "[Pau]DeCamelo",
-   "jogos": 15,
-   "vitorias": 5,
-   "winRate": 33,
-   "rotas": [
-    {
-     "posA": 4,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 2,
-     "winRate": 67
-    },
-    {
-     "posA": 3,
-     "posB": 2,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 5,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    }
-   ],
-   "rotasPiores": [
-    {
-     "posA": 5,
-     "posB": 3,
-     "jogos": 2,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 3,
-     "posB": 1,
-     "jogos": 3,
-     "vitorias": 0,
-     "winRate": 0
-    },
-    {
-     "posA": 3,
-     "posB": 2,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
-    }
-   ],
-   "herois": [],
-   "heroisPiores": [],
-   "partidas": [
-    {
-     "matchId": 9069396637,
-     "inicio": 1793416939,
-     "venceu": false,
-     "heroiA": 29,
-     "heroiB": 36,
-     "posA": 3,
-     "posB": 2
-    },
-    {
-     "matchId": 9063656098,
-     "inicio": 1793061302,
-     "venceu": false,
-     "heroiA": 88,
-     "heroiB": 70,
-     "posA": 4,
-     "posB": 1
-    },
-    {
-     "matchId": 9063627402,
-     "inicio": 1793058056,
-     "venceu": true,
-     "heroiA": 88,
-     "heroiB": 102,
-     "posA": 4,
-     "posB": 1
-    },
-    {
-     "matchId": 9063599534,
-     "inicio": 1793055231,
-     "venceu": false,
-     "heroiA": 69,
-     "heroiB": 100,
-     "posA": 3,
-     "posB": 2
-    },
-    {
-     "matchId": 9063567259,
-     "inicio": 1793052486,
-     "venceu": true,
-     "heroiA": 2,
-     "heroiB": 67,
-     "posA": 3,
-     "posB": 2
-    },
-    {
-     "matchId": 9063123733,
-     "inicio": 1793031557,
-     "venceu": false,
-     "heroiA": 5,
-     "heroiB": 102,
-     "posA": 5,
-     "posB": 3
-    },
-    {
-     "matchId": 9063040455,
-     "inicio": 1793028352,
-     "venceu": false,
-     "heroiA": 2,
-     "heroiB": 53,
-     "posA": 3,
-     "posB": 1
-    },
-    {
-     "matchId": 9062243978,
-     "inicio": 1792974125,
-     "venceu": true,
-     "heroiA": 29,
-     "heroiB": 37,
-     "posA": 3,
-     "posB": 5
-    }
-   ]
-  },
-  {
    "a": "26668150",
    "b": "111257540",
    "nomeA": "3rvinha",
@@ -4635,9 +4628,9 @@
    "b": "1254464470",
    "nomeA": "Kuscomem",
    "nomeB": "Conhecido do Baia",
-   "jogos": 19,
+   "jogos": 20,
    "vitorias": 5,
-   "winRate": 26,
+   "winRate": 25,
    "rotas": [
     {
      "posA": 3,
@@ -4661,6 +4654,13 @@
      "winRate": 17
     },
     {
+     "posA": 1,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
      "posA": 3,
      "posB": 5,
      "jogos": 2,
@@ -4677,18 +4677,18 @@
      "winRate": 0
     },
     {
+     "posA": 1,
+     "posB": 5,
+     "jogos": 2,
+     "vitorias": 0,
+     "winRate": 0
+    },
+    {
      "posA": 4,
      "posB": 5,
      "jogos": 6,
      "vitorias": 1,
      "winRate": 17
-    },
-    {
-     "posA": 5,
-     "posB": 4,
-     "jogos": 7,
-     "vitorias": 3,
-     "winRate": 43
     }
    ],
    "herois": [
@@ -4709,6 +4709,15 @@
      "heroiA": 42,
      "heroiB": 9,
      "posA": 3,
+     "posB": 5
+    },
+    {
+     "matchId": 9069302907,
+     "inicio": 1793407854,
+     "venceu": false,
+     "heroiA": 12,
+     "heroiB": 30,
+     "posA": 1,
      "posB": 5
     },
     {
@@ -4764,15 +4773,6 @@
      "heroiB": 37,
      "posA": 4,
      "posB": 5
-    },
-    {
-     "matchId": 9042320122,
-     "inicio": 1791837464,
-     "venceu": true,
-     "heroiA": 105,
-     "heroiB": 30,
-     "posA": 5,
-     "posB": 4
     }
    ]
   }
@@ -8960,6 +8960,106 @@
   },
   {
    "membros": [
+    "83300280",
+    "241782761",
+    "1254464470"
+   ],
+   "herois": {
+    "83300280": [
+     {
+      "heroi": 99,
+      "jogos": 1,
+      "vitorias": 1,
+      "winRate": 100
+     },
+     {
+      "heroi": 29,
+      "jogos": 1,
+      "vitorias": 0,
+      "winRate": 0
+     }
+    ],
+    "241782761": [
+     {
+      "heroi": 76,
+      "jogos": 1,
+      "vitorias": 1,
+      "winRate": 100
+     },
+     {
+      "heroi": 36,
+      "jogos": 1,
+      "vitorias": 0,
+      "winRate": 0
+     }
+    ],
+    "1254464470": [
+     {
+      "heroi": 123,
+      "jogos": 2,
+      "vitorias": 1,
+      "winRate": 50
+     }
+    ]
+   },
+   "jogos": 2,
+   "vitorias": 1,
+   "winRate": 50,
+   "formacoes": [
+    {
+     "posicoes": {
+      "83300280": 3,
+      "241782761": 2,
+      "1254464470": 4
+     },
+     "jogos": 2,
+     "vitorias": 1,
+     "winRate": 50
+    }
+   ],
+   "partidas": [
+    {
+     "matchId": 9069436111,
+     "inicio": 1793420659,
+     "venceu": true,
+     "herois": {
+      "83300280": {
+       "heroi": 99,
+       "pos": 3
+      },
+      "241782761": {
+       "heroi": 76,
+       "pos": 2
+      },
+      "1254464470": {
+       "heroi": 123,
+       "pos": 4
+      }
+     }
+    },
+    {
+     "matchId": 9069396637,
+     "inicio": 1793416939,
+     "venceu": false,
+     "herois": {
+      "83300280": {
+       "heroi": 29,
+       "pos": 3
+      },
+      "241782761": {
+       "heroi": 36,
+       "pos": 2
+      },
+      "1254464470": {
+       "heroi": 123,
+       "pos": 4
+      }
+     }
+    }
+   ]
+  },
+  {
+   "membros": [
     "81918076",
     "111257540",
     "241782761"
@@ -11974,64 +12074,6 @@
      }
     }
    ]
-  },
-  {
-   "membros": [
-    "83300280",
-    "241782761",
-    "1254464470"
-   ],
-   "herois": {
-    "83300280": [
-     {
-      "heroi": 29,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "241782761": [
-     {
-      "heroi": 36,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ],
-    "1254464470": [
-     {
-      "heroi": 123,
-      "jogos": 1,
-      "vitorias": 0,
-      "winRate": 0
-     }
-    ]
-   },
-   "jogos": 1,
-   "vitorias": 0,
-   "winRate": 0,
-   "formacoes": [],
-   "partidas": [
-    {
-     "matchId": 9069396637,
-     "inicio": 1793416939,
-     "venceu": false,
-     "herois": {
-      "83300280": {
-       "heroi": 29,
-       "pos": 3
-      },
-      "241782761": {
-       "heroi": 36,
-       "pos": 2
-      },
-      "1254464470": {
-       "heroi": 123,
-       "pos": 4
-      }
-     }
-    }
-   ]
   }
  ],
  "pool": {
@@ -12039,8 +12081,8 @@
    {
     "heroi": 123,
     "pos": 4,
-    "jogos": 25,
-    "vitorias": 11
+    "jogos": 26,
+    "vitorias": 12
    },
    {
     "heroi": 30,
@@ -12067,6 +12109,12 @@
     "vitorias": 3
    },
    {
+    "heroi": 30,
+    "pos": 5,
+    "jogos": 4,
+    "vitorias": 1
+   },
+   {
     "heroi": 9,
     "pos": 5,
     "jogos": 4,
@@ -12074,12 +12122,6 @@
    },
    {
     "heroi": 45,
-    "pos": 5,
-    "jogos": 3,
-    "vitorias": 1
-   },
-   {
-    "heroi": 30,
     "pos": 5,
     "jogos": 3,
     "vitorias": 1
@@ -12751,7 +12793,7 @@
    {
     "heroi": 75,
     "pos": 2,
-    "jogos": 9,
+    "jogos": 10,
     "vitorias": 3
    },
    {
@@ -12761,16 +12803,16 @@
     "vitorias": 6
    },
    {
-    "heroi": 1,
-    "pos": 1,
+    "heroi": 76,
+    "pos": 2,
     "jogos": 8,
     "vitorias": 6
    },
    {
-    "heroi": 76,
-    "pos": 2,
-    "jogos": 7,
-    "vitorias": 5
+    "heroi": 1,
+    "pos": 1,
+    "jogos": 8,
+    "vitorias": 6
    },
    {
     "heroi": 70,
@@ -12977,6 +13019,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 7,
+    "pos": 2,
+    "jogos": 2,
+    "vitorias": 1
+   },
+   {
     "heroi": 23,
     "pos": 2,
     "jogos": 2,
@@ -13105,12 +13153,6 @@
    {
     "heroi": 64,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 7,
-    "pos": 2,
     "jogos": 1,
     "vitorias": 1
    },
@@ -13841,6 +13883,12 @@
     "vitorias": 0
    },
    {
+    "heroi": 12,
+    "pos": 1,
+    "jogos": 2,
+    "vitorias": 0
+   },
+   {
     "heroi": 88,
     "pos": 4,
     "jogos": 2,
@@ -13969,12 +14017,6 @@
    {
     "heroi": 26,
     "pos": 5,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 12,
-    "pos": 1,
     "jogos": 1,
     "vitorias": 0
    },
@@ -14357,6 +14399,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 99,
+    "pos": 3,
+    "jogos": 2,
+    "vitorias": 1
+   },
+   {
     "heroi": 88,
     "pos": 4,
     "jogos": 2,
@@ -14395,12 +14443,6 @@
    {
     "heroi": 119,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 99,
-    "pos": 3,
     "jogos": 1,
     "vitorias": 0
    },
@@ -26269,6 +26311,58 @@
    ]
   },
   {
+   "id": 9069291418,
+   "t": 1793406709,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     75,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9069302907,
+   "t": 1793407854,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     12,
+     1,
+     3,
+     -1
+    ],
+    [
+     "1254464470",
+     30,
+     5,
+     3,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9069315310,
+   "t": 1793409094,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "241782761",
+     7,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
    "id": 9069353676,
    "t": 1793412905,
    "v": 0,
@@ -26325,10 +26419,39 @@
      -1
     ]
    ]
+  },
+  {
+   "id": 9069436111,
+   "t": 1793420659,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1254464470",
+     123,
+     4,
+     1,
+     0
+    ],
+    [
+     "83300280",
+     99,
+     3,
+     1,
+     0
+    ],
+    [
+     "241782761",
+     76,
+     2,
+     2,
+     -1
+    ]
+   ]
   }
  ],
  "medalhas": {
-  "1254464470": 51,
+  "1254464470": 45,
   "1000265186": 64,
   "241782761": 44,
   "81918076": 54,
