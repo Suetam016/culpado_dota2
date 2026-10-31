@@ -1,4 +1,7 @@
-"""Gera as emoções dos retratos com IA (Gemini) e monta GIF + folha de quadros para a jogada.
+"""Gera as emoções dos retratos com IA e monta GIF + folha de quadros para a jogada.
+
+Provedor (variável PROVEDOR): "gratis" usa o Pollinations (sem chave, uma imagem a cada ~45 s);
+"gemini" usa o modelo de imagem do Gemini (precisa de GEMINI_API_KEY com faturamento ativo).
 
 Para cada herói e emoção, pede ao modelo de imagem do Gemini uma versão do retrato de img/herois/<heroi>.png
 rindo, chorando, sofrendo, apavorado ou nocauteado, guarda a imagem em ia/<heroi>_<emocao>.png e roda
@@ -8,12 +11,14 @@ Herói/emoção que já tem imagem de IA é pulado, então dá para rodar de nov
     GEMINI_API_KEY=... python img/herois/emocoes/gerar_ia.py pudge,faceless_void   # ou "todos"
 """
 import base64
+import io
 import json
 import os
 import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -64,9 +69,77 @@ def gerar(retrato: Path, emocao: str, chave: str) -> bytes:
             raise RuntimeError(f"HTTP {e.code}: {corpo_erro[:300]}")
 
 
+SITE = os.environ.get("SITE_RETRATOS", "https://suetam016.github.io/culpado_dota2/img/herois/")
+POLLI = [  # tentados em ordem; o primeiro que devolver uma edição do retrato vira o padrão da rodada
+    "https://image.pollinations.ai/prompt/{p}?model=kontext&image={img}&width=512&height=512&nologo=true&seed={seed}&referrer=culpado_dota2",
+    "https://gen.pollinations.ai/image/{p}?model=kontext&image={img}&width=512&height=512&nologo=true&seed={seed}",
+    "https://gen.pollinations.ai/image/{p}?model=nanobanana&image={img}&width=512&height=512&nologo=true&seed={seed}",
+]
+_polli_ok = None
+_ultimo = 0.0
+
+
+def distancia(a: bytes, b: bytes) -> float:
+    """Diferença média (0-255) entre as duas imagens em 32x32 cinza; edição do retrato fica baixa, imagem nova fica alta."""
+    from PIL import Image
+    x = Image.open(io.BytesIO(a)).convert("L").resize((32, 32))
+    y = Image.open(io.BytesIO(b)).convert("L").resize((32, 32))
+    return sum(abs(p - q) for p, q in zip(x.tobytes(), y.tobytes())) / 1024
+
+
+def gerar_gratis(retrato: Path, emocao: str, heroi: str) -> bytes:
+    global _polli_ok, _ultimo
+    token = os.environ.get("POLLINATIONS_TOKEN")
+    texto = PROMPTS[emocao].replace("Edit this video game hero portrait.", "Edit the input image (a video game hero portrait).")
+    p = urllib.parse.quote(texto, safe="")
+    img = urllib.parse.quote(SITE + heroi + ".png", safe="")
+    original = retrato.read_bytes()
+    erros = []
+    for i, modelo in enumerate(POLLI):
+        if _polli_ok is not None and i != _polli_ok:
+            continue
+        url = modelo.format(p=p, img=img, seed=abs(hash(heroi + emocao)) % 100000)
+        for tentativa in range(3):
+            espera = 46 - (time.time() - _ultimo)
+            if espera > 0:
+                time.sleep(espera)
+            _ultimo = time.time()
+            req = urllib.request.Request(url, headers={"User-Agent": "culpado-dota2-emocoes"} | ({"Authorization": f"Bearer {token}"} if token else {}))
+            try:
+                with urllib.request.urlopen(req, timeout=240) as r:
+                    tipo, dado = r.headers.get("Content-Type", ""), r.read()
+            except urllib.error.HTTPError as e:
+                corpo = e.read().decode("utf-8", "replace")[:200]
+                if e.code in (402, 429, 500, 502, 503) and tentativa < 2:
+                    print(f"  HTTP {e.code} em {url.split('?')[0][:40]}..., nova tentativa", flush=True)
+                    time.sleep(int(e.headers.get("Retry-After") or 60))
+                    continue
+                erros.append(f"{url.split('/prompt')[0].split('/image/')[0]} HTTP {e.code}: {corpo}")
+                break
+            except Exception as e:
+                erros.append(f"{url[:40]}: {e}")
+                break
+            if not tipo.startswith("image/"):
+                erros.append(f"{url[:40]}: resposta {tipo} {dado[:150]!r}")
+                break
+            d = distancia(original, dado)
+            print(f"  diferença do retrato: {d:.0f}", flush=True)
+            if d > 70:  # ignorou a imagem de entrada e desenhou outra coisa
+                (IA / "suspeitas").mkdir(exist_ok=True)
+                (IA / "suspeitas" / f"{heroi}_{emocao}_m{i}.png").write_bytes(dado)
+                erros.append(f"modelo {i} ignorou o retrato (diferença {d:.0f})")
+                break
+            _polli_ok = i
+            return dado
+    if _polli_ok is None and len(erros) >= len(POLLI):
+        raise SemCota("nenhum endpoint gratuito editou o retrato: " + " | ".join(erros))
+    raise RuntimeError(" | ".join(erros))
+
+
 def main():
+    provedor = os.environ.get("PROVEDOR", "gratis")
     chave = os.environ.get("GEMINI_API_KEY")
-    if not chave:
+    if provedor == "gemini" and not chave:
         print("Falta o segredo GEMINI_API_KEY (Settings > Secrets and variables > Actions).")
         sys.exit(1)
     pedido = (sys.argv[1] if len(sys.argv) > 1 else "pudge,faceless_void,terrorblade").strip()
@@ -83,11 +156,12 @@ def main():
             img = IA / f"{heroi}_{emocao}.png"
             if not img.exists():
                 try:
-                    img.write_bytes(gerar(retrato, emocao, chave))
+                    dado = gerar(retrato, emocao, chave) if provedor == "gemini" else gerar_gratis(retrato, emocao, heroi)
+                    img.write_bytes(dado)
                     feitos += 1
                     print(f"- {heroi} {emocao}: ok", flush=True)
                 except SemCota as e:
-                    print(f"\nA chave do Gemini não tem cota para gerar imagens (o modelo de imagem exige faturamento ativo no Google AI Studio). Resposta: {e}")
+                    print(f"\nO provedor {provedor} não gerou imagens. Gemini sem cota precisa de faturamento ativo no Google AI Studio. Resposta: {e}")
                     sys.exit(1)
                 except Exception as e:  # um herói ruim não derruba o lote
                     print(f"- {heroi} {emocao}: falhou ({e})")
