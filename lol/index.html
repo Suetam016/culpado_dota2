@@ -273,6 +273,29 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 .doc-tpi .doc-foto .icone { border-color: #e8b04a; }
 .doc-tpi .doc-carimbo { color: #ff4b3a; border-color: #ff4b3a; font-size: 1.1rem; }
 .doc-tpi .doc-alerta { background: rgba(255, 75, 58, .12); border: 1px solid #ff4b3a; color: #ffd0c8; }
+/* a build */
+:root { --dano-fis: #e08a3c; --dano-mag: #5aa9e6; --dano-ver: #d9d4c7; }
+.build-quem { flex-wrap: wrap; }
+.build-linha { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 14px; }
+.build-linha li { width: 76px; text-align: center; font-size: .78rem; line-height: 1.2; }
+.build-linha .icone.it, .build-sug .icone.it { width: 44px; height: 44px; border-radius: 8px; margin: 0 auto 4px; border: 1px solid var(--line-strong); }
+.build-linha b { display: block; font-family: var(--font-mono); font-weight: 500; color: var(--gold-2); }
+.build-linha small { display: block; color: var(--ink-2); overflow-wrap: anywhere; }
+.danos { display: grid; gap: 10px; margin-bottom: 12px; }
+@media (min-width: 640px) { .danos { grid-template-columns: 1fr 1fr; } }
+.dano-rot { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+.dano-barra { display: flex; height: 12px; border-radius: 99px; overflow: hidden; background: var(--surface-3); }
+.dano-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .82rem; color: var(--ink-2); margin-top: 4px; }
+.dano-leg span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: var(--c); margin-right: 5px; }
+.build-leitura { list-style: none; display: grid; gap: 6px; }
+.build-leitura li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; background: var(--surface-2); border-radius: var(--radius-sm); padding: 7px 10px; }
+.build-leitura .ok { color: var(--good-ink); font-weight: 800; } .build-leitura .nao { color: var(--bad-ink); font-weight: 800; } .build-leitura .neutro { color: var(--muted); }
+.build-sub { font-family: var(--font-display); font-size: 1rem; margin: 14px 0 8px; }
+.build-sug { display: grid; gap: 8px; }
+.build-sug > div { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; border: 1px dashed var(--gold); background: var(--gold-wash); border-radius: var(--radius-sm); padding: 8px 10px; }
+.build-sug .icone.it { margin: 0; }
+.build-sug strong { display: block; } .build-sug small { color: var(--ink-2); }
+.build-nada { color: var(--ink-2); margin-top: 12px; }
 .doc-de-novo { background: none; border: 1px solid var(--line-strong); color: var(--ink-2); border-radius: 99px; padding: 6px 14px; cursor: pointer; font-size: .9rem; margin-top: 8px; }
 .doc-de-novo:hover { color: var(--gold-2); border-color: var(--gold); }
 @media (max-width: 420px) { .doc-meio { grid-template-columns: 80px minmax(0, 1fr); } .doc-foto .icone { width: 80px; height: 100px; } }
@@ -291,6 +314,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
 <script src="replay.js"></script>
 <script src="resenha.js"></script>
 <script src="culpa.js"></script>
+<script src="build.js"></script>
 <script src="revelar.js"></script>
 <script>
 (function () {
@@ -377,6 +401,9 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
         </div>`).join('')}</div>
         <p class="legenda" style="margin-top:12px">Pontos = cada 1.000 de ouro entregue aos inimigos (mortes, objetivos perdidos, rota) menos o que ajudou a ganhar.</p>
       </section>
+      <section class="cartao" id="cartao-build"><h2>A build</h2>
+        <div class="abas build-quem">${r.nos.map((j) => `<button type="button" class="rp-chip ${j === (eu || c.jogador) ? 'on' : ''}" data-build="${j.id}">${esc(j.championName)}${eu && j.id === eu.id ? ' (você)' : j.id === c.jogador.id ? ' (culpado)' : ''}</button>`).join('')}</div>
+        <div id="build-corpo"><p class="vazio">Carregando os itens…</p></div></section>
       <section class="cartao grafico"><h2 id="graf-titulo">Chance de vitória</h2>
         <div class="abas"><button class="rp-chip on" data-graf="chance">Chance de vitória</button><button class="rp-chip" data-graf="ouro">Ouro</button></div>
         <div id="graf-corpo">${graficoChance(cv)}</div></section>
@@ -394,6 +421,7 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       if (replay && replay.pular) replay.pular(Math.max(0, +b.dataset.ver - 10));
     }));
     preencherHabilidades(partida);
+    iniciarBuild(partida, r, eu || c.jogador);
     window.scrollTo(0, 0);
     if (doc) {
       const abrir = () => window.RevelarLoL({
@@ -476,6 +504,50 @@ details.porque ul { margin: 6px 0 4px 18px; color: var(--ink-2); font-size: .9re
       <text x="2" y="${y(max) + 4}" font-size="10" fill="var(--muted)">+${k(max)}</text>
       <text x="2" y="${y(-max) + 4}" font-size="10" fill="var(--muted)">−${k(max)}</text>${ticks.join('')}
     </svg><p class="legenda"><span style="--c:var(--good)">time na frente</span><span style="--c:var(--bad)">time atrás</span></p>`;
+  }
+
+  // ---------------------------------------------------------------- build
+  let dadosDoJogo = null;
+  const carregarDadosDoJogo = () => (dadosDoJogo = dadosDoJogo || Promise.all([pegar('itens.json'), pegar('campeoes.json')])
+    .then(([i, c]) => ({ itens: (i && i.itens) || null, campeoes: (c && c.campeoes) || {}, versao: (i && i.versao) || versaoDD })));
+  const iconeItem = (id, versao) => (versao
+    ? `<img class="icone it" alt="" loading="lazy" src="https://ddragon.leagueoflegends.com/cdn/${esc(versao)}/img/item/${Number(id)}.png" onerror="this.style.visibility='hidden'">`
+    : '<span class="icone it"></span>');
+
+  async function iniciarBuild(partida, r, inicial) {
+    const corpo = document.getElementById('build-corpo');
+    const d = await carregarDadosDoJogo();
+    if (!document.body.contains(corpo)) return;
+    if (!d.itens) { corpo.innerHTML = '<p class="vazio">Os dados dos itens ainda não foram baixados. Aparecem depois da próxima coleta.</p>'; return; }
+    const mostrar = (j) => { corpo.innerHTML = buildHtml(partida, j, r, d); };
+    document.querySelectorAll('[data-build]').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('[data-build]').forEach((x) => x.classList.toggle('on', x === b));
+      mostrar(partida.jogadores.find((j) => j.id === +b.dataset.build));
+    }));
+    mostrar(inicial);
+  }
+
+  function barraDano(rot, p) {
+    if (!p) return '';
+    const seg = [['fisico', 'físico', 'var(--dano-fis)'], ['magico', 'mágico', 'var(--dano-mag)'], ['verdadeiro', 'verdadeiro', 'var(--dano-ver)']].filter(([k]) => p[k] >= 0.01);
+    return `<div class="dano"><div class="dano-rot">${rot}</div><div class="dano-barra">${seg.map(([k, , cor]) => `<i style="width:${(p[k] * 100).toFixed(1)}%;background:${cor}"></i>`).join('')}</div>
+      <div class="dano-leg">${seg.map(([k, nomeT, cor]) => `<span style="--c:${cor}">${Math.round(p[k] * 100)}% ${nomeT}</span>`).join('')}</div></div>`;
+  }
+
+  function buildHtml(partida, j, r, d) {
+    const l = window.BuildLoL.ler(partida, j, r, d.itens, d.campeoes);
+    const linha = l.completos.length
+      ? `<ol class="build-linha">${l.completos.map((x) => `<li>${iconeItem(x.id, d.versao)}<b>${Math.round(x.t / 60)} min</b><small>${esc(x.nome)}</small></li>`).join('')}</ol>`
+      : '<p class="vazio">Nenhum item completo.</p>';
+    const marca = (b) => (b === true ? '<span class="ok">✓</span>' : b === false ? '<span class="nao">✗</span>' : '<span class="neutro">·</span>');
+    const sug = l.sugestoes.length
+      ? `<h3 class="build-sub">O que faltou</h3><div class="build-sug">${l.sugestoes.map((s) => `<div>${iconeItem(s.id, d.versao)}<p><strong>${esc(s.nome)}</strong><small>${esc(s.motivo)}</small></p></div>`).join('')}</div>`
+      : '<p class="build-nada">Nada óbvio faltou na build desta partida.</p>';
+    return `${linha}
+      <div class="danos">${barraDano('Dano do time deles', l.perfilInimigo)}${barraDano(`O que matou ${esc(nome(j))}`, l.morreuPara)}</div>
+      <ul class="build-leitura">${l.leitura.map((x) => `<li>${marca(x.bom)}<span>${esc(x.texto)}</span></li>`).join('')}</ul>
+      ${sug}
+      <p class="legenda" style="margin-top:10px">A Riot não informa a build mais usada de cada campeão: a sugestão sai do que aconteceu nesta partida.</p>`;
   }
 
   // ---------------------------------------------------------------- recibo, lutas e resenha
