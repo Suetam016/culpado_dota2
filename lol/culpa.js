@@ -36,9 +36,11 @@
   const CRIMES = {
     mortes: [
       ['Doação ilegal de ouro ao inimigo', 'Visitas frequentes à fonte sem motivo', 'Morrer em local proibido', 'Deixar a tela cinza mais tempo que colorida',
-        'Distribuição gratuita de ouro no rio', 'Uso indevido do tempo de renascimento', 'Passeio noturno sem sentinela', 'Alimentar o inimigo depois das 22h'],
+        'Distribuição gratuita de ouro no rio', 'Uso indevido do tempo de renascimento', 'Passeio noturno sem sentinela', 'Alimentar o inimigo depois das 22h',
+        'Pagar recompensa de abate em série', 'Fazer o atirador deles fechar item mais cedo', 'Renascer só pra cumprir tabela', 'Entregar o primeiro abate e os seguintes'],
       ['Art. 171: estelionato contra o próprio time', 'Lavagem de ouro na fonte deles', 'Desvio de verba para o caixa do adversário',
-        'Contribuição para o enriquecimento ilícito do atirador deles', 'Abandono do próprio corpo em via pública', 'Resistência à prisão… sem resistir'],
+        'Contribuição para o enriquecimento ilícito do atirador deles', 'Abandono do próprio corpo em via pública', 'Resistência à prisão… sem resistir',
+        'Pagamento de recompensa com dinheiro do time', 'Patrocínio ao power spike do inimigo'],
       ['Tráfico internacional de ouro pela fronteira do rio', 'Remessa ilegal de ouro ao exterior (lado deles)', 'Financiamento de facção inimiga',
         'Contrabando de recompensas pelo covil do Barão'],
       ['Entrega sistemática de ouro ao inimigo em tempo de guerra', 'Sabotagem da economia do próprio povo', 'Colaboracionismo com a força de ocupação'],
@@ -46,7 +48,8 @@
     ],
     sozinho: [
       ['Andar sozinho em área de risco', 'Turismo na selva inimiga sem visto', 'Fazer trilha solo no rio sem sentinela',
-        'Ignorar a placa de “área sem visão”', 'Explorar a selva deles sem lanterna', 'Andar no rio como se tivesse Anjo Guardião'],
+        'Ignorar a placa de “área sem visão”', 'Explorar a selva deles sem lanterna', 'Andar no rio como se tivesse Anjo Guardião',
+        'Fazer push lateral com o caçador deles sumido', 'Checar arbusto com o próprio rosto', 'Ir buscar a wave sozinho no minuto errado'],
       ['Exposição voluntária ao perigo', 'Vadiagem em área de risco', 'Invasão de propriedade alheia sem mandado', 'Facilitação de sequestro (da própria pessoa)'],
       ['Imigração clandestina para a selva deles', 'Missão solo sem autorização do comando', 'Entrada ilegal em território estrangeiro'],
       ['Expor-se como alvo civil em zona de conflito', 'Abandono de pelotão em território hostil'],
@@ -54,7 +57,7 @@
     ],
     objetivos: [
       ['Assistir ao dragão morrer da tela cinza', 'Deixar o Barão sem segurança', 'Dar ao inimigo a chave da torre', 'Guardar a base dormindo',
-        'Ver a Arauta passear de longe'],
+        'Ver a Arauta passear de longe', 'Deixar o dragão sair de graça', 'Recall bem na hora do objetivo', 'Chegar no Barão quando o Barão já era deles'],
       ['Omissão na defesa do patrimônio público', 'Dano ao patrimônio por ausência', 'Negligência com a Alma do Dragão alheia', 'Furto de torre assistido sem reação'],
       ['Entrega de instalações militares ao inimigo', 'Facilitação de saque internacional (Barão incluso)', 'Venda de dragões ancestrais ao exterior'],
       ['Destruição do patrimônio cultural da humanidade (o Nexus)', 'Rendição da capital sem resistência'],
@@ -62,7 +65,8 @@
     ],
     rota: [
       ['Abandono de rota', 'Perda culposa de lane', 'Ceder placas de torre sem pedir recibo', 'Deixar a tropa inimiga pastar em paz',
-        'Ser dominado em duelo ao meio-dia', 'Furto de último golpe (sofrido)'],
+        'Ser dominado em duelo ao meio-dia', 'Furto de último golpe (sofrido)', 'Perder a wave pra torre', 'Ficar com metade do farm do rival',
+        'Tomar o first blood e a rota junto'],
       ['Estelionato na fase de rotas', 'Dano ao patrimônio: placas entregues intactas', 'Abandono de posto de trabalho na rota',
         'Lesão corporal sofrida por insistência na lane'],
       ['Entrega de território soberano ao inimigo', 'Cessão ilegal de fronteira (rota inteira)', 'Contrabando de experiência para o país vizinho'],
@@ -70,7 +74,7 @@
       ['Anexação da própria rota pelo inimigo'],
     ],
     abriu: [
-      ['Começar briga que não podia ganhar', 'Engage solo sem avisar ninguém', 'Puxar a luta errada na hora errada', 'Chamar pro X1 e perder no X5'],
+      ['Começar briga que não podia ganhar', 'Engage solo sem avisar ninguém', 'Puxar a luta errada na hora errada', 'Chamar pro X1 e perder no X5', 'Entrar de Flash sem ninguém atrás', 'Iniciar a luta com o time ainda na base'],
       ['Incitação à violência (contra o próprio time)', 'Início de tumulto em via pública', 'Provocação seguida de fuga… sem fuga'],
       ['Início de conflito internacional sem consultar os aliados', 'Declaração de guerra unilateral'],
       ['Provocar a guerra que destruiu o próprio povo'],
@@ -78,14 +82,14 @@
     ],
     ausente: [
       ['Ausência em luta coletiva', 'Presença só em espírito', 'Chegar depois do tiroteio pra contar história', 'Farmar enquanto a base pegava fogo',
-        'Assistir à luta da janela'],
+        'Assistir à luta da janela', 'Chegar com o Teleporte quando já era tela de derrota', 'Ficar no lado oposto do mapa em toda luta'],
       ['Omissão de socorro em luta coletiva', 'Abandono de incapaz (o suporte)', 'Deserção em plena luta do time', 'Prevaricação: tinha Teleporte e não veio'],
       ['Não comparecer à convocação da coalizão', 'Fuga de zona de conflito com o farm debaixo do braço'],
       ['Deserção em tempo de guerra', 'Abandono dos aliados em pleno massacre'],
       ['Ausência no dia do juízo final'],
     ],
     visao: [
-      ['Cegueira dolosa', 'Sonegação de sentinelas', 'Jogar o mapa no escuro', 'Guardar sentinela pra ocasião especial que nunca veio'],
+      ['Cegueira dolosa', 'Sonegação de sentinelas', 'Jogar o mapa no escuro', 'Guardar sentinela pra ocasião especial que nunca veio', 'Andar com o trinket sem usar', 'Deixar o rio inteiro no escuro'],
       ['Sonegação fiscal de Sentinelas de Controle', 'Ocultação de informação ao time', 'Apagão criminoso do mapa'],
       ['Blecaute internacional de inteligência', 'Espionagem a serviço do inimigo (deixou eles enxergarem tudo)'],
       ['Deixar o próprio povo às cegas durante a guerra'],
@@ -104,14 +108,14 @@
   const minutos = (p) => Math.round(p.duracao / 60);
   const GATILHOS = [
     { repete: 'mortes', teste: (j) => j.deaths >= 10, prova: (j) => `${j.deaths} mortes na partida`, frases: [
-      ['Recordista de visitas à fonte', 'Assinante premium da tela cinza', 'Colecionador de mortes'],
+      ['Recordista de visitas à fonte', 'Assinante premium da tela cinza', 'Colecionador de mortes', 'Conhecer a tela de renascimento de cor'],
       ['Reincidência específica (10 mortes ou mais)', 'Vício em tela cinza'],
       ['Turismo mortuário internacional'], ['Morte em escala industrial'], ['Extermínio de si mesmo em série']] },
     { teste: (j) => j.kills === 0 && j.deaths >= 5, prova: (j) => `0 abates e ${j.deaths} mortes`, frases: [
-      ['Pacifismo radical', 'Atirar só pro alto'], ['Porte de arma sem uso'], ['Missão de paz em plena guerra'],
+      ['Pacifismo radical', 'Atirar só pro alto', 'Jogar a partida inteira sem tirar uma vida'], ['Porte de arma sem uso'], ['Missão de paz em plena guerra'],
       ['Pacifismo armado durante o massacre'], ['Zero baixas inimigas em guerra total']] },
     { teste: (j) => j.kills >= 10, prova: (j) => `${j.kills} abates e derrota mesmo assim`, frases: [
-      ['Juntar abate e esquecer o objetivo'], ['Abuso de poder (10 abates e derrota)'], ['Mercenário sem causa'],
+      ['Juntar abate e esquecer o objetivo', 'Caçar abate enquanto o Nexus caía'], ['Abuso de poder (10 abates e derrota)'], ['Mercenário sem causa'],
       ['Massacre sem propósito militar'], ['Matou muito e mesmo assim perdeu a guerra']] },
     { teste: (j, p) => j.teamPosition !== 'UTILITY' && minutos(p) >= 20 && (j.detectorWardsPlaced || 0) === 0, prova: () => 'nenhuma Sentinela de Controle',
       frases: [['Pão-duro da visão', 'Economizar 75 de ouro na sentinela'], ['Sonegação de Sentinela de Controle'], ['Embargo de visão ao próprio país'],
@@ -144,9 +148,9 @@
   ];
 
   const ALCUNHAS = ['O Patrocinador', 'Mão de Alface', 'O Fantasma da Rota', 'Doador Universal', 'O Turista', 'Rei do Feed', 'Flash na Parede',
-    'O Cego do Rio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza', 'Caixa Eletrônico', 'Garçom do Inimigo', 'Papai Noel do Rio',
-    'Mão Furada', 'O Sem-Sentinela', 'Ministro da Fazenda (deles)', 'Wi-Fi da Padaria', 'Delivery de Ouro', 'Fiel da Fonte', 'Capitão Tela Cinza',
-    'O Pacifista', 'Freguês do Barão', 'Professor de Feed', 'O Fiador', 'Pinga-Interrogação', 'Recall Eterno', 'O Poro Perdido', 'Sem Bota'];
+    'O Cego do Rio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza', 'Caixa Eletrônico', 'Garçom do Inimigo', 
+    'Mão Furada', 'O Sem-Sentinela', 'Ministro da Fazenda (deles)', 'Delivery de Ouro', 'Fiel da Fonte', 'Capitão Tela Cinza',
+    'O Pacifista', 'Freguês do Barão', 'Professor de Feed', 'O Fiador', 'Pinga-Interrogação', 'Recall Eterno', 'O Poro Perdido', 'Sem Bota', 'Flash em Recarga', 'O Arbusto Errado', 'Wave Perdida', 'Ignite Desperdiçado', 'O Que Vai Sozinho', 'Trinket Intacto'];
   const PARADEIROS = ['visto pela última vez na selva deles, sem sentinela', 'avistado farmando enquanto o Nexus caía', 'localizado na fonte, esperando renascer',
     'flagrado no rio sem visão e sem plano', 'escondido atrás da torre interna com o Teleporte em recarga', 'avistado no Barão… do lado errado',
     'visto correndo de volta pra base sem Flash', 'encontrado na loja comprando poção', 'avistado na rota errada de novo',
