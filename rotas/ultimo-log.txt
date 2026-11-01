@@ -1,7 +1,6 @@
 explorer: 6 partidas nas últimas 24 h, 0 públicas
 fonte escolhida: amostra
-  amostra: 43 partidas de 200 vistas (202 chamadas)
   falhou (HTTP 429: {"error":"minute rate limit exceeded"}); tentativa 1/2
-  9069773958: desisti (HTTP 429: {"error":"minute rate limit exceeded"}): https://api.opendota.com/api/matches/9069773958
-amostra: 141 partidas boas de 553 vistas; descartadas: {'modo 23': 246, 'menos de 15 min': 8, 'rank alto': 137, 'modo 18': 11, 'abandono': 8, 'modo 21': 1}
-ok: 141 partidas novas (amostra, 561 chamadas, 10.4 min), 1376 no acumulado (peso das antigas 0.97); base: 6 pares de posição, 177 herói.pos e 0 pares de heróis com 20+ rotas -> /home/runner/work/culpado_dota2/culpado_dota2/rotas/base.json (4 KB)
+  9071578180: desisti (HTTP 429: {"error":"minute rate limit exceeded"}): https://api.opendota.com/api/matches/9071578180
+amostra: 6 partidas boas de 58 vistas; descartadas: {'modo 23': 50, 'rank alto': 1}
+ok: 6 partidas novas (amostra, 61 chamadas, 1.3 min), 1338 no acumulado (peso das antigas 0.97); base: 6 pares de posição, 174 herói.pos e 0 pares de heróis com 20+ rotas -> /home/runner/work/culpado_dota2/culpado_dota2/rotas/base.json (4 KB)
