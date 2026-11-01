@@ -855,13 +855,12 @@ function renderizarReddit() {
 
 const MINUTO_LANE = 10; // MINUTO_LANE do parceiros.py
 
-// início do período em segundos (hora local; a semana começa na segunda,
-// senão o domingo, dia de mais jogo, abria a semana zerada)
+// início do período em segundos (hora local; a semana começa no domingo)
 function desdePeriodo(chave = periodo) {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   if (chave === 'hoje') return d / 1000;
-  if (chave === 'semana') { d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d / 1000; }
+  if (chave === 'semana') { d.setDate(d.getDate() - d.getDay()); return d / 1000; }
   if (chave === 'mes') { d.setDate(1); return d / 1000; }
   if (chave === '3meses') {   // 31/05 - 3 meses = 28/02, não 03/03
     const dia = d.getDate();
