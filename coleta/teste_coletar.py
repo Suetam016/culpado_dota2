@@ -584,6 +584,10 @@ class Analise(Base):
         self.assertEqual(p["tentativas"], 0)
         self.assertEqual(p["pedido_em"][:13], C.iso(T0)[:13])
         self.assertNotIn("301", self.ler("indice.json"))
+        # os dados básicos já ficam em provisorias/ (as duplas do ranking contam sem esperar a análise)
+        prov = json.loads(gzip.decompress((self.dados / "provisorias" / "301.json.gz").read_bytes()))
+        self.assertEqual(prov["match_id"], 301)
+        self.assertFalse((self.dados / "partidas" / "301.json.gz").exists())
         # 10 min depois: ainda não é hora
         self.rel.t += 600
         self.rodar()
