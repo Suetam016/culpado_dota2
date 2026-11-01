@@ -155,7 +155,7 @@ Variáveis opcionais (*Settings* → *Variables and Secrets*, tipo *Text*):
 - **"Não deu para chamar o oráculo"** (e a internet está ok): a URL do `config.json` está errada ou o Worker
   não foi publicado.
 - **"O oráculo não aceitou pedidos deste endereço"**: o site está num endereço que não é
-  `suetam016.github.io`; ponha esse endereço na variável `ORIGENS` do Worker.
+  `oculpado.com.br` nem `suetam016.github.io`; ponha esse endereço na variável `ORIGENS` do Worker.
 - **"Não é de um coach"**: o Worker ainda tem o código antigo (o proxy da Anthropic). Cole o `coach.js` novo
   e clique *Deploy*.
 - **"O oráculo ainda está dormindo"**: falta o binding `AI` (passo 3); `/saude` mostra `"ok":false`.
