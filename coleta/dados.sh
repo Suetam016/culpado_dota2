@@ -78,14 +78,14 @@ salvar() {
   git config user.name "github-actions[bot]"
   git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
   local alvos=()
-  for f in partidas visitas indice.json estado.json amigos.json README.md; do
+  for f in partidas provisorias visitas indice.json estado.json amigos.json README.md; do
     [ -e "$f" ] && alvos+=("$f")
   done
   if [ ${#alvos[@]} -eq 0 ]; then
     echo "nada para salvar"
     return 0
   fi
-  # --ignore-removal: nunca registra arquivo apagado; --sparse: deixa acrescentar em partidas/ (fora do checkout)
+  # --ignore-removal: nunca registra arquivo apagado; --sparse: deixa acrescentar em partidas/ e provisorias/ (fora do checkout)
   git add --sparse --ignore-removal -- "${alvos[@]}"
   if git diff --cached --quiet; then
     echo "nada novo para salvar"

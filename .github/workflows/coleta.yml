@@ -7,6 +7,7 @@ name: Coleta de partidas (base para modelos)
 on:
   schedule:
     - cron: "17 * * * *"
+    - cron: "47 * * * *"   # dois horários: o agendamento do GitHub pula muitas rodadas (chegou a 6 h sem rodar)
   workflow_dispatch:
   # o agendamento do GitHub demora (ou falha) neste repositório: um push em coleta/disparar (qualquer conteúdo) roda na hora
   push:

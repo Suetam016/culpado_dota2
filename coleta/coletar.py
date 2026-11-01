@@ -377,6 +377,9 @@ Gravado pelo robô `.github/workflows/coleta.yml` (código em `coleta/` no branc
 - `partidas/<id>.json.gz`: resposta crua de `https://api.opendota.com/api/matches/<id>` (gzip). Quase todas com a
   análise do replay (séries por minuto, lances, compras, posições...); as com `"analisada": false` no índice são só
   os dados básicos (o OpenDota não conseguiu analisar a tempo).
+- `provisorias/<id>.json.gz`: só os dados básicos de partidas que ainda esperam a análise do replay (pendentes no
+  `estado.json`). O ranking dos amigos usa para as duplas não esperarem o OpenDota; quando a análise chega, a
+  partida vai para `partidas/` e vale no lugar desta.
 - `indice.json`: uma linha por partida: início (unix), duração, contas visíveis de cada lado, contas do grupo,
   analisada, tamanho do .gz.
 - `amigos.json`: quem o robô considera amigo (e quem quase entrou), com jogos juntos, sessões e a última vez.
@@ -444,6 +447,12 @@ class Base:
         self.escrever(self.dir_partidas / f"{mid}.json.gz", gz)
         self.indice[str(mid)] = entrada_indice(m, foi_analisada, len(gz), quando)
         return len(gz)
+
+    def salvar_provisoria(self, mid: int, bruto: bytes) -> None:
+        """Dados básicos (quem jogou, herói, lado, quem venceu) de uma partida que ainda espera a análise do replay:
+        o ranking dos amigos já conta a partida nas duplas sem esperar o OpenDota. Fica fora de partidas/ e do
+        índice, então a partida continua na fila até chegar a análise (que então vale no lugar desta)."""
+        self.escrever(self.pasta / "provisorias" / f"{mid}.json.gz", gzip.compress(bruto, compresslevel=9, mtime=0))
 
     def gravar(self, amigos: dict | None) -> None:
         self.escrever(self.pasta / "indice.json", json_por_linha(self.indice))
@@ -695,6 +704,8 @@ class Rodada:
                 self.desde_gravacao = 0
             return
         inicio = float(m.get("start_time") or ini_lista or 0)
+        if m.get("players") and m.get("radiant_win") is not None:
+            self.base.salvar_provisoria(int(k), corpo)
         p = self.pendentes.get(k)
         if not isinstance(p, dict):
             p = {"inicio": int(inicio), "primeira_vez": iso(agora), "pedido_em": None, "tentativas": 0}

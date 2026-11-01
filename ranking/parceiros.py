@@ -135,6 +135,10 @@ def main():
         vistas = {}
         for arq in sorted(Path(args.dados, 'partidas').glob('*.json.gz')):
             vistas[arq.name.split('.')[0]] = (arq, gzip.open)
+        # partida que ainda espera a análise do replay: a coleta guarda os dados básicos em provisorias/ e as duplas já
+        # contam a vitória (ou a derrota) sem esperar o OpenDota; quando a análise chega, vale a de partidas/
+        for arq in sorted(Path(args.dados, 'provisorias').glob('*.json.gz')):
+            vistas.setdefault(arq.name.split('.')[0], (arq, gzip.open))
         if args.recentes and Path(args.recentes).is_dir():
             for arq in sorted(Path(args.recentes).glob('*.json')):
                 mid = arq.stem
