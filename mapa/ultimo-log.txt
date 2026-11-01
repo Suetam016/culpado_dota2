@@ -2923,3 +2923,12 @@ OK 9070904227
   1445 usos de skill/item de 2406 no combat log
 OK 9070864978
 3 mapas novos
+Fila: [9070988193] (pedidos do site: [9070988193])
+  replay http://replay202.valve.net/570/9070988193_707244124.dem.bz2 -> HTTP 200 application/octet-stream 53432310 inicio=b"(\xb5/\xfd\x00`\x1c'\x0fn!^"
+  9070988193: 213747 eventos; tipos [('actions', 77329), ('DOTA_COMBATLOG_DAMAGE', 49895), ('interval', 32080), ('DOTA_COMBATLOG_MODIFIER_ADD', 15077), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 14912), ('DOTA_COMBATLOG_HEAL', 8860), ('DOTA_COMBATLOG_DEATH', 4042), ('DOTA_COMBATLOG_XP', 3965)]
+  exemplo de interval: {"time": -90, "type": "interval", "unit": "CDOTA_Unit_Hero_SandKing", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 16, "variant": 0, "facet_hero_id": 16, "life_state": 0, "level": 0, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "r
+  exemplo de habilidade: {"time": -59, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_huskar", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "plus_high_five"}
+  3449 registros de dano herói->herói
+  1443 usos de skill/item de 2473 no combat log
+OK 9070988193
+1 mapas novos
