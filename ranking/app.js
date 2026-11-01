@@ -862,7 +862,12 @@ function desdePeriodo(chave = periodo) {
   if (chave === 'hoje') return d / 1000;
   if (chave === 'semana') { d.setDate(d.getDate() - d.getDay()); return d / 1000; }
   if (chave === 'mes') { d.setDate(1); return d / 1000; }
-  if (chave === '3meses') { d.setMonth(d.getMonth() - 3); return d / 1000; }
+  if (chave === '3meses') {   // 31/05 - 3 meses = 28/02, não 03/03
+    const dia = d.getDate();
+    d.setDate(1); d.setMonth(d.getMonth() - 3);
+    d.setDate(Math.min(dia, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+    return d / 1000;
+  }
   if (chave === 'ano') { d.setMonth(0, 1); return d / 1000; }
   return 0;
 }

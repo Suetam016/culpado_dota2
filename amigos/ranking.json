@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-01T01:11:28.622Z",
+  "atualizadoEm": "2026-11-01T08:09:09.100Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -17,14 +17,14 @@
     {
       "accountId": "241782761",
       "nome": "[Pau]DeCamelo",
-      "culpados": 34,
+      "culpados": 36,
       "craques": 31,
-      "partidas": 282,
-      "vitorias": 131,
-      "winRate": 46,
-      "streak": null,
-      "mmrGanho": 3125,
-      "mmrPerdido": 3700
+      "partidas": 289,
+      "vitorias": 135,
+      "winRate": 47,
+      "streak": "culpado",
+      "mmrGanho": 3200,
+      "mmrPerdido": 3750
     },
     {
       "accountId": "26668150",
@@ -51,6 +51,18 @@
       "mmrPerdido": 1400
     },
     {
+      "accountId": "81918076",
+      "nome": "Suéter",
+      "culpados": 8,
+      "craques": 11,
+      "partidas": 190,
+      "vitorias": 94,
+      "winRate": 49,
+      "streak": null,
+      "mmrGanho": 2200,
+      "mmrPerdido": 2325
+    },
+    {
       "accountId": "83300280",
       "nome": "ptn",
       "culpados": 8,
@@ -75,40 +87,28 @@
       "mmrPerdido": 850
     },
     {
-      "accountId": "81918076",
-      "nome": "Suéter",
-      "culpados": 7,
-      "craques": 8,
-      "partidas": 183,
-      "vitorias": 90,
-      "winRate": 49,
-      "streak": "craque",
-      "mmrGanho": 2125,
-      "mmrPerdido": 2275
-    },
-    {
       "accountId": "1254464470",
       "nome": "Conhecido do Baia",
       "culpados": 6,
       "craques": 2,
-      "partidas": 93,
-      "vitorias": 40,
-      "winRate": 43,
+      "partidas": 98,
+      "vitorias": 43,
+      "winRate": 44,
       "streak": "craque",
-      "mmrGanho": 825,
-      "mmrPerdido": 1275
+      "mmrGanho": 875,
+      "mmrPerdido": 1325
     },
     {
       "accountId": "96286191",
       "nome": "charlinho",
       "culpados": 3,
-      "craques": 2,
-      "partidas": 46,
-      "vitorias": 25,
-      "winRate": 54,
+      "craques": 3,
+      "partidas": 51,
+      "vitorias": 28,
+      "winRate": 55,
       "streak": null,
-      "mmrGanho": 625,
-      "mmrPerdido": 525
+      "mmrGanho": 700,
+      "mmrPerdido": 575
     }
   ],
   "historicos": {
@@ -3284,6 +3284,83 @@
         "heroi": 107,
         "culpa": 0.114,
         "merito": 0.246
+      },
+      {
+        "matchId": 9070864978,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793490319,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 54,
+        "culpa": 0.168,
+        "merito": 0.153
+      },
+      {
+        "matchId": 9070904227,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793494080,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.171,
+        "merito": 0.203
+      },
+      {
+        "matchId": 9070951359,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1793498825,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.162,
+        "merito": 0.301
+      },
+      {
+        "matchId": 9070988193,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1793502344,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 15,
+        "culpa": 0.249,
+        "merito": 0.288
+      },
+      {
+        "matchId": 9071026181,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793505945,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 108,
+        "culpa": 0.219,
+        "merito": 0.144
+      },
+      {
+        "matchId": 9071056572,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793508739,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.25,
+        "merito": 0.088
+      },
+      {
+        "matchId": 9071102222,
+        "lado": "radiant",
+        "tipo": "craque",
+        "inicio": 1793512539,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 44,
+        "culpa": 0.181,
+        "merito": 0.282
       }
     ],
     "83300280": [
@@ -4179,6 +4256,61 @@
         "heroi": 44,
         "culpa": 0.217,
         "merito": 0.225
+      },
+      {
+        "matchId": 9070904227,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1793494080,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 54,
+        "culpa": 0.086,
+        "merito": 0.347
+      },
+      {
+        "matchId": 9070951359,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793498825,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 44,
+        "culpa": 0.056,
+        "merito": 0.21
+      },
+      {
+        "matchId": 9071026181,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793505945,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 87,
+        "culpa": 0.092,
+        "merito": 0.193
+      },
+      {
+        "matchId": 9071056572,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793508739,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 5,
+        "culpa": 0.208,
+        "merito": 0.217
+      },
+      {
+        "matchId": 9071102222,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793512539,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 87,
+        "culpa": 0.282,
+        "merito": 0.117
       }
     ],
     "111257540": [
@@ -8363,6 +8495,83 @@
         "heroi": 41,
         "culpa": 0.114,
         "merito": 0.303
+      },
+      {
+        "matchId": 9070864978,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793490319,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 84,
+        "culpa": 0.268,
+        "merito": 0.118
+      },
+      {
+        "matchId": 9070904227,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793494080,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 87,
+        "culpa": 0.19,
+        "merito": 0.164
+      },
+      {
+        "matchId": 9070951359,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793498825,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 69,
+        "culpa": 0.291,
+        "merito": 0.137
+      },
+      {
+        "matchId": 9070988193,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793502344,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 16,
+        "culpa": 0.235,
+        "merito": 0.091
+      },
+      {
+        "matchId": 9071026181,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1793505945,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 23,
+        "culpa": 0.424,
+        "merito": 0.133
+      },
+      {
+        "matchId": 9071056572,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793508739,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 47,
+        "culpa": 0.214,
+        "merito": 0.242
+      },
+      {
+        "matchId": 9071102222,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793512539,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 108,
+        "culpa": 0.337,
+        "merito": 0.186
       }
     ],
     "1000265186": [
@@ -11755,6 +11964,61 @@
         "heroi": 123,
         "culpa": 0.174,
         "merito": 0.167
+      },
+      {
+        "matchId": 9070951359,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793498825,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 123,
+        "culpa": 0.098,
+        "merito": 0.17
+      },
+      {
+        "matchId": 9070988193,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793502344,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 74,
+        "culpa": 0.198,
+        "merito": 0.155
+      },
+      {
+        "matchId": 9071026181,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793505945,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 123,
+        "culpa": 0.133,
+        "merito": 0.167
+      },
+      {
+        "matchId": 9071056572,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793508739,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 30,
+        "culpa": 0.126,
+        "merito": 0.265
+      },
+      {
+        "matchId": 9071102222,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793512539,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 123,
+        "culpa": 0.147,
+        "merito": 0.13
       }
     ]
   },
@@ -11805,5 +12069,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-10-31T21:38:37.604Z"
+  "perfisEm": "2026-11-01T06:57:57.927Z"
 }
