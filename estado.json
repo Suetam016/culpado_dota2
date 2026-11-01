@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-01T06:56:25Z",
+  "quando": "2026-11-01T07:33:29Z",
   "restante": {
-   "dia": 2952,
-   "minuto": 12
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -425,9 +425,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-01T06:56:03Z",
+   "em": "2026-11-01T07:33:26Z",
    "partidas": {
-    "9048688514": 1792220756,
     "9049609392": 1792258192,
     "9049718112": 1792261977,
     "9051285470": 1792340193,
@@ -2079,7 +2078,9 @@
   "9070988193": {
    "companheiros": [
     115028064,
-    241782761
+    241782761,
+    483724352,
+    1254464470
    ],
    "inicio": 1793502344
   },
@@ -2374,6 +2375,7 @@
   "470246885": "Segredo",
   "480788073": "kidb3ng4l4",
   "482732948": "❟❛❟MingalTV ❟❛❟",
+  "483724352": "SHIFULL´-`",
   "491652947": "Meowcat",
   "491783538": "PRÍNCIPE",
   "492137527": "DrakeN.",
@@ -2438,46 +2440,8 @@
   "99113261": "Randy Bobandy",
   "99140295": "·NEO·GEO·"
  },
- "pendentes": {
-  "9070904227": {
-   "inicio": 1793494080,
-   "pedido_em": "2026-11-01T06:56:06Z",
-   "primeira_vez": "2026-11-01T06:56:06Z",
-   "proxima": "2026-11-01T07:26:06Z",
-   "tentativas": 0
-  },
-  "9070951359": {
-   "inicio": 1793498825,
-   "pedido_em": "2026-11-01T06:56:08Z",
-   "primeira_vez": "2026-11-01T06:56:08Z",
-   "proxima": "2026-11-01T07:26:08Z",
-   "tentativas": 0
-  },
-  "9070988193": {
-   "inicio": 1793502344,
-   "pedido_em": "2026-11-01T06:56:11Z",
-   "primeira_vez": "2026-11-01T06:56:10Z",
-   "proxima": "2026-11-01T07:26:10Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-10-24T20:50:34Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2990,
-    "minuto": 50
-   },
-   "sobra_do_dia": 2675
-  },
   {
    "basicas": 0,
    "chamadas": 14,
@@ -3226,6 +3190,22 @@
     "minuto": 12
    },
    "sobra_do_dia": 2752
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-01T07:33:26Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2759
   }
  ],
  "uso": {
@@ -3242,6 +3222,6 @@
   "2026-10-29": 75,
   "2026-10-30": 84,
   "2026-10-31": 86,
-  "2026-11-01": 37
+  "2026-11-01": 41
  }
 }
