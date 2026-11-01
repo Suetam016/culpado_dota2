@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-01T15:10:54Z",
+ "atualizadoEm": "2026-11-01T19:13:45Z",
  "desde": "2025-12-21",
- "partidasLidas": 600,
+ "partidasLidas": 602,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,8 +11,8 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 183,
-   "vitorias": 91,
+   "jogos": 185,
+   "vitorias": 93,
    "winRate": 50
   },
   "26668150": {
@@ -23,9 +23,9 @@
   },
   "241782761": {
    "nome": "[Pau]DeCamelo",
-   "jogos": 161,
-   "vitorias": 79,
-   "winRate": 49
+   "jogos": 163,
+   "vitorias": 81,
+   "winRate": 50
   },
   "1000265186": {
    "nome": "gustavoDotinhaPro",
@@ -1336,8 +1336,8 @@
    "b": "241782761",
    "nomeA": "Suéter",
    "nomeB": "[Pau]DeCamelo",
-   "jogos": 101,
-   "vitorias": 50,
+   "jogos": 103,
+   "vitorias": 52,
    "winRate": 50,
    "rotas": [
     {
@@ -1355,18 +1355,18 @@
      "winRate": 71
     },
     {
+     "posA": 2,
+     "posB": 1,
+     "jogos": 15,
+     "vitorias": 10,
+     "winRate": 67
+    },
+    {
      "posA": 3,
      "posB": 4,
      "jogos": 3,
      "vitorias": 2,
      "winRate": 67
-    },
-    {
-     "posA": 2,
-     "posB": 1,
-     "jogos": 14,
-     "vitorias": 9,
-     "winRate": 64
     },
     {
      "posA": 5,
@@ -1423,14 +1423,14 @@
     },
     {
      "heroiA": 107,
-     "heroiB": 95,
-     "jogos": 3,
+     "heroiB": 4,
+     "jogos": 2,
      "vitorias": 2,
-     "winRate": 67
+     "winRate": 100
     },
     {
      "heroiA": 107,
-     "heroiB": 43,
+     "heroiB": 95,
      "jogos": 3,
      "vitorias": 2,
      "winRate": 67
@@ -1461,13 +1461,31 @@
    ],
    "partidas": [
     {
+     "matchId": 9071897758,
+     "inicio": 1793548300,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 4,
+     "posA": null,
+     "posB": null
+    },
+    {
+     "matchId": 9071807392,
+     "inicio": 1793545110,
+     "venceu": true,
+     "heroiA": 76,
+     "heroiB": 28,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9071700994,
      "inicio": 1793541457,
      "venceu": true,
      "heroiA": 107,
      "heroiB": 73,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 1
     },
     {
      "matchId": 9071591409,
@@ -1513,24 +1531,6 @@
      "heroiB": 71,
      "posA": 2,
      "posB": 5
-    },
-    {
-     "matchId": 9071236000,
-     "inicio": 1793521355,
-     "venceu": true,
-     "heroiA": 107,
-     "heroiB": 30,
-     "posA": 2,
-     "posB": 5
-    },
-    {
-     "matchId": 9071152344,
-     "inicio": 1793516165,
-     "venceu": false,
-     "heroiA": 86,
-     "heroiB": 92,
-     "posA": 5,
-     "posB": 3
     }
    ]
   },
@@ -12779,6 +12779,12 @@
     "vitorias": 0
    },
    {
+    "heroi": 73,
+    "pos": 1,
+    "jogos": 3,
+    "vitorias": 3
+   },
+   {
     "heroi": 95,
     "pos": 2,
     "jogos": 3,
@@ -12852,12 +12858,6 @@
    },
    {
     "heroi": 102,
-    "pos": 1,
-    "jogos": 2,
-    "vitorias": 2
-   },
-   {
-    "heroi": 73,
     "pos": 1,
     "jogos": 2,
     "vitorias": 2
@@ -13097,7 +13097,13 @@
     "vitorias": 1
    },
    {
-    "heroi": 73,
+    "heroi": 28,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 4,
     "pos": 0,
     "jogos": 1,
     "vitorias": 1
@@ -13535,8 +13541,8 @@
    {
     "heroi": 107,
     "pos": 2,
-    "jogos": 65,
-    "vitorias": 37
+    "jogos": 66,
+    "vitorias": 38
    },
    {
     "heroi": 107,
@@ -13667,6 +13673,12 @@
    {
     "heroi": 44,
     "pos": 1,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 76,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -27810,13 +27822,57 @@
     [
      "81918076",
      107,
+     2,
+     2,
+     1
+    ],
+    [
+     "241782761",
+     73,
+     1,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9071807392,
+   "t": 1793545110,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     76,
      0,
      null,
      null
     ],
     [
      "241782761",
-     73,
+     28,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9071897758,
+   "t": 1793548300,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     0,
+     null,
+     null
+    ],
+    [
+     "241782761",
+     4,
      0,
      null,
      null
