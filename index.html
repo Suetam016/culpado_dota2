@@ -1609,13 +1609,193 @@ roshan: 'Pegou o Roshan', farm: 'Farm acima do herói', dano: 'Dano acima do her
 cura: 'Segurou o time vivo', vivo: 'Ficou vivo',
 stacks: 'Stackou os camps', deward: 'Quebrou a visão deles', visaoPickoff: 'Visão que achou abate', roam: 'Roam que rendeu abate',
 };
+// Frases do lado bom. Cada tipo de mérito tem várias; a função recebe o que aconteceu com o jogador na partida
+// (x: heroi, k/d/a, min, pos, gpm, n, info) e devolve null quando a frase não combina com o jogo. A frase tem que
+// funcionar sozinha ("Frase.") e antes da prova ("Frase: 18 abates."). Nada de comparação com coisa do cotidiano.
 const ELOGIOS = {
-rota: 'amassou a rota e deu o tom do jogo', abates: 'colecionou cabeça como se fosse figurinha da Copa', assist: 'esteve em todas, igual Wi-Fi de shopping',
-lutas: 'chegou na luta e apagou a luz', objetivos: 'tratou torre como item de decoração', roshan: 'jantou o Roshan e ainda pediu sobremesa',
-farm: 'farmou como se o mapa fosse dele', dano: 'bateu como se tivesse raiva pessoal', visao: 'iluminou o mapa mais que poste de LED',
-controle: 'deixou o inimigo parado mais tempo que fila de banco', cura: 'virou o SUS do time', vivo: 'morrer não estava nos planos',
-stacks: 'empilhou camp como quem empilha prato pro carry', deward: 'apagou as luzes do inimigo', visaoPickoff: 'a ward dele entregou o jantar', roam: 'apareceu na rota dos outros sem avisar',
+rota: [
+'ganhou a rota e o jogo começou a pender dali',
+'saiu da fase de rotas na frente e não devolveu nada',
+'foi pra rota com plano e cumpriu',
+'abriu o jogo na rota, o time só teve que seguir',
+(x) => (x.info && x.info.rivais ? `deixou ${x.info.rivais} sem farm e sem paciência` : null),
+(x) => (x.info && x.info.rivais ? `${x.info.rivais} ${x.info.rivais.includes(' e ') ? 'vão' : 'vai'} lembrar dessa rota por um tempo` : null),
+'o rival passou os primeiros 10 minutos vendo creep morrer sem ele',
+(x) => (x.info && x.info.tipo === 'mid' ? 'ganhou o mid e o mapa inteiro sentiu' : null),
+(x) => (x.info && x.info.tipo === 'off' ? 'transformou a offlane, que era pra sofrer, em rota ganha' : null),
+(x) => (x.info && x.info.tipo === 'safe' ? 'fez da safe lane o que ela devia ser, farm livre e rival no prejuízo' : null),
+(x) => (x.pos >= 4 ? 'suporte que ganhou a rota no braço e deixou o core respirar' : null),
+],
+abates: [
+(x) => (x.k >= 10 ? 'cada vez que alguém deles voltava da fonte, ele já estava esperando' : null),
+(x) => (x.k >= 8 ? 'quem apareceu na frente dele virou ouro' : null),
+(x) => (x.k >= 10 ? 'o bounty deles foi quase todo para o mesmo bolso' : null),
+(x) => (x.k >= 8 ? 'sempre que o placar mudava, era ele somando' : null),
+(x) => (x.k >= 8 ? 'transformou as lutas numa fila pra tela cinza' : null),
+(x) => (x.k >= 10 ? 'virou assunto no chat deles, e não era elogio' : null),
+(x) => (x.k >= 8 ? `tinha alguém do outro lado digitando "report ${x.heroi}" só por estar perdendo` : null),
+(x) => (x.k < 8 ? 'não pegou tantos abates, mas pegou os que abriam o mapa' : null),
+(x) => (x.k < 8 ? 'cada abate dele veio na hora em que o time precisava' : null),
+(x) => (x.k < 8 ? 'escolheu bem quem matar, quase sempre o herói que importava' : null),
+'não desperdiçou abate, cada um virou espaço pro time',
+(x) => (x.k >= 15 ? `o time deles passou mais tempo no respawn por causa do ${x.heroi} do que andando no mapa` : null),
+(x) => (x.d === 0 ? 'matou e não morreu, nem a chance da revanche ele deu' : null),
+(x) => (x.d > 0 && x.d <= 2 && x.k >= 8 ? 'cobrou caro por cada cabeça e quase não pagou nada de volta' : null),
+(x) => (x.min <= 30 && x.k >= 10 ? `o jogo nem chegou aos ${x.min + 1} minutos e o placar dele já era de jogo longo` : null),
+(x) => (x.pos >= 4 ? 'suporte com placar de core, e ninguém reclamou' : null),
+(x) => (x.pos === 2 ? 'mid que saiu da rota com fome e foi comer nas outras' : null),
+(x) => (x.k >= 6 ? 'escolhia o alvo e o alvo não voltava pra base' : null),
+],
+assist: [
+'não teve luta no mapa sem ele no meio',
+'fez o trabalho que não aparece no kill feed e aparece no resultado',
+'chegava antes do carry e saía depois de todo mundo',
+'deixou os abates pros outros e ficou com as lutas',
+'o TP dele nunca ficou parado na bolsa',
+'quando o time chamava, ele já estava a caminho',
+'qualquer smoke do time tinha ele no grupo',
+'o nome dele está em quase todo abate, do lado de quem ajudou',
+(x) => (x.k <= 3 ? 'quase não pegou abate, e quase nenhum abate saiu sem ele' : null),
+(x) => (x.pos >= 4 ? 'suporte que não deixou nenhuma luta começar sem ele' : null),
+(x) => (x.pos <= 3 ? 'core que dividiu o mapa com o time em vez de se esconder na selva' : null),
+],
+lutas: [
+'quando a luta começava, era nele que o time se escorava',
+'entrou nas lutas certas e saiu delas com o placar a favor',
+'as lutas ganhas têm a assinatura do dano dele',
+'chegou na hora que a luta pedia e resolveu',
+'não ficou escolhendo luta, foi lá e decidiu',
+'fez da teamfight o lugar dele',
+(x) => `o ${x.heroi} chegava e a luta acabava ali`,
+'a melhor luta do jogo passou pelas mãos dele',
+(x) => (x.d <= 3 ? 'decidia a luta e ainda saía vivo pra contar' : null),
+],
+objetivos: [
+'enquanto o resto olhava pro kill feed, ele olhava pras torres',
+'entendeu antes de todo mundo que jogo se ganha derrubando prédio',
+'transformou vantagem em mapa, uma torre atrás da outra',
+'não deixou vantagem morrer na selva, transformou tudo em estrutura',
+'a base deles foi encolhendo e o motivo tem nome',
+'empurrou na hora certa, sem enrolar',
+'acabou com a ideia de jogo longo do time deles',
+(x) => (x.pos <= 3 ? 'não foi pra caçar cabeça, foi pra derrubar base' : null),
+(x) => (x.min <= 30 ? 'fechou o jogo cedo, antes deles encontrarem o item que salvava' : null),
+],
+roshan: [
+'o Aegis tinha dono',
+'pegou o Roshan e levou o jogo junto',
+'chegou no Roshan antes deles pensarem em contestar',
+'pegou o Aegis e jogou como quem tem duas vidas, porque tinha',
+'a call do Roshan foi dele e deu certo',
+(x) => (x.n >= 2 ? 'o Roshan nasceu de novo só pra cair pra ele de novo' : null),
+(x) => (x.n >= 2 ? 'o pit do Roshan virou endereço fixo dele' : null),
+],
+farm: [
+'o mapa ficou pequeno pro farm dele',
+'não deixou creep sobrando no caminho',
+'farmou com o tempo contado e chegou nos itens antes de todo mundo',
+(x) => `jogou de ${x.heroi} do jeito que o ${x.heroi} pede, com item cedo`,
+'cada minuto sem luta virou ouro',
+'a selva deles também entrou na conta',
+'quando apareceu na luta, já apareceu com o item que importa',
+'sabia a hora de farmar e a hora de largar o farm',
+(x) => (x.gpm >= 700 ? 'comprar item virou rotina no meio do jogo' : null),
+(x) => (x.d <= 3 ? 'farmou muito e quase não devolveu nada em morte' : null),
+],
+dano: [
+'cada luta tinha o número dele no topo do dano',
+'apertava os botões e a barra de vida deles sumia',
+'fez o inimigo sentir cada skill',
+(x) => `deu ao ${x.heroi} o dano que ele promete na tela de pick`,
+'o suporte deles sumia num combo',
+'ninguém do outro lado ficou com a vida cheia por muito tempo',
+'escolheu o alvo e não largou',
+'bateu de onde dava pra bater e não parou',
+(x) => (x.d <= 3 ? 'bateu muito e quase não apanhou' : null),
+],
+visao: [
+'o time sempre sabia onde eles estavam',
+'deixou o mapa claro e as rotações deles sem surpresa',
+'os smokes deles esbarravam numa ward dele',
+'gastou ouro em ward sem reclamar, e o placar agradeceu',
+'plantou ward onde o jogo ia acontecer, não onde era cômodo',
+'nenhum gank deles pegou o time desprevenido',
+'deu ao time a informação que ninguém pediu e todo mundo usou',
+(x) => (x.pos === 5 ? 'pos 5 de verdade, com a bolsa sempre cheia de ward' : null),
+(x) => (x.pos === 4 ? 'pos 4 que rodou o mapa sem esquecer da visão' : null),
+],
+controle: [
+'o inimigo passou boa parte das lutas sem poder apertar nada',
+'quem apanhou dele apanhou parado',
+'segurou o alvo certo até o time chegar',
+'abriu as lutas no stun e o resto foi só seguir',
+'emendou um controle no outro e a luta não teve volta',
+'deixou o carry deles assistindo à própria morte',
+'quando o stun dele acertava, a luta já estava decidida',
+(x) => `o ${x.heroi} acertava a skill e o time sabia que era hora de ir`,
+],
+cura: [
+'manteve vivo quem estava jogando no limite',
+'várias mortes do time viraram fuga por causa dele',
+'a vida do time voltava cheia depois de cada luta',
+'apagou boa parte do dano que eles fizeram',
+'o time lutou mais do que devia porque tinha ele atrás',
+'segurou a linha de frente de pé',
+'deixou o inimigo gastando combo à toa',
+],
+vivo: [
+'deu pouquíssimo ouro pro outro time',
+'jogou o jogo inteiro sem dar bounty de presente',
+'o time deles procurou e não achou',
+'saía da luta quando tinha que sair',
+'posicionamento de quem já sabia onde a luta ia estourar',
+'estava sempre no lugar onde dava pra bater e não dava pra pegar',
+(x) => (x.d === 0 ? 'não viu o timer de respawn nenhuma vez' : null),
+(x) => (x.d === 0 ? 'o time deles nunca viu a cor da recompensa dele' : null),
+(x) => (x.min >= 45 ? `atravessou ${x.min} minutos de jogo quase sem cair` : null),
+],
+stacks: [
+'deixou a selva pronta pro carry chegar e limpar',
+'pensou no farm do carry antes do carry',
+'não perdeu um :53 no relógio',
+'o carry achou ouro empilhado e nem perguntou de onde veio',
+'stackou o ancient enquanto o resto do time estava ocupado',
+'fez o trabalho chato do relógio, e ele rendeu',
+],
+deward: [
+'deixou o time deles jogando no escuro',
+'achou ward que eles juravam estar escondida',
+'os observers deles duraram bem menos do que deviam',
+'tirou a informação deles antes do gank sair',
+'andou com sentry e soube onde usar',
+'o suporte deles comprou ward pra nada',
+],
+visaoPickoff: [
+'a ward dele achou o abate antes de qualquer um',
+'plantou ward no lugar certo e o time só teve que chegar',
+'os pickoffs começaram na visão dele',
+'o inimigo passou pela ward dele e não voltou',
+],
+roam: [
+'saiu da rota na hora certa e voltou com abate',
+'apareceu nas outras rotas antes deles entenderem',
+'rodou o mapa cedo e deu ritmo ao jogo',
+'fez o inimigo olhar pro minimapa com medo',
+'deixou a própria rota pra ganhar as dos outros',
+],
 };
+// todas as frases que combinam com o jogo, numa ordem que depende da partida e do jogador (sem sorteio de verdade:
+// a mesma análise sempre dá a mesma ordem; quem evita repetir entre partidas é a interface)
+function elogiosDe(key, x, semente) {
+const xs = [];
+for (const f of ELOGIOS[key] || []) {
+let t = null;
+try { t = typeof f === 'function' ? f(x) : f; } catch { t = null; }
+if (t) xs.push(t);
+}
+const peso = (t) => { let a = 2166136261; for (const ch of `${semente}|${t}`) a = Math.imul(a ^ ch.charCodeAt(0), 16777619); return a >>> 0; };
+return xs.map((t) => [peso(t), t]).sort((a, b) => a[0] - b[0]).map((y) => y[1]);
+}
 function craquesDaPartida(ctx, match) {
 const { nos, eles, duracao } = ctx;
 const minutos = duracao / 60;
@@ -1733,7 +1913,11 @@ default: return '';
 const vs = nos.map((p) => {
 const cs = Object.entries(acc[p.idx])
 .filter(([, c]) => c.ouro >= CULPA.escala * 0.5)
-.map(([key, c]) => ({ key, label: LABELS_BOM[key], pontos: arred(c.ouro / CULPA.escala), evidencia: evid(key, c, p), elogio: ELOGIOS[key] }))
+.map(([key, c]) => {
+const x = { heroi: p.heroi.nome, k: p.raw.kills || 0, d: p.raw.deaths || 0, a: p.raw.assists || 0, min: Math.round(minutos), pos: p.posicao, gpm: p.raw.gold_per_min || 0, n: c.infos.length, info: c.infos[0] };
+const elogios = elogiosDe(key, x, `${match.match_id}-${p.idx}-${key}`);
+return { key, label: LABELS_BOM[key], pontos: arred(c.ouro / CULPA.escala), evidencia: evid(key, c, p), elogio: elogios[0] || LABELS_BOM[key].toLowerCase(), elogios };
+})
 .sort((a, b) => b.pontos - a.pontos);
 return { jogador: p, score: arred(soma(cs, (c) => c.pontos)), fatia: 0, componentes: cs, brilhou: cs.slice(0, 3) };
 });
@@ -2915,44 +3099,68 @@ const porInimigo = ctx.eles.map((e) => ({ nome: e.heroi.nome, n: (ctx.mortes ? c
 const maxN = Math.max(0, ...porInimigo.map((x) => x.n));
 const carrasco = porInimigo.filter((x) => x.n === maxN && maxN > 0).map((x) => x.nome).join(' e ') || 'o time deles';
 const varios = carrasco.includes(' e ');
+const min = Math.round(s.duracao / 60);
+const mortesCom = (n) => `${n} ${n === 1 ? 'morte' : 'mortes'}`;
+const vezes = (n) => `${n} ${n === 1 ? 'vez' : 'vezes'}`;
+const nAhead = s.deathsAhead || 0;
+// frases com a prova dentro (o cartaz mostra só a frase); null = não combina com o jogo
 const ZOEIRA = {
-
-Feeder: s.goldFed != null ? [
-() => `${s.deaths} mortes e ${fmtK(s.goldFed)} de ouro de presente: ${carrasco} já ${varios ? 'podem' : 'pode'} abrir uma conta no nome dele.`,
-() => `Patrocinou o time adversário com ${fmtK(s.goldFed)} de ouro em ${s.deaths} mortes.`,
-] : [
-() => `${s.deaths} mortes: ${carrasco} ${varios ? 'agradecem' : 'agradece'} a entrega em domicílio.`,
-() => `${s.deaths} mortes em ${Math.round(s.duracao / 60)} min: a fonte já guardava o lugar dele.`,
+Feeder: [
+s.goldFed != null && (() => `${mortesCom(s.deaths)} e ${fmtK(s.goldFed)} de ouro do lado de lá. ${carrasco} ${varios ? 'fecharam' : 'fechou'} item com esse dinheiro.`),
+s.goldFed != null && (() => `Morreu ${vezes(s.deaths)}. O time deles comprou ${fmtK(s.goldFed)} em item com o ouro que saiu dali.`),
+s.goldFed != null && (() => `${fmtK(s.goldFed)} de ouro entregue em ${mortesCom(s.deaths)}: tem item no inventário deles com o nome dele.`),
+maxN >= 4 && (() => `${carrasco} ${varios ? `pegaram ele ${maxN} vezes cada` : `pegou ele ${maxN} vezes`}. A essa altura já ${varios ? 'sabiam' : 'sabia'} onde ele ia aparecer.`),
+() => `${mortesCom(s.deaths)}. O timer de respawn dele ficou mais tempo na tela do que o inventário.`,
+s.deaths >= 4 && min >= 20 && (() => `${mortesCom(s.deaths)} em ${min} min: uma a cada ${Math.max(1, Math.round(min / s.deaths))} minutos, quase com hora marcada.`),
+s.deaths >= 3 && (() => `${mortesCom(s.deaths)}, e a cada respawn tinha ${carrasco} esperando na saída da base.`),
+s.deaths >= 10 && (() => `${mortesCom(s.deaths)}: passou tanto tempo morto que dava pra assistir a partida de espectador.`),
 ],
 Turista: [
-() => `Esteve em ${pct(tfp)} das lutas; o resto acompanhou pelo minimapa.`,
-() => `Participou de ${pct(tfp)} dos abates: comprou ingresso e saiu no intervalo.`,
+() => `Esteve em ${pct(tfp)} dos abates do time; o resto ele viu pelo minimapa.`,
+() => `${pct(tfp)} de participação: as lutas aconteceram e ele ficou sabendo depois.`,
+() => `O time brigou o jogo todo e ele apareceu em ${pct(tfp)} dos abates.`,
+() => `${pct(tfp)} dos abates com ele. No resto, o time lutou 4 contra 5.`,
+() => `Quando o time chamava pra luta, ele estava do outro lado do mapa. ${pct(tfp)} de participação.`,
+() => `Quando ele chegava na luta, o placar já tinha mudado. ${pct(tfp)} de participação.`,
 ],
 'Pickoff Ambulante': [
-() => `${meus} mortes sozinho no mapa: virou camp de farm de ${carrasco}.`,
-() => `${meus} mortes longe do time: andava sozinho como se tivesse Aegis.`,
+() => `${mortesCom(meus)} sozinho, longe do time: virou camp de farm de ${carrasco}.`,
+() => `Andou sozinho pelo mapa sem visão e pagou ${vezes(meus)}.`,
+meus >= 2 && (() => `${mortesCom(meus)} fora de luta. Cada uma começou com um "vou só ali rapidinho".`),
+() => `Foi pego sozinho ${vezes(meus)}: mapa escuro, nenhum aliado perto e ele no meio.`,
+() => `${carrasco} só ${varios ? 'precisaram' : 'precisou'} esperar no escuro: ele passou sozinho ${vezes(meus)}.`,
 ],
 Throw: [
-() => `${s.deathsAhead} ${s.deathsAhead === 1 ? 'morte' : 'mortes'} com o jogo ganho: devolveu a vantagem com juros.`,
-() => `Com o time na frente, achou que era hora de caçar sozinho. ${s.deathsAhead} ${s.deathsAhead === 1 ? 'vez' : 'vezes'}.`,
+() => `${mortesCom(nAhead)} com o jogo ganho: a vantagem voltou pro outro lado.`,
+() => `Com o time na frente, foi caçar sozinho. Voltou de tela cinza ${vezes(nAhead)}.`,
+() => `O jogo estava na mão e ele morreu ${vezes(nAhead)} tentando acabar mais rápido.`,
+() => `Bastava não morrer. Morreu ${vezes(nAhead)} com o time na frente.`,
+() => `A vantagem que o time construiu foi embora em ${mortesCom(nAhead)}.`,
 ],
 'Farm Simulator': [
 () => `${s.gpm} GPM e ${pct(tfp)} de participação: o time lutava, ele farmava.`,
-() => `${s.lastHits} last hits e pouca luta: a selva agradece a visita.`,
+() => `${s.lastHits} last hits e quase nenhuma luta: a selva teve mais companhia que o time.`,
+() => `Fechou item atrás de item enquanto o time perdia luta. ${pct(tfp)} de participação.`,
+() => `${s.lastHits} last hits guardados pra uma luta que ele não foi.`,
+() => `Farmou esperando o momento certo de entrar. O Ancient caiu antes. ${s.gpm} GPM.`,
 ],
 'Mão de Alface': [
 () => `${fmtK(s.heroDamage)} de dano em heróis: os inimigos nem perceberam que ele estava lá.`,
-() => `Bateu ${fmtK(s.heroDamage)} em herói o jogo todo: carinho, não dano.`,
+() => `${fmtK(s.heroDamage)} de dano em heróis jogando de ${p.heroi.nome}. O ${p.heroi.nome} costuma fazer bem mais que isso.`,
+() => `Bateu ${fmtK(s.heroDamage)} em herói o jogo todo: o suporte deles saiu inteiro das lutas.`,
+() => `Entrava na luta, apertava tudo e a vida deles continuava lá. ${fmtK(s.heroDamage)} de dano no jogo.`,
+() => `${fmtK(s.heroDamage)} de dano em ${min} min: as skills dele saíram mais de enfeite.`,
 ],
 };
-ctx.zoeirasUsadas = ctx.zoeirasUsadas || {};
 let zoeira = 'Ficha limpa: nenhum atributo negativo passou de 25.';
+let zoeiras = [];
 if (top.valor >= 25 && ZOEIRA[top.nome]) {
-const k = ctx.zoeirasUsadas[top.nome] || 0;
-ctx.zoeirasUsadas[top.nome] = k + 1;
-zoeira = ZOEIRA[top.nome][k % ZOEIRA[top.nome].length]();
+const semente = `${p.heroi.id}-${s.deaths}-${s.gpm}-${s.lastHits}-${s.heroDamage}`;
+const peso = (i) => { let a = 2166136261; for (const ch of `${semente}|${i}`) a = Math.imul(a ^ ch.charCodeAt(0), 16777619); return a >>> 0; };
+zoeiras = ZOEIRA[top.nome].map((f, i) => [peso(i), f]).filter((y) => y[1]).sort((x, y) => x[0] - y[0]).map((y) => y[1]()).filter(Boolean);
+if (zoeiras.length) zoeira = zoeiras[0];
 }
-return { atributos, classe, zoeira, principal: top.nome };
+return { atributos, classe, zoeira, zoeiras, principal: top.nome };
 }
 
 
@@ -5731,7 +5939,7 @@ return {
 vitoria, placar, titulo: titulos[nivel], selo: plural ? 'Culpados' : 'Culpado',
 sub: plural ? `${subs[nivel]} · dividido, ${dif === 0 ? 'empate' : `${dif} ${dif === 1 ? 'ponto' : 'pontos'} de diferença`}` : subs[nivel],
 rotulo: 'da culpa do time',
-pessoas: cs.map((v) => ({ v, numero: pct(v.fatia), frase: v.diagnostico || (v.ficha && v.ficha.zoeira) || '', classe: v.ficha ? v.ficha.classe : '', recompensa: p.venceu ? 0 : ouroEntregue(r, v.jogador) })),
+pessoas: cs.map((v) => ({ v, numero: pct(v.fatia), frase: v.diagnostico || (v.ficha && (fraseSemRepetir(v.ficha.zoeiras || [v.ficha.zoeira], r.partida.id, `${v.jogador.idx}-zoeira`) || v.ficha.zoeira)) || '', classe: v.ficha ? v.ficha.classe : '', recompensa: p.venceu ? 0 : ouroEntregue(r, v.jogador) })),
 };
 }
 
@@ -10833,6 +11041,52 @@ h('ol', {}, plano.map(linhaPlano))) : null);
 
 
 
+// Evita a mesma frase em partidas seguidas: guarda as últimas frases mostradas (e de que partida saíram) e a escolha
+// de cada partida, para a mesma partida mostrar sempre a mesma frase quando for aberta de novo.
+const FRASES_CHAVE = 'culpado:frases';
+let frasesMem = null;
+function memoriaFrases() {
+if (frasesMem) return frasesMem;
+frasesMem = { recentes: [], escolhas: {} };
+try {
+const m = JSON.parse(localStorage.getItem(FRASES_CHAVE) || 'null');
+if (m && Array.isArray(m.recentes) && m.escolhas && typeof m.escolhas === 'object') frasesMem = m;
+} catch { /* sem localStorage: escolhe sem memória */ }
+return frasesMem;
+}
+function fraseSemRepetir(opcoes, partida, chave, evitar = new Set()) {
+const xs = (opcoes || []).filter(Boolean);
+if (!xs.length) return null;
+const m = memoriaFrases();
+const id = String(partida);
+const k = `${id}|${chave}`;
+const ja = m.escolhas[k];
+if (ja && xs.includes(ja) && !evitar.has(ja)) return ja;
+const recentes = new Set(m.recentes.filter((y) => y.p !== id).map((y) => y.t));
+const t = xs.find((y) => !evitar.has(y) && !recentes.has(y)) || xs.find((y) => !evitar.has(y)) || xs[0];
+m.escolhas[k] = t;
+m.recentes.push({ t, p: id });
+if (m.recentes.length > 400) m.recentes.splice(0, m.recentes.length - 400);
+const ks = Object.keys(m.escolhas);
+if (ks.length > 800) for (const z of ks.slice(0, ks.length - 800)) delete m.escolhas[z];
+try { localStorage.setItem(FRASES_CHAVE, JSON.stringify(m)); } catch { /* cheio ou bloqueado */ }
+return t;
+}
+// frases já mostradas em outras partidas (para o sorteio dos documentos fugir delas)
+function frasesRecentes(partida) {
+const id = String(partida);
+return new Set(memoriaFrases().recentes.filter((y) => y.p !== id).map((y) => y.t));
+}
+function lembrarFrase(t, partida) {
+if (!t) return;
+const m = memoriaFrases();
+const id = String(partida);
+if (m.recentes.some((y) => y.t === t && y.p === id)) return;
+m.recentes.push({ t, p: id });
+if (m.recentes.length > 400) m.recentes.splice(0, m.recentes.length - 400);
+try { localStorage.setItem(FRASES_CHAVE, JSON.stringify(m)); } catch { /* cheio ou bloqueado */ }
+}
+
 const elogiosCache = new WeakMap();
 function componenteElogio(r, v) {
 let mapa = elogiosCache.get(r);
@@ -10840,7 +11094,11 @@ if (!mapa) {
 mapa = new Map();
 const usados = new Set();
 for (const c of r.craques || []) {
-const x = c.brilhou.find((b) => !usados.has(b.elogio)) || null;
+let x = null;
+for (const b of c.brilhou) {
+const t = fraseSemRepetir(b.elogios || [b.elogio], r.partida.id, `${c.jogador.idx}-${b.key}`, usados);
+if (t && !usados.has(t)) { x = { ...b, elogio: t }; break; }
+}
 if (x) usados.add(x.elogio);
 mapa.set(c.jogador, x);
 }
@@ -10970,7 +11228,7 @@ const g = 0.5 * lim((v.fatia - 0.22) / 0.16) + 0.5 * lim((v.score - 80) / 110);
 return GRAVIDADE_CORTES.filter((c) => g >= c).length;
 }
 
-function sorteador(semente) {
+function sorteador(semente, partida = null) {
 let a = 0;
 for (const ch of String(semente)) a = (Math.imul(a ^ ch.charCodeAt(0), 2654435761) + 0x9e3779b9) | 0;
 const prox = () => {
@@ -10979,7 +11237,17 @@ let t = Math.imul(a ^ (a >>> 15), 1 | a);
 t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
 return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 };
-return { um: (xs) => xs[Math.floor(prox() * xs.length)], num: (a_, b) => a_ + Math.floor(prox() * (b - a_ + 1)) };
+// com a partida, o sorteio de frases foge das que apareceram nas últimas partidas (e lembra das que saíram)
+const um = (xs) => {
+if (partida == null || !xs.length || typeof xs[0] !== 'string') return xs[Math.floor(prox() * xs.length)];
+const recentes = frasesRecentes(partida);
+const novas = xs.filter((x) => !recentes.has(x));
+const ys = novas.length ? novas : xs;
+const x = ys[Math.floor(prox() * ys.length)];
+lembrarFrase(x, partida);
+return x;
+};
+return { um, num: (a_, b) => a_ + Math.floor(prox() * (b - a_ + 1)) };
 }
 
 // Acusações por tipo de culpa (componente do veredito) e por nível do documento:
@@ -11210,9 +11478,9 @@ const CRIMES_DO_NIVEL = [
 const ALCUNHAS = ['De Mentalist', 'O Patrocinador', 'Mão de Alface', 'O Fantasma da Lane', 'Doador Universal', 'O Turista', 'Rei do Feed', 'Buyback Nunca',
 'O Cego do Rio', 'Courier Humano', 'O Arquiteto da Derrota', 'Pé Frio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza',
 'O Contador de Respawn', 'Bounty Ambulante', 'Caixa Eletrônico', 'O Benfeitor', 'Garçom do Inimigo', 'Papai Noel do Rio', 'Mão Furada',
-'O Sem-Ward', 'Ministro da Fazenda (deles)', 'O Mártir', 'Paz e Amor', 'O Doador de Órgãos', 'Seu Madruga', 'O Investidor Anjo (deles)',
-'Wi-Fi da Padaria', 'Lag Humano', 'O Herdeiro do GG', 'Delivery de Ouro', 'O Iluminado (pelo respawn)', 'Fiel da Fonte', 'Capitão Tela Cinza',
-'O Pacifista', 'Sem Bota', 'Freguês do Roshan', 'Professor de Feed', 'O Fiador'];
+'O Sem-Ward', 'Ministro da Fazenda (deles)', 'O Mártir', 'Paz e Amor', 'O Investidor Anjo (deles)',
+'Lag Humano', 'O Herdeiro do GG', 'Delivery de Ouro', 'O Iluminado (pelo respawn)', 'Fiel da Fonte', 'Capitão Tela Cinza',
+'O Pacifista', 'Sem Bota', 'Freguês do Roshan', 'Professor de Feed', 'O Fiador', 'Smoke Solo', 'O Sem TP', 'Morador do Fog', 'Bounty Rune Ambulante', 'O Último a Saber', 'Gank Fácil', 'Sentry Nunca', 'O Iniciador (da derrota)', 'Fila do Respawn', 'O Mapa Escuro', 'Cooldown Eterno', 'O Que Vai Só Ali', 'Ward no Bolso', 'Tango e Fé', 'O Ponto Cego', 'Freguês do Rio'];
 const PARADEIROS = ['visto pela última vez na selva deles, sem ward', 'avistado farmando enquanto a base caía', 'localizado na fonte, esperando o respawn',
 'flagrado no rio sem visão e sem plano', 'escondido atrás da T3 com o TP no cooldown', 'visto pela última vez na loja secreta, sem dinheiro',
 'avistado no Roshan… do lado errado', 'flagrado farmando a jungle deles às 2 da manhã', 'visto correndo de volta pra base sem TP',
@@ -11262,10 +11530,12 @@ return [];
 
 function acusacoesDe(v, nivel, rnd, r) {
 const usadas = new Set();
+const recentes = frasesRecentes(r.partida.id);
 const pegar = (tabela) => {
 const xs = frasesDoNivel(tabela, nivel, usadas);
-const x = xs.length ? rnd.um(xs) : null;
-if (x) usadas.add(x);
+const novas = xs.filter((x) => !recentes.has(x));
+const x = xs.length ? rnd.um(novas.length ? novas : xs) : null;
+if (x) { usadas.add(x); lembrarFrase(x, r.partida.id); }
 return x;
 };
 const pesou = (v.pesou && v.pesou.length ? v.pesou : v.componentes.filter((c) => c.pontos > 0).slice(0, 2))
@@ -11286,7 +11556,7 @@ return lista.slice(0, max);
 
 function fichaDoReu(v, r, nivel) {
 const p = v.jogador;
-const rnd = sorteador(`${r.partida.id}-${p.idx}`);
+const rnd = sorteador(`${r.partida.id}-${p.idx}`, r.partida.id);
 const local = { safe: 'Rota segura', mid: 'Rota do meio', off: 'Offlane' }[p.rota && p.rota.tipo] || 'Selva e arredores';
 return {
 p, v, rnd, local,
@@ -11412,7 +11682,7 @@ separados: ['Atacam em duas frentes: um no leste, outro no oeste.', 'Nunca são 
 
 function docWanted(fichas, r) {
 const dividido = fichas.length > 1;
-const rnd = sorteador(`wanted-${r.partida.id}`);
+const rnd = sorteador(`wanted-${r.partida.id}`, r.partida.id);
 const cs = fichas.map((f) => contextoDoBO(f, r));
 const total = fichas.reduce((s_, f) => s_ + Math.max(0, f.entregue), 0);
 const dolar = (x) => `$ ${Math.round(x / 10) * 10 >= 1000 ? (Math.round(x / 10) * 10).toLocaleString('pt-BR') : Math.round(x)}`;
@@ -11575,7 +11845,7 @@ const ORGAOS_TPI = ['Alto Comissariado das Nações Unidas para os Direitos dos 
 'Comissão Permanente de Direitos Humanos de Radiant e Dire', 'Assembleia Geral das Nações do Ancient, por aclamação',
 'Liga Internacional de Proteção aos Courier e Demais Inocentes', 'Corte Interamericana de Direitos do Jogador Aliado'];
 function declaracaoTPI(fichas, r) {
-const rnd = sorteador(`tpi-declara-${r.partida.id}`);
+const rnd = sorteador(`tpi-declara-${r.partida.id}`, r.partida.id);
 const c = contextoDoBO(fichas[0], r);
 const fala = rnd.um(fichas.length > 1 && rnd.num(0, 1) ? DECLARACOES_TPI_DUPLA : DECLARACOES_TPI)(c);
 return h('div', { class: 'tp6-declara' },
@@ -11595,7 +11865,7 @@ return art;
 }
 
 function docProcuradoTPIGrade(fichas, r) {
-const rnd = sorteador(`tpi-${r.partida.id}`);
+const rnd = sorteador(`tpi-${r.partida.id}`, r.partida.id);
 const viloes = [...VILOES].map((v) => ({ v, k: rnd.num(0, 9999) })).sort((a, b) => a.k - b.k).map((x) => x.v);
 const casa = ({ foto, origem, nome, crimes, reu }) => h('div', { class: `tp5-casa${reu ? ' tp5-reu' : ''}` },
 h('div', { class: 'tp5-foto' }, foto, h('span', { class: 'tp5-origem' }, origem)),
@@ -11692,7 +11962,7 @@ ausencia: ['Sumido', 'Fantasma', 'Home Office', 'Zé Ninguém'], farm: ['Bolso F
 visao: ['Apagão', 'Breu', 'Boca de Ward', 'Zé do Escuro'], participacao: ['Torcedor', 'Espectador', 'Zé Plateia'],
 };
 function vulgoDoBO(f, r) {
-const rnd = sorteador(`vulgo-${r.partida.id}-${f.p.idx}`);
+const rnd = sorteador(`vulgo-${r.partida.id}-${f.p.idx}`, r.partida.id);
 const k = ((f.v.pesou && f.v.pesou[0]) || {}).key;
 return VULGOS_POR_CULPA[k] && rnd.num(0, 1) ? rnd.um(VULGOS_POR_CULPA[k]) : rnd.um(VULGOS_BO);
 }
@@ -12033,7 +12303,7 @@ return paras;
 }
 
 function docBoletim(fichas, r) {
-const rnd = sorteador(`bo-${r.partida.id}`);
+const rnd = sorteador(`bo-${r.partida.id}`, r.partida.id);
 const quando = dataDaPartida(r);
 const brasao = s('svg', { viewBox: '0 0 40 46', width: 40, height: 46, 'aria-hidden': 'true' },
 s('path', { d: 'M20 2 L37 8 V22 C37 34 29 41 20 44 C11 41 3 34 3 22 V8 Z', fill: '#1d3f78', stroke: '#c9a640', 'stroke-width': 2 }),
@@ -12096,7 +12366,7 @@ h('div', { class: 'ip-faixa' }, fichas.length > 1 ? 'Procurados em todos os serv
 h('h2', { class: 'ip-titulo' }, fichas.length > 1 ? 'Criminosos internacionais' : 'Criminoso internacional'),
 h('p', { class: 'ip-sub' }, 'por crimes contra o próprio time em várias rotas'),
 fichas.map(ficha),
-h('p', { class: 'ip-alerta' }, sorteador(`ip-${r.partida.id}`).um(ALERTAS_INTERPOL)));
+h('p', { class: 'ip-alerta' }, sorteador(`ip-${r.partida.id}`, r.partida.id).um(ALERTAS_INTERPOL)));
 }
 
 // Haia: um depoimento só, curto e pesado, de alguém que viu o replay e não se recuperou. A rubrica entre colchetes
@@ -12172,7 +12442,7 @@ return h('blockquote', { class: 'tpi-depoimento' }, h('p', {}, h('i', {}, rnd.um
 }
 
 function docHaia(fichas, r) {
-const rnd = sorteador(`haia-${r.partida.id}`);
+const rnd = sorteador(`haia-${r.partida.id}`, r.partida.id);
 const romano = ['I', 'II', 'III', 'IV', 'V'];
 const selo = s('svg', { viewBox: '0 0 64 64', width: 58, height: 58, 'aria-hidden': 'true' },
 s('circle', { cx: 32, cy: 32, r: 29, fill: 'none', stroke: '#c9a640', 'stroke-width': 2 }),
