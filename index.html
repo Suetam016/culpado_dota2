@@ -41,6 +41,120 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#14100d">
+<style>
+/* ---- Por que: o veredito em números ---- */
+.motivo{padding:20px clamp(16px,3vw,26px);display:grid;gap:12px;margin-top:14px}
+.motivo .mt-titulo{font-family:var(--font-display);font-size:1.25rem;letter-spacing:.02em}
+.motivo .mt-titulo small{font-family:inherit;font-size:.8rem;color:var(--muted);font-weight:400}
+.mt-merito .mt-titulo{color:var(--gold)}.mt-culpa .mt-titulo{color:var(--eles)}
+.mt-resumo{color:var(--muted);margin:0}
+.mt-grade{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:18px 26px;align-items:start}
+@media (max-width:760px){.mt-grade{grid-template-columns:minmax(0,1fr)}}
+.mt-placar{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.mt-placar li{display:grid;grid-template-columns:minmax(0,7.5em) minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.9rem;opacity:.75}
+.mt-placar li.e-ele{opacity:1;font-weight:700}
+.mt-quem{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mt-barra{height:10px;border-radius:5px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden}
+.mt-barra i{display:block;height:100%;border-radius:5px;background:var(--muted)}
+.mt-merito .e-ele .mt-barra i{background:var(--gold)}.mt-culpa .e-ele .mt-barra i{background:var(--eles)}
+.mt-pts{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mt-pts small{color:var(--muted);font-weight:400}
+.mt-pessoas{display:grid;gap:16px}
+.mt-pessoa-nome{font-weight:700;margin:0}
+.mt-numeros{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.mt-numeros li{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:1px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.mt-numeros .mt-rot{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.mt-numeros b{font-family:var(--font-mono);font-size:1.25rem;font-variant-numeric:tabular-nums}
+.mt-numeros small{font-size:.75rem;color:var(--muted)}
+.mt-numeros .tom-ruim{border-color:color-mix(in srgb,var(--eles) 55%,var(--line))}.mt-numeros .tom-ruim b{color:var(--eles)}
+.mt-numeros .tom-bom{border-color:color-mix(in srgb,var(--nos) 55%,var(--line))}.mt-numeros .tom-bom b{color:var(--nos)}
+.mt-rot-comp{margin:2px 0 0;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.mt-comp{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.mt-comp li{display:grid;gap:3px}
+.mt-comp-cab{display:flex;justify-content:space-between;gap:10px;font-size:.92rem}
+.mt-comp-cab span{font-family:var(--font-mono);color:var(--muted);white-space:nowrap}
+.mt-comp-barra{height:6px;border-radius:3px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden}
+.mt-comp-barra i{display:block;height:100%;background:var(--gold)}.mt-culpa .mt-comp-barra i{background:var(--eles)}
+.mt-comp small{color:var(--muted);font-size:.8rem}
+
+/* ---- Fatos com prova (zoeira + número) ---- */
+.mr-fatos{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;text-align:left}
+.mr-fatos li{padding-left:18px;position:relative;line-height:1.35}
+.mr-fatos li::before{content:"★";position:absolute;left:0;top:0;color:#b98a2e;font-size:.85em}
+.mr-fatos li span{opacity:.8}
+.veredito.vitoria .reu .mr-fatos{font-size:.95rem}
+
+/* [0] Menção honrosa */
+.cartao.veredito.vitoria.doc-mencao{display:block;padding:14px;background:#fbf7ec;color:#2b2418;border:0;box-shadow:0 14px 34px -16px rgba(0,0,0,.7)}
+.doc-mencao .mc-borda{border:3px double #a07a2c;outline:1px solid #a07a2c;outline-offset:-10px;padding:26px clamp(14px,4vw,36px) 20px;text-align:center;display:grid;gap:8px}
+.mc-sobre{font:600 .8rem/1 var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:#7a5c22;margin:0}
+.mc-titulo{font:800 clamp(1.8rem,5vw,2.8rem)/1.05 var(--font-display);color:#5a3f10;margin:0}
+.mc-sub{font-style:italic;color:#6f5a3a;margin:0}
+.mc-texto{max-width:620px;margin:6px auto 0}
+.mc-pessoas{display:grid;gap:14px;margin-top:8px}
+.doc-mencao.dividido .mc-pessoas{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.mc-pessoa{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start;text-align:left;max-width:620px;margin:0 auto;width:100%}
+.mc-foto img,.mc-foto>*{width:84px;height:84px;object-fit:cover;border-radius:50%;border:3px solid #a07a2c;display:block}
+.mc-nome{font:800 1.3rem/1.1 var(--font-display);margin:0}
+.mc-heroi{font-size:.85rem;color:#6f5a3a;margin:2px 0 0}
+.mc-pe{display:flex;justify-content:center;align-items:center;gap:20px;margin-top:10px}
+.mc-selo{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#f4d47c,#c8952c 60%,#8a5a00);color:#fff7d6;font-size:1.6rem;box-shadow:0 2px 6px #0005}
+.mc-assina{display:grid;gap:2px;font-style:italic;color:#4a3a22;margin:0}
+.mc-linha{display:block;width:200px;border-top:1px solid #6f5a3a;margin:0 auto 4px}
+.mc-assina small{font-style:normal;color:#7a6a4e}
+
+/* [2] Jornal */
+.cartao.veredito.vitoria.doc-jornal{display:block;padding:20px clamp(14px,3.5vw,32px);background:#f1ece0;color:#161310;border:0;font-family:Georgia,"Times New Roman",serif;box-shadow:0 14px 34px -16px rgba(0,0,0,.7)}
+.jn2-cab{text-align:center;border-bottom:3px double #161310;padding-bottom:6px}
+.jn2-extra{display:inline-block;background:#b3261e;color:#fff;font:800 .8rem/1 var(--font-display);letter-spacing:.25em;text-transform:uppercase;padding:5px 12px;margin:0 0 6px;transform:rotate(-2deg)}
+.jn2-nome{font:900 clamp(1.8rem,6vw,3.2rem)/1 "Old English Text MT","UnifrakturCook",Georgia,serif;margin:0;letter-spacing:.01em}
+.jn2-data{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 14px;border-top:1px solid #161310;margin:8px 0 0;padding-top:4px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+.jn2-manchete{font:900 clamp(1.5rem,4.6vw,2.6rem)/1.05 Georgia,serif;text-transform:uppercase;margin:14px 0 6px;letter-spacing:-.01em}
+.jn2-linha-fina{font-style:italic;margin:0 0 12px;color:#3b342b}
+.jn2-corpo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:18px;border-top:1px solid #161310;padding-top:12px}
+@media (max-width:640px){.jn2-corpo{grid-template-columns:minmax(0,1fr)}}
+.jn2-fotos{margin:0;display:grid;gap:6px}
+.jn2-fotos>.jn2-foto{display:inline-block}
+.doc-jornal.dividido .jn2-fotos{grid-template-columns:1fr 1fr}
+.doc-jornal.dividido .jn2-fotos figcaption{grid-column:1/-1}
+.jn2-foto img,.jn2-foto>*{width:100%;aspect-ratio:1;object-fit:cover;display:block;filter:grayscale(1) contrast(1.15);border:1px solid #161310}
+.jn2-fotos figcaption{font-size:.8rem;color:#3b342b}
+.jn2-legenda{margin:0}
+.jn2-rot{font:800 .8rem/1 var(--font-display);text-transform:uppercase;letter-spacing:.15em;margin:0 0 4px;border-bottom:1px solid #161310;padding-bottom:4px}
+.jn2-fatos li::before{content:"■";color:#161310;font-size:.6em;top:.35em}
+.jn2-col{column-gap:20px}
+
+/* [3] Ordem do mérito */
+.cartao.veredito.vitoria.doc-ordem{display:block;padding:24px clamp(16px,4vw,38px);background:radial-gradient(120% 100% at 50% 0%,#1d3263,#0d1630 70%);color:#efe6cf;border:1px solid #c8952c;box-shadow:inset 0 0 0 6px #0d1630,inset 0 0 0 7px #c8952c88,0 16px 36px -14px #000}
+.od-topo{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center}
+@media (max-width:560px){.od-topo{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
+.od-num{font:600 .75rem/1.3 var(--font-mono);letter-spacing:.08em;color:#c8b98f;margin:0;text-transform:uppercase}
+.od-titulo{font:900 clamp(1.8rem,5vw,2.8rem)/1.05 var(--font-display);color:#f2d27a;margin:4px 0 8px;letter-spacing:.04em}
+.od-texto{margin:0;line-height:1.45}
+.od-nome{color:#f2d27a;font-size:1.1em}
+.od-rot{font:700 .8rem/1 var(--font-display);letter-spacing:.2em;text-transform:uppercase;color:#c8b98f;margin:18px 0 6px}
+.od-cons{margin:0;padding-left:1.4em;display:grid;gap:6px;line-height:1.4}
+.od-cons em{color:#c8b98f;font-style:normal}
+.od-cons strong{color:#f2d27a}
+.od-fecho{margin:16px 0 0;text-align:right;font-style:italic;color:#c8b98f}
+.od-medalha{filter:drop-shadow(0 4px 8px #000a)}
+
+/* [4] Monumento */
+.cartao.veredito.vitoria.doc-monumento{display:block;padding:24px clamp(14px,4vw,36px) 20px;text-align:center;color:#eae4d6;border:1px solid #6e6656;background:linear-gradient(180deg,#26303f 0%,#3b4250 55%,#5b5a55 56%,#4a4842 100%);box-shadow:0 16px 36px -14px #000}
+.mn-sobre{font:600 .75rem/1 var(--font-mono);letter-spacing:.2em;text-transform:uppercase;color:#c9c2b2;margin:0}
+.mn-titulo{font:900 clamp(1.7rem,5vw,2.7rem)/1.05 var(--font-display);color:#f2d27a;margin:6px 0 14px;text-shadow:0 2px 0 #0008}
+.mn-estatuas{display:flex;justify-content:center;gap:clamp(16px,6vw,60px);flex-wrap:wrap}
+.mn-estatua{display:grid;justify-items:center}
+.mn-busto{width:clamp(110px,24vw,160px);aspect-ratio:1;border-radius:50% 50% 12px 12px;overflow:hidden;border:5px solid #d9a93a;box-shadow:0 0 0 2px #7a5a12,0 0 40px #f2d27a55}
+.mn-busto img,.mn-busto>*{width:100%;height:100%;object-fit:cover;display:block;filter:sepia(.85) saturate(2.2) hue-rotate(-12deg) brightness(1.05) contrast(1.1)}
+.mn-pedestal{margin-top:-2px;padding:10px 18px 12px;min-width:160px;background:linear-gradient(180deg,#9b9483,#6f6a5d);border:1px solid #4d493f;clip-path:polygon(8% 0,92% 0,100% 100%,0 100%);display:grid;color:#1f1c16}
+.mn-pedestal span{font:900 1.05rem/1.1 var(--font-display)}
+.mn-pedestal small{font-size:.75rem}
+.mn-placa{margin:18px auto 0;max-width:640px;padding:14px 18px;background:linear-gradient(180deg,#a8742a,#7d5418);color:#fff2cf;border-radius:4px;box-shadow:inset 0 0 0 2px #5b3b0d,inset 0 0 0 4px #c8952c,0 4px 10px #0007;text-align:left}
+.mn-dedica{margin:0;font-family:Georgia,serif;font-style:italic;text-align:center}
+.mn-fatos li::before{color:#fff2cf}
+.mn-aviso{margin:14px 0 0;font-size:.8rem;color:#d6d0c2;font-style:italic}
+</style>
 </head>
 <body>
 <title>Quem é o Culpado?</title>
@@ -5858,7 +5972,7 @@ h('div', { class: 'quem-e' },
 h('p', { class: 'eyebrow' }, `${pct(v.fatia)} do mérito da vitória`),
 h('h3', {}, v.jogador.nome),
 h('p', { class: 'heroi' }, `${v.jogador.heroi.nome} · pos ${v.jogador.posicao} · ${v.jogador.raw.kills}/${v.jogador.raw.deaths}/${v.jogador.raw.assists}`),
-(() => { const c = componenteElogio(r, v) || v.brilhou[0]; return c ? h('p', { class: 'frase' }, `${capital(c.elogio)}: ${c.evidencia}.`) : null; })()));
+listaDeFatos(fatosDoCraque(v, r, cs.length > 1 ? 2 : 3))));
 return h('article', { class: `cartao veredito vitoria pergaminho${cs.length > 1 ? ' dividido' : ''}` },
 h('span', { class: 'carimbo craque', 'aria-hidden': 'true' }, cs.length > 1 ? 'Craques' : 'Craque'),
 h('div', { class: 'cartaz-cab' },
@@ -5866,6 +5980,282 @@ h('h2', { class: 'cartaz-titulo' }, 'Proclamação do Reino'),
 h('p', { class: 'eyebrow cartaz-sub' }, cs.length > 1 ? 'Heróis da partida · mérito dividido' : 'Herói da partida')),
 h('div', { class: 'reus' }, cs.map(craque)),
 vice.length ? h('p', { class: 'vice' }, h('span', { class: 'vice-rot' }, 'Também condecorados:'), ' ', vice.map((v, i) => h('span', {}, i ? ' e ' : '', h('strong', {}, v.jogador.nome), ` (${v.jogador.heroi.nome}, ${v.brilhou[0] ? v.brilhou[0].label.toLowerCase() : 'presença'})`))) : null);
+}
+
+// ---------- O documento do mérito: o visual sobe com o tamanho da carregada ----------
+// Menção honrosa (vitória de time) → Proclamação do Reino → Edição Extra do jornal → Ordem do Mérito → Monumento na praça.
+// Calibrado na fatia do 1º colocado em 266 vitórias dos amigos: <27% ~30%, 27–30% ~28%, 30–34% ~25%, 34–38% ~12%, 38%+ ~5%.
+const MERITO_CORTES = [0.27, 0.30, 0.34, 0.38];
+const nivelDoMerito = (cs) => MERITO_CORTES.filter((c) => cs[0].fatia >= c).length;
+
+const pluralMr = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+const kdaDe = (p) => `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`;
+const somaNos = (r, f) => r.nos.reduce((a, q) => a + (Number(f(q)) || 0), 0);
+
+// Zoeira com prova: cada frase sai de algo que aconteceu de verdade na partida e vem com o número que a sustenta.
+function fatosDoCraque(v, r, n = 3) {
+const p = v.jogador;
+const st = p.stats || {};
+const rnd = sorteador(`fatos-${r.partida.id}-${p.idx}`);
+const min = Math.max(1, Math.round(r.partida.duracao / 60));
+const outros = r.nos.filter((q) => q.idx !== p.idx);
+const abatesTime = somaNos(r, (q) => q.raw.kills) || 1;
+const fatos = [];
+const add = (peso, frases, prova, key = null) => fatos.push({ peso, frase: rnd.um(frases), prova, key });
+
+// quem ficou para trás: o último do mérito
+const lanterna = [...(r.craques || [])].reverse().find((c) => c.jogador.idx !== p.idx);
+if (lanterna && v.fatia >= 2 * lanterna.fatia) {
+const w = lanterna.jogador;
+add(9, [`Colocou ${w.nome} na mochila`, `Carregou ${w.nome} de cavalinho até o Ancient deles`, `Levou ${w.nome} no colo a partida inteira`, `Adotou ${w.nome} como mascote`],
+`${w.nome} (${w.heroi.nome}) terminou ${kdaDe(w)} com ${pct(lanterna.fatia)} do mérito; ele, ${pct(v.fatia)}`);
+}
+// o inimigo que ele mais matou
+if (r.mortes && r.eles) {
+const vitimas = r.eles.map((e) => ({ e, n: (r.mortes[e.idx] || []).filter((d) => d.assassino === p.idx).length })).sort((a, b) => b.n - a.n);
+const [top] = vitimas;
+if (top && top.n >= 3) add(6 + top.n / 2, [`Fez do ${top.e.heroi.nome} freguês`, `Botou o ${top.e.heroi.nome} no modo tutorial`, `Já pode cobrar aluguel do ${top.e.heroi.nome}`, `Virou o pesadelo particular do ${top.e.heroi.nome}`],
+`matou ${top.e.nome} (${top.e.heroi.nome}) ${pluralMr(top.n, 'vez', 'vezes')}`);
+}
+// mais abates que os dois melhores colegas somados
+const porAbate = [...outros].sort((a, b) => b.raw.kills - a.raw.kills);
+if (porAbate.length >= 2 && p.raw.kills >= 8 && p.raw.kills > porAbate[0].raw.kills + porAbate[1].raw.kills) {
+add(8, ['Matou por dois (na verdade, por três)', 'Fez o trabalho de uma dupla sozinho'],
+`${p.raw.kills} abates, mais que ${porAbate[0].nome} (${porAbate[0].raw.kills}) e ${porAbate[1].nome} (${porAbate[1].raw.kills}) juntos`);
+}
+const danoTime = somaNos(r, (q) => q.raw.hero_damage);
+const dano = p.raw.hero_damage || 0;
+if (danoTime && dano / danoTime >= 0.3) add(7 + 10 * (dano / danoTime - 0.3), ['Bateu como se tivesse raiva pessoal', 'Os outros quatro dividiram as sobras do dano'],
+`${pct(dano / danoTime)} do dano em herói do time (${fmtK(dano)})`, 'dano');
+const mortes = p.raw.deaths;
+if (mortes <= 2 && min >= 25) add(mortes === 0 ? 9 : 6, mortes === 0 ? ['Esqueceu como se morre', 'O respawn nem sabe quem é ele'] : ['O inimigo nem decorou a cara dele cinza', 'Morrer não estava nos planos'],
+mortes === 0 ? `zero mortes em ${min} min` : `${pluralMr(mortes, 'morte', 'mortes')} em ${min} min`);
+const mortesOutros = outros.reduce((a, q) => a + q.raw.deaths, 0);
+if (mortes <= 3 && mortesOutros >= 20) add(5, ['Enquanto o time morria, ele não', 'Assistiu o time morrer de camarote'],
+`os outros quatro morreram ${mortesOutros} vezes; ele, ${mortes}`);
+const gpms = [...(r.nos || []), ...(r.eles || [])].map((q) => q.raw.gold_per_min || 0);
+if (p.raw.gold_per_min && p.raw.gold_per_min >= Math.max(...gpms) && p.raw.gold_per_min >= 500) add(6, ['O mapa pagou pensão pra ele', 'Farmou como se o mapa fosse herança'],
+`${p.raw.gold_per_min} de ouro por minuto, o maior da partida`, 'farm');
+const estrTime = somaNos(r, (q) => q.raw.tower_damage);
+const estr = p.raw.tower_damage || 0;
+if (estrTime && estr >= 3000 && estr / estrTime >= 0.4) add(6, ['Demoliu a base deles e não pediu alvará', 'A prefeitura de lá pediu indenização'],
+`${pct(estr / estrTime)} do dano em estrutura do time (${fmtK(estr)})`, 'objetivos');
+const kp = (p.raw.kills + p.raw.assists) / abatesTime;
+if (kp >= 0.7) add(5 + 10 * (kp - 0.7), ['Onde tinha briga, tinha ele', 'Esteve em todas, igual Wi-Fi de shopping'],
+`participou de ${pct(Math.min(1, kp))} dos ${abatesTime} abates do time`, 'assist');
+const cura = p.raw.hero_healing || 0;
+if (cura >= 4000) add(5, ['Virou o SUS do time', 'Plano de saúde com cobertura total'], `${fmtK(cura)} de vida curada nos aliados`, 'cura');
+const stun = st.stuns || p.raw.stuns || 0;
+if (stun >= 40) add(5, ['Deixou o inimigo parado mais que fila de banco', 'O inimigo passou o jogo de castigo'], `${Math.round(stun)} s de stun no inimigo`, 'controle');
+const wards = (p.raw.obs_placed || 0) + (p.raw.sen_placed || 0);
+if (p.posicao >= 4 && wards >= Math.max(12, min * 0.6)) add(4, ['Transformou o mapa em Street View', 'Iluminou o mapa mais que poste de LED'], `${wards} wards plantadas em ${min} min`, 'visao');
+const lh = p.raw.last_hits || 0;
+if (lh / min >= 8) add(4, ['Fez da selva deles um self-service', 'Não sobrou creep pra contar história'], `${lh} last hits (${(lh / min).toFixed(1).replace('.', ',')} por minuto)`);
+const multi = p.raw.multi_kills || {};
+if (multi[5]) add(10, ['Rampage! O chat ainda está gritando', 'Apagou o time inimigo inteiro de uma vez'], `${pluralMr(multi[5], 'rampage', 'rampages')} na partida`);
+else if (multi[4]) add(7, ['Ultra kill: faltou um pra fechar a conta', 'Quase apagou a luz do time deles'], `${pluralMr(multi[4], 'ultra kill', 'ultra kills')} na partida`);
+const aegis = (v.componentes || []).find((c) => c.key === 'roshan');
+if (aegis) add(4, ['Jantou o Roshan e ainda pediu sobremesa', 'Roshan virou petisco'], aegis.evidencia, 'roshan');
+
+fatos.sort((a, b) => b.peso - a.peso);
+if (fatos.length < n) {
+const usadas = new Set(fatos.slice(0, n).map((f) => f.key));
+for (const c of v.brilhou || []) {
+if (fatos.length >= n) break;
+if (usadas.has(c.key)) continue;
+fatos.push({ peso: 0, frase: capital(c.elogio || c.label), prova: c.evidencia, key: c.key });
+}
+}
+return fatos.slice(0, n);
+}
+
+const listaDeFatos = (fs, cls = 'mr-fatos') => h('ul', { class: cls }, fs.map((f) => h('li', {}, h('strong', {}, `${f.frase}.`), ' ', h('span', {}, `${capital(f.prova)}.`))));
+
+function dataPorExtenso(r) {
+const t = r.partida.inicio ? new Date(r.partida.inicio * 1000) : new Date();
+try { return t.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch { return t.toISOString().slice(0, 10); }
+}
+
+function documentoDoMerito(r) {
+const cs = craquesDe(r);
+const nivel = nivelDoMerito(cs);
+const doc = [docMencao, cartaoCraques, docJornal, docOrdem, docMonumento][nivel](r, cs);
+doc.dataset.merito = String(nivel + 1);
+return doc;
+}
+
+// [0] Vitória de time: um certificado modesto
+function docMencao(r, cs) {
+const dupla = cs.length > 1;
+const rnd = sorteador(`mencao-${r.partida.id}`);
+const ass = rnd.um(['Associação de Moradores do Ancient', 'Grêmio Recreativo dos Suportes', 'Conselho Tutelar da Selva', 'Clube de Mães da Rota Segura', 'Sindicato dos Creeps']);
+return h('article', { class: `cartao veredito vitoria doc-mencao${dupla ? ' dividido' : ''}` },
+h('div', { class: 'mc-borda' },
+h('p', { class: 'mc-sobre' }, 'Certificado de'),
+h('h2', { class: 'mc-titulo' }, 'Menção Honrosa'),
+h('p', { class: 'mc-sub' }, 'Vitória de time: o mérito ficou espalhado entre os cinco'),
+h('p', { class: 'mc-texto' }, 'Certificamos que ', cs.map((v, i) => [i ? ' e ' : '', h('strong', {}, v.jogador.nome)]),
+dupla ? ' se destacaram ' : ' se destacou ', 'numa vitória em que todo mundo fez a sua parte.'),
+h('div', { class: 'mc-pessoas' }, cs.map((v) => h('div', { class: 'mc-pessoa' },
+h('span', { class: 'mc-foto' }, fotoDe(v.jogador, true)),
+h('div', {},
+h('p', { class: 'mc-nome' }, v.jogador.nome),
+h('p', { class: 'mc-heroi' }, `${v.jogador.heroi.nome} · pos ${v.jogador.posicao} · ${kdaDe(v.jogador)} · ${pct(v.fatia)} do mérito`),
+listaDeFatos(fatosDoCraque(v, r, 2)))))),
+h('div', { class: 'mc-pe' },
+h('span', { class: 'mc-selo', 'aria-hidden': 'true' }, '★'),
+h('p', { class: 'mc-assina' }, h('span', { class: 'mc-linha' }), ass, h('small', {}, dataPorExtenso(r))))));
+}
+
+// [2] A manchete do jornal
+const JORNAIS = ['Gazeta do Ancient', 'O Diário da Selva', 'Folha do Rio', 'Jornal do Roshan', 'O Estado da Rota'];
+function docJornal(r, cs) {
+const dupla = cs.length > 1;
+const rnd = sorteador(`jornal-${r.partida.id}`);
+const min = Math.round(r.partida.duracao / 60);
+const [a, b] = cs.map((v) => v.jogador);
+const manchete = dupla
+? rnd.um([`${a.nome} e ${b.nome} carregam o time e decidem em ${min} minutos`, `Dupla ${a.heroi.nome} e ${b.heroi.nome} assombra os ${ladoNome(!r.partida.ladoRadiant)}`])
+: rnd.um([`${a.nome} carrega o time nas costas em ${min} minutos`, `${a.heroi.nome} de ${a.nome} decide a partida`, `${a.nome} faz chover e o Ancient deles cai`, `Torcida pede estátua para ${a.nome}`]);
+const [fa] = cs.map((v) => fatosDoCraque(v, r, 3));
+const fatos = dupla ? cs.flatMap((v) => fatosDoCraque(v, r, 2)) : fa;
+const linha = (v) => h('p', { class: 'jn2-legenda' }, `${v.jogador.nome} (${v.jogador.heroi.nome}, pos ${v.jogador.posicao}): ${kdaDe(v.jogador)}, ${pct(v.fatia)} do mérito`);
+return h('article', { class: `cartao veredito vitoria doc-jornal${dupla ? ' dividido' : ''}` },
+h('div', { class: 'jn2-cab' },
+h('p', { class: 'jn2-extra' }, 'Edição extra'),
+h('h2', { class: 'jn2-nome' }, rnd.um(JORNAIS)),
+h('p', { class: 'jn2-data' }, h('span', {}, dataPorExtenso(r)), h('span', {}, `Partida nº ${r.partida.id}`), h('span', {}, rnd.um(['R$ 0,50 ou 1 Tango', 'Grátis com a Aegis', '1 Clarity', '50 de ouro'])))),
+h('h3', { class: 'jn2-manchete' }, manchete),
+h('p', { class: 'jn2-linha-fina' }, `Vitória dos ${ladoNome(r.partida.ladoRadiant)} por ${r.partida.placarNos} a ${r.partida.placarEles}. ${dupla ? 'Os dois somaram' : 'Sozinho, ele somou'} ${pct(cs.reduce((x, v) => x + v.fatia, 0))} do mérito do time.`),
+h('div', { class: 'jn2-corpo' },
+h('figure', { class: 'jn2-fotos' }, cs.map((v) => h('div', { class: 'jn2-foto' }, fotoDe(v.jogador, true))), h('figcaption', {}, cs.map(linha))),
+h('div', { class: 'jn2-col' }, h('p', { class: 'jn2-rot' }, 'O que aconteceu'), listaDeFatos(fatos, 'mr-fatos jn2-fatos')))
+);
+}
+
+// [3] Decreto de condecoração
+function medalhaGrande() {
+const pontas = [];
+for (let k = 0; k < 16; k++) {
+const a = (k * Math.PI) / 8;
+const R = k % 2 ? 26 : 34;
+pontas.push(`${50 + R * Math.sin(a)},${92 + -R * Math.cos(a)}`);
+}
+return s('svg', { class: 'od-medalha', width: 100, height: 132, viewBox: '0 0 100 132', 'aria-hidden': 'true' },
+s('path', { d: 'M30 0h16l4 48-12 10z', fill: '#2f6fd6' }), s('path', { d: 'M54 0h16l-8 58-12-10z', fill: '#b3261e' }),
+s('path', { d: 'M46 0h8v50h-8z', fill: '#f2d27a' }),
+s('polygon', { points: pontas.join(' '), fill: '#e8b04a', stroke: '#8a5a00', 'stroke-width': 1.5 }),
+s('circle', { cx: 50, cy: 92, r: 17, fill: '#b98a2e', stroke: '#fff3c4', 'stroke-width': 1.5 }),
+s('text', { x: 50, y: 98, 'text-anchor': 'middle', 'font-size': 16, 'font-family': 'Cinzel, Georgia, serif', 'font-weight': 900, fill: '#fff3c4' }, '★'));
+}
+function docOrdem(r, cs) {
+const dupla = cs.length > 1;
+const rnd = sorteador(`ordem-${r.partida.id}`);
+const grau = rnd.um(['Grã-Cruz da Ordem do Mérito do Ancient', 'Ordem Nacional do Carregador', 'Grande Colar da Ordem da Aegis', 'Medalha de Honra ao Mérito Tático']);
+const considerandos = cs.flatMap((v) => fatosDoCraque(v, r, dupla ? 2 : 4).map((f) => ({ ...f, quem: dupla ? v.jogador.nome : null })));
+return h('article', { class: `cartao veredito vitoria doc-ordem${dupla ? ' dividido' : ''}` },
+h('div', { class: 'od-topo' }, medalhaGrande(),
+h('div', {},
+h('p', { class: 'od-num' }, `Decreto nº ${String(r.partida.id).slice(-4)}, de ${dataPorExtenso(r)}`),
+h('h2', { class: 'od-titulo' }, 'Ordem do Mérito'),
+h('p', { class: 'od-texto' }, `O Conselho do Ancient dos ${ladoNome(r.partida.ladoRadiant)}, no uso de suas atribuições, confere a `, h('strong', {}, grau), ` a `,
+cs.map((v, i) => [i ? ' e a ' : '', h('strong', { class: 'od-nome' }, v.jogador.nome), ` (${v.jogador.heroi.nome}, ${pct(v.fatia)} do mérito)`]), '.'))),
+h('p', { class: 'od-rot' }, 'Considerando que:'),
+h('ol', { class: 'od-cons' }, considerandos.map((f) => h('li', {}, f.quem ? h('em', {}, `${f.quem}: `) : null, h('strong', {}, `${f.frase}`), `, pois ${f.prova};`))),
+h('p', { class: 'od-fecho' }, rnd.um(['Publique-se. Cumpra-se. Faça-se um busto.', 'Publique-se e afixe-se no mural da fonte.', 'Registre-se no replay e cumpra-se.'])));
+}
+
+// [4] A estátua na praça
+function docMonumento(r, cs) {
+const dupla = cs.length > 1;
+const rnd = sorteador(`monumento-${r.partida.id}`);
+const [fa] = cs;
+const fatos = cs.flatMap((v) => fatosDoCraque(v, r, dupla ? 2 : 3));
+const estatua = (v) => h('div', { class: 'mn-estatua' },
+h('div', { class: 'mn-busto' }, fotoDe(v.jogador, true)),
+h('div', { class: 'mn-pedestal' }, h('span', {}, v.jogador.nome), h('small', {}, `${v.jogador.heroi.nome} · ${pct(v.fatia)} do mérito`)));
+return h('article', { class: `cartao veredito vitoria doc-monumento${dupla ? ' dividido' : ''}` },
+h('p', { class: 'mn-sobre' }, 'Praça dos Heróis · inaugurada hoje'),
+h('h2', { class: 'mn-titulo' }, dupla ? 'Monumento aos Carregadores' : 'Monumento ao Carregador'),
+h('div', { class: 'mn-estatuas' }, cs.map(estatua)),
+h('div', { class: 'mn-placa' },
+h('p', { class: 'mn-dedica' }, `Esta estátua foi erguida em honra de ${cs.map((v) => v.jogador.nome).join(' e ')}, que em ${dataPorExtenso(r)} ${dupla ? 'carregaram' : 'carregou'} o time nas costas com ${pct(cs.reduce((x, v) => x + v.fatia, 0))} do mérito da vitória.`),
+listaDeFatos(fatos, 'mr-fatos mn-fatos')),
+h('p', { class: 'mn-aviso' }, rnd.um(['Proibido pombo pousar na cabeça.', 'Visitação gratuita. Proibido pedir farm.', `Os quatro colegas de ${fa.jogador.nome} pediram uma plaquinha também. Negado.`, 'Ao passar, faça silêncio e um +rep.'])));
+}
+
+// ---------- Por que: o motivo do veredito em números, para a culpa e para o mérito ----------
+function numerosDe(p, r, vitoria) {
+const nos = r.nos;
+const min = Math.max(1, r.partida.duracao / 60);
+const abatesTime = somaNos(r, (q) => q.raw.kills) || 1;
+const posicao = (f) => 1 + nos.filter((q) => (Number(f(q)) || 0) > (Number(f(p)) || 0)).length;
+const total = (f) => somaNos(r, f) || 1;
+const ordinal = (k, ruimAlto) => (k === 1 ? (ruimAlto ? 'o pior do time' : 'o melhor do time') : k === nos.length ? (ruimAlto ? 'o melhor do time' : 'o pior do time') : `${k}º do time`);
+const M = [
+{ k: 'mortes', rot: 'Mortes', f: (q) => q.raw.deaths, txt: (x) => String(x), ruimAlto: true, extra: () => `média do time: ${(total((q) => q.raw.deaths) / nos.length).toFixed(1).replace('.', ',')}` },
+{ k: 'entregue', rot: 'Ouro entregue morrendo', f: (q) => (q.stats && q.stats.goldFed) || 0, txt: fmtK, ruimAlto: true },
+{ k: 'morto', rot: 'Tempo morto', f: (q) => (q.stats && q.stats.timeDead) || 0, txt: (x) => `${(x / 60).toFixed(1).replace('.', ',')} min`, ruimAlto: true },
+{ k: 'kp', rot: 'Participação em abates', f: (q) => (q.raw.kills + q.raw.assists) / abatesTime, txt: (x) => pct(Math.min(1, x)) },
+{ k: 'gpm', rot: 'Ouro por minuto', f: (q) => q.raw.gold_per_min, txt: (x) => String(x) },
+{ k: 'dano', rot: 'Dano em herói', f: (q) => q.raw.hero_damage, txt: (x) => `${fmtK(x)}`, extra: (x) => `${pct(x / total((q) => q.raw.hero_damage))} do time` },
+{ k: 'estr', rot: 'Dano em estrutura', f: (q) => q.raw.tower_damage, txt: (x) => `${fmtK(x)}`, extra: (x) => `${pct(x / total((q) => q.raw.tower_damage))} do time` },
+{ k: 'lh', rot: 'Last hits', f: (q) => q.raw.last_hits, txt: (x) => String(x), extra: (x) => `${(x / min).toFixed(1).replace('.', ',')} por min` },
+];
+if (p.posicao >= 4) {
+M.push({ k: 'wards', rot: 'Wards', f: (q) => (q.raw.obs_placed || 0) + (q.raw.sen_placed || 0), txt: (x) => String(x) });
+M.push({ k: 'stun', rot: 'Stun no inimigo', f: (q) => q.raw.stuns || 0, txt: (x) => `${Math.round(x)} s` });
+M.push({ k: 'cura', rot: 'Cura', f: (q) => q.raw.hero_healing || 0, txt: fmtK });
+}
+const celulas = M.map((m) => {
+const x = Number(m.f(p)) || 0;
+const k = posicao(m.f);
+const ruim = m.ruimAlto ? k === 1 : k === nos.length;
+const bom = m.ruimAlto ? k === nos.length : k === 1;
+// destaque: o que pesa a favor do veredito (ruim na culpa, bom no mérito)
+const forca = (vitoria ? bom : ruim) ? 3 : (vitoria ? (m.ruimAlto ? k >= nos.length - 1 : k <= 2) : (m.ruimAlto ? k <= 2 : k >= nos.length - 1)) ? 2 : 0;
+return { ...m, x, k, tom: ruim ? 'ruim' : bom ? 'bom' : '', forca: x ? forca : 0 };
+});
+const escolhidas = celulas.filter((c) => c.forca > 0).sort((a, b) => b.forca - a.forca).slice(0, 5);
+return h('ul', { class: 'mt-numeros' },
+h('li', { class: 'mt-num-kda' }, h('span', { class: 'mt-rot' }, 'K/D/A'), h('b', {}, kdaDe(p)), h('small', {}, `${p.heroi.nome} · pos ${p.posicao}`)),
+escolhidas.map((c) => h('li', { class: c.tom ? `tom-${c.tom}` : '' },
+h('span', { class: 'mt-rot' }, c.rot), h('b', {}, c.txt(c.x)),
+h('small', {}, [ordinal(c.k, c.ruimAlto), c.extra ? c.extra(c.x) : null].filter(Boolean).join(' · ')))));
+}
+
+function cartaoMotivo(cs, r, vitoria) {
+const lista = vitoria ? r.craques : r.vereditos;
+if (!lista || lista.length < 2) return null;
+const max = Math.max(...lista.map((v) => v.score)) || 1;
+const doVeredito = new Set(cs.map((v) => v.jogador.idx));
+const [a, b] = lista;
+const tipo = vitoria ? 'mérito' : 'culpa';
+const nomes = cs.map((v) => v.jogador.nome).join(' e ');
+const resumo = cs.length > 1
+? `${nomes} ficaram colados: ${Math.round(cs[0].score)} e ${Math.round(cs[1].score)} pontos de ${tipo}, diferença pequena demais para separar.`
+: `${a.jogador.nome} somou ${Math.round(a.score)} pontos de ${tipo}, ${Math.round(a.score - b.score)} a mais que ${b.jogador.nome}, o 2º.`;
+const composicao = (v) => {
+const comps = (v.componentes || []).filter((c) => c.pontos > 0).slice(0, 4);
+const tot = comps.reduce((x, c) => x + c.pontos, 0) || 1;
+return h('ul', { class: 'mt-comp' }, comps.map((c) => h('li', {},
+h('span', { class: 'mt-comp-cab' }, h('strong', {}, c.label), h('span', {}, `+${Math.round(c.pontos)} pts`)),
+h('span', { class: 'mt-comp-barra', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.round((100 * c.pontos) / tot)}%` })),
+c.evidencia ? h('small', {}, `${capital(c.evidencia)}.`) : null)));
+};
+return h('section', { class: `cartao motivo ${vitoria ? 'mt-merito' : 'mt-culpa'}`, 'aria-label': `Por que o ${tipo}` },
+h('h3', { class: 'mt-titulo' }, vitoria ? 'Por que o mérito é ' : 'Por que a culpa é ', cs.length > 1 ? 'deles' : 'dele', h('small', {}, ' · os números do veredito')),
+h('p', { class: 'mt-resumo' }, resumo, ` Cada ponto vale cerca de 100 de ouro ${vitoria ? 'de impacto a favor do time' : 'de prejuízo para o time'}.`),
+h('div', { class: 'mt-grade' },
+h('ol', { class: 'mt-placar', 'aria-label': `Pontos de ${tipo} de cada um` }, lista.map((v) => h('li', { class: doVeredito.has(v.jogador.idx) ? 'e-ele' : '' },
+h('span', { class: 'mt-quem' }, v.jogador.nome),
+h('span', { class: 'mt-barra', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.max(2, Math.round((100 * Math.max(0, v.score)) / max))}%` })),
+h('span', { class: 'mt-pts' }, `${Math.round(v.score)}`, h('small', {}, ` pts · ${pct(v.fatia)}`))))),
+h('div', { class: 'mt-pessoas' }, cs.map((v) => h('div', { class: 'mt-pessoa' },
+cs.length > 1 ? h('p', { class: 'mt-pessoa-nome' }, v.jogador.nome) : null,
+numerosDe(v.jogador, r, vitoria),
+h('p', { class: 'mt-rot-comp' }, `De onde vieram os pontos de ${tipo}`),
+composicao(v))))));
 }
 
 function secaoTopo(r) {
@@ -5884,7 +6274,7 @@ elo.hidden = !elo.hidden;
 botao.setAttribute('aria-expanded', String(!elo.hidden));
 rotulo.textContent = elo.hidden ? 'Ver o elo fraco' : 'Esconder o elo fraco';
 });
-const cartaz = cartaoCraques(r);
+const cartaz = documentoDoMerito(r);
 cartaz.append(barraCompartilhar(r));
 principal = h('div', { class: 'topo-vitoria' }, cartaz, botao, elo);
 }
@@ -5892,6 +6282,7 @@ return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
 r.partida.provisorio ? h('p', { class: 'selo-provisorio' }, 'Veredito provisório · só com o placar') : null,
 seletorDeTime(r),
 principal,
+cartaoMotivo(vitoria ? craquesDe(r) : cs, r, Boolean(vitoria)),
 parcial ? h('div', { class: 'cartao esperando' },
 h('span', { class: 'pulso', 'aria-hidden': 'true' }),
 h('div', {},
@@ -5920,12 +6311,13 @@ const cs = craquesDe(r);
 const pessoas = cs.map((v) => {
 const c = componenteElogio(r, v) || v.brilhou[0];
 const fv = r.vereditos.find((x) => x.jogador === v.jogador);
-return { v, numero: pct(v.fatia), frase: c ? `${capital(c.elogio)}: ${c.evidencia}.` : '', classe: fv && fv.fichaBoa ? fv.fichaBoa.classe : '', recompensa: 0 };
+const [fato] = fatosDoCraque(v, r, 1);
+return { v, numero: pct(v.fatia), frase: fato ? `${fato.frase}: ${fato.prova}.` : c ? `${capital(c.elogio)}: ${c.evidencia}.` : '', classe: fv && fv.fichaBoa ? fv.fichaBoa.classe : '', recompensa: 0 };
 });
 const dupla = pessoas.length > 1;
 return {
-vitoria, pessoas, placar, titulo: 'Proclamação do Reino', selo: dupla ? 'Craques' : 'Craque',
-sub: dupla ? 'Heróis da partida · mérito dividido' : 'Herói da partida', rotulo: 'do mérito da vitória',
+vitoria, pessoas, placar, titulo: ['Menção Honrosa', 'Proclamação do Reino', 'Edição Extra', 'Ordem do Mérito', dupla ? 'Monumento aos Carregadores' : 'Monumento ao Carregador'][nivelDoMerito(cs)], selo: dupla ? 'Craques' : 'Craque',
+sub: dupla ? 'Heróis da partida · mérito dividido' : ['Vitória de time · destaque da partida', 'Herói da partida', 'Carregou o time nas costas', 'Condecorado pelo Conselho do Ancient', 'Carregou o time inteiro nas costas'][nivelDoMerito(cs)], rotulo: 'do mérito da vitória',
 };
 }
 const cs = culpados(r);
