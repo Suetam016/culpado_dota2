@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-02T14:45:39Z",
+  "quando": "2026-11-02T15:55:06Z",
   "restante": {
-   "dia": 2967,
-   "minuto": 27
+   "dia": 2997,
+   "minuto": 57
   }
  },
  "desistencias": {
@@ -421,7 +421,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-02T14:45:24Z",
+   "em": "2026-11-02T15:55:04Z",
    "partidas": {
     "9051285470": 1792340193,
     "9051396867": 1792344122,
@@ -525,24 +525,6 @@
   }
  },
  "lo": {
-  "9027608956": {
-   "companheiros": [
-    40951882,
-    112239026,
-    241782761,
-    1254464470
-   ],
-   "inicio": 1791039255
-  },
-  "9027712484": {
-   "companheiros": [
-    83300280,
-    100834978,
-    115102339,
-    241782761
-   ],
-   "inicio": 1791042900
-  },
   "9027886530": {
    "companheiros": [
     103391801,
@@ -2297,7 +2279,6 @@
   "1002067690": "Digs",
   "100722951": "Neoxa.Mauwek",
   "100817932": "General",
-  "100834978": "shisho9le",
   "1008435916": "MEIY",
   "100867877": "CoCoTa♡PA",
   "101172321": "MgL",
@@ -2341,7 +2322,6 @@
   "1116193156": "ARTIFAC MOQUEGUA",
   "111939377": "Jhun",
   "111997561": "ᔕβ𝔲Ž𝐀เ𝐦𝓂",
-  "112239026": "Torax",
   "1125523024": "ADM F95zone",
   "1126109970": "daniel.arpex",
   "112651822": "Corvus",
@@ -2356,7 +2336,6 @@
   "114920253": "POTRO",
   "114928861": "Kin-",
   "115028064": "MINISTERIO ETROM",
-  "115102339": "Int3nSse-PaiN ♫ ♫",
   "1152578362": "DaRoça",
   "115364841": "uNnder",
   "1154592206": "DigzaoNS",
@@ -2568,7 +2547,6 @@
   "395227522": "TITAN",
   "402258503": "Troche",
   "40881164": "Āǿʞɨʝɨ",
-  "40951882": "DIEGO",
   "411742109": "Água gelada",
   "415891584": "SÓ CALL ERRADA",
   "431064215": "TUTUBAMAN",
@@ -2656,39 +2634,8 @@
   "99113261": "Randy Bobandy",
   "99140295": "·NEO·GEO·"
  },
- "pendentes": {
-  "9072989723": {
-   "inicio": 1793621250,
-   "pedido_em": "2026-11-02T14:45:37Z",
-   "primeira_vez": "2026-11-02T14:45:35Z",
-   "proxima": "2026-11-02T15:15:35Z",
-   "tentativas": 0
-  },
-  "9073047501": {
-   "inicio": 1793623941,
-   "pedido_em": "2026-11-02T14:45:39Z",
-   "primeira_vez": "2026-11-02T14:45:38Z",
-   "proxima": "2026-11-02T15:15:38Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-10-26T21:20:23Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2706
-  },
   {
    "basicas": 0,
    "chamadas": 23,
@@ -3440,6 +3387,22 @@
     "minuto": 27
    },
    "sobra_do_dia": 2717
+  },
+  {
+   "basicas": 0,
+   "chamadas": 3,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-02T15:55:04Z",
+   "novas": 2,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2997,
+    "minuto": 57
+   },
+   "sobra_do_dia": 2714
   }
  ],
  "uso": {
@@ -3456,6 +3419,6 @@
   "2026-10-30": 84,
   "2026-10-31": 86,
   "2026-11-01": 143,
-  "2026-11-02": 83
+  "2026-11-02": 86
  }
 }
