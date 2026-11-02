@@ -3082,3 +3082,55 @@ OK 9072316763
   1019 usos de skill/item de 1851 no combat log
 OK 9072311164
 4 mapas novos
+Fila: [9072669520, 9072642045, 9072614760, 9072579323, 9072551959, 9072514667, 9072497817, 9072487745]
+  replay http://replay201.valve.net/570/9072669520_1072566870.dem.bz2 -> HTTP 200 application/octet-stream 40806816 inicio=b'(\xb5/\xfd\x00`\x1c5\x0f^Q\xde'
+  9072669520: 138765 eventos; tipos [('actions', 63930), ('interval', 23860), ('DOTA_COMBATLOG_DAMAGE', 17504), ('DOTA_COMBATLOG_MODIFIER_ADD', 8074), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 8047), ('DOTA_COMBATLOG_HEAL', 4155), ('DOTA_COMBATLOG_XP', 3291), ('DOTA_COMBATLOG_DEATH', 3029)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Ursa", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 70, "variant": 0, "facet_hero_id": 70, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "rando
+  exemplo de habilidade: {"time": -86, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_grimstroke", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_smoke_of_deceit"}
+  2534 registros de dano herói->herói
+  1689 usos de skill/item de 2530 no combat log
+OK 9072669520
+  replay http://replay202.valve.net/570/9072642045_298072019.dem.bz2 -> HTTP 200 application/octet-stream 41028553 inicio=b'(\xb5/\xfd\x00`\x0c9\x0f\xae`\x9e'
+  9072642045: 144795 eventos; tipos [('actions', 62413), ('DOTA_COMBATLOG_DAMAGE', 24436), ('interval', 23540), ('DOTA_COMBATLOG_MODIFIER_ADD', 8213), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 8168), ('DOTA_COMBATLOG_HEAL', 4160), ('DOTA_COMBATLOG_DEATH', 3238), ('DOTA_COMBATLOG_XP', 3151)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Techies", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 105, "variant": 0, "facet_hero_id": 105, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "
+  exemplo de habilidade: {"time": -52, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_disruptor", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  2678 registros de dano herói->herói
+  2265 usos de skill/item de 3207 no combat log
+OK 9072642045
+  replay http://replay201.valve.net/570/9072614760_28419873.dem.bz2 -> HTTP 200 application/octet-stream 46721328 inicio=b'(\xb5/\xfd\x00`|H\x0f\x0e\x9b\x1e'
+  9072614760: 173487 eventos; tipos [('actions', 72715), ('DOTA_COMBATLOG_DAMAGE', 30320), ('interval', 26910), ('DOTA_COMBATLOG_MODIFIER_ADD', 11351), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 11202), ('DOTA_COMBATLOG_HEAL', 5985), ('DOTA_COMBATLOG_XP', 3976), ('DOTA_COMBATLOG_DEATH', 3566)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Rubick", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 86, "variant": 0, "facet_hero_id": 86, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ran
+  exemplo de habilidade: {"time": -69, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_pudge", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "pudge_meat_hook"}
+  2976 registros de dano herói->herói
+  1515 usos de skill/item de 2533 no combat log
+OK 9072614760
+  replay http://replay201.valve.net/570/9072579323_1415918693.dem.bz2 -> HTTP 200 application/octet-stream 63096885 inicio=b'(\xb5/\xfd\x00`\x048\x0f~j^'
+  9072579323: 240560 eventos; tipos [('actions', 96402), ('DOTA_COMBATLOG_DAMAGE', 49823), ('interval', 33510), ('DOTA_COMBATLOG_MODIFIER_ADD', 15896), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 15785), ('DOTA_COMBATLOG_HEAL', 9373), ('DOTA_COMBATLOG_DEATH', 5318), ('DOTA_COMBATLOG_XP', 5039)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_WitchDoctor", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 30, "variant": 0, "facet_hero_id": 30, "life_state": 0, "level": 0, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0,
+  exemplo de habilidade: {"time": -52, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_lina", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  4342 registros de dano herói->herói
+  1915 usos de skill/item de 3366 no combat log
+OK 9072579323
+  replay http://replay201.valve.net/570/9072551959_1441773072.dem.bz2 -> HTTP 200 application/octet-stream 37630625 inicio=b'(\xb5/\xfd\x00`\xe4\x83\x0f\x9e\xc0\xdf'
+  9072551959: 132959 eventos; tipos [('actions', 64858), ('interval', 22580), ('DOTA_COMBATLOG_DAMAGE', 16200), ('DOTA_COMBATLOG_MODIFIER_ADD', 6994), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 6934), ('DOTA_COMBATLOG_HEAL', 3769), ('DOTA_COMBATLOG_XP', 3068), ('DOTA_COMBATLOG_DEATH', 2619)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_DarkWillow", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 119, "variant": 0, "facet_hero_id": 119, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0
+  exemplo de habilidade: {"time": -48, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_earth_spirit", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_observer"}
+  2534 registros de dano herói->herói
+  1254 usos de skill/item de 2294 no combat log
+OK 9072551959
+  replay http://replay201.valve.net/570/9072514667_1823699447.dem.bz2 -> HTTP 200 application/octet-stream 50395940 inicio=b'(\xb5/\xfd\x00`\x84?\x0f\x0ew\x9e'
+  9072514667: 189018 eventos; tipos [('actions', 86498), ('DOTA_COMBATLOG_DAMAGE', 30977), ('interval', 27780), ('DOTA_COMBATLOG_MODIFIER_ADD', 11275), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 11217), ('DOTA_COMBATLOG_HEAL', 5474), ('DOTA_COMBATLOG_XP', 4358), ('DOTA_COMBATLOG_DEATH', 4289)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Sniper", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 35, "variant": 0, "facet_hero_id": 35, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ran
+  exemplo de habilidade: {"time": -73, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_antimage", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  3079 registros de dano herói->herói
+  1549 usos de skill/item de 2496 no combat log
+OK 9072514667
+FALHOU 9072497817: HTTP Error 500: Internal Server Error
+  replay http://replay201.valve.net/570/9072487745_1361397784.dem.bz2 -> HTTP 200 application/octet-stream 39021259 inicio=b'(\xb5/\xfd\x00`\xbc1\x0fNL^'
+  9072487745: 147328 eventos; tipos [('actions', 70072), ('interval', 23700), ('DOTA_COMBATLOG_DAMAGE', 20750), ('DOTA_COMBATLOG_MODIFIER_ADD', 8210), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 8118), ('DOTA_COMBATLOG_HEAL', 3895), ('DOTA_COMBATLOG_XP', 3151), ('DOTA_COMBATLOG_DEATH', 2868)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_EarthSpirit", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 107, "variant": 0, "facet_hero_id": 107, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 
+  exemplo de habilidade: {"time": -80, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_skywrath_mage", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  2398 registros de dano herói->herói
+  1405 usos de skill/item de 2521 no combat log
+OK 9072487745
+7 mapas novos
