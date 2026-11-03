@@ -836,9 +836,17 @@ return { pares, semPar: [...a, ...b].filter((p) => !comPar.has(p)) };
 
 
 
+// Índice do mapa (mapas/<id>.json) -> índice do jogador. O robô grava a posição do jogador na partida (0..9), não o
+// player_slot (128+ no Dire): procura pelo slot e, sem achar, usa a posição, igual ao replay do mapinha.
+function idxDoMapa(mapa, jog) {
+const out = mapa.slots.map(() => null);
+jog.forEach((j, i) => { const k0 = mapa.slots.indexOf(j.slot); const k = k0 >= 0 ? k0 : i < mapa.slots.length ? i : -1; if (k >= 0) out[k] = j.idx; });
+return out;
+}
+
 function harassDaRota(ctx, a, b) {
 if (!ctx.mapa) return null;
-const idxDe = ctx.mapa.slots.map((slot) => { const j = ctx.jog.find((p) => p.slot === slot); return j ? j.idx : null; });
+const idxDe = idxDoMapa(ctx.mapa, ctx.jog);
 const ia = new Set(a.map((p) => p.idx));
 const ib = new Set(b.map((p) => p.idx));
 const dano = Object.fromEntries([...a, ...b].map((p) => [p.idx, 0]));
@@ -4358,6 +4366,392 @@ visao: (p) => `${p.stats.obs} obs e ${p.stats.sen} sentries em ${Math.round(p.st
 
 
 
+// ---------- Momentos da vitória: o que o craque fez de decisivo, com hora, lugar e contexto ----------
+// Cada momento sai de um evento real da partida (luta, estrutura, buyback, abate, rota) e traz as provas.
+// O peso mistura o quanto aquilo mexeu no jogo (chance de vitória e ouro) com o quanto foi dele.
+// Ordem de importância pedida pelo Mat (03/11/2026): virada > solo kill / pick-off no core rico > split push que
+// leva estrutura (ou o jogo) > defender a base / buyback que salva a base > anular o rival na rota > suporte e mid.
+const BASE_RADIANT = [82, 84];
+const BASE_DIRE = [166, 162];
+const POCOS_ROSHAN = [[106, 142], [156, 110]];
+// família: na tela entra no máximo um momento de cada (duas lutas parecidas cansam)
+const FAMILIA_MOMENTO = { abriu: 'luta', fechou: 'luta', defesa: 'luta', buyback: 'luta', solo: 'abate', rico: 'abate', pickoff: 'abate',
+'buyback-deles': 'castigo', item: 'castigo', anulou: 'rota', rota: 'rota', mid: 'rota' };
+const distM = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+function lugarDaLuta(l, ctx) {
+const pts = [];
+for (const q of ctx.jog) for (const [x, ys] of Object.entries((l.jogadores[q.idx] || {}).deaths_pos || {})) for (const [y, n] of Object.entries(ys)) for (let i = 0; i < n; i++) pts.push([Number(x), Number(y)]);
+if (!pts.length) return null;
+const c = [soma(pts, (p) => p[0]) / pts.length, soma(pts, (p) => p[1]) / pts.length];
+const nossaBase = ctx.nos[0].radiant ? BASE_RADIANT : BASE_DIRE;
+const delesBase = ctx.nos[0].radiant ? BASE_DIRE : BASE_RADIANT;
+if (distM(c, nossaBase) <= 24) return 'nossa-base';
+if (distM(c, delesBase) <= 24) return 'base-deles';
+if (POCOS_ROSHAN.some((r) => distM(c, r) <= 12)) return 'roshan';
+return 'mapa';
+}
+
+function momentosDaVitoria(ctx, match, chance, venceu) {
+const out = {};
+if (!venceu || !ctx.mortes || !ctx.lutas) return out;
+const { nos, eles, jog, duracao } = ctx;
+const radiant = nos[0].radiant;
+const curva = curvaDeChance(ctx, chance, true) || [];
+const chanceEm = (t) => (curva.length ? curva[Math.max(0, Math.min(curva.length - 1, Math.floor(t / 60)))] : null);
+const lead = ctx.lead || [];
+const leadEm = (t) => (lead.length ? lead[Math.max(0, Math.min(lead.length - 1, Math.floor(t / 60)))] : null);
+const minTxt = (t) => `${Math.floor(t / 60)} min`;
+const segTxt = (s) => (s < 60 ? `${Math.round(s)} s` : s < 120 ? `1 min${Math.round(s - 60) >= 10 ? ` e ${Math.round(s - 60)} s` : ''}` : `${Math.round(s / 60)} min`);
+const nw = (q, t) => {
+const arr = q.raw.networth_t || q.raw.gold_t || [];
+return arr.length ? Number(arr[Math.max(0, Math.min(arr.length - 1, Math.floor(t / 60)))]) || 0 : 0;
+};
+const mortesDe = (i) => ctx.mortes[i] || [];
+const abatesDe = (p) => eles.flatMap((e) => mortesDe(e.idx).filter((d) => d.assassino === p.idx).map((d) => ({ ...d, vitima: e }))).sort((a, b) => a.t - b.t);
+const mortoEm = (q, t) => mortesDe(q.idx).some((d) => d.morto != null && d.t <= t && t < d.t + d.morto);
+const naLuta = (t, folga = 0) => ctx.lutas.find((l) => t >= l.inicio - folga && t <= (l.fim ?? l.inicio) + folga);
+const killsNaLuta = (l, q) => soma(eles, (e) => ((l.jogadores[q.idx] || {}).killed || {})[e.heroi.npc] || 0);
+const danoNaLuta = (l, q) => (l.jogadores[q.idx] || {}).damage || 0;
+const fatiaDano = (l, q) => danoNaLuta(l, q) / (soma(nos, (x) => danoNaLuta(l, x)) || 1);
+const presentes = (l) => nos.filter((q) => presenteNaLuta(l.jogadores[q.idx] || {}));
+const parteDele = (l, q) => { const k = killsNaLuta(l, q); const f = fatiaDano(l, q); return k ? `${plural(k, 'abate', 'abates')}${f >= 0.3 ? ` e ${pct(f)} do dano do time` : ''}` : `${pct(f)} do dano do time`; };
+
+// mapa (posições e dano segundo a segundo), quando o robô já processou o replay
+const mapa = ctx.mapa;
+const slotIdx = mapa ? idxDoMapa(mapa, jog) : [];
+const posEm = (q, t) => {
+if (!mapa || !Array.isArray(mapa.x)) return null;
+const k = slotIdx.indexOf(q.idx);
+if (k < 0 || !mapa.x[k]) return null;
+const i = Math.round(t - (mapa.t0 || 0));
+const x = mapa.x[k][i];
+const y = mapa.y[k][i];
+return x == null || y == null ? null : [x, y];
+};
+// solo kill: nos 12 s antes da morte só o assassino (entre os heróis de vocês) bateu na vítima
+const solo = (d, vit) => {
+if (!mapa || !Array.isArray(mapa.dano) || d.assassino == null) return null;
+const quem = new Set();
+for (const [t, a, b] of mapa.dano) {
+if (t < d.t - 12 || t > d.t + 1) continue;
+if (slotIdx[b] !== vit.idx) continue;
+const ia = slotIdx[a];
+if (ia != null && jog[ia].radiant === radiant) quem.add(ia);
+}
+return quem.size === 1 && quem.has(d.assassino);
+};
+
+// estruturas com autor
+const estruturas = (match.objectives || []).filter((o) => o.type === 'building_kill').map((o) => {
+const est = descreverEstrutura(o.key);
+const autor = o.player_slot != null ? jog.find((q) => q.slot === o.player_slot) : (o.unit ? jog.find((q) => q.heroi.npc === o.unit) : null);
+const deles = est.deRadiant !== radiant;
+const grande = est.tipo === 'quartel' || est.tipo === 'ancestral' || /T[34]/.test(est.nome);
+return { t: Number(o.time) || 0, est, autor: autor || null, deles, grande, key: o.key || '' };
+});
+const estrTxt = (e) => (e.est.tipo === 'ancestral' ? 'o Ancestral' : `${e.est.artigo} ${e.est.nome}`);
+const estrLista = (xs) => {
+const t4 = xs.filter((e) => /T4/.test(e.est.nome));
+const torres = xs.filter((e) => e.est.tipo === 'torre' && !t4.includes(e));
+const qs = xs.filter((e) => e.est.tipo === 'quartel');
+const anc = xs.some((e) => e.est.tipo === 'ancestral');
+const partes = [];
+if (torres.length) partes.push(torres.length === 1 ? estrTxt(torres[0]) : `${torres.length} torres`);
+if (qs.length) partes.push(qs.length === 1 ? estrTxt(qs[0]) : `${qs.length} quartéis`);
+if (t4.length) partes.push(t4.length === 1 ? 'a T4' : 'as duas T4');
+if (anc) partes.push('o Ancestral');
+return juntarNomes(partes);
+};
+
+// as lutas ganhas, com o quanto mexeram na chance de vitória
+const lutas = ctx.lutas.map((l) => ({ ...l, ganha: l.mortesEles >= 2 && l.mortesEles > l.mortesNos, lugar: lugarDaLuta(l, ctx),
+delta: chanceEm((l.fim ?? l.inicio) + 60) - chanceEm(l.inicio - 30) }));
+
+const lanterna = (p) => {
+// o parceiro que mais deu ouro pro inimigo (pra o contraste "enquanto fulano...")
+const cands = nos.filter((q) => q !== p).map((q) => ({ q, n: mortesDe(q.idx).length })).sort((a, b) => b.n - a.n);
+return cands[0] && cands[0].n >= 8 ? cands[0].q : null;
+};
+
+for (const p of nos) {
+const ms = [];
+const add = (tipo, peso, frases, prova, t = null) => ms.push({ tipo, familia: FAMILIA_MOMENTO[tipo] || tipo, peso, frases, prova, t });
+const meus = abatesDe(p);
+const abatesTime = (t0, t1 = Infinity) => soma(eles, (e) => mortesDe(e.idx).filter((d) => d.t >= t0 && d.t <= t1).length);
+const minhasEstr = estruturas.filter((e) => e.deles && e.autor === p);
+
+// 1) Virada: o time esteve perto de perder e ele puxou a recuperação
+if (curva.length > 5) {
+let mMin = 0;
+for (let m = 0; m < curva.length - 1; m++) if (curva[m] < curva[mMin]) mMin = m;
+const cMin = curva[mMin];
+const atras = lead[mMin] != null ? -lead[mMin] : 0;
+if (cMin <= 0.32 && atras >= 2500 && mMin * 60 < duracao - 240) {
+const t0 = mMin * 60;
+const k = meus.filter((d) => d.t >= t0).length;
+const kt = abatesTime(t0);
+const est = minhasEstr.filter((e) => e.t >= t0);
+const nota = (q) => abatesDe(q).filter((d) => d.t >= t0).length + 1.5 * estruturas.filter((e) => e.deles && e.autor === q && e.t >= t0 && e.grande).length;
+const melhor = Math.max(...nos.map(nota));
+if (kt >= 4 && (k / kt >= 0.3 || nota(p) >= melhor) && nota(p) >= 3) {
+const estTxt = est.filter((e) => e.grande).length ? `, e ele mesmo derrubou ${estrLista(est.filter((e) => e.grande))}` : '';
+add('virada', 14 + 25 * (0.35 - cMin) + Math.min(6, atras / 1500) + 6 * (k / kt), cMin <= 0.15 ? [
+'Pegou um jogo com cheiro de GG e virou no braço',
+'Ressuscitou um jogo que já tinha atestado de óbito',
+'Quando o time já ensaiava o "gg wp", ele discordou',
+'O time já tinha escolhido o caixão; ele cancelou o velório',
+] : [
+'Desatolou o jogo quando o time estava afundando',
+'Tirou o time do buraco com as próprias mãos',
+'Transformou o "dá pra ganhar?" em "ganhamos"',
+'Pegou o jogo torto e endireitou na marra',
+], `aos ${minTxt(t0)} o time estava ${fmtK(atras)} de ouro atrás (chance de vitória de ${pct(cMin)}); dali até o fim ele fez ${k} dos ${kt} abates do time${estTxt}`, t0);
+}
+}
+}
+
+// 2) Abates que valem: solo kill e pick-off no core mais rico deles
+for (const d of meus) {
+const e = d.vitima;
+const rico = eles.every((x) => x === e || nw(x, d.t) <= nw(e, d.t)) && d.t >= 15 * 60 && nw(e, d.t) >= 8000;
+const isolado = !naLuta(d.t, 8);
+const ehSolo = solo(d, e);
+d.rico = rico; d.isolado = isolado; d.solo = ehSolo;
+}
+const solos = meus.filter((d) => d.solo && d.isolado);
+if (solos.length) {
+const ricos = solos.filter((d) => d.rico);
+const melhor = ricos[0] || [...solos].sort((a, b) => (b.vitima.posicao <= 3) - (a.vitima.posicao <= 3) || nw(b.vitima, b.t) - nw(a.vitima, a.t))[0];
+const v = melhor.vitima;
+const outros = solos.length - 1;
+add('solo', 9 + 2 * Math.min(4, solos.length) + (melhor.rico ? 4 : melhor.vitima.posicao <= 3 ? 2 : 0), melhor.rico ? [
+`Pegou ${v.heroi.nome}, o mais rico deles, no x1 e sem ajuda`,
+`Foi no mano a mano com ${v.heroi.nome}, o dono do dinheiro deles, e saiu com a carteira`,
+`Chamou ${v.heroi.nome} pro x1 e ${v.heroi.nome} topou. Erro dele`,
+] : [
+`Pegou ${v.heroi.nome} sozinho, sem ninguém do time encostar`,
+`Mano a mano com ${v.heroi.nome}: ganhou e ainda cobrou o ingresso`,
+`Resolveu ${v.heroi.nome} no x1, à moda antiga`,
+], `aos ${mmss(melhor.t)} matou ${v.nome} (${v.heroi.nome}${melhor.rico ? `, ${fmtK(nw(v, melhor.t))} de patrimônio, o maior do time deles` : ''}) sem nenhum aliado dar dano nos 12 s antes${outros ? `; no jogo foram ${solos.length} solo kills dele` : ''}`, melhor.t);
+}
+const ricosMortos = meus.filter((d) => d.rico && !d.solo);
+if (ricosMortos.length) {
+const porVit = {};
+for (const d of ricosMortos) (porVit[d.vitima.idx] = porVit[d.vitima.idx] || []).push(d);
+const [vi, ds] = Object.entries(porVit).sort((a, b) => b[1].length - a[1].length)[0];
+const v = jog[vi];
+const fora = ds.filter((d) => d.isolado).length;
+const maxNw = Math.max(...ds.map((d) => nw(v, d.t)));
+if (ds.length >= 2 || (fora >= 1 && ds[0].t >= 25 * 60)) {
+add('rico', 8 + 1.5 * Math.min(5, ds.length) + 2 * fora, ds.length === 1 ? [
+`Pegou ${v.heroi.nome}, o milionário deles, andando sozinho no mapa`,
+`Achou ${v.heroi.nome}, o dono do dinheiro deles, dando bobeira e cobrou`,
+`Fez ${v.heroi.nome} descobrir que dinheiro não compra respawn`,
+] : [
+`Desligou ${v.heroi.nome}, o milionário deles, ${ds.length} vezes`,
+`Cobrou IPTU da mansão de ${v.heroi.nome}`,
+`Tratou ${v.heroi.nome} de ${fmtK(maxNw)} como se fosse creep da rota`,
+`Fez ${v.heroi.nome} descobrir que dinheiro não compra respawn`,
+], `${v.nome} (${v.heroi.nome}) era o mais rico do time deles e morreu pra ele ${ds.length === 1 ? `aos ${mmss(ds[0].t)}` : `${ds.length} vezes depois dos 15 min`} (até ${fmtK(maxNw)} de patrimônio)${fora ? `, ${fora === ds.length ? (fora === 1 ? 'fora de qualquer luta' : 'todas fora de luta') : `${fora} delas fora de luta`}` : ''}`, ds[0].t);
+}
+}
+const picks = meus.filter((d) => d.isolado && !d.solo && !d.rico && d.t >= 12 * 60 && d.vitima.posicao <= 3);
+if (picks.length >= 3) {
+add('pickoff', 6 + Math.min(6, picks.length), [
+'Caçou os cores deles pelo mapa como quem procura Pokémon',
+'Abriu um delivery de morte fora das lutas',
+'Pegou core deles andando sozinho e não perdoou',
+], `${plural(picks.length, 'abate', 'abates')} em cores deles (${juntarNomes([...new Set(picks.map((d) => d.vitima.heroi.nome))])}) depois dos 12 min, fora das lutas de time`, picks[0].t);
+}
+
+// 3) Split push: estrutura dele enquanto o time segurava a briga em outro lugar (ou com o time morto)
+for (const e of minhasEstr) {
+const l = ctx.lutas.find((x) => e.t >= x.inicio - 15 && e.t <= (x.fim ?? x.inicio) + 20);
+const longe = l && !presenteNaLuta(l.jogadores[p.idx] || {});
+const mortos = nos.filter((q) => q !== p && mortoEm(q, e.t)).length;
+if (!(longe || mortos >= 3) || !(e.grande || e.est.tipo === 'torre')) continue;
+const ancient = e.est.tipo === 'ancestral';
+const peso = (e.grande ? 13 : 6) + (ancient ? 6 : 0) + (longe && l.ganha ? 1 : 0);
+const contexto = longe
+? `enquanto o time ${l.mortesEles > l.mortesNos ? 'ganhava' : l.mortesEles < l.mortesNos ? 'perdia' : 'segurava'} a luta das ${mmss(l.inicio)} (${l.mortesEles} x ${l.mortesNos}) em outro canto`
+: `com ${mortos} aliados mortos`;
+add('split', peso, ancient ? [
+'Fez o clássico "segura aí que eu vou no Ancestral"',
+'Enquanto todo mundo brigava, ele foi lá e desligou o jogo',
+'Entrou pela porta dos fundos e terminou o jogo',
+] : longe ? [
+'Fez o clássico "segura aí que eu vou na torre"',
+'Enquanto o time brigava, ele foi fazer obra na base deles',
+'Split push raiz: sumiu do mapa e voltou com uma estrutura no bolso',
+] : e.grande ? [
+'Time no cemitério e ele na base deles, demolindo',
+'Com o time todo morto, ele seguiu batendo em prédio',
+] : [
+'Time no cemitério e ele batendo em torre',
+'Com o time todo morto, ele seguiu trabalhando na obra',
+], `aos ${mmss(e.t)} derrubou ${estrTxt(e)} ${contexto}`, e.t);
+break;
+}
+
+// 4) Lutas que decidiram: abriu a base, defendeu a base, buyback que salvou
+for (const l of lutas.filter((x) => x.ganha)) {
+const k = killsNaLuta(l, p);
+const f = fatiaDano(l, p);
+const dele = k >= 2 || (f >= 0.35 && danoNaLuta(l, p) >= 1500);
+if (!dele) continue;
+const fimL = l.fim ?? l.inicio;
+const pres = presentes(l);
+if (l.lugar === 'nossa-base' && l.mortesEles >= 3) {
+const sozinho = pres.length <= 2;
+add('defesa', 11 + (sozinho ? 5 : 0) + 15 * Math.max(0, l.delta), sozinho ? [
+'Segurou a base praticamente sozinho',
+'Trancou a porta de casa e jogou a chave fora, sozinho',
+'Fez a defesa da base no modo solo',
+] : [
+'Eles subiram a high ground e voltaram de rabo entre as pernas',
+'Defendeu a base como se fosse o último pedaço de pizza',
+'Trancou a porta de casa na cara deles',
+], `aos ${mmss(l.inicio)} eles invadiram a base de vocês e a luta terminou ${l.mortesEles} x ${l.mortesNos}${sozinho ? `, só com ${pres.length === 1 ? 'ele' : `ele e ${pres.find((q) => q !== p).nome}`} na defesa` : ''}; ${parteDele(l, p)} na conta dele`, l.inicio);
+}
+const abriu = estruturas.filter((e) => e.deles && e.grande && e.t >= l.inicio && e.t <= fimL + 150);
+if (abriu.length && l.mortesEles >= 3) {
+const fim = abriu.find((e) => e.est.tipo === 'ancestral');
+const minhas = abriu.filter((e) => e.autor === p);
+const lista = estrLista(abriu);
+add(fim ? 'fechou' : 'abriu', 4 + (fim ? 15 : 30) * Math.max(0, Math.min(fim ? 0.3 : 0.5, l.delta)) + Math.min(4, 1.5 * k) + (minhas.length ? 1.5 : 0) + (fim && fim.autor === p ? 1 : 0), fim ? [
+'Ganhou a última luta e foi pessoalmente desligar o jogo',
+'Apagou o time deles e foi buscar o Ancestral de brinde',
+'Fechou a partida do jeito certo: wipe e Ancestral',
+] : [
+'Abriu a porta da base deles na porrada',
+'Ganhou a luta e foi cobrar o aluguel na base deles',
+abriu.some((e) => e.est.tipo === 'quartel') ? 'Luta ganha com entrega em domicílio: direto pros quartéis' : 'Ganhou a briga e já foi subindo a high ground',
+], `aos ${mmss(l.inicio)} a luta foi ${l.mortesEles} x ${l.mortesNos} pra vocês, com ${parteDele(l, p)} na conta dele; ${abriu[0].t - fimL <= 5 ? 'na sequência' : `${segTxt(abriu[0].t - fimL)} depois`} ${abriu.length === 1 ? 'caiu' : 'caíram'} ${lista}${minhas.length ? ` (${minhas.length === abriu.length ? (abriu.length === 1 ? 'no golpe dele' : 'tudo no golpe dele') : `${minhas.length} no golpe dele`})` : ''}`, l.inicio);
+}
+}
+for (const b of p.raw.buyback_log || []) {
+const t = Number(b.time) || 0;
+const l = lutas.find((x) => x.ganha && x.inicio >= t - 10 && x.inicio <= t + 90 && (killsNaLuta(x, p) >= 1 || fatiaDano(x, p) >= 0.25));
+if (!l) continue;
+const emCasa = l.lugar === 'nossa-base';
+add('buyback', (emCasa ? 13 : 8) + 10 * Math.max(0, l.delta), emCasa ? [
+'Pagou o buyback e salvou a casa',
+'Gastou o ouro do buyback e o investimento rendeu uma base inteira',
+'Voltou da fonte de táxi pra salvar o Ancestral',
+] : [
+'Pagou o boleto do buyback e voltou pra resolver',
+'Morreu, comprou a volta e ganhou a luta',
+], `comprou buyback aos ${mmss(t)} e ${emCasa ? 'a defesa da base' : 'a luta seguinte'} terminou ${l.mortesEles} x ${l.mortesNos}, com ${parteDele(l, p)} na conta dele`, t);
+break;
+}
+
+// 5) Castigos: buyback deles jogado fora, item novo que não estreou
+for (const e of eles) {
+for (const b of e.raw.buyback_log || []) {
+const t = Number(b.time) || 0;
+const d = meus.find((x) => x.vitima === e && x.t > t && x.t <= t + 120);
+if (!d) continue;
+const custo = Math.round(200 + nw(e, t) / 13);
+add('buyback-deles', 8, [
+`Fez o buyback de ${e.heroi.nome} virar doação`,
+`${e.heroi.nome} pagou buyback só pra morrer pra ele de novo`,
+`Mandou ${e.heroi.nome} de volta pra fonte com o boleto do buyback ainda quente`,
+], `${e.nome} (${e.heroi.nome}) pagou ~${fmtK(custo)} de buyback aos ${mmss(t)} e morreu pra ele ${segTxt(d.t - t)} depois`, d.t);
+break;
+}
+}
+const itensCaros = eles.flatMap((e) => (e.raw.purchase_log || []).map((x) => ({ e, t: Number(x.time) || 0, key: x.key, it: (ctx.items || {})[x.key] }))
+.filter((x) => x.it && (x.it.cost || 0) >= 3500 && !String(x.key).startsWith('recipe')));
+for (const x of itensCaros) {
+const d = meus.find((m) => m.vitima === x.e && m.t > x.t && m.t <= x.t + 45);
+if (!d) continue;
+add('item', 6 + Math.min(3, (x.it.cost - 3500) / 1500), [
+`${x.e.heroi.nome} comprou ${x.it.dname} e não deu nem tempo de estrear`,
+`Fez ${x.e.heroi.nome} perder a garantia do ${x.it.dname} em ${Math.round(d.t - x.t)} s`,
+`${x.it.dname} novinho, ainda com plástico, e ${x.e.heroi.nome} já estava na fonte`,
+], `${x.e.nome} (${x.e.heroi.nome}) comprou ${x.it.dname} (${fmtK(x.it.cost)}) aos ${mmss(x.t)} e morreu pra ele ${Math.round(d.t - x.t)} s depois`, d.t);
+break;
+}
+
+// 6) Rota: anulou o rival (que nunca mais se recuperou) ou atropelou a rota
+const av = avaliarRotas(ctx).find((r_) => r_.a.includes(p));
+const duelo = av && av.duelos.find((x) => x.jogador === p);
+if (duelo && duelo.rival && duelo.ouroDiff >= 1000 && (duelo.ouroDiff >= 1500 || ((duelo.rival.stats || {}).bench || {}).gold_per_min <= 0.3)) {
+const rv = duelo.rival;
+const bench = (rv.stats && rv.stats.bench) || {};
+const gpmPct = bench.gold_per_min;
+const anulou = gpmPct != null && gpmPct <= 0.3 && rv.posicao <= 3;
+const k = meus.filter((d) => d.vitima === rv && d.t < 600).length;
+add(anulou ? 'anulou' : 'rota', (anulou ? 9 : 5) + Math.min(4, duelo.ouroDiff / 1000) + Math.min(2, k), anulou ? [
+`Acabou com o jogo de ${rv.heroi.nome} na rota, e ${rv.heroi.nome} nunca mais se recuperou`,
+`Mandou ${rv.heroi.nome} pra terapia já nos primeiros 10 min`,
+`Anulou ${rv.heroi.nome}: o resto do jogo foi só o eco`,
+] : [
+`Atropelou ${rv.heroi.nome} na rota`,
+`Fez da rota contra ${rv.heroi.nome} um passeio no parque`,
+], `aos 10 min estava ${fmtK(duelo.ouroDiff)} de ouro na frente de ${rv.nome} (${rv.heroi.nome})${k ? `, com ${plural(k, 'abate', 'abates')} em cima dele` : ''}${anulou ? `; ${rv.heroi.nome} terminou com ${rv.raw.gold_per_min} de GPM, abaixo de ${pct(1 - gpmPct)} de quem joga com ele` : ''}`, 600);
+}
+
+// 7) Mid: runas e ganks cedo
+if (p.posicao === 2) {
+const runas = (p.raw.runes_log || []).filter((x) => String(x.key) in NOMES_RUNA && x.time <= 15 * 60);
+const ganks = meus.filter((d) => d.t >= 120 && d.t < 720 && d.vitima.rota && p.rota && d.vitima.rota.lane != null && d.vitima.rota.lane !== p.rota.lane);
+if (ganks.length >= 2) {
+add('mid', 6 + ganks.length + Math.min(2, runas.length / 2), [
+'Fez da mid uma agência de viagens: saía pra gankar e voltava com abate',
+'Mid que não fica na mid: rodou o mapa e cobrou pedágio',
+'Pegou runa, saiu da rota e foi visitar os vizinhos',
+], `${plural(ganks.length, 'abate', 'abates')} fora da mid antes dos 12 min (${juntarNomes([...new Set(ganks.map((d) => d.vitima.heroi.nome))])})${runas.length ? ` e ${plural(runas.length, 'runa de poder', 'runas de poder')} até os 15 min` : ''}`, ganks[0] ? ganks[0].t : null);
+}
+}
+
+// 8) Suporte que montou o carry
+if (p.posicao >= 4 && (p.raw.camps_stacked || 0) >= 5) {
+const carry = nos.find((q) => q.posicao === 1);
+if (carry && carry !== p && (carry.raw.last_hits || 0) >= 200) {
+const neutros = soma(Object.entries(carry.raw.killed || {}).filter(([k]) => k.includes('neutral')), ([, n]) => n);
+add('stack', 5 + Math.min(4, (p.raw.camps_stacked - 5) / 2), [
+`Montou o self-service da selva pro ${carry.nome}`,
+`Stackou a selva e entregou ${carry.nome} pronto pra servir`,
+'Fez a feira do carry e ainda carregou as sacolas',
+], `${p.raw.camps_stacked} camps stackados; ${carry.nome} (${carry.heroi.nome}) terminou com ${carry.raw.last_hits} last hits${neutros ? `, ${neutros} deles na selva` : ''}`);
+}
+}
+
+// 9) Enquanto o parceiro alimentava o inimigo, ele resolvia
+const w = lanterna(p);
+if (w) {
+const ds = mortesDe(w.idx);
+let best = null;
+for (let i = 0; i < ds.length; i++) {
+for (let j = i + 4; j < ds.length; j++) {
+const t0 = ds[i].t;
+const t1 = ds[j].t;
+if (t1 - t0 > 15 * 60) break;
+const n = j - i + 1;
+const k = meus.filter((d) => d.t >= t0 - 30 && d.t <= t1 + 30).length;
+const est = minhasEstr.filter((e) => e.t >= t0 - 30 && e.t <= t1 + 30).length;
+const nota = k + 2 * est;
+if (k >= 5 && nota >= n && (!best || nota + n > best.nota + best.n)) best = { t0, t1, n, k, est, nota };
+}
+}
+if (best) {
+add('enquanto', 9 + Math.min(5, best.n / 2) + Math.min(4, best.nota / 3), [
+`Enquanto ${w.nome} distribuía ouro pro inimigo, ele cobrava de volta com juros`,
+`${w.nome} abriu a torneira de ouro pro inimigo e ele foi fechando`,
+`Enquanto ${w.nome} fazia turismo na fonte, ele pagava as contas da casa`,
+`${w.nome} patrocinou o time deles; ele mandou a fatura de volta`,
+], `entre os ${minTxt(best.t0)} e os ${minTxt(best.t1)}, ${w.nome} (${w.heroi.nome}) morreu ${best.n} vezes; no mesmo período ele fez ${plural(best.k, 'abate', 'abates')}${best.est ? ` e derrubou ${plural(best.est, 'estrutura', 'estruturas')}` : ''}`, best.t0);
+}
+}
+
+ms.sort((a, b) => b.peso - a.peso);
+out[p.idx] = ms;
+}
+return out;
+}
+
 function escolherLado(match, jog, amigos, ladoPedido) {
 if (ladoPedido === 'radiant') return true;
 if (ladoPedido === 'dire') return false;
@@ -4598,7 +4992,8 @@ quedas: ctx.quedas, viradas: ctx.viradas,
 janela: (() => { try { return janelaDoJogo(ctx, match, venceu); } catch (e) { console.error('janela', e); return null; } })(),
 matchups: ctx.matchups, // o mesmo objeto que completarHerois preenche depois
 draft: Array.isArray(match.picks_bans) && match.picks_bans.length ? match.picks_bans.map((x) => ({ is_pick: Boolean(x.is_pick), hero_id: x.hero_id, team: x.team, order: x.order })) : null,
-vereditos, craques: craquesDaPartida(ctx, match), comparativo, rotas, inimigo, dadosDeItens, itensQueMudamALuta,
+vereditos, craques: craquesDaPartida(ctx, match), comparativo,
+momentos: parseado ? (() => { try { return momentosDaVitoria(ctx, match, chance, venceu); } catch (e) { console.error('momentos', e); return {}; } })() : {}, rotas, inimigo, dadosDeItens, itensQueMudamALuta,
 planoDoTime: ctx.alocacao.plano, ameacasDoTime: ctx.alocacao.ameacas, debates: debatesDeItens(ctx),
 historia: parseado && ctx.mortes ? historiaDaPartida(ctx, rotas, venceu) : [],
 chance,
@@ -6013,10 +6408,15 @@ const outros = r.nos.filter((q) => q.idx !== p.idx);
 const abatesTime = somaNos(r, (q) => q.raw.kills) || 1;
 const fatos = [];
 const add = (peso, frases, prova, key = null) => fatos.push({ peso, frase: rnd.um(frases), prova, key });
+// os momentos decisivos que o motor achou (virada, solo kill, split push, defesa...): no máximo um de cada família
+const familias = new Set();
+const momentos = ((r.momentos || {})[p.idx] || []).filter((m) => !familias.has(m.familia) && familias.add(m.familia));
+for (const m of momentos) fatos.push({ peso: m.peso, frase: rnd.um(m.frases), prova: m.prova, key: m.tipo });
+const tem = (...ks) => momentos.some((m) => ks.includes(m.tipo) || ks.includes(m.familia));
 
 // quem ficou para trás: o último do mérito
 const lanterna = [...(r.craques || [])].reverse().find((c) => c.jogador.idx !== p.idx);
-if (lanterna && v.fatia >= 2 * lanterna.fatia) {
+if (lanterna && v.fatia >= 2 * lanterna.fatia && !tem('enquanto')) {
 const w = lanterna.jogador;
 add(9, [`Colocou ${w.nome} na mochila`, `Carregou ${w.nome} de cavalinho até o Ancient deles`, `Levou ${w.nome} no colo a partida inteira`, `Adotou ${w.nome} como mascote`],
 `${w.nome} (${w.heroi.nome}) terminou ${kdaDe(w)} com ${pct(lanterna.fatia)} do mérito; ele, ${pct(v.fatia)}`);
@@ -6025,7 +6425,7 @@ add(9, [`Colocou ${w.nome} na mochila`, `Carregou ${w.nome} de cavalinho até o 
 if (r.mortes && r.eles) {
 const vitimas = r.eles.map((e) => ({ e, n: (r.mortes[e.idx] || []).filter((d) => d.assassino === p.idx).length })).sort((a, b) => b.n - a.n);
 const [top] = vitimas;
-if (top && top.n >= 3) add(6 + top.n / 2, [`Fez do ${top.e.heroi.nome} freguês`, `Botou o ${top.e.heroi.nome} no modo tutorial`, `Já pode cobrar aluguel do ${top.e.heroi.nome}`, `Virou o pesadelo particular do ${top.e.heroi.nome}`],
+if (top && top.n >= 3 && !tem('abate')) add(6 + top.n / 2, [`Fez do ${top.e.heroi.nome} freguês`, `Botou o ${top.e.heroi.nome} no modo tutorial`, `Já pode cobrar aluguel do ${top.e.heroi.nome}`, `Virou o pesadelo particular do ${top.e.heroi.nome}`],
 `matou ${top.e.nome} (${top.e.heroi.nome}) ${pluralMr(top.n, 'vez', 'vezes')}`);
 }
 // mais abates que os dois melhores colegas somados
@@ -6063,10 +6463,9 @@ if (p.posicao >= 4 && wards >= Math.max(12, min * 0.6)) add(4, ['Transformou o m
 const lh = p.raw.last_hits || 0;
 if (lh / min >= 8) add(4, ['Fez da selva deles um self-service', 'Não sobrou creep pra contar história'], `${lh} last hits (${(lh / min).toFixed(1).replace('.', ',')} por minuto)`);
 const multi = p.raw.multi_kills || {};
-if (multi[5]) add(10, ['Rampage! O chat ainda está gritando', 'Apagou o time inimigo inteiro de uma vez'], `${pluralMr(multi[5], 'rampage', 'rampages')} na partida`);
-else if (multi[4]) add(7, ['Ultra kill: faltou um pra fechar a conta', 'Quase apagou a luz do time deles'], `${pluralMr(multi[4], 'ultra kill', 'ultra kills')} na partida`);
+if (multi[5]) add(5, ['Rampage! O chat ainda está gritando', 'Apagou o time inimigo inteiro de uma vez'], `${pluralMr(multi[5], 'rampage', 'rampages')} na partida`);
 const aegis = (v.componentes || []).find((c) => c.key === 'roshan');
-if (aegis) add(4, ['Jantou o Roshan e ainda pediu sobremesa', 'Roshan virou petisco'], aegis.evidencia, 'roshan');
+if (aegis && !tem('luta')) add(3, ['Jantou o Roshan e ainda pediu sobremesa', 'Roshan virou petisco'], aegis.evidencia, 'roshan');
 
 fatos.sort((a, b) => b.peso - a.peso);
 if (fatos.length < n) {
