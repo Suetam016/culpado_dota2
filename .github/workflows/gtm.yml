@@ -1,0 +1,31 @@
+name: Medição do GTM
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'ranking/**'
+      - 'jogada/**'
+      - 'lol/**'
+      - 'gtm/**'
+      - '.github/workflows/gtm.yml'
+  workflow_dispatch:
+
+jobs:
+  checar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar Playwright
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Conferir o que o GTM usa
+        run: |
+          python3 -m http.server 8765 >/dev/null 2>&1 &
+          sleep 2
+          node gtm/checar.js http://localhost:8765
