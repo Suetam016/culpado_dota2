@@ -36,11 +36,13 @@ O GTM também espera estes eventos no `dataLayer`, que **o site ainda não envia
 
 ## Tela de vitória: visões sorteadas (desde 04/11/2026)
 
-Numa vitória, a tela sorteia uma "visão" (hoje `zap` com peso 7 e `documento` com peso 3; Plantão, Stories e Post entram
-depois). O site envia `dataLayer.push({ event: 'victory_view', victory_view: '<id>', victory_view_switch: <true se a pessoa trocou> })`.
+Numa vitória, a tela sorteia uma "visão" (`documento`; Plantão, Stories e Post entram depois). **Desde 04/11/2026 a
+visão `zap` está desligada**: toda vitória mostra o `documento`, então `victory_view` chega sempre com `documento` e
+`victory_view_switch: false`, o botão `.trocar-visao` some (só aparece quando há mais de uma visão) e `.zap-play` /
+`.zap-pedir` não aparecem mais. O código ficou para religar depois. O site envia `dataLayer.push({ event: 'victory_view', victory_view: '<id>', victory_view_switch: <true se a pessoa trocou> })`.
 A visão também fica em `.visao-vitoria[data-visao]`. Elementos novos ainda sem gatilho: o botão `.trocar-visao`
 (`data-gtm="vitoria-trocar-visao"`, "Ver em outra tela"). Os botões do áudio (`.zap-play`, `.zap-pedir`) continuam iguais,
-agora dentro da visão do zap. `?visao=zap` (ou `documento`) na URL força uma visão, útil para testar.
+agora dentro da visão do zap. `?visao=zap` (ou `documento`) na URL força uma visão, mesmo desligada, útil para testar.
 
 ## Conferência automática
 

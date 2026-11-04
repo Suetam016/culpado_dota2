@@ -6984,19 +6984,26 @@ return corpo;
 
 // ---------- Visões da vitória: a tela de vitória sorteia uma "cara" a cada visita ----------
 // Para pôr uma visão nova (Plantão da Selva, Stories, Post...): escreva visaoX(r) devolvendo o <article> e some uma
-// linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força.
+// linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força
+// (inclusive uma visão desligada). `ligada: false` tira a visão do sorteio sem apagar o código.
+// Zap desligado em 04/11/2026 (o áudio demorava para gravar e o visual não agradou); para religar, troque para true.
 const VISOES_VITORIA = [
-{ id: 'zap', nome: 'Grupo do zap', peso: 7, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
+{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
 ];
 const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega
 
+function visaoForcada() {
+try { return new URLSearchParams(location.search).get('visao'); } catch (e) { return null; /* sem URL */ }
+}
+// visões que entram no sorteio desta partida (a desligada só aparece se a URL pedir por ela)
+const visoesPossiveis = (r) => VISOES_VITORIA.filter((x) => x.pode(r) && (x.ligada !== false || x.id === visaoForcada()));
+
 function escolherVisao(r, evitar = null) {
 const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
 const chave = `${r.partida.id}-${lado}`;
-const possiveis = VISOES_VITORIA.filter((x) => x.pode(r));
-let forcada = null;
-try { forcada = new URLSearchParams(location.search).get('visao'); } catch (e) { /* sem URL */ }
+const possiveis = visoesPossiveis(r);
+const forcada = visaoForcada();
 if (!evitar) {
 const fixa = possiveis.find((x) => x.id === forcada) || possiveis.find((x) => x.id === visaoSorteada.get(chave));
 if (fixa) { visaoSorteada.set(chave, fixa.id); return fixa; }
@@ -7016,7 +7023,7 @@ const montar = (visao) => {
 const doc = visao.montar(r);
 doc.dataset.visao = visao.id;
 doc.append(barraCompartilhar(r));
-const outras = VISOES_VITORIA.filter((x) => x.id !== visao.id && x.pode(r));
+const outras = visoesPossiveis(r).filter((x) => x.id !== visao.id);
 const trocar = outras.length ? h('button', { class: 'trocar-visao', type: 'button', 'data-gtm': 'vitoria-trocar-visao' }, '🎲 Ver em outra tela') : null;
 if (trocar) trocar.addEventListener('click', () => {
 const nova = escolherVisao(r, visao.id);
