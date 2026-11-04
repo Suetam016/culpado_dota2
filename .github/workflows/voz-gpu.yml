@@ -12,10 +12,11 @@ on:
         description: "Id de uma partida para medir o tempo (vazio: só publica)"
         required: false
         default: ""
+  # Parado: o Modal só libera GPU com cartão cadastrado e o Mat não quer gasto nenhum (04/11/2026). Só roda na mão
+  # ou com um push em audio/gpu-teste, para não falhar a cada mudança do site.
   push:
     branches: [main]
-    paths: ["audio/gpu.py", "audio/falar.py", "audio/fila.js", "audio/roteiro.js", "audio/voz/**", "frases/**",
-            "ranking/gerar.js", "index.html", ".github/workflows/voz-gpu.yml", "audio/gpu-teste"]
+    paths: ["audio/gpu-teste"]
 
 permissions:
   contents: write
