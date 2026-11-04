@@ -24,6 +24,9 @@ concurrency:
 
 jobs:
   audio:
+    # Desligado em 04/11/2026 junto com a visão do zap na vitória: só grava se alguém rodar na mão.
+    # Para religar a gravação automática, crie a variável do repositório AUDIO_AUTOMATICO=true.
+    if: github.event_name == 'workflow_dispatch' || vars.AUDIO_AUTOMATICO == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
