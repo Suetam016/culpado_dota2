@@ -15,7 +15,7 @@ on:
   push:
     branches: [main]
     paths: ["audio/gpu.py", "audio/falar.py", "audio/fila.js", "audio/roteiro.js", "audio/voz/**", "frases/**",
-            "ranking/gerar.js", "index.html", ".github/workflows/voz-gpu.yml"]
+            "ranking/gerar.js", "index.html", ".github/workflows/voz-gpu.yml", "audio/gpu-teste"]
 
 permissions:
   contents: write
@@ -31,6 +31,7 @@ jobs:
     env:
       MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
       MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+      CHAVE_BASE: ${{ secrets.MODAL_TOKEN_SECRET }}
       MAPA_GITHUB_TOKEN: ${{ secrets.MAPA_GITHUB_TOKEN }}
       OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
     steps:
@@ -42,6 +43,12 @@ jobs:
             echo "ok=0" >> "$GITHUB_OUTPUT"
           else
             echo "ok=1" >> "$GITHUB_OUTPUT"
+            # colado com espaço/quebra de linha ou com os dois trocados (o id começa com ak-, o segredo com as-)
+            ID=$(printf '%s' "$MODAL_TOKEN_ID" | tr -d '[:space:]'); SEC=$(printf '%s' "$MODAL_TOKEN_SECRET" | tr -d '[:space:]')
+            case "$ID" in as-*) T="$ID"; ID="$SEC"; SEC="$T"; echo "::warning::MODAL_TOKEN_ID e MODAL_TOKEN_SECRET estavam trocados";; esac
+            case "$ID" in ak-*) ;; *) echo "::warning::MODAL_TOKEN_ID não começa com ak- (confira o valor colado)";; esac
+            echo "::add-mask::$ID"; echo "::add-mask::$SEC"
+            { echo "MODAL_TOKEN_ID=$ID"; echo "MODAL_TOKEN_SECRET=$SEC"; } >> "$GITHUB_ENV"
           fi
       - uses: actions/checkout@v4
         if: steps.seg.outputs.ok == '1'
@@ -55,7 +62,7 @@ jobs:
         if: steps.seg.outputs.ok == '1'
         run: |
           pip install -q modal
-          CHAVE=$(printf '%s' "culpado-voz:$MODAL_TOKEN_SECRET" | sha256sum | cut -c1-40)
+          CHAVE=$(printf '%s' "culpado-voz:$CHAVE_BASE" | sha256sum | cut -c1-40)
           modal secret create culpado-voz --force GITHUB_TOKEN="$MAPA_GITHUB_TOKEN" CHAVE="$CHAVE" OPENDOTA_API_KEY="$OPENDOTA_API_KEY" >/dev/null
       - name: Publicar
         if: steps.seg.outputs.ok == '1'
@@ -65,9 +72,15 @@ jobs:
           [ -n "$URL" ] || { echo "não achei o endereço do pedir no log"; exit 1; }
           echo "URL=$URL" >> "$GITHUB_ENV"
           echo "Voz na GPU no ar: $URL" | tee -a "$GITHUB_STEP_SUMMARY"
+      # na mão com "teste", ou com um push em audio/gpu-teste (o arquivo traz o id da partida)
       - name: Medir o tempo
-        if: steps.seg.outputs.ok == '1' && inputs.teste != ''
-        run: modal run audio/gpu.py --id "${{ inputs.teste }}" 2>&1 | grep -v -i -E "warn|pci_bus" | tail -25 | tee -a "$GITHUB_STEP_SUMMARY"
+        if: steps.seg.outputs.ok == '1'
+        run: |
+          ID="${{ inputs.teste }}"
+          MEXEU="${{ contains(join(github.event.commits.*.added, ','), 'audio/gpu-teste') || contains(join(github.event.commits.*.modified, ','), 'audio/gpu-teste') }}"
+          [ -z "$ID" ] && [ "$MEXEU" = "true" ] && ID=$(tr -dc '0-9' < audio/gpu-teste)
+          [ -z "$ID" ] && exit 0
+          modal run audio/gpu.py --id "$ID" 2>&1 | grep -v -i -E "warn|pci_bus" | tail -25 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Ligar no Worker
         if: steps.seg.outputs.ok == '1'
         run: |
