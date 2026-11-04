@@ -1,0 +1,96 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/modules/rnn.py:1012: UserWarning: dropout option adds dropout after all but last recurrent layer, so non-zero dropout expects num_layers greater than 1, but got dropout=0.2 and num_layers=1
+  super().__init__("LSTM", *args, **kwargs)
+/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/torch/nn/utils/weight_norm.py:145: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+  WeightNorm.apply(module, name, dim)
+Loaded the voice encoder model on cpu in 0.01 seconds.
+bm_george  nota 0.760 alvo 0.625 estab 0.968
+bm_lewis   nota 0.743 alvo 0.614 estab 0.942
+bm_daniel  nota 0.730 alvo 0.594 estab 0.946
+em_santa   nota 0.728 alvo 0.585 estab 0.963
+pm_alex    nota 0.722 alvo 0.588 estab 0.936
+im_nicola  nota 0.721 alvo 0.580 estab 0.951
+em_alex    nota 0.714 alvo 0.580 estab 0.928
+pm_santa   nota 0.712 alvo 0.568 estab 0.955
+am_eric    nota 0.699 alvo 0.549 estab 0.962
+pf_dora    nota 0.698 alvo 0.554 estab 0.944
+hm_omega   nota 0.685 alvo 0.529 estab 0.971
+am_michael nota 0.683 alvo 0.538 estab 0.933
+am_adam    nota 0.679 alvo 0.527 estab 0.956
+am_onyx    nota 0.672 alvo 0.523 estab 0.940
+bm_fable   nota 0.632 alvo 0.473 estab 0.951
+am_echo    nota 0.626 alvo 0.466 estab 0.951
+am_liam    nota 0.623 alvo 0.464 estab 0.948
+am_fenrir  nota 0.595 alvo 0.434 estab 0.947
+am_puck    nota 0.582 alvo 0.421 estab 0.942
+início: nota 0.760 alvo 0.625
+passo 26: nota 0.764 alvo 0.632 estab 0.966
+passo 39: nota 0.764 alvo 0.635 estab 0.958
+passo 53: nota 0.766 alvo 0.643 estab 0.946
+passo 74: nota 0.768 alvo 0.645 estab 0.950
+passo 84: nota 0.772 alvo 0.660 estab 0.930
+passo 85: nota 0.773 alvo 0.661 estab 0.933
+passo 86: nota 0.782 alvo 0.669 estab 0.941
+passo 88: nota 0.782 alvo 0.669 estab 0.942
+passo 90: nota 0.786 alvo 0.674 estab 0.941
+passo 91: nota 0.787 alvo 0.684 estab 0.927
+passo 95: nota 0.796 alvo 0.693 estab 0.937
+passo 99: nota 0.798 alvo 0.694 estab 0.938
+passo 117: nota 0.798 alvo 0.701 estab 0.925
+passo 119: nota 0.800 alvo 0.700 estab 0.933
+passo 121: nota 0.800 alvo 0.713 estab 0.912
+passo 124: nota 0.805 alvo 0.715 estab 0.922
+passo 131: nota 0.808 alvo 0.718 estab 0.923
+passo 149: nota 0.810 alvo 0.720 estab 0.925
+passo 154: nota 0.817 alvo 0.728 estab 0.930
+passo 200 (escala 0.225)
+passo 202: nota 0.817 alvo 0.726 estab 0.934
+passo 221: nota 0.818 alvo 0.733 estab 0.924
+passo 245: nota 0.822 alvo 0.732 estab 0.936
+passo 256: nota 0.830 alvo 0.749 estab 0.931
+passo 369: nota 0.830 alvo 0.742 estab 0.943
+passo 400 (escala 0.203)
+passo 427: nota 0.835 alvo 0.748 estab 0.946
+passo 450: nota 0.836 alvo 0.751 estab 0.941
+passo 459: nota 0.837 alvo 0.752 estab 0.943
+passo 464: nota 0.837 alvo 0.764 estab 0.926
+passo 484: nota 0.839 alvo 0.765 estab 0.928
+passo 492: nota 0.844 alvo 0.765 estab 0.941
+passo 507: nota 0.848 alvo 0.775 estab 0.937
+passo 536: nota 0.849 alvo 0.780 estab 0.932
+passo 600 (escala 0.182)
+passo 702: nota 0.852 alvo 0.781 estab 0.937
+passo 789: nota 0.852 alvo 0.783 estab 0.934
+passo 796: nota 0.853 alvo 0.786 estab 0.932
+passo 800 (escala 0.164)
+passo 809: nota 0.853 alvo 0.784 estab 0.935
+passo 810: nota 0.855 alvo 0.789 estab 0.934
+passo 815: nota 0.857 alvo 0.790 estab 0.936
+passo 925: nota 0.858 alvo 0.795 estab 0.933
+passo 942: nota 0.859 alvo 0.795 estab 0.935
+passo 988: nota 0.861 alvo 0.799 estab 0.933
+passo 990: nota 0.865 alvo 0.796 estab 0.948
+passo 991: nota 0.869 alvo 0.799 estab 0.953
+passo 992: nota 0.872 alvo 0.801 estab 0.957
+passo 1000 (escala 0.148)
+passo 1005: nota 0.873 alvo 0.803 estab 0.955
+passo 1008: nota 0.873 alvo 0.805 estab 0.953
+passo 1012: nota 0.873 alvo 0.811 estab 0.945
+passo 1020: nota 0.874 alvo 0.805 estab 0.957
+passo 1032: nota 0.875 alvo 0.808 estab 0.954
+passo 1037: nota 0.876 alvo 0.809 estab 0.954
+passo 1099: nota 0.876 alvo 0.809 estab 0.956
+passo 1200 (escala 0.133)
+passo 1400 (escala 0.120)
+passo 1600 (escala 0.108)
+passo 1800 (escala 0.097)
+passo 2000 (escala 0.087)
+passo 2160: nota 0.877 alvo 0.811 estab 0.954
+passo 2200 (escala 0.078)
+passo 2226: nota 0.877 alvo 0.809 estab 0.957
+passo 2229: nota 0.877 alvo 0.814 estab 0.951
+passo 2230: nota 0.881 alvo 0.815 estab 0.959
+passo 2400 (escala 0.071)
+passo 2584: nota 0.883 alvo 0.819 estab 0.958
+passo 2600 (escala 0.064)
+fim: 2637 passos, nota 0.883, alvo 0.819 (base mais parecida: bm_george)
