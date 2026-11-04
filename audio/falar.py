@@ -8,6 +8,7 @@ duração). O pedido do site atendido (audio/pedidos/<id>) é apagado, saindo o 
 audio/falhas.json para o site parar de esperar.
 """
 import json
+import os
 import subprocess
 import sys
 import time
@@ -45,7 +46,7 @@ def main():
         modelo = Qwen3TTSModel.from_pretrained(MODELO, device_map="cpu", dtype=torch.float32)
         # o "prompt" da voz é calculado uma vez e reaproveitado em todos os áudios
         prompt = modelo.create_voice_clone_prompt(ref_audio=str(VOZ), ref_text=VOZ_TEXTO)
-        print(f"modelo carregado em {time.time() - t:.0f}s", flush=True)
+        print(f"modelo carregado em {time.time() - t:.0f}s ({torch.get_num_threads()} threads, {os.cpu_count()} CPUs)", flush=True)
     for x in fila:
         pedido = AQUI / "pedidos" / str(x["id"])
         if x.get("jaTem"):

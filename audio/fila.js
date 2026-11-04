@@ -47,8 +47,10 @@ async function main() {
   // 1) pedidos do site (quem pediu está esperando na página)
   const pedidos = fs.existsSync(PEDIDOS) ? fs.readdirSync(PEDIDOS).filter((f) => /^\d+$/.test(f)) : [];
   for (const id of pedidos) candidatos.push({ id, pedido: true });
-  // 2) vitórias do grupo dos últimos dias, das mais novas para as mais velhas
-  const desde = Date.now() / 1000 - DIAS * 86400;
+  // 2) vitórias do grupo dos últimos dias, das mais novas para as mais velhas. Se tem gente esperando na página, o
+  //    robô grava SÓ os pedidos (cada áudio leva ~4 min na CPU e o site só recebe quando a rodada inteira termina);
+  //    as do grupo ficam para a rodada que vem depois do ranking.
+  const desde = pedidos.length ? Infinity : Date.now() / 1000 - DIAS * 86400;
   Object.entries(indice)
     .filter(([, info]) => (info.inicio || 0) >= desde && info.radiant_venceu != null)
     .sort((a, b) => b[1].inicio - a[1].inicio)
