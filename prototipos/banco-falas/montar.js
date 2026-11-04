@@ -10,7 +10,7 @@ const { dadosEmbutidos } = require('../../ranking/gerar.js');
 const RAIZ = path.resolve(__dirname, '../..');
 const id = process.argv[2];
 if (!/^\d{9,12}$/.test(id || '')) { console.error('uso: montar.js <id da partida>'); process.exit(1); }
-execFileSync('node', [path.join(RAIZ, 'audio/fila.js'), '--id', id], { stdio: 'inherit', cwd: RAIZ });
+execFileSync('node', [path.join(RAIZ, 'audio/fila.js'), '--id', id, '--forcar'], { stdio: 'inherit', cwd: RAIZ });
 const item = JSON.parse(fs.readFileSync(path.join(RAIZ, 'audio/fila.json'), 'utf8')).find((x) => !x.jaTem);
 if (!item) { console.error('sem roteiro para essa partida'); process.exit(1); }
 

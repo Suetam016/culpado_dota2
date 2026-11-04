@@ -85,7 +85,7 @@ async function main() {
     }
     if (!match || !Array.isArray(match.players) || match.radiant_win == null) { console.error(`${c.id}: partida incompleta`); continue; }
     const lado = c.lado || (match.radiant_win ? 'radiant' : 'dire');
-    if (c.pedido && temAudio(c.id, lado)) { fila.push({ id: c.id, lado, pedido: true, jaTem: true }); continue; }
+    if (c.pedido && !process.argv.includes('--forcar') && temAudio(c.id, lado)) { fila.push({ id: c.id, lado, pedido: true, jaTem: true }); continue; }
     try {
       const r = motor.analisar({ match, heroes, items, itemIds, amigos, rotas, timings: {}, matchups: {}, duracoes: {}, mapa: null }, { lado });
       const f = Roteiro.fatos(r);

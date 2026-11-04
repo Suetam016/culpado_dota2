@@ -8,6 +8,7 @@ Usa audio/falar.py (mesma voz e modelo da produção). As pausas imitam um áudi
 no fim de frase. Cada pedaço tem o silêncio das pontas cortado e o volume igualado.
 """
 import json
+import shutil
 import subprocess
 import sys
 import time
@@ -57,10 +58,15 @@ def main():
     for f in sorted((saida / "pedacos").glob("*.wav")):
         subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(f), "-ac", "1", "-b:a", "48k", str(f.with_suffix(".mp3"))], check=True)
         f.unlink()
+    # o áudio inteiro de produção, se já existe, é a comparação; senão grava agora
     t = time.time()
-    falar.gravar(modelo, prompt, {"arquivo": "inteiro", "texto": cfg["texto"]}, saida)
+    producao = AQUI.parent.parent / "audios" / f"{cfg['partida']}.mp3"
+    if producao.exists():
+        shutil.copy(producao, saida / "inteiro.mp3")
+    else:
+        falar.gravar(modelo, prompt, {"arquivo": "inteiro", "texto": cfg["texto"]}, saida)
+        (saida / "inteiro.json").unlink(missing_ok=True)
     inteiro_s = round(time.time() - t, 1)
-    (saida / "inteiro.json").unlink(missing_ok=True)
     (saida / "tempos.json").write_text(json.dumps({"total_s": round(len(tudo) / sr, 1), "inteiro_gerado_em": inteiro_s, "pedacos": tempos}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"emendado: {len(tudo) / sr:.1f}s", flush=True)
 
