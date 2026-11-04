@@ -198,7 +198,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </svg>
 <header class="topo">
   <div class="topo-inner">
-    <a class="ir-ranking" href="ranking/" title="Ranking dos amigos"><span aria-hidden="true">🏆</span><span class="ir-ranking-txt">Ranking</span></a>
+    <a class="ir-ranking" href="ranking/" title="Liga dos grupos"><span aria-hidden="true">🏆</span><span class="ir-ranking-txt">Liga dos grupos</span></a>
     <div class="marca">
       <h1>Quem é o <em>culpado?</em></h1>
       <span class="tag">Dota 2</span>
@@ -233,12 +233,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span class="home-cartao-txt"><strong>O replay no mapinha</strong><span>Os lances que decidiram o jogo, animados no mapa: o Play e o Throw of the Game, com som.</span></span>
     </button>
     <a class="home-cartao" href="ranking/">
-      <span class="home-foto"><img src="img/home-ranking.jpg" alt="Ranking do grupo de amigos Marocas" width="640" height="353" loading="lazy"></span>
-      <span class="home-cartao-txt"><strong>O ranking do grupo</strong><span>Quem é o mais culpado e o mais craque da turma, duplas que funcionam e o time fechado. Veja o do Marocas.</span></span>
+      <span class="home-foto"><img src="img/home-ranking.jpg" alt="Liga dos grupos: o ranking do grupo Marocas" width="640" height="353" loading="lazy"></span>
+      <span class="home-cartao-txt"><strong>A liga dos grupos</strong><span>Os grupos que jogam juntos, com o MMR da semana, o craque e o culpado de cada um. Clique no grupo para ver a Bolsa e o ranking dele.</span></span>
     </a>
   </div>
   <div class="home-grupo">
-    <div><strong>Quer o ranking do seu grupo?</strong><span>É de graça enquanto estamos em teste. Mande o nome do grupo e o perfil da Steam dos amigos.</span></div>
+    <div><strong>Quer o seu grupo na liga?</strong><span>É de graça enquanto estamos em teste. Mande o nome do grupo e o perfil da Steam dos amigos.</span></div>
     <button type="button" class="botao secundario" id="home-pedir-grupo">Quero o meu grupo</button>
   </div>
 </section>
@@ -14170,11 +14170,11 @@ function montarAvisoRanking() {
 if (SO_EMBUTIDO) return;
 if (!avisoRanking) {
 const fechar = (ev) => { if (ev) ev.preventDefault(); clearTimeout(avisoTimer); avisoRanking.classList.remove('av-rk-on'); };
-avisoRanking = h('aside', { class: 'av-rk', role: 'status', 'aria-label': 'Novidade: ranking dos amigos' },
+avisoRanking = h('aside', { class: 'av-rk', role: 'status', 'aria-label': 'Novidade: liga dos grupos' },
 h('span', { class: 'av-rk-selo' }, 'Novo'),
-h('strong', { class: 'av-rk-tit' }, 'Ranking dos amigos'),
-h('p', { class: 'av-rk-txt' }, 'Quem é o mais culpado do grupo, as duplas que jogam bem juntas e as melhores composições.'),
-h('a', { class: 'av-rk-ir', href: 'ranking/' }, 'Ver o ranking →'),
+h('strong', { class: 'av-rk-tit' }, 'Liga dos grupos'),
+h('p', { class: 'av-rk-txt' }, 'Os grupos que jogam juntos, com o MMR da semana, o craque e o culpado de cada um.'),
+h('a', { class: 'av-rk-ir', href: 'ranking/' }, 'Ver a liga →'),
 h('button', { class: 'av-rk-x', type: 'button', 'aria-label': 'Fechar aviso', onclick: fechar }, '×'));
 document.body.append(avisoRanking);
 }
@@ -14361,7 +14361,7 @@ const caixa = document.querySelector('.fb-caixa');
 const texto = document.querySelector('.fb-texto');
 if (!botao || !caixa || !texto) return;
 if (caixa.hidden) botao.click();
-texto.value = 'Quero o ranking do meu grupo!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
+texto.value = 'Quero o meu grupo na Liga dos grupos!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
 texto.focus();
 texto.setSelectionRange(texto.value.indexOf('\n') + 16, texto.value.indexOf('\n') + 16);
 });
