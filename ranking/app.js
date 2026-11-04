@@ -39,7 +39,19 @@ let ordem = 'culpados';
 const $ = id => document.getElementById(id);
 
 document.addEventListener('DOMContentLoaded', async () => {
+  modoLiga(!location.hash || location.hash === '#liga');
   mostrarPatchNotes();
+  $('liga-grupos').addEventListener('click', e => {
+    const tr = e.target.closest('tr[data-href]');
+    if (tr && !e.target.closest('a')) location.hash = tr.dataset.href;
+  });
+  $('liga-pedir-grupo').addEventListener('click', () => {
+    const caixa = $('fb-caixa');
+    if (caixa.hidden) $('fb-botao').click();
+    const campo = $('fb-texto');
+    if (!campo.value.trim()) campo.value = 'Quero o meu grupo na Liga dos grupos!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
+    campo.focus();
+  });
   document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => mudarAba(b.dataset.aba)));
   document.querySelectorAll('[data-ordem]').forEach(b => b.addEventListener('click', () => {
     ordem = b.dataset.ordem;
@@ -82,13 +94,76 @@ document.addEventListener('DOMContentLoaded', async () => {
   parceirosBase = parceiros;
   aplicarPeriodo();
 
+  renderizarLiga();
   const pelaUrl = () => {
     const aba = location.hash.slice(1);
-    mudarAba(aba && document.querySelector(`.aba[data-aba="${aba}"]`) ? aba : 'elo'); // a Bolsa abre por padrão
+    if (!aba || aba === 'liga') { modoLiga(true); return; } // sem # abre a Liga dos grupos
+    modoLiga(false);
+    mudarAba(document.querySelector(`.aba[data-aba="${aba}"]`) ? aba : 'elo'); // dentro do grupo, a Bolsa abre por padrão
   };
   window.addEventListener('hashchange', pelaUrl);
   pelaUrl();
 });
+
+/* ---------- Liga dos grupos ---------- */
+// Os grupos da liga. Hoje só o Marocas, que usa os dados desta página; grupo novo entra aqui com os arquivos dele.
+const GRUPOS = [{ id: 'marocas', nome: 'Marocas', fundador: true, href: 'elo' }];
+
+function modoLiga(liga) {
+  document.body.classList.toggle('modo-liga', liga);
+  $('marca-tag').textContent = liga ? 'A comunidade do culpado' : 'Liga dos grupos';
+  $('marca-nome').textContent = liga ? 'Liga dos grupos' : 'Marocas';
+  document.title = liga ? 'Liga dos grupos' : 'Ranking — Marocas';
+  if (liga && location.hash !== '#liga') history.replaceState(null, '', '#liga');
+}
+
+// semana de domingo a sábado (igual ao período "Esta semana"): pessoas, partidas do grupo, MMR somado, craque e culpado
+function semanaDoGrupo(r, p) {
+  const inicio = desdePeriodo('semana');
+  const pessoas = (r.ranking || []).map(x => {
+    const vistas = new Set();
+    const ev = (r.historicos[x.accountId] || []).filter(h => (h.inicio || 0) >= inicio && !vistas.has(h.matchId) && vistas.add(h.matchId));
+    const venceu = h => h.tipo === 'vitoria' || h.tipo === 'craque';
+    return {
+      conta: x.accountId, nome: x.nome, avatar: ((r.perfis || {})[x.accountId] || {}).avatar,
+      partidas: ev.length,
+      craques: ev.filter(h => h.tipo === 'craque').length,
+      culpados: ev.filter(h => h.tipo === 'culpado').length,
+      mmr: ev.filter(h => h.ranqueada).reduce((s, h) => s + (venceu(h) ? MMR_POR_PARTIDA : -MMR_POR_PARTIDA), 0),
+    };
+  });
+  // quem mais vezes; empate vai pra maior porcentagem
+  const topo = k => pessoas.filter(x => x[k] > 0).sort((a, b) => b[k] - a[k] || b[k] / b.partidas - a[k] / a.partidas)[0] || null;
+  const jogos = ((p && p.jogos) || []).filter(g => g.t >= inicio);
+  return {
+    pessoas: pessoas.length,
+    partidas: jogos.length, vit: jogos.filter(g => g.v).length,
+    mmr: pessoas.reduce((s, x) => s + x.mmr, 0),
+    craque: topo('craques'), culpado: topo('culpados'), inicio,
+  };
+}
+
+function renderizarLiga() {
+  const corpo = $('liga-grupos');
+  if (!corpo || !ranking) return;
+  const linhas = GRUPOS.map(g => ({ ...g, s: semanaDoGrupo(ranking, parceirosBase) })).sort((a, b) => b.s.mmr - a.s.mmr);
+  const ini = new Date(linhas[0].s.inicio * 1000);
+  const fim = new Date(ini); fim.setDate(fim.getDate() + 6);
+  const dm = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  $('liga-semana').textContent = `Semana de domingo ${dm(ini)} a sábado ${dm(fim)}. Zera todo domingo.`;
+  const mmr = m => `<span class="liga-num ${m > 0 ? 'liga-mmr-pos' : m < 0 ? 'liga-mmr-neg' : 'liga-mmr-zero'}">${m > 0 ? '+' : m < 0 ? '−' : '±'}${Math.abs(m)}</span>`;
+  const rosto = x => x.avatar ? `<img src="${esc(x.avatar)}" alt="" loading="lazy">` : `<span class="liga-ini" aria-hidden="true">${esc((x.nome || '?').replace(/[^\p{L}\p{N}]/gu, '').slice(0, 1).toUpperCase() || '?')}</span>`;
+  const pessoa = (x, k, papel, cls) => x
+    ? `<span class="liga-pessoa ${cls}">${rosto(x)}<span><b>${esc(x.nome)}</b><small>${papel} ${x[k]}x em ${x.partidas}</small></span></span>`
+    : '<span class="liga-vazio">ninguém ainda</span>';
+  corpo.innerHTML = linhas.map((g, i) => `<tr data-href="${g.href}" data-grupo="${g.id}">
+    <td class="liga-pos">${i + 1}</td>
+    <td><a class="liga-nome" href="#${g.href}">${esc(g.nome)}</a>${g.fundador ? '<span class="liga-fund">Fundador</span>' : ''}<span class="liga-sub">${g.s.partidas} partidas · ${g.s.vit}V ${g.s.partidas - g.s.vit}D</span></td>
+    <td class="liga-num liga-pessoas">${g.s.pessoas}</td>
+    <td class="liga-mmr">${mmr(g.s.mmr)}</td>
+    <td class="liga-c-craque">${pessoa(g.s.craque, 'craques', 'craque', 'liga-craque')}</td>
+    <td class="liga-c-culpado">${pessoa(g.s.culpado, 'culpados', 'culpado', 'liga-culpado')}</td></tr>`).join('');
+}
 
 function mudarAba(aba) {
   document.querySelectorAll('.aba').forEach(b => {
@@ -2000,7 +2075,7 @@ function montarFeedback() {
     if (texto.length < 3) { status.textContent = 'Escreve um pouquinho mais.'; return; }
     const url = await urlDoCoach();
     if (!url) { status.textContent = 'O envio está desligado agora.'; return; }
-    const aba = (document.querySelector('.aba-ativa') || {}).dataset?.aba || 'geral';
+    const aba = document.body.classList.contains('modo-liga') ? 'liga' : (document.querySelector('.aba-ativa') || {}).dataset?.aba || 'geral';
     enviar.disabled = true;
     status.textContent = 'Enviando…';
     try {

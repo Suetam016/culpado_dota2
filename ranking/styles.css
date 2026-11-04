@@ -990,3 +990,62 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
   .tk-trilha { animation: none; }
   .tk-trilha > div[aria-hidden] { display: none; }
 }
+
+/* ---------- Liga dos grupos: a lista de grupos que abre /ranking/ (sem # ou #liga) ---------- */
+body:not(.modo-liga) .liga { display: none; }
+body.modo-liga .ranking-topo-esq,
+body.modo-liga .aba-conteudo { display: none !important; }
+.liga { min-width: 0; display: grid; gap: 14px; align-content: start; margin-bottom: 18px; }
+.liga .secao-titulo { margin: 0; }
+.liga-semana { color: var(--muted); font-size: 13px; }
+.liga-tabela-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.liga-tabela { width: 100%; min-width: 660px; border-collapse: collapse; }
+.liga-tabela th { text-align: left; padding: 10px 12px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.liga-tabela td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.liga-tabela tbody tr:last-child td { border-bottom: 0; }
+.liga-tabela tbody tr { cursor: pointer; transition: background .15s; }
+.liga-tabela tbody tr:hover { background: var(--gold-wash); }
+.liga-pos { font-family: var(--font-display); font-size: 20px; color: var(--gold); width: 36px; }
+.liga-nome { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--ink); text-decoration: none; }
+.liga-nome:hover { color: var(--gold-2); }
+.liga-fund { display: inline-block; margin-left: 8px; padding: 1px 6px; border-radius: 4px; background: var(--gold); color: var(--on-gold); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; vertical-align: middle; }
+.liga-sub { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-family: var(--font-mono); }
+.liga-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 17px; }
+.liga-mmr-pos { color: var(--good-ink); }
+.liga-mmr-neg { color: var(--bad-ink); }
+.liga-mmr-zero { color: var(--ink-2); }
+.liga-pessoa { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.liga-pessoa img, .liga-pessoa .liga-ini { width: 32px; height: 32px; border-radius: 50%; flex: none; object-fit: cover; border: 2px solid var(--line-strong); background: var(--surface-3); }
+.liga-ini { display: inline-grid; place-items: center; font-weight: 800; font-size: 13px; color: var(--ink-2); }
+.liga-craque img, .liga-craque .liga-ini { border-color: var(--gold); }
+.liga-culpado img, .liga-culpado .liga-ini { border-color: var(--bad); }
+.liga-pessoa b { display: block; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.liga-pessoa small { display: block; color: var(--muted); font-size: 12px; }
+.liga-vazio { color: var(--muted); }
+.liga-entrar { border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 16px; display: grid; gap: 12px; }
+.liga-entrar h3 { font-family: var(--font-display); font-size: 17px; color: var(--ink); }
+.liga-passos { margin: 0; padding: 0; list-style: none; counter-reset: passo; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.liga-passos li { counter-increment: passo; background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; color: var(--ink-2); }
+.liga-passos li::before { content: counter(passo); display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 8px; border-radius: 50%; background: var(--gold); color: var(--on-gold); font-size: 12px; font-weight: 800; }
+.liga-passos b { color: var(--ink); }
+.liga-pedir { justify-self: start; border: 0; border-radius: 999px; padding: 9px 16px; background: var(--gold); color: var(--on-gold); font: inherit; font-weight: 800; cursor: pointer; }
+.liga-pedir:hover { background: var(--gold-2); }
+.voltar-liga { display: inline-block; margin-bottom: 12px; color: var(--gold-2); font-weight: 700; font-size: 14px; text-decoration: none; }
+.voltar-liga:hover { text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) { .liga-tabela tbody tr { transition: none; } }
+@media (max-width: 640px) {
+  .liga-tabela { min-width: 0; }
+  .liga-tabela thead { display: none; }
+  .liga-tabela tbody tr { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; grid-template-areas: "pos nome mmr" ". pess pess" ". craq craq" ". culp culp"; gap: 8px 10px; padding: 14px 12px; border-bottom: 1px solid var(--line); }
+  .liga-tabela tbody tr:last-child { border-bottom: 0; }
+  .liga-tabela td { padding: 0; border: 0; }
+  .liga-pos { grid-area: pos; }
+  .liga-tabela td:nth-child(2) { grid-area: nome; min-width: 0; }
+  .liga-mmr { grid-area: mmr; text-align: right; }
+  .liga-mmr::after { content: "MMR na semana"; display: block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .liga-pessoas { grid-area: pess; font-size: 14px; color: var(--ink-2); }
+  .liga-pessoas::after { content: " pessoas no grupo"; font-family: var(--font-body); }
+  .liga-c-craque { grid-area: craq; }
+  .liga-c-culpado { grid-area: culp; }
+  .liga-pessoa b { max-width: none; }
+}

@@ -25,6 +25,11 @@ Se um destes nomes mudar ou sumir, o evento para de chegar no GA4 **sem dar erro
 | section_view | seções da partida: `lances`, `cap-jogo`, `cap-janela`, `cap-draft`, `cap-rotas`, `cap-itens`, `cap-tribunal`, `cap-time` |
 | scroll_depth / page_type | URL: `/ranking...` = ranking, `#<id da partida>` = partida, resto = home |
 
+Desde 04/11/2026 o `/ranking/` sem `#` (ou com `#liga`) abre a **Liga dos grupos** (lista de grupos); o grupo Marocas
+fica em `/ranking/#elo` e nas outras abas. Então `ranking_open` agora significa "abriu a liga", e `page_type` = ranking
+vale para a liga e para o grupo. Elementos novos ainda sem gatilho: o botão `#liga-pedir-grupo` (pedir para entrar na liga),
+as linhas `#liga-grupos tr[data-grupo]` (clique num grupo) e o link `#voltar-liga`.
+
 O GTM também espera estes eventos no `dataLayer`, que **o site ainda não envia**:
 `match_judge_start`, `match_judge_success`, `match_judge_error`, `group_request_submit`, `feedback_submit`
 (com `is_example`, `load_time_ms`, `verdict_doc`, `error_code`).

@@ -10,12 +10,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ranking — Marocas</title>
+  <title>Liga dos grupos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=29">
+  <link rel="stylesheet" href="styles.css?v=30">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -25,8 +25,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <header class="topo">
     <div class="topo-inner">
       <div class="marca">
-        <span class="marca-tag">Ranking do grupo</span>
-        <h1>Marocas</h1>
+        <span class="marca-tag" id="marca-tag">A comunidade do culpado</span>
+        <h1 id="marca-nome">Liga dos grupos</h1>
       </div>
       <a class="voltar" href="../">← Painel</a>
     </div>
@@ -34,7 +34,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <main class="pagina">
     <div class="ranking-topo">
+    <section class="liga" id="liga" aria-labelledby="liga-titulo">
+      <div class="secao-titulo">
+        <h2 id="liga-titulo">Os grupos da liga</h2>
+        <p>Os grupos que jogam juntos e se julgam aqui. Clique num grupo para ver a Bolsa e o ranking dele.</p>
+      </div>
+      <p class="liga-semana" id="liga-semana"></p>
+      <div class="liga-tabela-wrap"><table class="liga-tabela" id="liga-tabela">
+        <thead><tr><th scope="col">#</th><th scope="col">Grupo</th><th scope="col">Pessoas</th><th scope="col">MMR na semana</th><th scope="col">Craque da semana</th><th scope="col">Culpado da semana</th></tr></thead>
+        <tbody id="liga-grupos"></tbody>
+      </table></div>
+      <div class="liga-entrar">
+        <h3>Seu grupo também joga junto? Entre na liga</h3>
+        <ol class="liga-passos">
+          <li><b>Mande o nome do grupo</b> e o perfil da Steam (ou ID) de cada amigo, mínimo 3.</li>
+          <li><b>A gente confere</b> se vocês jogam juntos e aprova. É de graça enquanto estamos em teste.</li>
+          <li><b>O robô baixa as partidas</b> e o grupo aparece aqui na liga, com a própria Bolsa.</li>
+        </ol>
+        <button type="button" class="liga-pedir" id="liga-pedir-grupo">Adicionar meu grupo</button>
+      </div>
+    </section>
     <div class="ranking-topo-esq">
+    <a class="voltar-liga" id="voltar-liga" href="#liga">← Liga dos grupos</a>
     <div class="atualizacao" id="atualizacao">
       <p class="att-quando">Atualizado pela última vez em: <b id="att-data">—</b> <span id="att-rel"></span></p>
       <p class="att-pendentes" id="att-pendentes"></p>
@@ -201,6 +222,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <button type="button" class="fb-botao" id="fb-botao" aria-expanded="false" aria-controls="fb-caixa">💬 Feedback</button>
 
   <script src="../herois-tracos.js?v=2"></script>
-  <script src="app.js?v=32"></script>
+  <script src="app.js?v=33"></script>
 </body>
 </html>
