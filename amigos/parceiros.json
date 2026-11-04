@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-04T09:14:17Z",
+ "atualizadoEm": "2026-11-04T11:38:09Z",
  "desde": "2025-12-21",
  "partidasLidas": 646,
  "jogadores": {
@@ -1255,6 +1255,13 @@
    "winRate": 51,
    "rotas": [
     {
+     "posA": 2,
+     "posB": 4,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
      "posA": 4,
      "posB": 5,
      "jogos": 5,
@@ -1281,13 +1288,6 @@
      "jogos": 8,
      "vitorias": 4,
      "winRate": 50
-    },
-    {
-     "posA": 3,
-     "posB": 5,
-     "jogos": 9,
-     "vitorias": 4,
-     "winRate": 44
     }
    ],
    "rotasPiores": [
@@ -1373,8 +1373,8 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 131,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 4
     },
     {
      "matchId": 9075343936,
@@ -14989,8 +14989,8 @@
    {
     "heroi": 107,
     "pos": 2,
-    "jogos": 87,
-    "vitorias": 48
+    "jogos": 88,
+    "vitorias": 49
    },
    {
     "heroi": 107,
@@ -15127,12 +15127,6 @@
    {
     "heroi": 76,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 107,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -16521,14 +16515,14 @@
     "vitorias": 1
    },
    {
-    "heroi": 18,
-    "pos": 1,
-    "jogos": 2,
-    "vitorias": 2
-   },
-   {
     "heroi": 131,
     "pos": 4,
+    "jogos": 3,
+    "vitorias": 3
+   },
+   {
+    "heroi": 18,
+    "pos": 1,
     "jogos": 2,
     "vitorias": 2
    },
@@ -16559,12 +16553,6 @@
    {
     "heroi": 5,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 131,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -30658,16 +30646,16 @@
     [
      "81918076",
      107,
-     0,
-     null,
-     null
+     2,
+     2,
+     1
     ],
     [
      "96286191",
      131,
-     0,
-     null,
-     null
+     4,
+     1,
+     1
     ]
    ]
   }
