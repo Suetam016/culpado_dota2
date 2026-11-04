@@ -1,0 +1,80 @@
+name: Voz do Mat na GPU (Modal)
+
+# Publica audio/gpu.py no Modal: o áudio da vitória pedido pelo site sai numa GPU em ~1 min em vez de ~5 min na CPU do
+# Actions. Precisa dos segredos MODAL_TOKEN_ID e MODAL_TOKEN_SECRET (Modal > Settings > API Tokens). Usa também o
+# MAPA_GITHUB_TOKEN (para a GPU subir o mp3 no repositório) e o OPENDOTA_API_KEY, se existir.
+# A chave que o Worker usa para chamar a GPU sai do MODAL_TOKEN_SECRET (o worker.yml calcula a mesma).
+# Na mão (Run workflow) com "teste" preenchido, mede o tempo da máquina fria e quente numa partida, sem gravar nada.
+on:
+  workflow_dispatch:
+    inputs:
+      teste:
+        description: "Id de uma partida para medir o tempo (vazio: só publica)"
+        required: false
+        default: ""
+  push:
+    branches: [main]
+    paths: ["audio/gpu.py", "audio/falar.py", "audio/fila.js", "audio/roteiro.js", "audio/voz/**", "frases/**",
+            "ranking/gerar.js", "index.html", ".github/workflows/voz-gpu.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: voz-gpu
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+      MAPA_GITHUB_TOKEN: ${{ secrets.MAPA_GITHUB_TOKEN }}
+      OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+    steps:
+      - name: Tem os segredos?
+        id: seg
+        run: |
+          if [ -z "$MODAL_TOKEN_ID" ] || [ -z "$MODAL_TOKEN_SECRET" ]; then
+            echo "Faltam os segredos MODAL_TOKEN_ID/MODAL_TOKEN_SECRET; nada a fazer." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.seg.outputs.ok == '1'
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        if: steps.seg.outputs.ok == '1'
+        with:
+          python-version: "3.11"
+      - name: Segredos no Modal
+        if: steps.seg.outputs.ok == '1'
+        run: |
+          pip install -q modal
+          CHAVE=$(printf '%s' "culpado-voz:$MODAL_TOKEN_SECRET" | sha256sum | cut -c1-40)
+          modal secret create culpado-voz --force GITHUB_TOKEN="$MAPA_GITHUB_TOKEN" CHAVE="$CHAVE" OPENDOTA_API_KEY="$OPENDOTA_API_KEY" >/dev/null
+      - name: Publicar
+        if: steps.seg.outputs.ok == '1'
+        run: |
+          modal deploy audio/gpu.py 2>&1 | tee deploy.log
+          URL=$(grep -oE 'https://[a-zA-Z0-9.-]+--culpado-voz-pedir[a-zA-Z0-9.-]*\.modal\.run' deploy.log | head -1)
+          [ -n "$URL" ] || { echo "não achei o endereço do pedir no log"; exit 1; }
+          echo "URL=$URL" >> "$GITHUB_ENV"
+          echo "Voz na GPU no ar: $URL" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Medir o tempo
+        if: steps.seg.outputs.ok == '1' && inputs.teste != ''
+        run: modal run audio/gpu.py --id "${{ inputs.teste }}" 2>&1 | grep -v -i -E "warn|pci_bus" | tail -25 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Ligar no Worker
+        if: steps.seg.outputs.ok == '1'
+        run: |
+          printf '{"url": "%s"}\n' "$URL" > audio/gpu.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/gpu.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Voz na GPU: endereço do Modal"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
