@@ -37,6 +37,7 @@ https://suetam016.github.io/culpado_dota2/ranking/
 1. **Fazer mudanças** neste repositório (`culpado_dota2`)
 2. **Comitar e fazer push**: As mudanças vão direto para o site
 3. **GitHub Pages atualiza automaticamente**: ~2 minutos depois
+4. **Patch notes** (`patch-notes.json`): não é diário. Só entra tela, aba, recurso ou modo novo, ou mudança grande que o visitante percebe. Ajuste de texto, frase nova, ordem/selo, correção pequena e detalhe interno ficam de fora. Na dúvida, não entra. Regra completa no campo `_como_usar` do próprio arquivo.
 
 ## Próximos passos (sugestões)
 
