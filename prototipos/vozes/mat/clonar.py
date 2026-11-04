@@ -2,7 +2,7 @@
 
     python prototipos/vozes/mat/clonar.py <chatterbox|qwen>
 """
-import sys, time, traceback
+import json, sys, time, traceback
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -21,13 +21,16 @@ def salvar(nome, wav, sr):
     print(f"ok {nome}: {len(wav)/sr:.1f}s", flush=True)
 
 
+ROTEIROS = json.load(open(AQUI / "roteiros.json"))
+
+
 def chatterbox():
     from chatterbox.mtl_tts import ChatterboxMultilingualTTS
     m = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
-    for nome, kw in [("chatterbox_clone", {}), ("chatterbox_clone_expressivo", {"exaggeration": 0.7, "cfg_weight": 0.3})]:
+    for nome, texto in ROTEIROS.items():
         try:
-            wav = m.generate(TEXTO, language_id="pt", audio_prompt_path=REF, **kw)
-            salvar(nome, wav.cpu().numpy(), m.sr)
+            wav = m.generate(texto, language_id="pt", audio_prompt_path=REF, exaggeration=0.7, cfg_weight=0.3)
+            salvar(f"chatterbox_{nome}", wav.cpu().numpy(), m.sr)
         except Exception:
             traceback.print_exc()
 
@@ -40,11 +43,12 @@ def qwen():
     print("transcrição do trecho:", ref_text, flush=True)
     from qwen_tts import Qwen3TTSModel
     m = Qwen3TTSModel.from_pretrained("Qwen/Qwen3-TTS-12Hz-0.6B-Base", device_map="cpu", dtype=torch.float32)
-    try:
-        wavs, sr = m.generate_voice_clone(text=TEXTO, language="Portuguese", ref_audio=REF, ref_text=ref_text)
-        salvar("qwen3_clone", wavs[0], sr)
-    except Exception:
-        traceback.print_exc()
+    for nome, texto in ROTEIROS.items():
+        try:
+            wavs, sr = m.generate_voice_clone(text=texto, language="Portuguese", ref_audio=REF, ref_text=ref_text)
+            salvar(f"qwen3_{nome}", wavs[0], sr)
+        except Exception:
+            traceback.print_exc()
 
 
 t = time.time()
