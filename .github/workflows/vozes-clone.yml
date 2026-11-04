@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        modelo: [chatterbox, qwen]
+        modelo: [chatterbox]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,6 +24,7 @@ jobs:
           python-version: "3.11"
       - name: Instalar
         run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost && df -h / | tail -1
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox libsox-dev >/dev/null
           pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
           pip install -q soundfile numpy
