@@ -297,7 +297,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @media (prefers-reduced-motion:no-preference){.doc-tpi6 .tp6-moldura{animation:tp6-pulso 2.4s ease-in-out infinite}}
 @keyframes tp6-pulso{50%{box-shadow:0 0 2.4cqw rgba(229,38,45,.7)}}
 /* Áudio do craque no grupo (estilo zap) */
-.cartao.zap{padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;margin-top:14px;font-family:system-ui,"Segoe UI",Roboto,sans-serif}
 .zap-topo{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#202c33;color:#e9edef}
 .zap-grupo-ic{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#00a884;font-size:20px;flex:none}
 .zap-grupo{margin:0;font-weight:600;font-size:15px}
@@ -337,7 +336,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .zap-pedir{margin-top:8px;background:#00a884;color:#0b141a;border:0;border-radius:18px;padding:8px 14px;font:600 14px system-ui,sans-serif;display:inline-flex;gap:6px;align-items:center;cursor:pointer}.zap-pedir:hover{background:#06cf9c}.zap-pedir:disabled{opacity:.6;cursor:default}
 @media (prefers-reduced-motion:no-preference){.zap-ondas i{animation:zap-onda 1s ease-in-out infinite}.zap-rec{animation:zap-pisca 1.2s steps(2) infinite}}
 @keyframes zap-onda{50%{height:100%}}
-@keyframes zap-pisca{50%{opacity:.3}}
+@keyframes zap-pisca{50%{opacity:.3}}.visao-vitoria{display:grid;gap:8px;width:100%;justify-items:start}.visao-vitoria>.cartao{width:100%}
+.trocar-visao{border:0;background:none;color:var(--muted);font-size:var(--t-sm);cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}.trocar-visao:hover{color:var(--ink)}
+.cartao.veredito.vitoria.doc-zap{display:block;padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;color:#e9edef;font-family:system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 14px 34px -16px rgba(0,0,0,.7);max-width:560px}
+.doc-zap .zap-corpo{padding:14px 12px 18px;min-height:0}
+.doc-zap .zap-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(380px,62vw)}
+.zap-slot{display:flex;flex-direction:column;gap:8px}
+.zap-fw{display:block;font-size:12px;font-style:italic;color:#8696a0;margin-bottom:4px}
+.zap-com-cartao{padding:4px 4px 20px}
+.zap-com-cartao .zap-autor{padding:2px 4px 0}
+.zap-com-cartao .zap-fw{padding:0 4px}
+.zap-veredito{width:min(330px,72vw);border-radius:6px;overflow:hidden;background:#11163a;color:#fff}
+.zap-vd-fotos{position:relative;display:flex;height:112px;background:#1b2250}
+.zap-vd-foto{flex:1;min-width:0;overflow:hidden}
+.zap-vd-foto>*{width:100%!important;height:100%!important;border-radius:0!important;border:0!important;box-shadow:none!important}
+.zap-vd-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+.zap-vd-fotos::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#11163a 4%,transparent 65%)}
+.zap-vd-selo{position:absolute;top:8px;left:8px;z-index:1;background:#ffd23f;color:#11163a;font:900 11px/1 system-ui,sans-serif;padding:5px 7px;border-radius:4px;transform:rotate(-4deg);text-transform:uppercase;letter-spacing:.03em}
+.zap-vd-tx{position:relative;z-index:1;margin-top:-26px;padding:0 10px 10px;display:grid;gap:2px}
+.zap-vd-tx b{font:800 clamp(1.15rem,4.6vw,1.45rem)/1.05 var(--font-display,system-ui);text-transform:uppercase;letter-spacing:.01em}
+.zap-vd-tx span{font-size:12.5px;opacity:.88}
+.zap-vd-tx em{font-style:normal;font-size:11.5px;color:#9fb0ff}
+.zap-zoa{margin-top:4px!important;color:#d1d7db}
+.zap-figurinha{position:relative;align-self:flex-end;width:118px;margin:2px 6px 0 0;transform:rotate(6deg);filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 3px #fff) drop-shadow(0 6px 8px rgba(0,0,0,.4))}
+.zap-fig-foto{display:block}
+.zap-fig-foto>*{width:118px!important;height:118px!important;border-radius:50% 46% 52% 44%!important;border:0!important;box-shadow:none!important;overflow:hidden}
+.zap-fig-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.zap-figurinha b{position:absolute;left:-10px;right:-10px;bottom:-6px;text-align:center;font:900 22px/1 Impact,"Anton","Arial Black",sans-serif;color:#ffd23f;-webkit-text-stroke:3px #111;paint-order:stroke;transform:rotate(-3deg)}
+.zap-digitar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#202c33}
+.zap-digitar span{flex:1;background:#2a3942;border-radius:20px;padding:9px 14px;color:#8696a0;font-size:14px}
+.zap-digitar i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#00a884;color:#0b141a}
+.doc-zap>.cartaz-acoes{padding:12px 14px 14px;background:#111b21;border-top:1px solid #233138}
+@media (prefers-reduced-motion:no-preference){.zap-entra{animation:zap-entra .35s ease-out both}.zap-corpo>.zap-entra:nth-child(3){animation-delay:.5s}.zap-corpo>.zap-entra:nth-child(4){animation-delay:1.1s}.zap-corpo>.zap-entra:nth-child(5){animation-delay:1.8s}.zap-corpo>.zap-entra:nth-child(6){animation-delay:2.3s}}
+@keyframes zap-entra{from{opacity:0;transform:translateY(8px) scale(.98)}}
 </style>
 
 <style>
@@ -6810,7 +6841,7 @@ document.head.append(sc);
 }));
 const mmssAudio = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
-function bolhaDeAudio(p, info, urlMp3) {
+function bolhaDeAudio(p, info, urlMp3, hora = horaZap) {
 const audio = new Audio();
 audio.preload = 'metadata';
 audio.src = urlMp3;
@@ -6850,44 +6881,35 @@ h('div', { class: 'zap-player' },
 h('span', { class: 'zap-foto' }, fotoDe(p, false), h('span', { class: 'zap-mic', 'aria-hidden': 'true' }, iconeMic())),
 play, h('div', { class: 'zap-faixa' }, onda, h('span', { class: 'zap-rodape' }, tempo, vel))),
 transcricao,
-h('span', { class: 'zap-hora' }, horaZap(), h('span', { class: 'zap-check', 'aria-hidden': 'true' }, '✓✓')));
+h('span', { class: 'zap-hora' }, hora(), h('span', { class: 'zap-check', 'aria-hidden': 'true' }, '✓✓')));
 return bolha;
 }
 const iconeMic = () => s('svg', { viewBox: '0 0 24 24', width: 14, height: 14 }, s('path', { d: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 6-6.9h-2z', fill: 'currentColor' }));
 const horaZap = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-function cartaoZap(r) {
+// O fluxo do áudio do craque (já gravado, na fila, pedir, versão escrita). Devolve o espaço da conversa onde a
+// bolha aparece; `aoGravar(sim)` avisa o cabeçalho do grupo para mostrar "X está gravando áudio…".
+function audioDoCraque(r, aoGravar = () => {}, hora = horaZap) {
 const v = (r.craques || [])[0];
-if (!v || SO_EMBUTIDO) return null;
 const p = v.jogador;
 const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
 const chave = `${r.partida.id}-${lado}`;
-const status = h('p', { class: 'zap-status' }, 'você e mais 9 pessoas');
-const corpo = h('div', { class: 'zap-corpo', 'aria-live': 'polite' });
-const card = h('section', { class: 'cartao zap', 'aria-label': `Áudio de ${p.nome} no grupo` },
-h('div', { class: 'zap-topo' },
-h('span', { class: 'zap-grupo-ic', 'aria-hidden': 'true' }, '🏆'),
-h('div', {}, h('p', { class: 'zap-grupo' }, 'Grupo do Culpado'), status)),
-corpo);
+const corpo = h('div', { class: 'zap-slot', 'aria-live': 'polite' });
 const msgSistema = (txt) => h('p', { class: 'zap-sistema' }, txt);
-const mostrar = (...nos) => corpo.replaceChildren(msgSistema('O site encaminhou o veredito pro grupo.'), ...nos);
+const mostrar = (...nos) => corpo.replaceChildren(...nos);
 let coach = null;
 
-const tocar = (info, urlMp3) => {
-status.textContent = 'você e mais 9 pessoas';
-mostrar(bolhaDeAudio(p, info, urlMp3));
-};
+const tocar = (info, urlMp3) => { aoGravar(false); mostrar(bolhaDeAudio(p, info, urlMp3, hora)); };
 const textoReserva = async (motivo) => {
 const R = await carregarRoteiro();
 const f = R && R.fatos(r);
 const g = f && R.gerar(f, chave);
 mostrar(h('div', { class: 'zap-msg' }, h('p', { class: 'zap-autor' }, p.nome),
 h('p', {}, g ? g.texto : 'Carreguei essa, tá no replay.'),
-h('span', { class: 'zap-hora' }, horaZap())), msgSistema(motivo));
+h('span', { class: 'zap-hora' }, hora())), msgSistema(motivo));
 };
 const gravando = (desde) => {
-status.textContent = `${p.nome} está gravando áudio…`;
-status.classList.add('gravando');
+aoGravar(true);
 const cron = h('span', { class: 'zap-cron' }, '0:00');
 mostrar(h('div', { class: 'zap-msg zap-gravando' },
 h('span', { class: 'zap-rec', 'aria-hidden': 'true' }, iconeMic()),
@@ -6896,10 +6918,10 @@ cron),
 msgSistema('A voz sai do nosso robô e leva de 5 a 10 minutos. Pode deixar a aba aberta que o áudio chega aqui.'));
 const t0 = desde || Date.now();
 const tic = setInterval(() => {
-if (!card.isConnected) return clearInterval(tic);
+if (!corpo.isConnected) return clearInterval(tic);
 cron.textContent = mmssAudio((Date.now() - t0) / 1000);
 }, 1000);
-return () => { clearInterval(tic); status.classList.remove('gravando'); };
+return () => { clearInterval(tic); aoGravar(false); };
 };
 const doCoach = async (caminho, opcoes) => {
 const res = await fetch(`${coach}${caminho}`, opcoes);
@@ -6908,9 +6930,10 @@ return { ok: res.ok, status: res.status, j: await res.json().catch(() => ({})) }
 const esperar = async (desde) => {
 const parar = gravando(desde);
 const t0 = Date.now();
-while (card.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
+await new Promise((ok) => setTimeout(ok, 50));
+while (corpo.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
 await new Promise((ok) => setTimeout(ok, 15_000));
-if (!card.isConnected) break;
+if (!corpo.isConnected) break;
 try {
 const { ok, j } = await doCoach(`/audio/${chave}`);
 if (ok && j.pronto) {
@@ -6922,7 +6945,7 @@ if (ok && j.falha && !j.naFila) { parar(); return textoReserva('O robô não con
 } catch (e) { /* rede: tenta de novo na próxima volta */ }
 }
 parar();
-if (card.isConnected) textoReserva('O áudio está demorando mais que o normal. Recarregue a página daqui a pouco.');
+if (corpo.isConnected) textoReserva('O áudio está demorando mais que o normal. Recarregue a página daqui a pouco.');
 };
 const pedir = async () => {
 try {
@@ -6935,10 +6958,11 @@ textoReserva(j.msg || 'Não deu pra pedir o áudio agora.');
 const convite = () => {
 const botao = h('button', { class: 'zap-pedir', type: 'button', 'data-gtm': 'audio-vitoria-pedir' }, h('span', { 'aria-hidden': 'true' }, iconeMic()), ` Pedir o áudio de ${p.nome}`);
 botao.addEventListener('click', () => { botao.disabled = true; pedir(); });
-mostrar(h('div', { class: 'zap-msg zap-convite' }, h('p', {}, `${p.nome} carregou ${pct(v.fatia)} do mérito e tá doido pra mandar um áudio no grupo.`), botao));
+mostrar(h('div', { class: 'zap-msg zap-convite' }, h('p', { class: 'zap-autor' }, p.nome), h('p', {}, `Carreguei ${pct(v.fatia)} do mérito e tô doido pra mandar um áudio aqui.`), botao,
+h('span', { class: 'zap-hora' }, hora())));
 };
 const iniciar = async () => {
-corpo.replaceChildren(msgSistema('Carregando a conversa…'));
+mostrar(msgSistema('Carregando a conversa…'));
 // 1) já publicado no site (vitórias do grupo saem gravadas pelo robô)
 try {
 const res = await fetch(`audios/${chave}.json`, { cache: 'no-cache' });
@@ -6955,6 +6979,138 @@ if (ok && j.naFila) return esperar(Date.parse(j.pedidoEm) || Date.now());
 convite();
 };
 iniciar();
+return corpo;
+}
+
+// ---------- Visões da vitória: a tela de vitória sorteia uma "cara" a cada visita ----------
+// Para pôr uma visão nova (Plantão da Selva, Stories, Post...): escreva visaoX(r) devolvendo o <article> e some uma
+// linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força.
+const VISOES_VITORIA = [
+{ id: 'zap', nome: 'Grupo do zap', peso: 7, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
+{ id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
+];
+const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega
+
+function escolherVisao(r, evitar = null) {
+const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
+const chave = `${r.partida.id}-${lado}`;
+const possiveis = VISOES_VITORIA.filter((x) => x.pode(r));
+let forcada = null;
+try { forcada = new URLSearchParams(location.search).get('visao'); } catch (e) { /* sem URL */ }
+if (!evitar) {
+const fixa = possiveis.find((x) => x.id === forcada) || possiveis.find((x) => x.id === visaoSorteada.get(chave));
+if (fixa) { visaoSorteada.set(chave, fixa.id); return fixa; }
+}
+const pool = possiveis.filter((x) => x.id !== evitar);
+const lista = pool.length ? pool : possiveis;
+const total = lista.reduce((a, x) => a + x.peso, 0);
+let sorte = Math.random() * total;
+const escolhida = lista.find((x) => (sorte -= x.peso) < 0) || lista[0];
+visaoSorteada.set(chave, escolhida.id);
+return escolhida;
+}
+
+function telaDaVitoria(r) {
+const caixa = h('div', { class: 'visao-vitoria' });
+const montar = (visao) => {
+const doc = visao.montar(r);
+doc.dataset.visao = visao.id;
+doc.append(barraCompartilhar(r));
+const outras = VISOES_VITORIA.filter((x) => x.id !== visao.id && x.pode(r));
+const trocar = outras.length ? h('button', { class: 'trocar-visao', type: 'button', 'data-gtm': 'vitoria-trocar-visao' }, '🎲 Ver em outra tela') : null;
+if (trocar) trocar.addEventListener('click', () => {
+const nova = escolherVisao(r, visao.id);
+montar(nova);
+avisarVisao(nova, true);
+});
+caixa.dataset.visao = visao.id;
+caixa.replaceChildren(doc, trocar || '');
+};
+const visao = escolherVisao(r);
+montar(visao);
+avisarVisao(visao, false);
+return caixa;
+}
+function avisarVisao(visao, trocou) {
+try { (window.dataLayer = window.dataLayer || []).push({ event: 'victory_view', victory_view: visao.id, victory_view_switch: trocou }); } catch (e) { /* sem GTM */ }
+}
+
+// A visão do zap: o veredito encaminhado no grupo, o elo fraco chorando com um número de verdade, o craque mandando
+// o áudio (com a voz do Mat), alguém dando +rep com a prova e a figurinha.
+const GRUPOS_ZAP = ['Dota dos crias 🎮', 'Grupo do Culpado 🏆', 'Rankeada é amanhã', '5 stack sem tilt', 'Os de sempre 🎮', 'Fonte da amizade'];
+const CORES_ZAP = ['#e26a6a', '#a78bfa', '#53bdeb', '#06cf9c', '#f5a524', '#ff7ab6'];
+function visaoZap(r) {
+const rnd = sorteador(`zap-${r.partida.id}`, r.partida.id);
+const cs = craquesDe(r);
+const craque = cs[0].jogador;
+const dupla = cs.length > 1;
+const nos = r.nos || [];
+const idsCraques = new Set(cs.map((v) => v.jogador.idx));
+const outros = nos.filter((q) => !idsCraques.has(q.idx));
+const elo = (culpados(r)[0] || {}).jogador;
+const fraco = elo && !idsCraques.has(elo.idx) ? elo : outros[outros.length - 1];
+const resto = outros.filter((q) => q !== fraco);
+const encaminhou = resto[0] || fraco || craque;
+const deuRep = resto[1] || resto[0] || fraco || craque;
+const cor = new Map(nos.map((q, i) => [q.idx, CORES_ZAP[i % CORES_ZAP.length]]));
+const fimMin = r.partida.inicio ? (r.partida.inicio + r.partida.duracao) * 1000 : Date.now();
+const hora = (mais) => new Date(fimMin + mais * 60_000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+const autor = (q) => h('p', { class: 'zap-autor', style: `color:${cor.get(q.idx) || '#53bdeb'}` }, q.nome);
+const bolha = (q, conteudo, minuto, extra = '') => h('div', { class: `zap-msg zap-entra ${extra}`.trim() }, autor(q), conteudo, h('span', { class: 'zap-hora' }, hora(minuto)));
+
+// 1) alguém encaminha o veredito
+const nomes = cs.map((v) => v.jogador.nome).join(' e ');
+const merito = pct(cs.reduce((a, v) => a + v.fatia, 0));
+const cartao = h('div', { class: 'zap-veredito' },
+h('div', { class: 'zap-vd-fotos' }, cs.map((v) => h('span', { class: 'zap-vd-foto' }, fotoDe(v.jogador, true))), h('span', { class: 'zap-vd-selo' }, 'Veredito oficial')),
+h('div', { class: 'zap-vd-tx' },
+h('b', {}, `${nomes} ${dupla ? 'carregaram' : 'carregou'}`),
+h('span', {}, dupla ? `${merito} do mérito somados · ${cs.map((v) => kdaDe(v.jogador)).join(' e ')}` : `${craque.heroi.nome} · ${merito} do mérito · ${kdaDe(craque)}`),
+h('em', {}, `oculpado.com.br · vitória ${r.partida.placarNos} × ${r.partida.placarEles} em ${mmss(r.partida.duracao)}`)));
+const msgVeredito = bolha(encaminhou, [h('span', { class: 'zap-fw' }, '↪ Encaminhada com frequência'), cartao], 0, 'zap-com-cartao');
+
+// 2) o elo fraco reclama com o próprio número
+let msgFraco = null;
+if (fraco && fraco !== craque) {
+const fr = fraco.raw || {};
+const wards = (fr.obs_placed || 0) + (fr.sen_placed || 0);
+const choro = (fr.deaths || 0) >= 7 ? rnd.um([`kkkkkkk ${merito} e eu morri ${fr.deaths} vezes 😭`, `${fr.deaths} mortes e ainda ganhei, obrigado ${craque.nome} 🙏`, `quem morreu ${fr.deaths} vezes foi o meu irmão tá`])
+: fraco.posicao >= 4 ? rnd.um([`kkkkkkk ${merito} e eu de suporte com ${wards} ${wards === 1 ? 'ward' : 'wards'} 😭`, `ninguém fala das minhas ${wards} wards né`, `${wards} wards plantadas e nem uma menção honrosa`])
+: rnd.um([`e os meus ${fr.gold_per_min || 0} de GPM, ninguém comenta? 😭`, `${kdaDe(fraco)} e não ganhei nem uma estrelinha`, `eu tava lá também tá (${kdaDe(fraco)})`]);
+msgFraco = bolha(fraco, h('p', {}, choro), 1);
+}
+
+// 3) o craque manda o áudio (o fluxo de gravar/pedir mora em audioDoCraque)
+const status = h('p', { class: 'zap-status' }, [...nos.filter((q) => q !== craque).map((q) => q.nome), craque.nome].slice(0, 4).join(', ') + ', você');
+const statusBase = status.textContent;
+const slot = audioDoCraque(r, (sim) => {
+status.textContent = sim ? `${craque.nome} está gravando áudio…` : statusBase;
+status.classList.toggle('gravando', sim);
+}, () => hora(2));
+slot.classList.add('zap-entra');
+
+// 4) alguém dá +rep com a prova e zoa o elo fraco
+const [fato] = fatosDoCraque(cs[0], r, 1);
+const voc = window.VOCABULARIO;
+const fr = (fraco && fraco.raw) || {};
+const zoa = fraco && fraco !== craque && (fr.deaths || 0) >= 5
+? (voc && voc.morrer ? rnd.um(voc.morrer(fraco.nome)) : rnd.um([`${fraco.nome} fazia turismo na fonte`, `${fraco.nome} batia ponto na fonte`, `${fraco.nome} patrocinava o time deles`])) + ` (${fr.deaths} mortes) 💀`
+: null;
+const rep = fato ? `${capital(fato.prova)}. ${rnd.um(['Tá no replay 🫡', '+rep pro monstro', 'Respeita 🐐', 'Pode printar'])}` : rnd.um(['+rep pro monstro', 'Respeita 🐐']);
+const msgRep = deuRep && deuRep !== craque ? bolha(deuRep, [h('p', {}, rep), zoa ? h('p', { class: 'zap-zoa' }, `enquanto isso ${zoa}`) : null], 3) : null;
+
+// 5) a figurinha
+const figurinhaRep = h('div', { class: 'zap-figurinha zap-entra', 'aria-label': `Figurinha de ${craque.nome} com +REP` },
+h('span', { class: 'zap-fig-foto' }, fotoDe(craque, true)), h('b', {}, rnd.um(['+REP', 'PAI TÁ ON', 'CARREGOU', 'MONSTRO'])));
+
+const card = h('article', { class: 'cartao veredito vitoria doc-zap', 'aria-label': `Conversa do grupo sobre o mérito de ${nomes}` },
+h('div', { class: 'zap-topo' },
+h('span', { class: 'zap-grupo-ic', 'aria-hidden': 'true' }, '🏆'),
+h('div', {}, h('p', { class: 'zap-grupo' }, rnd.um(GRUPOS_ZAP)), status)),
+h('div', { class: 'zap-corpo' },
+h('p', { class: 'zap-sistema' }, `Hoje · Partida ${r.partida.id}`),
+msgVeredito, msgFraco, slot, msgRep, figurinhaRep),
+h('div', { class: 'zap-digitar', 'aria-hidden': 'true' }, h('span', {}, 'Mensagem'), h('i', {}, iconeMic())));
 return card;
 }
 
@@ -6974,9 +7130,7 @@ elo.hidden = !elo.hidden;
 botao.setAttribute('aria-expanded', String(!elo.hidden));
 rotulo.textContent = elo.hidden ? 'Ver o elo fraco' : 'Esconder o elo fraco';
 });
-const cartaz = documentoDoMerito(r);
-cartaz.append(barraCompartilhar(r));
-principal = h('div', { class: 'topo-vitoria' }, cartaz, parcial ? null : cartaoZap(r), botao, elo);
+principal = h('div', { class: 'topo-vitoria' }, telaDaVitoria(r), botao, elo);
 }
 return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
 r.partida.provisorio ? h('p', { class: 'selo-provisorio' }, 'Veredito provisório · só com o placar') : null,
