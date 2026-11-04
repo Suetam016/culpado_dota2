@@ -10,32 +10,15 @@
         },
         {
           "tag": "Liga",
-          "texto": "Nasceu a Liga dos grupos: o botão do troféu agora abre a lista de grupos, com quantas pessoas cada um tem, o MMR ganho na semana, o craque e o culpado da semana. Clique no grupo para ver a Bolsa e o ranking dele. Quer o seu grupo na liga? Tem o botão \"Adicionar meu grupo\" lá embaixo."
+          "texto": "Nasceu a Liga dos grupos: o troféu abre a lista de grupos com o MMR da semana, o craque e o culpado. Dá pra pôr o seu grupo lá."
         },
         {
           "tag": "Ranking",
-          "texto": "A Bolsa do grupo agora é a primeira aba e abre direto no ranking. O selo \"Novo\" ficou só nela (saiu de Duplas, Times e picks, Time fechado e Meta)."
-        },
-        {
-          "tag": "Ranking",
-          "texto": "Nova Bolsa do grupo na aba de elo (agora \"Bolsa do grupo\"): o grupo virou a ação MRC3, cada dia é um candle do MMR somado de todo mundo com a cara de quem puxou pra cima ou derrubou, livro de quem subiu e caiu, calendário de pregões e um letreiro com as fofocas da semana (herói novo, troca de função, dupla que não dá certo, lane perdida, madrugada...)."
+          "texto": "Nova Bolsa do grupo: o grupo vira uma ação, cada dia é um candle do MMR com a cara de quem puxou ou derrubou, e um letreiro com as fofocas da semana."
         },
         {
           "tag": "Site",
-          "texto": "Partida que alguém já abriu fica guardada por 2 dias: quem abrir a mesma partida depois (um link mandado no grupo, por exemplo) recebe ela na hora, sem esperar o OpenDota."
-        },
-        {
-          "tag": "Site",
-          "texto": "Partida recém-terminada que o OpenDota ainda não tem: o site agora espera até 45 min (antes desistia em 15), diz pelo próprio ID há quanto tempo a partida começou e a causa provável da demora (Steam ainda liberando, fila do OpenDota cheia, ID com número trocado ou partida antiga demais) e marca a aba com ✅ quando a partida chega."
-        }
-      ]
-    },
-    {
-      "data": "2026-11-03",
-      "itens": [
-        {
-          "tag": "Veredito",
-          "texto": "Na vitória, o quadro \"O que aconteceu\" agora conta os lances que decidiram o jogo, com hora e números de verdade: a virada quando o time estava atrás, solo kill no mais rico deles, split push com o time brigando (ou morto), defesa da base, buyback que salvou a luta, buyback deles jogado fora, rival anulado na rota e até o \"enquanto fulano morria, ele resolvia\". Cada frase tem várias versões."
+          "texto": "Partida recém-terminada: o site espera até 45 min pelo OpenDota e explica o motivo da demora. E partida que alguém já abriu carrega na hora."
         }
       ]
     },
@@ -43,32 +26,16 @@
       "data": "2026-11-01",
       "itens": [
         {
-          "tag": "Ranking",
-          "texto": "As duplas agora contam a partida assim que ela termina, sem esperar o OpenDota analisar o replay (isso chegava a atrasar horas). E o robô que busca as partidas passou a rodar duas vezes por hora."
-        },
-        {
           "tag": "Site",
-          "texto": "O site ganhou endereço próprio: oculpado.com.br. O link antigo continua funcionando e leva para lá."
+          "texto": "O site ganhou endereço próprio: oculpado.com.br."
         },
         {
           "tag": "Veredito",
-          "texto": "Quem carregou agora ganha um documento que cresce com o tamanho da carregada: Menção Honrosa (vitória de time), Proclamação do Reino, Edição Extra do jornal, Ordem do Mérito e, pra quem levou o time inteiro nas costas, um Monumento na praça."
+          "texto": "Quem carregou ganha um documento que cresce com a carregada: de Menção Honrosa até um Monumento na praça."
         },
         {
           "tag": "Veredito",
-          "texto": "Frases de zoeira tiradas do que aconteceu de verdade, sempre com o número do lado: \"colocou fulano na mochila\", \"fez do Slark freguês\", \"o respawn nem sabe quem é ele\" e outras."
-        },
-        {
-          "tag": "Veredito",
-          "texto": "Novo quadro \"Por que a culpa é dele\" / \"Por que o mérito é dele\": os pontos de cada um do time, os números que pesaram (mortes, ouro entregue, dano, participação em abates...) e de onde veio cada ponto."
-        },
-        {
-          "tag": "Veredito",
-          "texto": "Frases novas, bem mais: o craque ganhou mais de 100 elogios que mudam com o jogo (herói, mortes, tempo de partida, rota), o culpado ganhou frases novas na ficha e mais crimes nos documentos, inclusive no LoL. E o site lembra das últimas partidas que você abriu para não repetir a mesma frase em seguida."
-        },
-        {
-          "tag": "Ranking",
-          "texto": "\"Esta semana\" voltou a começar no domingo: a semana do ranking zera todo domingo. E \"Últimos 3 meses\" não erra mais a data no fim do mês."
+          "texto": "Novo quadro \"Por que a culpa (ou o mérito) é dele\", com os números que pesaram."
         }
       ]
     },
@@ -77,11 +44,7 @@
       "itens": [
         {
           "tag": "Replay",
-          "texto": "Na jogada 3D (Pudge x Void) o cabeção agora é o retrato de verdade do herói, e ele muda de cara no lance: ri quando acerta, sofre quando apanha e fica nocauteado quando cai."
-        },
-        {
-          "tag": "Site",
-          "texto": "O contador de visitas agora conta pessoas, não navegadores: quem é do grupo e abre no celular e no PC conta uma vez só."
+          "texto": "Na jogada 3D o cabeção é o retrato do herói e muda de cara: ri, sofre e fica nocauteado."
         }
       ]
     },
@@ -89,48 +52,16 @@
       "data": "2026-10-30",
       "itens": [
         {
-          "tag": "Ranking",
-          "texto": "Patch notes aqui no ranking: tudo o que mudou no site, dia a dia."
+          "tag": "Replay",
+          "texto": "No mapinha agora aparecem itens (BKB, Blink, TP...), status (stun, silence, hex...) e a vida no anel de cada herói."
         },
         {
           "tag": "Replay",
-          "texto": "O Hook do Pudge agora puxa a vítima de verdade até ele, e o Blink salta de uma vez, junto com o som."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Itens aparecem no mapinha: BKB, Ghost, Eul's, Blade Mail, Glimmer, Lotus, Satanic, Manta, Force, Shiva, Pipe, Greaves, Smoke, Vessel, Blink e TP."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Status em cima do retrato: dá pra ver quem levou stun, silence, root, hex, taunt, disarm ou sleep."
-        },
-        {
-          "tag": "Replay",
-          "texto": "O anel de cada herói esvazia conforme ele leva dano e zera na morte. E quem toma pancada grande pisca e treme."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Undying entrou: Tombstone com zumbis, Decay e Soul Rip. As skills viram bolas de energia na cor da magia."
-        },
-        {
-          "tag": "Replay",
-          "texto": "A skill usada aparece no pé do retrato do herói, em vez de uma fila de ícones voando pelo mapa."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Mapinha mais limpo: efeito grande e letreiro de ult só nos lances decisivos, Chronosphere desenhada no mapa e visão das wards discreta."
-        },
-        {
-          "tag": "Home",
-          "texto": "Julgar uma partida pela home roda a roleta do culpado de novo, com som."
+          "texto": "Mais heróis com as próprias skills: Pudge (o Hook puxa de verdade), Undying, Witch Doctor, Axe, Invoker, Grimstroke e Nature's Prophet."
         },
         {
           "tag": "Home",
           "texto": "Home nova: cola o ID da partida e pronto. Embaixo, o veredito, o replay e o ranking do grupo."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Witch Doctor, Axe, Invoker, Grimstroke e Nature's Prophet ganharam as próprias skills no mapinha."
         }
       ]
     },
@@ -138,24 +69,8 @@
       "data": "2026-10-29",
       "itens": [
         {
-          "tag": "Ranking",
-          "texto": "Botão de Ranking no canto de cima, à esquerda (no celular, só o troféu)."
-        },
-        {
           "tag": "Site",
-          "texto": "O site descobre sozinho quem do grupo você é, depois de umas partidas juntos. Sem pergunta chata na entrada."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Replay começa em 1×. O botão de velocidade gira 1× → 1,5× → 3× → 0,75×."
-        },
-        {
-          "tag": "Replay",
-          "texto": "Câmera lenta nos lances que importam e skills próprias de Earthshaker, Crystal Maiden, Disruptor, Hoodwink e Pudge."
-        },
-        {
-          "tag": "Veredito",
-          "texto": "Quem não é do grupo escolhe o time antes de ver o culpado."
+          "texto": "O site descobre sozinho quem do grupo você é. E quem não é do grupo escolhe o time antes de ver o culpado."
         }
       ]
     }
