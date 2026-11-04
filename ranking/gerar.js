@@ -304,7 +304,11 @@ async function main() {
   console.log(`Ranking salvo: ${saida}`);
 }
 
-main().catch((erro) => {
-  console.error(erro);
-  process.exit(1);
-});
+// o robô do áudio da vitória (audio/roteiros.js) reaproveita o motor carregado daqui
+if (require.main === module) {
+  main().catch((erro) => {
+    console.error(erro);
+    process.exit(1);
+  });
+}
+module.exports = { carregarMotor, dadosEmbutidos };
