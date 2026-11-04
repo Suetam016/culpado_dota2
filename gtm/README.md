@@ -34,6 +34,14 @@ O GTM também espera estes eventos no `dataLayer`, que **o site ainda não envia
 `match_judge_start`, `match_judge_success`, `match_judge_error`, `group_request_submit`, `feedback_submit`
 (com `is_example`, `load_time_ms`, `verdict_doc`, `error_code`).
 
+## Tela de vitória: visões sorteadas (desde 04/11/2026)
+
+Numa vitória, a tela sorteia uma "visão" (hoje `zap` com peso 7 e `documento` com peso 3; Plantão, Stories e Post entram
+depois). O site envia `dataLayer.push({ event: 'victory_view', victory_view: '<id>', victory_view_switch: <true se a pessoa trocou> })`.
+A visão também fica em `.visao-vitoria[data-visao]`. Elementos novos ainda sem gatilho: o botão `.trocar-visao`
+(`data-gtm="vitoria-trocar-visao"`, "Ver em outra tela"). Os botões do áudio (`.zap-play`, `.zap-pedir`) continuam iguais,
+agora dentro da visão do zap. `?visao=zap` (ou `documento`) na URL força uma visão, útil para testar.
+
 ## Conferência automática
 
 O workflow `gtm.yml` roda `node gtm/checar.js` em todo PR que mexe nas páginas. Ele abre a home, a partida de
