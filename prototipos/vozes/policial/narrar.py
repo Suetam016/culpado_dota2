@@ -2,8 +2,8 @@
 
 Mesmo modelo do áudio do zap (Qwen3-TTS 0.6B Base, clone sem treino), mas a referência é a imitação de locutor
 policial que o Mat gravou (trechos ref_a/b/c.wav, 18 s cada). O modelo copia o jeito de falar da referência.
-O texto da referência sai do faster-whisper. Grava todas as falas com a ref_a e três falas com cada referência
-para comparar. Saída em saida/ (mp3 mono).
+O texto da referência sai do faster-whisper. Cada fala de falas.json diz qual referência usar (o Mat escolheu
+a C para abertura e abate e a B para o fim). falas.json sai de tomadas.js (roteiro.js sorteia as falas). Saída em saida/ (mp3 mono).
 
     python prototipos/vozes/policial/narrar.py
 """
@@ -43,11 +43,8 @@ def gravar(nome, texto, r):
     return round(len(wav) / sr, 2)
 
 dur = {}
-for r in ("b", "c", "a"):
-    for nome, texto in falas:
-        if nome in ("00-abertura", "03-cpf", "16-acabou"):
-            dur[f"{r}-{nome}"] = gravar(f"{r}-{nome}", texto, r)
-for nome, texto in falas:
-    if f"a-{nome}" not in dur:
-        dur[f"a-{nome}"] = gravar(f"a-{nome}", texto, "a")
+for f in falas:
+    nome, texto = f[0], f[1]
+    r = f[2] if len(f) > 2 else "a"
+    dur[nome] = gravar(nome, texto, r)
 (SAIDA / "duracoes.json").write_text(json.dumps(dur, indent=1), encoding="utf-8")
