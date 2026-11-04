@@ -1185,6 +1185,62 @@ async function rotaVisitas(req, env, origem, caminho) {
   return recusar(404, 'rota', origem, env);
 }
 
+// Geladeira de partidas (KV PARTIDAS, 2 dias): quem abrir a mesma partida depois recebe dela, sem esperar o OpenDota.
+//   GET  /partida/<id>  -> a partida em JSON gzip (200) ou 404 se não está guardada
+//   POST /partida/<id>  -> o navegador avisa que abriu uma partida analisada; o Worker busca ELE MESMO no OpenDota
+//                          (nunca guarda o que o navegador manda, para ninguém plantar partida falsa) e guarda.
+// O navegador continua buscando direto no OpenDota quando a partida não está aqui: o Worker só gasta 1 consulta
+// por partida nova. Limites (por instância, aproximados): a cota grátis do KV é 1.000 gravações por dia.
+const PARTIDA_TTL_S = 2 * 24 * 3600;
+const PARTIDA_ID = /^\d{6,12}$/;
+const PARTIDA_MAX_BYTES = 20 * 1024 * 1024;
+const geladeira = { hora: 0, global: 0, ips: new Map() };
+const PARTIDA_GLOBAL_POR_HORA = 40; // 40 x 24 = 960: cabe nas 1.000 gravações grátis do KV por dia
+const PARTIDA_IP_POR_HORA = 20;
+
+function vagaGeladeira(req, agora = Date.now()) {
+  const hora = Math.floor(agora / 3600e3);
+  if (geladeira.hora !== hora) { geladeira.hora = hora; geladeira.global = 0; geladeira.ips.clear(); }
+  const ip = chaveDoIp(req.headers.get('CF-Connecting-IP'));
+  const n = geladeira.ips.get(ip) || 0;
+  if (geladeira.global >= PARTIDA_GLOBAL_POR_HORA || n >= PARTIDA_IP_POR_HORA) return false;
+  geladeira.global++;
+  if (geladeira.ips.size < MAX_CHAVES) geladeira.ips.set(ip, n + 1);
+  return true;
+}
+
+async function gzip(texto) {
+  return new Response(new Blob([texto]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+}
+
+async function rotaPartida(req, env, origem, id) {
+  const chave = `p:${id}`;
+  if (req.method === 'GET') {
+    let bytes = null;
+    try { bytes = await env.PARTIDAS.get(chave, 'arrayBuffer'); } catch { /* KV fora: o site vai no OpenDota */ }
+    if (!bytes) return json(404, { erro: 'sem-partida' }, origem, env);
+    return new Response(bytes, { status: 200, headers: { 'content-type': 'application/octet-stream', 'cache-control': 'no-store', ...cors(origem, env) } });
+  }
+  // POST: guardar
+  try {
+    // get (leitura: 100 mil grátis por dia), não list (só 1.000 por dia)
+    const ja = await env.PARTIDAS.get(chave, 'stream');
+    if (ja) { ja.cancel().catch(() => {}); return json(200, { ok: true, ja: true }, origem, env); }
+  } catch { return json(503, { erro: 'desligado' }, origem, env); }
+  if (!vagaGeladeira(req)) return json(429, { erro: 'limite' }, origem, env);
+  let r;
+  try { r = await fetch(`https://api.opendota.com/api/matches/${id}`, { headers: { 'user-agent': 'culpado-coach' } }); } catch { return json(502, { erro: 'opendota' }, origem, env); }
+  if (!r.ok) return json(r.status === 429 ? 429 : 502, { erro: 'opendota', status: r.status }, origem, env);
+  const texto = await r.text();
+  if (texto.length > PARTIDA_MAX_BYTES) return json(413, { erro: 'grande' }, origem, env);
+  let m;
+  try { m = JSON.parse(texto); } catch { return json(502, { erro: 'opendota' }, origem, env); }
+  // só partida já analisada (version) e completa: a sem análise ainda vai mudar
+  if (!m || String(m.match_id) !== id || m.version == null || !Array.isArray(m.players) || m.players.length !== 10) return json(200, { ok: false, motivo: 'sem-analise' }, origem, env);
+  try { await env.PARTIDAS.put(chave, await gzip(texto), { expirationTtl: PARTIDA_TTL_S }); } catch { return json(503, { erro: 'kv' }, origem, env); }
+  return json(200, { ok: true }, origem, env);
+}
+
 export default {
   async fetch(req, env = {}) {
     const origem = (req.headers.get('Origin') || '').replace(/\/$/, '');
@@ -1200,6 +1256,7 @@ export default {
         msg: p.provedor ? 'Coach ligado. Agora cole este endereço no config.json do site.' : MSG.desligadoDono,
         ...(pausado ? { aviso: 'O Gemini está pausado por uns minutos (cota do dia ou chave recusada; veja os Logs). Enquanto isso responde a Cloudflare.' } : {}),
         ...(await saudeMapa(env)),
+        partidas: Boolean(env.PARTIDAS),
       }, origem, env);
     }
 
@@ -1226,6 +1283,13 @@ export default {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
       if (!env.VISITAS) return json(503, { erro: 'desligado' }, origem, env);
       return rotaVisitas(req, env, origem, caminho);
+    }
+    const rotaPart = caminho.match(/^\/partida\/(\d+)$/);
+    if (rotaPart && (req.method === 'GET' || req.method === 'POST')) {
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!env.PARTIDAS) return json(503, { erro: 'desligado' }, origem, env);
+      if (!PARTIDA_ID.test(rotaPart[1])) return recusar(400, 'invalido', origem, env);
+      return rotaPartida(req, env, origem, rotaPart[1]);
     }
     if (req.method === 'POST' && caminho === '/feedback') {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
@@ -1257,7 +1321,7 @@ export default {
 export const _interno = {
   enxugarContexto, cortarHistorico, montarConversa, eventosSse, classificarErroCF, limparContexto, chaveDoIp, msgCotaCF,
   SISTEMA, LIMITES, MODELO_PADRAO, resumoVisitas, diaBr, contagem, geminiPausa, entradaMinima,
-  cacheMapa, consultas, PEDIDO_PARADO_MS, MAX_CHAVES,
+  cacheMapa, consultas, PEDIDO_PARADO_MS, MAX_CHAVES, geladeira,
   limparCacheMapa: () => {
     cacheMapa.clear(); consultas.clear();
     cacheFalhas = { ate: 0, dados: null }; cacheSaude = { ate: 0, dados: null }; orcamentoGithub = { hora: -1, n: 0 };

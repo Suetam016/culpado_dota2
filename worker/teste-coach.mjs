@@ -1186,3 +1186,62 @@ test('visitas: dia no horário de Brasília', () => {
   assert.equal(_interno.diaBr(Date.parse('2026-10-20T02:00:00Z')), '2026-10-19');
   assert.equal(_interno.diaBr(Date.parse('2026-10-20T03:30:00Z')), '2026-10-20');
 });
+
+// ---------- geladeira de partidas (KV PARTIDAS) ----------
+function kvFalso() {
+  const m = new Map();
+  return {
+    m,
+    async get(k, tipo) {
+      if (!m.has(k)) return null;
+      const v = m.get(k).v;
+      return tipo === 'stream' ? new Response(v).body : v;
+    },
+    async put(k, v, op) { m.set(k, { v, op }); },
+  };
+}
+const partidaOD = (id, extra = {}) => ({ match_id: Number(id), version: 21, players: Array.from({ length: 10 }, (_, i) => ({ hero_id: i + 1 })), ...extra });
+async function gunzipTexto(buf) {
+  return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+}
+
+test('partida: guarda a analisada buscando no OpenDota e devolve em gzip', async () => {
+  _interno.geladeira.hora = 0;
+  const env = { PARTIDAS: kvFalso() };
+  let chamadas = 0;
+  globalThis.fetch = async (url) => { chamadas++; assert.match(String(url), /api\.opendota\.com\/api\/matches\/9042378073$/); return new Response(JSON.stringify(partidaOD('9042378073')), { status: 200 }); };
+  assert.equal((await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/partida/9042378073' }), env)).status, 404);
+  const r = await worker.fetch(pedido(null, { caminho: '/partida/9042378073' }), env);
+  assert.deepEqual(await r.json(), { ok: true });
+  assert.equal(env.PARTIDAS.m.get('p:9042378073').op.expirationTtl, 172800);
+  // segunda vez: já está guardada, não chama o OpenDota
+  assert.deepEqual(await (await worker.fetch(pedido(null, { caminho: '/partida/9042378073' }), env)).json(), { ok: true, ja: true });
+  assert.equal(chamadas, 1);
+  const g = await worker.fetch(pedido(null, { metodo: 'GET', caminho: '/partida/9042378073' }), env);
+  assert.equal(g.status, 200);
+  assert.equal(g.headers.get('Access-Control-Allow-Origin'), SITE);
+  assert.equal(JSON.parse(await gunzipTexto(await g.arrayBuffer())).version, 21);
+});
+
+test('partida: não guarda sem análise, de outro id, nem de outra origem', async () => {
+  _interno.geladeira.hora = 0;
+  const env = { PARTIDAS: kvFalso() };
+  globalThis.fetch = async () => new Response(JSON.stringify(partidaOD('9042378073', { version: null })), { status: 200 });
+  assert.equal((await (await worker.fetch(pedido(null, { caminho: '/partida/9042378073' }), env)).json()).ok, false);
+  globalThis.fetch = async () => new Response(JSON.stringify(partidaOD('111111111')), { status: 200 });
+  assert.equal((await (await worker.fetch(pedido(null, { caminho: '/partida/9042378073' }), env)).json()).ok, false);
+  assert.equal(env.PARTIDAS.m.size, 0);
+  assert.equal((await worker.fetch(pedido(null, { caminho: '/partida/9042378073', origem: 'https://malvado.example' }), env)).status, 403);
+  assert.equal((await worker.fetch(pedido(null, { caminho: '/partida/123' }), env)).status, 400);
+  assert.equal((await worker.fetch(pedido(null, { caminho: '/partida/9042378073' }), {})).status, 503);
+});
+
+test('partida: limite por IP e OpenDota recusando', async () => {
+  _interno.geladeira.hora = 0;
+  const env = { PARTIDAS: kvFalso() };
+  globalThis.fetch = async () => new Response('{}', { status: 429 });
+  assert.equal((await worker.fetch(pedido(null, { caminho: '/partida/9042378073', ip: '9.9.9.9' }), env)).status, 429);
+  for (let i = 0; i < 25; i++) await worker.fetch(pedido(null, { caminho: `/partida/90423780${String(i).padStart(2, '0')}`, ip: '9.9.9.9' }), env);
+  const r = await worker.fetch(pedido(null, { caminho: '/partida/9042378099', ip: '9.9.9.9' }), env);
+  assert.equal((await r.json()).erro, 'limite');
+});

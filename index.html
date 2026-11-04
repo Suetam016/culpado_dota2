@@ -5707,10 +5707,8 @@ return p;
 // A base do grupo (branch "dados", alimentado pelo robô de coleta): partida que já está lá não gasta chamada do
 // OpenDota. O arquivo é o JSON cru do OpenDota em gzip.
 const BASE_PARTIDAS = 'https://raw.githubusercontent.com/Suetam016/culpado_dota2/dados/partidas/';
-async function partidaDaBase(k, signal) {
-try {
-const pre = tomarPre('base', k);
-const r = (pre && await pre) || await fetch(`${BASE_PARTIDAS}${k}.json.gz`, { signal });
+// Lê a resposta da base ou da geladeira: JSON do OpenDota, cru ou em gzip. Só vale partida já analisada.
+async function lerPartidaGuardada(r) {
 if (!r || !r.ok) return null;
 const bytes = new Uint8Array(await r.arrayBuffer());
 let txt;
@@ -5720,22 +5718,61 @@ txt = await new Response(new Blob([bytes]).stream().pipeThrough(new Decompressio
 } else txt = new TextDecoder().decode(bytes);
 const m = JSON.parse(txt);
 return m && Array.isArray(m.players) && m.players.length && m.version != null ? m : null; // sem análise: vai no OpenDota
+}
+async function partidaDaBase(k, signal) {
+try {
+const pre = tomarPre('base', k);
+return await lerPartidaGuardada((pre && await pre) || await fetch(`${BASE_PARTIDAS}${k}.json.gz`, { signal }));
 } catch (e) {
 if (ehAbort(e)) throw e;
 return null;
 }
 }
+// Geladeira do Worker (2 dias): partida que alguém já abriu vem de lá, sem esperar o OpenDota. Se o Worker
+// não responder em 2 s ou não tiver a partida, o navegador busca no OpenDota como sempre.
+const GELADEIRA_ESPERA_MS = 2000;
+async function partidaDaGeladeira(k, signal) {
+try {
+const url = await urlDoCoach();
+if (!url) return null;
+const ctrl = new AbortController();
+const parar = () => ctrl.abort();
+if (signal) signal.addEventListener('abort', parar, { once: true });
+const relogio = setTimeout(parar, GELADEIRA_ESPERA_MS);
+try {
+return await lerPartidaGuardada(await fetch(`${url}/partida/${k}`, { signal: ctrl.signal, cache: 'no-store' }));
+} finally {
+clearTimeout(relogio);
+if (signal) signal.removeEventListener('abort', parar);
+}
+} catch (e) {
+if (signal && signal.aborted) throw abortado();
+return null;
+}
+}
+// Partida analisada que veio do OpenDota: avisa o Worker, que busca ela ele mesmo e guarda por 2 dias.
+const avisadasGeladeira = new Set();
+function guardarNaGeladeira(k) {
+if (avisadasGeladeira.has(k)) return;
+avisadasGeladeira.add(k);
+urlDoCoach().then((url) => url && fetch(`${url}/partida/${k}`, { method: 'POST', keepalive: true })).catch(() => {});
+}
 const partidasMem = new Map();
 async function buscarPartida(id, signal) {
 const k = String(id);
 if (partidasMem.has(k)) return partidasMem.get(k);
+const pre = tomarPre('partida', k);
+// base do grupo e geladeira ao mesmo tempo (exemplo embutido não passa pela geladeira)
+const daGeladeiraP = pre ? Promise.resolve(null) : partidaDaGeladeira(k, signal);
+daGeladeiraP.catch(() => {});
 const daBase = await partidaDaBase(k, signal);
 if (daBase) { partidasMem.set(k, daBase); return daBase; }
-const pre = tomarPre('partida', k);
+const daGeladeira = await daGeladeiraP;
+if (daGeladeira) { partidasMem.set(k, daGeladeira); return daGeladeira; }
 const resp = pre && await pre;
 const match = resp ? await respostaApi(resp) : await api(`/matches/${k}`, { signal });
 if (!match || !Array.isArray(match.players) || !match.players.length) throw Object.assign(new Error('vazia'), { code: 'nao-encontrada' });
-if (match.version != null) partidasMem.set(k, match);
+if (match.version != null) { partidasMem.set(k, match); if (!resp) guardarNaGeladeira(k); }
 return match;
 }
 
@@ -5902,6 +5939,7 @@ const m = await api(`/matches/${id}`).catch(() => null);
 faixa.checou();
 if (m && m.version != null) {
 partidasMem.set(String(id), m); // a recarga usa esta, sem pedir de novo
+guardarNaGeladeira(String(id));
 marcar('F4');
 faixa.parar(true);
 await new Promise((r) => setTimeout(r, 500));
@@ -5978,7 +6016,7 @@ await new Promise((r) => setTimeout(r, passou > 10 * 60 ? BUSCA_NOVA_PASSO_LENTO
 if (!vivo()) return true;
 const m = await api(`/matches/${id}`, { signal: carga.signal }).catch(() => null);
 if (m && Array.isArray(m.players) && m.players.length) {
-if (m.version != null) partidasMem.set(String(id), m);
+if (m.version != null) { partidasMem.set(String(id), m); guardarNaGeladeira(String(id)); }
 avisarAbaPronta(id);
 carregar(id);
 return true;
