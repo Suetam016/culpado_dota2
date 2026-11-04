@@ -56,6 +56,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (ranking) renderizarElo();
   }));
 
+  $('bolsa').addEventListener('click', e => {
+    const d = e.target.closest('[data-dia]');
+    if (d) { bolsaDia = d.dataset.dia; renderizarBolsa(); }
+  });
+
   const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
   [ranking, parceiros, insights, meta, estadoAtt] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking()]);
   // o GitHub Pages pode levar minutos para publicar o ranking novo: se o repositório já tem um mais novo, usa ele
@@ -1073,6 +1078,7 @@ function curvaDeElo(conta, tier) {
 }
 
 function renderizarElo() {
+  renderizarBolsa();
   const alvo = $('elo-corrida');
   requestAnimationFrame(() => requestAnimationFrame(() => {
     alvo.querySelectorAll('.palito').forEach(p => { p.style.left = `${p.dataset.para}%`; });
@@ -1160,6 +1166,265 @@ function renderizarElo() {
           <span>${x.v + x.d ? `${x.v}V · ${x.d}D` : 'sem ranqueada'}</span></div>
       </li>`).join('')}</ol>
     <p class="time-nota">Cada palito sai de onde a pessoa estava no começo do período e corre até onde está agora. MMR estimado: começa na medalha atual de cada um no OpenDota e volta no tempo ±${MMR_POR_PARTIDA} por ranqueada que o robô guardou. Partidas que o robô ainda não baixou não entram, e a Valve não mostra o MMR exato.</p>`;
+}
+
+/* ---------- Bolsa do grupo ----------
+ * O grupo vira uma ação (MRC3): o preço é a soma do MMR estimado de quem tem medalha (mesma conta da Corrida de elo,
+ * ±25 por ranqueada). Cada dia é um candle: abre onde o grupo estava, fecha onde terminou e o pavio marca o pico e o
+ * fundo partida a partida. O letreiro de cima mistura cotações com fofocas tiradas das partidas dos últimos 7 dias. */
+
+const BOLSA_DIAS = 90;
+const BOLSA_LW = 18;
+let bolsaDia = null;
+
+const diaLocal = t => { const d = new Date(t * 1000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const dataDoDia = s => { const [a, m, d] = s.split('-').map(Number); return new Date(a, m - 1, d); };
+const somaDia = (s, n) => { const d = dataDoDia(s); d.setDate(d.getDate() + n); return diaLocal(d / 1000); };
+const DIAS_SEM = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+const DIAS_CURTO = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+const MESES_BOLSA = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const sinal = n => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n).toLocaleString('pt-BR');
+const pts = n => n.toLocaleString('pt-BR');
+
+function dadosDaBolsa() {
+  const perfis = ranking.perfis || {};
+  const medalhas = (parceirosBase && parceirosBase.medalhas) || {};
+  const nomes = { ...(parceirosBase.nomes || {}), ...Object.fromEntries(ranking.ranking.map(j => [j.accountId, j.nome])) };
+  const contas = Object.keys(ranking.historicos);
+  const cores = Object.fromEntries(contas.map((c, i) => [c, CORES_ELO[i % CORES_ELO.length]]));
+  const tiers = Object.fromEntries(contas.map(c => [c, (perfis[c] || {}).rankTier || medalhas[c] || null]).filter(([, t]) => t));
+  const jogos = (parceirosBase.jogos || []).filter(g => g.r).sort((a, b) => a.t - b.t);
+  // anda de trás pra frente a partir do MMR de hoje
+  let preco = Object.values(tiers).reduce((s, t) => s + mmrDaMedalha(t), 0);
+  const variacao = g => g.j.filter(x => tiers[x[0]]).length * (g.v ? MMR_POR_PARTIDA : -MMR_POR_PARTIDA);
+  const depois = new Map();
+  for (let i = jogos.length - 1; i >= 0; i--) { depois.set(jogos[i], preco); preco -= variacao(jogos[i]); }
+  const porDia = new Map();
+  jogos.forEach(g => { const s = diaLocal(g.t); (porDia.get(s) || porDia.set(s, []).get(s)).push(g); });
+  const hoje = diaLocal(Date.now() / 1000);
+  const velas = [];
+  let atual = preco;
+  // preço antes da janela: aplica os dias anteriores
+  const inicio = somaDia(hoje, -(BOLSA_DIAS - 1));
+  jogos.forEach(g => { if (diaLocal(g.t) < inicio) atual = depois.get(g); });
+  for (let s = inicio; s <= hoje; s = somaDia(s, 1)) {
+    const gs = porDia.get(s) || [];
+    const o = atual; let hi = o, lo = o;
+    const por = {};
+    gs.forEach(g => {
+      atual = depois.get(g); hi = Math.max(hi, atual); lo = Math.min(lo, atual);
+      g.j.forEach(x => { if (!tiers[x[0]]) return; const p = por[x[0]] = por[x[0]] || { c: x[0], d: 0, v: 0, l: 0 }; p.d += g.v ? MMR_POR_PARTIDA : -MMR_POR_PARTIDA; p[g.v ? 'v' : 'l']++; });
+    });
+    const ps = Object.values(por);
+    const saldo = atual - o;
+    ps.sort(saldo >= 0 ? (a, b) => b.d - a.d || (b.v + b.l) - (a.v + a.l) : (a, b) => a.d - b.d || (b.v + b.l) - (a.v + a.l));
+    velas.push({ s, o, c: atual, hi, lo, jogos: gs.length, vit: gs.filter(g => g.v).length, ps, resp: saldo ? ps[0] : null });
+  }
+  return { velas, nomes, cores, perfis, hoje };
+}
+
+/* Fofocas do pregão: cada regra olha os últimos 7 dias e só entra no letreiro se aconteceu de verdade. */
+function fofocasDaBolsa(b) {
+  const N = c => `<b>${esc(b.nomes[c] || c)}</b>`;
+  const heroi = h => ((parceirosBase.herois || {})[h] || [])[1] || 'herói misterioso';
+  const todos = (parceirosBase.jogos || []).slice().sort((a, b2) => a.t - b2.t);
+  if (!todos.length) return [];
+  const fim = todos[todos.length - 1].t;
+  const ini = fim - 7 * 86400;
+  const sem = todos.filter(g => g.t > ini), antes = todos.filter(g => g.t <= ini);
+  const uma = (lista, chave) => lista[[...chave].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7) % lista.length];
+  const grupos = {};
+  const add = (tipo, f) => (grupos[tipo] = grupos[tipo] || []).push(f);
+  const frases = { push: f => add('geral', f) };
+  const por = new Map();
+  sem.forEach(g => g.j.forEach(x => (por.get(x[0]) || por.set(x[0], []).get(x[0])).push({ g, x })));
+
+  // sequência de ranqueadas (do jogo mais novo para trás)
+  for (const c of Object.keys(ranking.historicos)) {
+    const rs = todos.filter(g => g.r && g.j.some(x => x[0] === c));
+    if (!rs.length) continue;
+    const ult = rs[rs.length - 1].v; let k = 0;
+    for (let i = rs.length - 1; i >= 0 && rs[i].v === ult; i--) k++;
+    if (k >= 3 && !ult) frases.push(uma([`${N(c)} emenda ${k} derrotas seguidas: CVM suspende a negociação do papel`, `${N(c)} cai pela ${k}ª vez seguida e analistas recomendam desinstalar`, `Alerta de ${k} quedas seguidas em ${N(c)}: o papel tá sendo vendido a preço de banana`], c + k));
+    if (k >= 3 && ult) frases.push(uma([`${N(c)} com ${k} vitórias seguidas: papel em alta, já tem gente pedindo autógrafo`, `${N(c)} engata ${k} vitórias e entra no radar dos grandes fundos`], c + k));
+  }
+  for (const [c, lista] of por) {
+    // herói novo (só para quem já tem histórico, senão tudo seria estreia)
+    const jogosAntes = antes.filter(g => g.j.some(x => x[0] === c));
+    const visto = new Set(jogosAntes.flatMap(g => g.j.filter(x => x[0] === c).map(x => x[1])));
+    const novos = new Map();
+    lista.forEach(({ g, x }) => { if (x[1] && !visto.has(x[1])) { const n = novos.get(x[1]) || { v: 0, l: 0 }; n[g.v ? 'v' : 'l']++; novos.set(x[1], n); } });
+    if (jogosAntes.length >= 15) {
+      const devolvidos = [], estreias = [];
+      for (const [h, n] of novos) {
+        const H = `<b>${esc(heroi(h))}</b>`;
+        if (n.v + n.l === 1) (n.v ? estreias : devolvidos).push(H);
+        else if (n.v > n.l) add('heroi', uma([`IPO de ${H} por ${N(c)} estreia em alta: ${n.v}V ${n.l}D`, `${N(c)} descobriu ${H} essa semana: ${n.v}V ${n.l}D, já tá cobrando royalties`], c + h));
+        else add('heroi', uma([`${N(c)} lançou ${H} na bolsa: ${n.v}V ${n.l}D, investidores pedem reembolso`, `${N(c)} insiste em ${H}: ${n.v}V ${n.l}D. O mercado não perdoa`], c + h));
+      }
+      const e = lista2 => lista2.length > 1 ? `${lista2.slice(0, -1).join(', ')} e ${lista2[lista2.length - 1]}` : lista2[0];
+      if (devolvidos.length) add('heroi', devolvidos.length > 1 ? `${N(c)} testou ${e(devolvidos)} uma vez cada e devolveu tudo na loja` : `${N(c)} testou ${devolvidos[0]} uma vez e devolveu na loja`);
+      if (estreias.length) add('heroi', estreias.length > 1 ? `${N(c)} estreou ${e(estreias)} e ganhou com ${estreias.length === 2 ? 'os dois' : 'todos'}: IPOs de sucesso` : `${N(c)} estreou ${estreias[0]} e já ganhou: IPO de sucesso`);
+    }
+    // monopólio de um herói
+    const cont = new Map();
+    lista.forEach(({ g, x }) => { if (!x[1]) return; const n = cont.get(x[1]) || { v: 0, l: 0 }; n[g.v ? 'v' : 'l']++; cont.set(x[1], n); });
+    const top = [...cont].sort((a, b2) => (b2[1].v + b2[1].l) - (a[1].v + a[1].l))[0];
+    if (top && top[1].v + top[1].l >= 5) { const [h, n] = top; add('heroi', `${N(c)} jogou ${n.v + n.l} de <b>${esc(heroi(h))}</b> na semana (${n.v}V ${n.l}D): monopólio, o CADE está de olho`); }
+    // troca de função
+    const moda = arr => { const m = new Map(); arr.forEach(p => p && m.set(p, (m.get(p) || 0) + 1)); return [...m].sort((a, b2) => b2[1] - a[1])[0]; };
+    const velha = moda(antes.flatMap(g => g.j.filter(x => x[0] === c).map(x => x[2])));
+    const nova = moda(lista.map(({ x }) => x[2]));
+    if (velha && nova && velha[0] !== nova[0] && nova[1] >= 3 && velha[1] >= 5) {
+      const naNova = lista.filter(({ x }) => x[2] === nova[0]);
+      const v = naNova.filter(({ g }) => g.v).length, l = naNova.length - v;
+      const P1 = POSICOES[velha[0]], P2 = POSICOES[nova[0]];
+      frases.push(v > l ? `${N(c)} largou o ${P1} e virou ${P2}: ${v}V ${l}D, reestruturação aprovada pelo conselho`
+        : `${N(c)} saiu do ${P1} pra testar ${P2}: ${v}V ${l}D. Volta pro ${P1} pelo amor de Deus`);
+    }
+    // lane
+    const lanes = lista.map(({ x }) => x[4]).filter(r => r === 1 || r === -1 || r === 0);
+    if (lanes.length >= 4) {
+      const perdeu = lanes.filter(r => r === -1).length, ganhou = lanes.filter(r => r === 1).length;
+      if (perdeu / lanes.length >= 0.6) frases.push(uma([`${N(c)} perdeu ${perdeu} de ${lanes.length} lanes na semana: a lane é dele só no papel`, `${N(c)} chega no minuto 10 sempre devendo: ${perdeu} lanes perdidas de ${lanes.length}`], c));
+      else if (ganhou / lanes.length >= 0.7) frases.push(`${N(c)} ganhou ${ganhou} de ${lanes.length} lanes: dono do minuto 10, cobra aluguel do vizinho`);
+    }
+  }
+  // duplas
+  const pares = new Map();
+  sem.forEach(g => { const cs = g.j.map(x => x[0]).sort(); for (let i = 0; i < cs.length; i++) for (let k = i + 1; k < cs.length; k++) { const ch = cs[i] + '|' + cs[k]; const p = pares.get(ch) || { v: 0, l: 0 }; p[g.v ? 'v' : 'l']++; pares.set(ch, p); } });
+  const listaPares = [...pares].filter(([, p]) => p.v + p.l >= 3);
+  const melhor = listaPares.filter(([, p]) => p.v / (p.v + p.l) >= 0.75).sort((a, b2) => b2[1].v - a[1].v)[0];
+  const pior = listaPares.filter(([, p]) => p.v / (p.v + p.l) <= 0.25).sort((a, b2) => b2[1].l - a[1].l)[0];
+  if (melhor) { const [a, c] = melhor[0].split('|'); frases.push(uma([`Fusão aprovada: ${N(a)} + ${N(c)} fizeram ${melhor[1].v}V ${melhor[1].l}D juntos`, `${N(a)} e ${N(c)} juntos: ${melhor[1].v}V ${melhor[1].l}D. Já tão vendo apartamento`], melhor[0])); }
+  if (pior) { const [a, c] = pior[0].split('|'); frases.push(uma([`${N(a)} e ${N(c)} juntos: ${pior[1].v}V ${pior[1].l}D, divórcio litigioso em andamento`, `Dupla ${N(a)} + ${N(c)}: ${pior[1].v}V ${pior[1].l}D. Separem esses dois na fila`], pior[0])); }
+  // lane dupla perdida
+  const lanePar = new Map();
+  sem.forEach(g => { const xs = g.j.filter(x => x[3] && x[4] === -1); for (let i = 0; i < xs.length; i++) for (let k = i + 1; k < xs.length; k++) if (xs[i][3] === xs[k][3]) { const ch = [xs[i][0], xs[k][0]].sort().join('|'); lanePar.set(ch, (lanePar.get(ch) || 0) + 1); } });
+  const pl = [...lanePar].sort((a, b2) => b2[1] - a[1])[0];
+  if (pl && pl[1] >= 2) { const [a, c] = pl[0].split('|'); frases.push(`${N(a)} e ${N(c)} perderam a lane juntos ${pl[1]} vezes: dupla sertaneja desafinada`); }
+  // culpados e craques (motor do site)
+  const conta = tipo => Object.entries(ranking.historicos).map(([c, h]) => [c, h.filter(x => x.tipo === tipo && (x.inicio || 0) > ini).length]).sort((a, b2) => b2[1] - a[1])[0];
+  const culp = conta('culpado'), craq = conta('craque');
+  if (culp && culp[1] >= 3) frases.push(uma([`${N(culp[0])} foi o culpado ${culp[1]} vezes na semana: delação premiada em negociação`, `${N(culp[0])}, culpado ${culp[1]}x em 7 dias, convocado pra depor na CPI do feed`], culp[0]));
+  if (craq && craq[1] >= 3) frases.push(`${N(craq[0])} carregou ${craq[1]} partidas na semana: bônus de fim de ano garantido`);
+  // volume
+  const vol = [...por].map(([c, l]) => [c, l.length, l.filter(({ g }) => g.v).length]).sort((a, b2) => b2[1] - a[1])[0];
+  if (vol && vol[1] >= 10) frases.push(vol[2] / vol[1] < 0.45 ? `${N(vol[0])}: ${vol[1]} partidas em 7 dias, volume de day trader e prejuízo de day trader também` : `${N(vol[0])}: ${vol[1]} partidas em 7 dias, volume de Faria Lima`);
+  // madrugada
+  const madru = sem.filter(g => { const h = new Date(g.t * 1000).getHours(); return h < 5; });
+  const ml = madru.filter(g => !g.v).length;
+  if (ml >= 3) {
+    const quem = new Map(); madru.forEach(g => g.j.forEach(x => quem.set(x[0], (quem.get(x[0]) || 0) + 1)));
+    const q = [...quem].sort((a, b2) => b2[1] - a[1])[0][0];
+    frases.push(`Pregão da madrugada: ${ml} derrotas depois da meia-noite. Vai dormir, ${N(q)}`);
+  }
+  // sumido
+  const ultimo = new Map(); todos.forEach(g => g.j.forEach(x => ultimo.set(x[0], g.t)));
+  for (const c of Object.keys(ranking.historicos)) {
+    const t = ultimo.get(c); if (!t) continue;
+    const d = Math.floor((fim - t) / 86400);
+    if (d >= 7) frases.push(`${N(c)} não negocia há ${d} dias: papel deslistado por falta de liquidez`);
+  }
+  // time fechado
+  const tf = (parceirosBase.timeFechado || []).filter(g => g.t > ini);
+  if (tf.length >= 2) { const v = tf.filter(g => g.v).length; frases.push(v === tf.length - v ? `Time fechado com os 5: ${v}V ${tf.length - v}D, assembleia de acionistas sem consenso` : v > tf.length - v ? `Time fechado com os 5: ${v}V ${tf.length - v}D, a holding toda junta rende` : `Time fechado com os 5: ${v}V ${tf.length - v}D. Holding em recuperação judicial`); }
+  // pregões extremos da semana
+  const semana = b.velas.slice(-7).filter(v => v.jogos);
+  const pior2 = semana.slice().sort((a, b2) => (a.c - a.o) - (b2.c - b2.o))[0];
+  const melhor2 = semana.slice().sort((a, b2) => (b2.c - b2.o) - (a.c - a.o))[0];
+  if (pior2 && pior2.c < pior2.o) frases.push(`Pior pregão da semana: ${DIAS_SEM[dataDoDia(pior2.s).getDay()]}, ${sinal(pior2.c - pior2.o)}. Circuit breaker acionado${pior2.resp ? `, ${N(pior2.resp.c)} na mira` : ''}`);
+  if (melhor2 && melhor2.c > melhor2.o) frases.push(`Melhor pregão da semana: ${DIAS_SEM[dataDoDia(melhor2.s).getDay()]}, ${sinal(melhor2.c - melhor2.o)}. Champanhe na Faria Lima${melhor2.resp ? ` por conta de ${N(melhor2.resp.c)}` : ''}`);
+  // intercala os tipos para o letreiro não virar uma lista de heróis seguidos
+  const filas = Object.values(grupos), saida = [];
+  while (filas.some(f => f.length)) filas.forEach(f => f.length && saida.push(f.shift()));
+  return saida;
+}
+
+function renderizarBolsa() {
+  const alvo = $('bolsa');
+  if (!alvo || !parceirosBase) return;
+  const b = dadosDaBolsa();
+  const { velas } = b;
+  const comJogo = velas.filter(v => v.jogos);
+  if (!comJogo.length) { alvo.innerHTML = '<p class="carregando">Sem ranqueada nos últimos meses.</p>'; return; }
+  if (!bolsaDia || !velas.some(v => v.s === bolsaDia)) bolsaDia = comJogo[comJogo.length - 1].s;
+  const i = velas.findIndex(v => v.s === bolsaDia), V = velas[i];
+  const N = c => esc(b.nomes[c] || c);
+  const foto = c => (b.perfis[c] || {}).avatar;
+  const inicial = c => esc(((b.nomes[c] || '?').match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase());
+  const avatar = (c, t) => `<span class="bolsa-av" style="--cor:${b.cores[c] || '#888'};--t:${t}px"><span>${inicial(c)}</span>${foto(c) ? `<img src="${esc(foto(c))}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>`;
+
+  // velas
+  const H = 280, TOPO = 30, BASE = 32, LW = BOLSA_LW;
+  const max = Math.max(...velas.map(v => v.hi)) + 80, min = Math.min(...velas.map(v => v.lo)) - 80;
+  const y = n => TOPO + ((max - n) * (H - TOPO - BASE)) / (max - min);
+  const W = velas.length * LW + 64;
+  const passo = [100, 250, 500, 1000, 2500].find(p => (max - min) / p <= 6) || 5000;
+  let g = '<defs><clipPath id="bolsa-redondo" clipPathUnits="objectBoundingBox"><circle cx=".5" cy=".5" r=".5"/></clipPath></defs>';
+  for (let n = Math.ceil(min / passo) * passo; n <= max; n += passo) g += `<line x1="0" x2="${W - 60}" y1="${y(n)}" y2="${y(n)}" class="grade"/><text x="${W - 56}" y="${y(n) + 3}">${pts(n)}</text>`;
+  velas.forEach((v, j) => {
+    const x = j * LW + 4, cx = x + (LW - 5) / 2;
+    const d = dataDoDia(v.s);
+    if (d.getDay() === 0) g += `<line x1="${x - 2}" x2="${x - 2}" y1="${TOPO - 14}" y2="${H - BASE + 4}" class="domingo"/><text x="${x}" y="${H - 12}">${d.getDate()}/${d.getMonth() + 1}</text>`;
+    const classe = v.c > v.o ? 'alta' : v.c < v.o ? 'baixa' : 'lado';
+    g += `<g class="vela ${classe}${v.s === bolsaDia ? ' vela-sel' : ''}" data-dia="${v.s}"><title>${DIAS_SEM[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}${v.jogos ? ` · ${sinal(v.c - v.o)}` : ' · sem ranqueada'}</title>
+      <rect class="fundo" x="${x - 2}" y="${TOPO - 18}" width="${LW}" height="${H - TOPO - BASE + 22}"/>
+      <line x1="${cx}" x2="${cx}" y1="${y(v.hi)}" y2="${y(v.lo)}" class="pavio"/>
+      <rect class="corpo" x="${x}" y="${y(Math.max(v.o, v.c))}" width="${LW - 5}" height="${Math.max(1.5, Math.abs(y(v.o) - y(v.c)))}"/>`;
+    if (v.resp) {
+      const r = 7.5, ay = v.c >= v.o ? y(v.hi) - r - 3 : y(v.lo) + r + 3, c = v.resp.c;
+      g += `<circle cx="${cx}" cy="${ay}" r="${r + 1.5}" style="fill:${b.cores[c] || '#888'}"/><circle cx="${cx}" cy="${ay}" r="${r}" class="av-fundo"/>
+        <text x="${cx}" y="${ay + 3}" text-anchor="middle" class="av-ini">${inicial(c)}</text>
+        ${foto(c) ? `<image href="${esc(foto(c))}" x="${cx - r}" y="${ay - r}" width="${2 * r}" height="${2 * r}" clip-path="url(#bolsa-redondo)" preserveAspectRatio="xMidYMid slice" onerror="this.remove()"/>` : ''}`;
+    }
+    g += '</g>';
+  });
+
+  // letreiro: fofocas intercaladas com as cotações dos últimos 7 dias
+  const sete = {};
+  velas.slice(-7).forEach(v => v.ps.forEach(p => { const s = sete[p.c] = sete[p.c] || { c: p.c, d: 0, v: 0, l: 0 }; s.d += p.d; s.v += p.v; s.l += p.l; }));
+  const ult = velas[velas.length - 1], prim7 = velas[Math.max(0, velas.length - 7)];
+  const cot = [`<span><b class="tk-papel">MRC3</b> ${pts(ult.c)} <span class="${ult.c >= prim7.o ? 'up' : 'dn'}">${ult.c >= prim7.o ? '▲' : '▼'} ${sinal(ult.c - prim7.o)} em 7 dias</span></span>`,
+    ...Object.values(sete).sort((a, c) => c.d - a.d).map(p => `<span><b class="tk-papel">${N(p.c).toUpperCase()}</b> <span class="${p.d > 0 ? 'up' : p.d < 0 ? 'dn' : ''}">${p.d > 0 ? '▲' : p.d < 0 ? '▼' : '■'} ${sinal(p.d)}</span> <span class="tk-vol">${p.v}V ${p.l}D</span></span>`)];
+  const fof = fofocasDaBolsa(b).map(f => `<span class="tk-fofoca">${f}</span>`);
+  const itens = [];
+  for (let k = 0; k < Math.max(cot.length, fof.length); k++) { if (cot[k]) itens.push(cot[k]); if (fof[k]) itens.push(fof[k]); }
+  const faixa = itens.join('<i class="tk-sep">◆</i>');
+  const segundos = Math.max(40, Math.round(faixa.replace(/<[^>]+>/g, '').length / 9));
+
+  // livro de ofertas e calendário de pregões
+  const dV = dataDoDia(V.s);
+  const lado = (lista, titulo) => `<div><h4>${titulo}</h4>${lista.length ? lista.map(p => `<div class="livro-linha">${avatar(p.c, 20)}<span class="livro-nome">${N(p.c)}</span><span class="livro-vol">${p.v}V ${p.l}D</span><span class="${p.d > 0 ? 'up' : p.d < 0 ? 'dn' : ''}">${sinal(p.d)}</span></div>`).join('') : '<div class="livro-vol">ninguém</div>'}</div>`;
+  const prim = new Date(dV.getFullYear(), dV.getMonth(), 1);
+  let cal = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(x => `<b>${x}</b>`).join('') + '<span class="vazio"></span>'.repeat(prim.getDay());
+  const porS = new Map(velas.map(v => [v.s, v]));
+  for (let d = new Date(prim); d.getMonth() === dV.getMonth(); d.setDate(d.getDate() + 1)) {
+    const s = diaLocal(d / 1000), v = porS.get(s);
+    const k = v ? Math.min(1, Math.abs(v.c - v.o) / 300).toFixed(2) : 0;
+    cal += v && v.jogos ? `<button class="${v.c > v.o ? 'up' : v.c < v.o ? 'dn' : ''}${s === bolsaDia ? ' sel' : ''}" style="--k:${k}" data-dia="${s}" title="${sinal(v.c - v.o)}">${d.getDate()}</button>`
+      : `<span>${d.getDate()}</span>`;
+  }
+  const varDia = V.c - V.o;
+  alvo.innerHTML = `
+    <div class="tk" role="marquee" aria-label="Letreiro da bolsa do grupo"><div class="tk-trilha" style="--dur:${segundos}s"><div>${faixa}</div><div aria-hidden="true">${faixa}</div></div></div>
+    <div class="bolsa-corpo">
+      <div class="bolsa-graf">
+        <div class="cotacao"><span class="tick">MRC3 · ${DIAS_CURTO[dV.getDay()]} ${dV.getDate()}/${dV.getMonth() + 1}</span><span class="preco">${pts(V.c)}</span>
+          <span class="${varDia > 0 ? 'up' : varDia < 0 ? 'dn' : ''}">${varDia > 0 ? '▲' : varDia < 0 ? '▼' : '■'} ${sinal(varDia)} (${((100 * varDia) / V.o).toFixed(2).replace('.', ',')}%)</span>
+          <small>Abertura ${pts(V.o)} · máxima ${pts(V.hi)} · mínima ${pts(V.lo)} · ${V.jogos ? `${V.jogos} ranqueada${V.jogos > 1 ? 's' : ''} · ${V.vit}V ${V.jogos - V.vit}D` : 'sem ranqueada'}</small></div>
+        <div class="velas" id="bolsa-velas"><svg width="${W}" height="${H}" role="img" aria-label="Um candle por dia do MMR somado do grupo">${g}</svg></div>
+      </div>
+      <aside class="livro">
+        ${V.resp ? `<div class="livro-resp">${avatar(V.resp.c, 44)}<div><h4>${varDia > 0 ? 'Puxou a alta' : 'Derrubou o papel'}</h4><span>${N(V.resp.c)} <span class="${V.resp.d > 0 ? 'up' : 'dn'}">${sinal(V.resp.d)}</span></span></div></div>` : `<h4>${V.jogos ? 'Dia de lado' : 'Sem pregão'}</h4>`}
+        ${lado(V.ps.filter(p => p.d > 0), 'Compra · subiram')}
+        ${lado(V.ps.filter(p => p.d <= 0).reverse(), 'Venda · caíram')}
+        <div><h4>Pregões de ${MESES_BOLSA[dV.getMonth()]}</h4><div class="pregao">${cal}</div></div>
+      </aside>
+    </div>
+    <p class="bolsa-nota">O preço da MRC3 é a soma do MMR estimado de quem tem medalha no grupo (±${MMR_POR_PARTIDA} por ranqueada, igual à Corrida de elo). Cada candle é um dia: verde se o grupo subiu, vermelho se caiu, e a cara é de quem mais puxou pra cima ou pra baixo. Clique num candle para ver o dia. O letreiro conta o que rolou nos últimos 7 dias.</p>`;
+  const vel = $('bolsa-velas');
+  vel.scrollLeft = Math.max(0, i * LW - vel.clientWidth + 120);
 }
 
 /* ---------- Worker do coach (feedback e botão de atualizar) ---------- */
