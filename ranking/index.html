@@ -45,7 +45,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <nav class="abas" role="tablist" aria-label="Seções do ranking">
-      <button class="aba aba-ativa" data-aba="geral" role="tab" aria-selected="true">
+      <button class="aba aba-ativa" data-aba="elo" role="tab" aria-selected="true">
+        <span class="aba-icone" aria-hidden="true">📈</span><span class="aba-nome">Bolsa do grupo</span><span class="aba-sub">MMR dia a dia</span><span class="aba-novo">Novo</span>
+      </button>
+      <button class="aba" data-aba="geral" role="tab" aria-selected="false">
         <span class="aba-icone" aria-hidden="true">🏆</span><span class="aba-nome">Geral</span><span class="aba-sub">Culpados e craques</span>
       </button>
       <button class="aba" data-aba="stack" role="tab" aria-selected="false">
@@ -55,19 +58,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="aba-icone" aria-hidden="true">🎯</span><span class="aba-nome">Solo</span><span class="aba-sub">Sozinho na fila</span>
       </button>
       <button class="aba" data-aba="duplas" role="tab" aria-selected="false">
-        <span class="aba-icone" aria-hidden="true">🤝</span><span class="aba-nome">Duplas</span><span class="aba-sub">Win rate juntos</span><span class="aba-novo">Novo</span>
+        <span class="aba-icone" aria-hidden="true">🤝</span><span class="aba-nome">Duplas</span><span class="aba-sub">Win rate juntos</span>
       </button>
       <button class="aba" data-aba="composicoes" role="tab" aria-selected="false">
-        <span class="aba-icone" aria-hidden="true">🛡️</span><span class="aba-nome">Times e picks</span><span class="aba-sub">Sugestão de time</span><span class="aba-novo">Novo</span>
+        <span class="aba-icone" aria-hidden="true">🛡️</span><span class="aba-nome">Times e picks</span><span class="aba-sub">Sugestão de time</span>
       </button>
       <button class="aba" data-aba="fechado" role="tab" aria-selected="false">
-        <span class="aba-icone" aria-hidden="true">🏟️</span><span class="aba-nome">Time fechado</span><span class="aba-sub">Os 5 juntos</span><span class="aba-novo">Novo</span>
-      </button>
-      <button class="aba" data-aba="elo" role="tab" aria-selected="false">
-        <span class="aba-icone" aria-hidden="true">📈</span><span class="aba-nome">Bolsa do grupo</span><span class="aba-sub">MMR dia a dia</span><span class="aba-novo">Novo</span>
+        <span class="aba-icone" aria-hidden="true">🏟️</span><span class="aba-nome">Time fechado</span><span class="aba-sub">Os 5 juntos</span>
       </button>
       <button class="aba" data-aba="meta" role="tab" aria-selected="false">
-        <span class="aba-icone" aria-hidden="true">🔥</span><span class="aba-nome">Meta</span><span class="aba-sub">Heróis do patch</span><span class="aba-novo">Novo</span>
+        <span class="aba-icone" aria-hidden="true">🔥</span><span class="aba-nome">Meta</span><span class="aba-sub">Heróis do patch</span>
       </button>
     </nav>
 
@@ -86,7 +86,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </aside>
     </div>
 
-    <section class="aba-conteudo aba-conteudo-ativa" id="aba-ranking">
+    <section class="aba-conteudo" id="aba-ranking">
       <div class="barra">
         <p class="barra-desc" id="ranking-desc"></p>
         <div class="ordem" role="group" aria-label="Ordenar por">
@@ -144,7 +144,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="fechado-conteudo"></div>
     </section>
 
-    <section class="aba-conteudo" id="aba-elo">
+    <section class="aba-conteudo aba-conteudo-ativa" id="aba-elo">
       <div class="secao-titulo">
         <h2>Bolsa do grupo</h2>
         <p>O grupo virou ação: cada dia é um candle do MMR somado de todo mundo.</p>
