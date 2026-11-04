@@ -31,6 +31,7 @@
 // Protocolo com o site:
 //   GET  /saude  -> {ok, provedor, modelo, ..., mapa}  (o dono abre no navegador para conferir)
 //   POST /mapa e GET /mapa/<id>: pedido do mapa animado (seção "mapa animado" mais abaixo)
+//   POST /audio e GET /audio/<id>-<lado>: pedido do áudio da vitória (seção "áudio da vitória")
 //   POST /chat   {partida:"123", contexto:{...}, mensagens:[{papel:"eu"|"coach", texto}]}
 //     erro antes do stream: JSON {erro, msg, minutos?} com status 400/403/413/429/503
 //     sucesso: text/event-stream com linhas  data: {"t":"pedaço"}  ...  data: {"fim":true,"modelo":"...","cortada"?:true}
@@ -957,6 +958,135 @@ async function pedirMapa(req, env, origem) {
   }
 }
 
+// ------------------------------------------------------------------ áudio da vitória (pedido pelo site)
+// Quem carregou "manda um áudio" no grupo com a voz do Mat (workflow audio.yml, Qwen3-TTS na CPU do Actions).
+// As vitórias do grupo já saem gravadas; para as outras o site pede aqui. O Worker só ESCREVE audio/pedidos/<id>
+// e só LÊ audios/<id>-<lado>.(json|mp3), audio/pedidos/<id>, a lista de audio/pedidos e audio/falhas.json.
+//   POST /audio {id}               -> {estado:'pronto'|'na-fila'|'pedido', pedidoEm?}
+//   GET /audio/<id>-<lado>         -> {pronto, naFila, pedidoEm, falha:{motivo, quando}|null, agora}
+//   GET /audio/<id>-<lado>/(json|mp3) -> o próprio arquivo (para o site não esperar o GitHub Pages publicar)
+// Os limites por conexão e por hora são os mesmos do mapa (cada pedido conta como um pedido de mapa).
+const AUDIO_FILA_MAX = 6;
+const AUDIO_PARADO_MS = 25 * 60_000; // o robô grava ~3 por rodada, ~4 min cada: depois disso o pedido travou
+const caminhoAudio = {
+  arquivo: (id, lado, ext) => `audios/${id}-${lado}.${ext}`,
+  pedido: (id) => `audio/pedidos/${id}`,
+  fila: () => 'audio/pedidos',
+  falhas: () => 'audio/falhas.json',
+};
+const cacheAudio = new Map();
+let cacheFalhasAudio = { ate: 0, dados: null };
+
+async function audioExiste(env, id, lado) {
+  const r = await github(env, 'HEAD', caminhoAudio.arquivo(id, lado, 'json'));
+  if (r.status === 200) return true;
+  if (r.status === 404) return false;
+  throw erroDe('github', `HEAD audio ${r.status}`);
+}
+
+async function lerPedidoAudio(env, id) {
+  const r = await github(env, 'GET', caminhoAudio.pedido(id));
+  if (r.status === 404) { descartar(r); return null; }
+  if (r.status !== 200) throw erroDe('github', `GET pedido audio ${r.status}`);
+  const j = await r.json().catch(() => ({}));
+  let quando = null;
+  try { quando = (deBase64(j.content).match(/\d{4}-\d\d-\d\dT[\d:.]+Z/) || [])[0] || null; } catch { /* conteúdo estranho */ }
+  return { sha: j.sha || null, quando };
+}
+
+async function falhasAudio(env) {
+  if (cacheFalhasAudio.ate > Date.now()) return cacheFalhasAudio.dados;
+  const r = await github(env, 'GET', caminhoAudio.falhas(), null, 'application/vnd.github.raw+json');
+  let dados = {};
+  if (r.status === 200) { try { dados = JSON.parse(await r.text()) || {}; } catch { dados = {}; } } else descartar(r);
+  cacheFalhasAudio = { ate: Date.now() + CACHE_FALHAS_MS, dados };
+  return dados;
+}
+
+async function estadoAudio(env, id, lado) {
+  const k = `${id}-${lado}`;
+  const c = cacheAudio.get(k);
+  if (c && c.ate > Date.now()) return c.dados;
+  const [pronto, pedido, falhas] = await Promise.all([audioExiste(env, id, lado), lerPedidoAudio(env, id), falhasAudio(env)]);
+  const f = !pronto && falhas[id] && typeof falhas[id] === 'object' ? falhas[id] : null;
+  const dados = { pronto, naFila: !pronto && Boolean(pedido), pedidoEm: pedido ? pedido.quando : null,
+    falha: f ? { motivo: String(f.motivo || '').slice(0, 200), quando: String(f.quando || '').slice(0, 40) } : null };
+  if (cacheAudio.size > 500) cacheAudio.clear();
+  cacheAudio.set(k, { ate: Date.now() + (pronto ? 10 * 60_000 : CACHE_ESTADO_MS * 2), dados });
+  return dados;
+}
+
+async function pedirAudio(req, env, origem) {
+  const resp = (status, dados, extra) => json(status, dados, origem, env, extra);
+  const erro = (status, cod, extra = {}, headers = {}) => resp(status, { erro: cod, msg: (MSG_MAPA[cod] || MSG.invalido).replace('mapa', 'áudio'), ...extra }, headers);
+  const texto = await lerCorpo(req, 2_000);
+  if (texto == null) return erro(413, 'invalido');
+  let corpo;
+  try { corpo = JSON.parse(texto); } catch { return erro(400, 'invalido'); }
+  const id = String((corpo && corpo.id) ?? '');
+  const lado = String((corpo && corpo.lado) ?? '');
+  if (!ID_MAPA.test(id) || !['radiant', 'dire'].includes(lado)) return erro(400, 'invalido');
+  let devolver = () => {};
+  try {
+    if (await audioExiste(env, id, lado)) return resp(200, { estado: 'pronto' });
+    const pedido = await lerPedidoAudio(env, id);
+    const desde = pedido && pedido.quando ? Date.parse(pedido.quando) : NaN;
+    const parado = Boolean(pedido) && Number.isFinite(desde) && Date.now() - desde > AUDIO_PARADO_MS;
+    if (pedido && !parado) return resp(200, { estado: 'na-fila', pedidoEm: pedido.quando });
+    const conta = contarMapa(req, env, `a${id}`);
+    devolver = conta.devolver;
+    if (conta.minutos) return resp(429, { erro: 'limite', msg: `Muitos pedidos nesta hora. Tente de novo em ${conta.minutos} min.`, minutos: conta.minutos }, { 'Retry-After': String(conta.minutos * 60) });
+    if (!pedido) {
+      const r = await github(env, 'GET', caminhoAudio.fila());
+      const lista = r.status === 200 ? await r.json().catch(() => []) : (descartar(r), []);
+      if (Array.isArray(lista) && lista.filter((f) => f && ID_MAPA.test(String(f.name))).length >= AUDIO_FILA_MAX) {
+        devolver();
+        return resp(429, { erro: 'limite', msg: 'Tem muito áudio na fila agora. Tente de novo em uns minutos.', minutos: 10 }, { 'Retry-After': '600' });
+      }
+      if (!(await partidaExiste(env, id))) return erro(404, 'partida');
+    }
+    const quando = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    const novo = { message: `Pedido de áudio: ${id}`, content: conteudoPedido(quando) };
+    let r = await github(env, 'PUT', caminhoAudio.pedido(id), pedido && pedido.sha ? { ...novo, sha: pedido.sha } : novo);
+    cacheAudio.delete(`${id}-${lado}`);
+    if (r.status === 200 || r.status === 201) return resp(200, { estado: 'pedido', pedidoEm: quando });
+    if (r.status === 422 || r.status === 409) {
+      descartar(r);
+      const atual = await lerPedidoAudio(env, id);
+      if (atual) { devolver(); return resp(200, { estado: 'na-fila', pedidoEm: atual.quando || quando }); }
+      r = await github(env, 'PUT', caminhoAudio.pedido(id), novo);
+      if (r.status === 200 || r.status === 201) return resp(200, { estado: 'pedido', pedidoEm: quando });
+    }
+    console.log('github PUT pedido audio', id, r.status, (await r.text().catch(() => '')).slice(0, 200));
+    devolver();
+    return erro(502, 'github');
+  } catch (e) {
+    devolver();
+    console.log('audio: falhou', id, e && e.codigo, String(e && e.message).slice(0, 200));
+    if (e && e.codigo === 'orcamento') return respostaOrcamento(resp);
+    return erro(502, e && e.codigo === 'token' ? 'token' : 'github');
+  }
+}
+
+async function consultarAudio(req, env, origem, chave, ext) {
+  const m = /^(\d{9,12})-(radiant|dire)$/.exec(chave || '');
+  if (!m) return recusar(400, 'invalido', origem, env);
+  const [, id, lado] = m;
+  if (!contarConsulta(req, env, `a${id}`)) return json(429, { erro: 'limite', msg: 'Consultas demais nesta hora.' }, origem, env, { 'Retry-After': '600' });
+  try {
+    if (ext) {
+      const r = await github(env, 'GET', caminhoAudio.arquivo(id, lado, ext), null, 'application/vnd.github.raw+json');
+      if (r.status !== 200) { descartar(r); return json(r.status === 404 ? 404 : 502, { erro: 'github' }, origem, env); }
+      return new Response(r.body, { status: 200, headers: { 'content-type': ext === 'mp3' ? 'audio/mpeg' : 'application/json; charset=utf-8',
+        'cache-control': 'public, max-age=3600', ...cors(origem, env) } });
+    }
+    return json(200, { ...(await estadoAudio(env, id, lado)), agora: new Date().toISOString() }, origem, env);
+  } catch (e) {
+    if (e && e.codigo === 'orcamento') return respostaOrcamento((st, d, ex) => json(st, d, origem, env, ex));
+    return json(502, { erro: e && e.codigo === 'token' ? 'token' : 'github' }, origem, env);
+  }
+}
+
 // Botão "Atualizar agora" do ranking: no máximo uma atualização a cada RANKING_INTERVALO_MIN minutos, contando da
 // última atualização do ranking.json ou do último pedido (o que for mais recente). O limite vale para todo mundo
 // porque fica no próprio repositório, não na memória do Worker.
@@ -1268,6 +1398,14 @@ export default {
       if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: MSG_MAPA.desligado }, origem, env);
       return req.method === 'POST' ? pedirMapa(req, env, origem) : consultarMapa(req, env, origem, rotaMapa[1], Boolean(rotaMapa[2]));
     }
+    // áudio da vitória: POST /audio {id, lado}, GET /audio/<id>-<lado> e GET /audio/<id>-<lado>/(json|mp3)
+    const rotaAudio = caminho.match(/^\/audio(?:\/([^/]*)(?:\/(json|mp3))?)?$/);
+    if (rotaAudio) {
+      if (!(req.method === 'POST' && rotaAudio[1] === undefined) && !(req.method === 'GET' && rotaAudio[1] !== undefined)) return recusar(404, 'rota', origem, env);
+      if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
+      if (!tokenGithub(env)) return json(503, { erro: 'desligado', msg: 'O áudio ainda não foi ligado pelo dono do site.' }, origem, env);
+      return req.method === 'POST' ? pedirAudio(req, env, origem) : consultarAudio(req, env, origem, rotaAudio[1], rotaAudio[2]);
+    }
     const rotaArq = caminho.match(/^\/ranking\/arquivo\/(ranking|parceiros)$/);
     if (rotaArq && req.method === 'GET') {
       if (!origensPermitidas(env).includes(origem)) return recusar(403, 'origem', origem, env);
@@ -1326,5 +1464,6 @@ export const _interno = {
     cacheMapa.clear(); consultas.clear();
     cacheFalhas = { ate: 0, dados: null }; cacheSaude = { ate: 0, dados: null }; orcamentoGithub = { hora: -1, n: 0 };
     cacheRanking = { ate: 0, dados: null };
+    cacheAudio.clear(); cacheFalhasAudio = { ate: 0, dados: null };
   },
 };

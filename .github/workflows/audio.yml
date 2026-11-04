@@ -1,0 +1,81 @@
+name: Áudio da vitória (voz do Mat)
+
+# Quem carregou manda um áudio debochado no grupo: o roteiro sai dos números da partida (audio/roteiro.js) e a voz é a
+# do Mat, clonada no Qwen3-TTS 0.6B (Apache 2.0) a partir do trecho que ele publicou (audio/voz/mat.wav), na CPU.
+# Grava em audios/<id>-<lado>.mp3 + .json. Roda depois de cada ranking (vitórias do grupo dos últimos dias), na mão,
+# ou na hora com um push em audio/pedidos/<id> (pedido do site, para partida de qualquer pessoa).
+on:
+  workflow_run:
+    workflows: ["Ranking dos amigos (culpados, MMR e parceiros)"]
+    types: [completed]
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["audio/pedidos/**", "audio/roteiro.js", "audio/fila.js", "audio/falar.py", ".github/workflows/audio.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: audio
+  cancel-in-progress: false
+
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          ref: dados
+          path: .dados
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Roteiros (fila)
+        id: fila
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: node audio/fila.js --max 3 --dias 3 | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-python@v5
+        if: steps.fila.outputs.fila != '0'
+        with:
+          python-version: "3.11"
+      # o pip e o modelo (~2,5 GB) ficam em cache: sem ele, a instalação leva ~3 min
+      - uses: actions/cache@v4
+        if: steps.fila.outputs.fila != '0'
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+          key: qwen-tts-0.6b-v1
+      - name: Instalar a voz
+        if: steps.fila.outputs.fila != '0'
+        run: |
+          sudo apt-get install -y -qq ffmpeg sox >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox >/dev/null)
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
+          pip install -q qwen-tts==0.1.1 soundfile numpy
+      - name: Gravar
+        if: steps.fila.outputs.fila != '0' || steps.fila.outputs.pedidos != '0'
+        run: python audio/falar.py 2>&1 | grep -v -i -E "warn|pci_bus" | tail -30 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        if: always() && (steps.fila.outputs.fila != '0' || steps.fila.outputs.pedidos != '0')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p audios
+          git add -A audios audio/pedidos audio/falhas.json 2>/dev/null || git add -A audios
+          git diff --cached --quiet && exit 0
+          git commit -m "Áudio da vitória: $(git diff --cached --name-only -- audios | grep -c '\.mp3$') novo(s)"
+          for i in 1 2 3; do
+            if ! git pull --rebase -X theirs origin main; then
+              git diff --name-only --diff-filter=U -- audio/pedidos | xargs -r git rm -q --
+              GIT_EDITOR=true git rebase --continue || { git rebase --abort; sleep 5; continue; }
+            fi
+            git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

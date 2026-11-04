@@ -1245,3 +1245,44 @@ test('partida: limite por IP e OpenDota recusando', async () => {
   const r = await worker.fetch(pedido(null, { caminho: '/partida/9042378099', ip: '9.9.9.9' }), env);
   assert.equal((await r.json()).erro, 'limite');
 });
+
+// ------------------------------------------------------------------ áudio da vitória (POST /audio, GET /audio/<id>-<lado>)
+const pedirAudio = (corpo, opts = {}) => worker.fetch(pedido(corpo, { caminho: '/audio', ...opts }), opts.env || ENV_MAPA);
+const consultarAudio = (chave, opts = {}) => worker.fetch(pedido(null, { caminho: `/audio/${chave}`, metodo: 'GET', ...opts }), opts.env || ENV_MAPA);
+
+test('áudio: POST cria audio/pedidos/<id> e só escreve lá', async () => {
+  const repo = githubFalso();
+  const r = await pedirAudio({ id: ID, lado: 'dire' }, { ip: '9.9.9.1' });
+  const j = await r.json();
+  assert.equal(j.estado, 'pedido');
+  const put = repo.chamadas.find((c) => c.metodo === 'PUT');
+  assert.equal(put.caminho, `audio/pedidos/${ID}`);
+  assert.equal(put.corpo.message, `Pedido de áudio: ${ID}`);
+  assert.ok(repo.chamadas.every((c) => [`audios/${ID}-dire.json`, `audio/pedidos/${ID}`, 'audio/pedidos', 'audio/falhas.json'].includes(c.caminho)));
+});
+
+test('áudio: já gravado = pronto, sem PUT; lado ou id inválido = 400', async () => {
+  const repo = githubFalso({ arquivos: { [`audios/${ID}-radiant.json`]: { content: '{"texto":"x"}', sha: 'a' } } });
+  assert.deepEqual(await (await pedirAudio({ id: ID, lado: 'radiant' }, { ip: '9.9.9.2' })).json(), { estado: 'pronto' });
+  assert.ok(!repo.chamadas.some((c) => c.metodo === 'PUT'));
+  assert.equal((await pedirAudio({ id: ID, lado: 'meio' }, { ip: '9.9.9.2' })).status, 400);
+  assert.equal((await pedirAudio({ id: 'abc', lado: 'dire' }, { ip: '9.9.9.2' })).status, 400);
+});
+
+test('áudio: GET devolve o estado, a falha do robô e o próprio arquivo', async () => {
+  const quando = agoraIso(-30_000);
+  githubFalso({ arquivos: {
+    [`audio/pedidos/${ID}`]: { content: `pedido pelo site em ${quando}\n`, sha: 'p' },
+    'audio/falhas.json': { content: JSON.stringify({ 9000000001: { motivo: 'sem craque', quando } }), sha: 'f' },
+    [`audios/9000000002-dire.mp3`]: { content: 'ID3mp3', sha: 'm' },
+  } });
+  let j = await (await consultarAudio(`${ID}-dire`, { ip: '9.9.9.3' })).json();
+  assert.equal(j.pronto, false); assert.equal(j.naFila, true); assert.equal(j.pedidoEm, quando); assert.equal(j.falha, null);
+  j = await (await consultarAudio('9000000001-radiant', { ip: '9.9.9.3' })).json();
+  assert.equal(j.falha.motivo, 'sem craque');
+  const r = await consultarAudio('9000000002-dire/mp3', { ip: '9.9.9.3' });
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('content-type'), 'audio/mpeg');
+  assert.equal(await r.text(), 'ID3mp3');
+  assert.equal((await consultarAudio('xyz', { ip: '9.9.9.3' })).status, 400);
+});
