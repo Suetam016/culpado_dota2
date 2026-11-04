@@ -11,7 +11,7 @@ from pathlib import Path
 UA = "culpado-dota2-vozes/1.0 (site de fã; github.com/Suetam016/culpado_dota2)"
 WIKIS = ["https://dota2.fandom.com/api.php", "https://liquipedia.net/dota2/api.php"]
 PASTA = Path(__file__).parent / "mirana"
-QUER = re.compile(r"(win|victory|laugh|kill|rival|thank|cheer|rare|happy|immort|ally|deny|lasthit|respawn|purch)", re.I)
+QUER = re.compile(r"^vo_mirana_mir_(win|laugh|happy|kill_0[1-4]|rival_0[1-3])_", re.I)
 MAX = 40
 
 
@@ -38,6 +38,8 @@ def listar(wiki):
 
 
 PASTA.mkdir(parents=True, exist_ok=True)
+for velho in PASTA.glob("*.mp3"):
+    velho.unlink()
 todos = []
 for wiki in WIKIS:
     try:
