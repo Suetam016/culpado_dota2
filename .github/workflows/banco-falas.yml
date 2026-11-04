@@ -1,0 +1,69 @@
+name: Teste do banco de falas (voz do Mat)
+
+# Protótipo: grava o roteiro de uma partida em pedaços soltos (como o banco de falas guardaria) e emendado, mais a
+# versão inteira para comparar. A partida vem da 1ª linha de prototipos/banco-falas/partida. Sai em
+# prototipos/banco-falas/saida/<id>-<lado>/. Não mexe no site.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["prototipos/banco-falas/partida", "prototipos/banco-falas/*.py", "prototipos/banco-falas/*.js", ".github/workflows/banco-falas.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: banco-falas
+  cancel-in-progress: false
+
+jobs:
+  gravar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          ref: dados
+          path: .dados
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Roteiro em pedaços
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: node prototipos/banco-falas/montar.js "$(head -1 prototipos/banco-falas/partida | tr -dc '0-9')" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-python@v5
+        id: py
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            ~/venv-voz
+            ~/.cache/huggingface
+          key: qwen-tts-0.6b-venv-${{ steps.py.outputs.python-version }}-v1
+      - name: Instalar a voz
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v sox >/dev/null; then
+            sudo apt-get install -y -qq ffmpeg sox >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox >/dev/null)
+          fi
+          if [ "${{ steps.cache.outputs.cache-hit }}" != "true" ]; then
+            python -m venv ~/venv-voz
+            ~/venv-voz/bin/pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
+            ~/venv-voz/bin/pip install -q qwen-tts==0.1.1 soundfile numpy
+          fi
+          echo "$HOME/venv-voz/bin" >> "$GITHUB_PATH"
+      - name: Gravar pedaços, emendar e gravar inteiro
+        run: python prototipos/banco-falas/emendar.py 2>&1 | grep -v -i -E "warn|pci_bus|pad_token" | tail -40 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/banco-falas/saida prototipos/banco-falas/pedacos.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Banco de falas: teste gravado"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
