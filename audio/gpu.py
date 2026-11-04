@@ -5,7 +5,7 @@ Fluxo: o site pede (POST /audio no Worker) -> o Worker chama o endereço `pedir`
 grava a voz e sobe audios/<id>-<lado>.mp3 + .json na main pela API do GitHub, apagando audio/pedidos/<id>. O site
 já pergunta ao Worker se o áudio ficou pronto, então nada muda do lado dele.
 
-Publicado pelo workflow voz-gpu.yml (segredos MODAL_TOKEN_ID/MODAL_TOKEN_SECRET). Custo: GPU L4 a ~US$ 0,80/h, só
+Publicado pelo workflow voz-gpu.yml (segredos MODAL_TOKEN_ID/MODAL_TOKEN_SECRET). Custo: GPU T4 a ~US$ 0,59/h (VOZ_GPU=L4 no deploy troca), só
 enquanto grava (a máquina desliga 2 min depois do último áudio); o plano grátis do Modal dá US$ 30/mês.
 
 Teste na mão (mede o tempo de máquina fria e quente):  modal run audio/gpu.py --id 9073941063
@@ -109,7 +109,7 @@ def anotar_falha(id_, motivo):
     subir("audio/falhas.json", json.dumps(falhas, ensure_ascii=False, indent=1).encode(), f"Áudio da vitória: falhou {id_}")
 
 
-@app.cls(gpu="L4", image=imagem, secrets=[segredo], timeout=600, scaledown_window=120, max_containers=2)
+@app.cls(gpu=os.environ.get("VOZ_GPU", "T4"), image=imagem, secrets=[segredo], timeout=600, scaledown_window=120, max_containers=2)
 class Voz:
     @modal.enter()
     def carregar(self):
