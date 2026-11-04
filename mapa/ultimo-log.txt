@@ -3336,3 +3336,12 @@ Fila: [9073990634]
   1547 usos de skill/item de 2318 no combat log
 OK 9073990634
 1 mapas novos
+Fila: [9075236651]
+  replay http://replay201.valve.net/570/9075236651_253996404.dem.bz2 -> HTTP 200 application/octet-stream 46920745 inicio=b'(\xb5/\xfd\x00`\xcc7\x0f\x8eX\xde'
+  9075236651: 153576 eventos; tipos [('actions', 69933), ('interval', 26960), ('DOTA_COMBATLOG_DAMAGE', 19743), ('DOTA_COMBATLOG_MODIFIER_ADD', 8872), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 8817), ('DOTA_COMBATLOG_HEAL', 4365), ('DOTA_COMBATLOG_XP', 3996), ('DOTA_COMBATLOG_DEATH', 3522)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Sniper", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 35, "variant": 0, "facet_hero_id": 35, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ran
+  exemplo de habilidade: {"time": -73, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_witch_doctor", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  2700 registros de dano herói->herói
+  1666 usos de skill/item de 2768 no combat log
+OK 9075236651
+1 mapas novos
