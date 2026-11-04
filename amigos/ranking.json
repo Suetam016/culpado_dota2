@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-04T03:21:49.943Z",
+  "atualizadoEm": "2026-11-04T09:14:12.810Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -55,12 +55,12 @@
       "nome": "Suéter",
       "culpados": 11,
       "craques": 15,
-      "partidas": 229,
-      "vitorias": 115,
+      "partidas": 231,
+      "vitorias": 116,
       "winRate": 50,
       "streak": "culpado",
-      "mmrGanho": 2725,
-      "mmrPerdido": 2775
+      "mmrGanho": 2750,
+      "mmrPerdido": 2800
     },
     {
       "accountId": "111257540",
@@ -89,25 +89,25 @@
     {
       "accountId": "83300280",
       "nome": "ptn",
-      "culpados": 8,
+      "culpados": 9,
       "craques": 1,
-      "partidas": 39,
-      "vitorias": 23,
+      "partidas": 41,
+      "vitorias": 24,
       "winRate": 59,
       "streak": null,
-      "mmrGanho": 500,
-      "mmrPerdido": 375
+      "mmrGanho": 525,
+      "mmrPerdido": 400
     },
     {
       "accountId": "96286191",
       "nome": "charlinho",
       "culpados": 4,
       "craques": 6,
-      "partidas": 70,
-      "vitorias": 35,
-      "winRate": 50,
+      "partidas": 71,
+      "vitorias": 36,
+      "winRate": 51,
       "streak": "craque",
-      "mmrGanho": 875,
+      "mmrGanho": 900,
       "mmrPerdido": 875
     }
   ],
@@ -4043,6 +4043,28 @@
         "heroi": 107,
         "culpa": 0.053,
         "merito": 0.242
+      },
+      {
+        "matchId": 9075269221,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793750575,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.141,
+        "merito": 0.243
+      },
+      {
+        "matchId": 9075343936,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793758790,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.229,
+        "merito": 0.203
       }
     ],
     "83300280": [
@@ -4474,6 +4496,28 @@
         "heroi": 12,
         "culpa": 0.049,
         "merito": 0.269
+      },
+      {
+        "matchId": 9075269221,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793750575,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 5,
+        "culpa": 0.273,
+        "merito": 0.165
+      },
+      {
+        "matchId": 9075343936,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793758790,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 2,
+        "culpa": 0.303,
+        "merito": 0.167
       }
     ],
     "96286191": [
@@ -5246,6 +5290,17 @@
         "heroi": 6,
         "culpa": 0.064,
         "merito": 0.144
+      },
+      {
+        "matchId": 9075343936,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793758790,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 131,
+        "culpa": 0.166,
+        "merito": 0.151
       }
     ],
     "111257540": [
