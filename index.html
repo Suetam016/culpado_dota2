@@ -5919,16 +5919,49 @@ const parseJaPedido = new Set();
 
 // Partida recém-terminada: o OpenDota só conhece depois que alguém pede (POST /request busca na Steam e entra
 // numa fila). Acompanha o pedido na fila (GET /request/<job>), pede de novo se ele sumir sem trazer a partida
-// e tenta a partida a cada 10 s; desiste em 15 min (aí o ID deve estar errado ou a Steam não entregou).
-const BUSCA_NOVA_MS = 15 * 60e3;
+// e tenta a partida (a cada 10 s nos primeiros 10 min, depois a cada 30 s); desiste em 45 min.
+// Para a mensagem dizer a causa provável, estima quando a partida começou pelo próprio ID: os IDs crescem com o
+// tempo, e o /publicMatches do OpenDota traz as partidas públicas mais novas com o ID e a hora de início.
+const BUSCA_NOVA_MS = 45 * 60e3;
 const BUSCA_NOVA_PASSO_MS = 10e3;
+const BUSCA_NOVA_PASSO_LENTO_MS = 30e3;
 const BUSCA_NOVA_REPEDIR_MS = 4 * 60e3;
+async function idadeDoId(id, signal) {
+try {
+const lista = await api('/publicMatches', { signal });
+const ok = (lista || []).filter((m) => m && m.match_id && m.start_time).sort((x, y) => x.match_id - y.match_id);
+if (ok.length < 2) return null;
+const [velha, nova] = [ok[0], ok[ok.length - 1]];
+const ritmo = (nova.match_id - velha.match_id) / Math.max(60, nova.start_time - velha.start_time); // IDs por segundo
+if (!(ritmo > 0)) return null;
+const inicio = nova.start_time - (nova.match_id - Number(id)) / ritmo;
+return { min: Math.round((Date.now() / 1000 - inicio) / 60), futura: Number(id) > nova.match_id + ritmo * 600 };
+} catch (e) { return null; }
+}
+const tempoHumano = (min) => (min < 90 ? `${Math.max(1, min)} min` : min < 48 * 60 ? `${Math.round(min / 60)} h` : `${Math.round(min / 1440)} dias`);
+function causaProvavel(idade) {
+if (!idade) return '';
+if (idade.futura) return ' Esse ID é maior que o da partida mais nova do Dota agora: deve ter um número trocado.';
+if (idade.min < 75) return ` Pelo ID, ela começou há uns ${tempoHumano(idade.min)}: se acabou agora há pouco, a Steam costuma levar alguns minutos para liberar os dados.`;
+if (idade.min > 14 * 1440) return ` Pelo ID, ela é de uns ${tempoHumano(idade.min)} atrás: partida antiga que o OpenDota nunca viu às vezes não é mais entregue pela Steam.`;
+return ` Pelo ID, ela começou há uns ${tempoHumano(idade.min)}.`;
+}
+const tituloOriginal = document.title;
+function avisarAbaPronta(id) {
+if (!document.hidden) return;
+document.title = `✅ Partida ${id} chegou! · ${tituloOriginal}`;
+const volta = () => { if (!document.hidden) { document.title = tituloOriginal; document.removeEventListener('visibilitychange', volta); } };
+document.addEventListener('visibilitychange', volta);
+}
 async function buscarPartidaNova(id, carga) {
 const vivo = () => estado.carga === carga && !carga.signal.aborted;
 const pedir = () => api(`/request/${id}`, { method: 'POST' }).then((x) => (x && x.job && x.job.jobId) || null);
 let job;
 try { job = await pedir(); } catch (e) { return false; }
 parseJaPedido.add(String(id));
+const idadeP = idadeDoId(id, carga.signal);
+let idade = null;
+idadeP.then((x) => { idade = x; });
 const inicio = Date.now();
 let ultimoPedido = inicio;
 let pedidos = 1;
@@ -5937,25 +5970,37 @@ while (Date.now() - inicio < BUSCA_NOVA_MS) {
 if (!vivo()) return true;
 const passou = Math.round((Date.now() - inicio) / 1000);
 const tempo = `${Math.floor(passou / 60)}:${String(passou % 60).padStart(2, '0')}`;
+if (idade && idade.futura && passou > 60) return false; // ID que ainda não existe: não adianta esperar
 const naFila = fila ? ` Na fila do OpenDota${fila.attempts ? ` (tentativa ${fila.attempts + 1})` : ''}.` : '';
-mostrarStatus(`A partida ${id} é nova e o OpenDota ainda não tinha ela. Pedi pra ele buscar na Steam há ${tempo}.${naFila} Pode deixar a aba aberta: a análise abre sozinha quando chegar (costuma levar de 1 a 10 min).`, 'carregando');
-await new Promise((r) => setTimeout(r, BUSCA_NOVA_PASSO_MS));
+const demora = passou > 10 * 60 ? ' Está demorando mais que o normal: a fila do OpenDota ou a Steam estão lentas, mas eu sigo tentando até 45 min.' : '';
+mostrarStatus(`A partida ${id} é nova e o OpenDota ainda não tinha ela. Pedi pra ele buscar na Steam há ${tempo}.${naFila}${causaProvavel(idade)}${demora} Pode deixar a aba aberta: a análise abre sozinha quando chegar (costuma levar de 1 a 10 min).`, 'carregando');
+await new Promise((r) => setTimeout(r, passou > 10 * 60 ? BUSCA_NOVA_PASSO_LENTO_MS : BUSCA_NOVA_PASSO_MS));
 if (!vivo()) return true;
 const m = await api(`/matches/${id}`, { signal: carga.signal }).catch(() => null);
 if (m && Array.isArray(m.players) && m.players.length) {
 if (m.version != null) partidasMem.set(String(id), m);
+avisarAbaPronta(id);
 carregar(id);
 return true;
 }
 fila = job ? await api(`/request/${job}`, { signal: carga.signal }).catch(() => fila) : null;
 // o pedido saiu da fila e a partida não veio: pede de novo (no máximo a cada 4 min)
-if ((!fila || !job) && Date.now() - ultimoPedido >= BUSCA_NOVA_REPEDIR_MS && pedidos < 4) {
+if ((!fila || !job) && Date.now() - ultimoPedido >= BUSCA_NOVA_REPEDIR_MS && pedidos < 10) {
 job = await pedir().catch(() => job);
 ultimoPedido = Date.now();
 pedidos++;
 }
 }
 return false;
+}
+
+// Mensagem final quando a busca desiste, com a causa provável pelo ID.
+async function msgPartidaNaoVeio(id) {
+const idade = await Promise.race([idadeDoId(id), new Promise((ok) => setTimeout(() => ok(null), 4000))]);
+if (idade && idade.futura) return `A partida ${id} ainda não existe: esse ID é maior que o da partida mais nova do Dota agora. Confira os números no fim do placar ("Partida 9041118764").`;
+if (idade && idade.min < 120) return `O OpenDota ainda não conseguiu trazer a partida ${id} (pelo ID, ela começou há uns ${tempoHumano(idade.min)}). Isso acontece quando a Steam demora para liberar a partida ou a fila do OpenDota está cheia. O pedido continua lá: tente de novo daqui a uns 15 min.`;
+if (idade && idade.min > 14 * 1440) return `O OpenDota não conseguiu trazer a partida ${id}. Pelo ID ela é de uns ${tempoHumano(idade.min)} atrás, e partida antiga que ninguém pediu antes às vezes não é mais entregue pela Steam. Confira o ID ou tente outra partida.`;
+return `O OpenDota não conseguiu trazer a partida ${id} em 45 min. Se o ID estiver certo, a fila deles ou a Steam estão lentas: tente de novo daqui a pouco (o pedido continua lá).`;
 }
 
 
@@ -6064,7 +6109,9 @@ const achou = await buscarPartidaNova(id, carga).finally(() => { estado.buscando
 if (achou || !vivo()) return;
 pararProgresso(true);
 if (!estado.resultado) el.pagina.textContent = '';
-mostrarStatus(`O OpenDota não conseguiu trazer a partida ${id} em 15 min. Se o ID estiver certo, a fila deles está lenta: tente de novo daqui a pouco (o pedido continua lá).`, 'erro');
+const msg = await msgPartidaNaoVeio(id);
+if (!vivo()) return;
+mostrarStatus(msg, 'erro');
 return;
 }
 if (!estado.resultado) el.pagina.textContent = ''; // casca e silhuetas saem: não vem nada para elas
