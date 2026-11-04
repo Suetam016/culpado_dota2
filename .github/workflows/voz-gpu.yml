@@ -78,7 +78,7 @@ jobs:
         run: |
           ID="${{ inputs.teste }}"
           MEXEU="${{ contains(join(github.event.commits.*.added, ','), 'audio/gpu-teste') || contains(join(github.event.commits.*.modified, ','), 'audio/gpu-teste') }}"
-          [ -z "$ID" ] && [ "$MEXEU" = "true" ] && ID=$(tr -dc '0-9' < audio/gpu-teste)
+          [ -z "$ID" ] && [ "$MEXEU" = "true" ] && ID=$(head -1 audio/gpu-teste | tr -dc '0-9')
           [ -z "$ID" ] && exit 0
           modal run audio/gpu.py --id "$ID" 2>&1 | grep -v -i -E "warn|pci_bus" | tail -25 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Ligar no Worker

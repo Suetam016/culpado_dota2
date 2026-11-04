@@ -34,7 +34,10 @@ def carregar(device="cpu"):
     from qwen_tts import Qwen3TTSModel
 
     t = time.time()
-    dtype = torch.bfloat16 if device.startswith("cuda") else torch.float32
+    dtype = torch.float32
+    if device.startswith("cuda"):
+        # bfloat16 só nas GPUs novas (L4/A10, Ampere+); na T4 vai float16
+        dtype = torch.bfloat16 if torch.cuda.get_device_capability()[0] >= 8 else torch.float16
     modelo = Qwen3TTSModel.from_pretrained(MODELO, device_map=device, dtype=dtype)
     prompt = modelo.create_voice_clone_prompt(ref_audio=str(VOZ), ref_text=VOZ_TEXTO)
     print(f"modelo carregado em {time.time() - t:.0f}s ({device}, {torch.get_num_threads()} threads, "
