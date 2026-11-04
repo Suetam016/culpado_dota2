@@ -2,7 +2,7 @@
 
     python prototipos/vozes/mat/clonar.py <chatterbox|qwen>
 """
-import json, sys, time, traceback
+import json, re, sys, time, traceback
 from pathlib import Path
 import numpy as np
 import soundfile as sf
@@ -29,8 +29,17 @@ def chatterbox():
     m = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
     for nome, texto in ROTEIROS.items():
         try:
-            wav = m.generate(texto, language_id="pt", audio_prompt_path=REF, exaggeration=0.7, cfg_weight=0.3)
-            salvar(f"chatterbox_{nome}", wav.cpu().numpy(), m.sr)
+            partes, atual = [], ""
+            for frase in re.split(r"(?<=[.!?])\s+", texto):
+                if len(atual) + len(frase) > 180 and atual:
+                    partes.append(atual.strip()); atual = ""
+                atual += " " + frase
+            partes.append(atual.strip())
+            pausa = np.zeros(int(m.sr * 0.18), dtype=np.float32)
+            pedacos = []
+            for pt in partes:
+                pedacos += [m.generate(pt, language_id="pt", audio_prompt_path=REF, exaggeration=0.7, cfg_weight=0.3).cpu().numpy().squeeze(), pausa]
+            salvar(f"chatterbox_{nome}", np.concatenate(pedacos), m.sr)
         except Exception:
             traceback.print_exc()
 
