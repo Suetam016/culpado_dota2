@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const pelaUrl = () => {
     const aba = location.hash.slice(1);
-    if (aba && document.querySelector(`.aba[data-aba="${aba}"]`)) mudarAba(aba);
+    mudarAba(aba && document.querySelector(`.aba[data-aba="${aba}"]`) ? aba : 'elo'); // a Bolsa abre por padrão
   };
   window.addEventListener('hashchange', pelaUrl);
   pelaUrl();
