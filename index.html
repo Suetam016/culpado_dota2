@@ -296,6 +296,48 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .tp6-crimes{margin:0;color:#bdbdbd;font:400 1.9cqw/1.3 "Alegreya Sans",Arial,sans-serif;text-align:center}
 @media (prefers-reduced-motion:no-preference){.doc-tpi6 .tp6-moldura{animation:tp6-pulso 2.4s ease-in-out infinite}}
 @keyframes tp6-pulso{50%{box-shadow:0 0 2.4cqw rgba(229,38,45,.7)}}
+/* Áudio do craque no grupo (estilo zap) */
+.cartao.zap{padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;margin-top:14px;font-family:system-ui,"Segoe UI",Roboto,sans-serif}
+.zap-topo{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#202c33;color:#e9edef}
+.zap-grupo-ic{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#00a884;font-size:20px;flex:none}
+.zap-grupo{margin:0;font-weight:600;font-size:15px}
+.zap-status{margin:0;font-size:12.5px;color:#8696a0}
+.zap-status.gravando{color:#00a884}
+.zap-corpo{display:flex;flex-direction:column;gap:8px;padding:14px 12px 16px;background:#0b141a radial-gradient(circle at 20% 10%,rgba(255,255,255,.025) 0 2px,transparent 3px) 0 0/26px 26px;min-height:120px}
+.zap-sistema{align-self:center;margin:0;padding:5px 10px;border-radius:8px;background:#182229;color:#8696a0;font-size:12px;text-align:center;max-width:92%}
+.zap-msg{position:relative;align-self:flex-start;max-width:min(420px,92%);padding:6px 8px 18px;border-radius:0 8px 8px 8px;background:#202c33;color:#e9edef;font-size:14.5px;line-height:1.4;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.zap-msg p{margin:0}
+.zap-autor{font-size:12.5px;font-weight:600;color:#53bdeb;margin-bottom:2px!important}
+.zap-hora{position:absolute;right:8px;bottom:3px;font-size:11px;color:#8696a0;display:flex;gap:3px;align-items:center}
+.zap-check{color:#53bdeb;letter-spacing:-3px;margin-right:3px}
+.zap-player{display:flex;align-items:center;gap:8px;width:min(330px,76vw)}
+.zap-foto{position:relative;flex:none;width:46px;height:46px}
+.zap-foto>*:first-child{width:46px!important;height:46px!important;border-radius:50%;overflow:hidden}
+.zap-foto img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.zap-mic{position:absolute;right:-3px;bottom:-2px;color:#00a884;background:#202c33;border-radius:50%;display:grid;place-items:center;width:18px;height:18px}
+.zap-audio.ouvido .zap-mic{color:#53bdeb}
+.zap-play{flex:none;width:34px;height:34px;border:0;background:none;color:#8696a0;cursor:pointer;display:grid;place-items:center;padding:0}
+.zap-play-ic{width:0;height:0;border-left:15px solid currentColor;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.zap-play.tocando .zap-play-ic{width:12px;height:16px;border:0;margin:0;border-left:4px solid currentColor;border-right:4px solid currentColor}
+.zap-faixa{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.zap-onda{display:flex;align-items:center;gap:2px;height:26px;cursor:pointer}
+.zap-onda i{flex:1;min-width:2px;border-radius:2px;background:#5e6e78;transition:background .15s}
+.zap-onda i.tocado{background:#00a884}
+.zap-rodape{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#8696a0}
+.zap-vel{border:0;border-radius:10px;background:#3b4a54;color:#e9edef;font-size:11px;font-weight:600;padding:1px 7px;cursor:pointer}
+.zap-transcricao{margin-top:6px;font-size:13px;color:#d1d7db}
+.zap-transcricao summary{cursor:pointer;color:#8696a0;font-size:12px}
+.zap-transcricao p{margin-top:4px!important;max-width:330px}
+.zap-gravando{display:flex;align-items:center;gap:10px;padding:10px 12px;min-width:220px}
+.zap-rec{color:#f15c6d;display:grid;place-items:center}
+.zap-ondas{display:flex;align-items:center;gap:3px;height:22px;flex:1}
+.zap-ondas i{width:3px;height:30%;border-radius:2px;background:#00a884}
+.zap-cron{font-size:12px;color:#8696a0;font-variant-numeric:tabular-nums}
+.zap-convite{padding-bottom:10px}
+.zap-pedir{margin-top:8px;background:#00a884;color:#0b141a;border:0;border-radius:18px;padding:8px 14px;font:600 14px system-ui,sans-serif;display:inline-flex;gap:6px;align-items:center;cursor:pointer}.zap-pedir:hover{background:#06cf9c}.zap-pedir:disabled{opacity:.6;cursor:default}
+@media (prefers-reduced-motion:no-preference){.zap-ondas i{animation:zap-onda 1s ease-in-out infinite}.zap-rec{animation:zap-pisca 1.2s steps(2) infinite}}
+@keyframes zap-onda{50%{height:100%}}
+@keyframes zap-pisca{50%{opacity:.3}}
 </style>
 
 <style>
@@ -6678,6 +6720,169 @@ h('p', { class: 'mt-rot-comp' }, `De onde vieram os pontos de ${tipo}`),
 composicao(v))))));
 }
 
+// ---------- Áudio do craque: quem carregou "manda um áudio" no grupo, estilo zap ----------
+// O roteiro sai dos números da partida (audio/roteiro.js) e a voz é a do Mat, clonada no Qwen3-TTS pelo robô
+// (workflow audio.yml). Vitórias do grupo já saem gravadas; as outras o visitante pede e o robô grava em ~5 min.
+const AUDIO_ESPERA_MAX = 25 * 60_000;
+let roteiroJs = null;
+const carregarRoteiro = () => (roteiroJs = roteiroJs || new Promise((ok) => {
+if (window.Roteiro) return ok(window.Roteiro);
+const sc = document.createElement('script');
+sc.src = 'audio/roteiro.js';
+sc.onload = () => ok(window.Roteiro || null);
+sc.onerror = () => ok(null);
+document.head.append(sc);
+}));
+const mmssAudio = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+
+function bolhaDeAudio(p, info, urlMp3) {
+const audio = new Audio();
+audio.preload = 'metadata';
+audio.src = urlMp3;
+const rnd = sorteador(`onda-${info.id}`);
+const barras = Array.from({ length: 34 }, (_, i) => h('i', { style: `height:${Math.round(22 + 78 * Math.abs(Math.sin(i * 0.7 + rnd.um([0, 1, 2, 3]))) * (0.55 + 0.45 * rnd.um([0.3, 0.6, 1])))}%` }));
+const onda = h('span', { class: 'zap-onda', 'aria-hidden': 'true' }, barras);
+const tempo = h('span', { class: 'zap-tempo' }, mmssAudio(info.segundos || 0));
+const icone = h('span', { class: 'zap-play-ic', 'aria-hidden': 'true' });
+const play = h('button', { class: 'zap-play', type: 'button', 'aria-label': `Ouvir o áudio de ${p.nome}`, 'data-gtm': 'audio-vitoria-play' }, icone);
+const vel = h('button', { class: 'zap-vel', type: 'button', 'aria-label': 'Velocidade do áudio' }, '1x');
+const pintar = () => {
+const f = audio.duration ? audio.currentTime / audio.duration : 0;
+barras.forEach((b, i) => b.classList.toggle('tocado', i / barras.length < f));
+tempo.textContent = mmssAudio(audio.currentTime && !audio.paused ? audio.currentTime : audio.duration || info.segundos || 0);
+};
+audio.addEventListener('timeupdate', pintar);
+audio.addEventListener('loadedmetadata', pintar);
+audio.addEventListener('play', () => { play.classList.add('tocando'); play.setAttribute('aria-label', 'Pausar'); });
+audio.addEventListener('pause', () => { play.classList.remove('tocando'); play.setAttribute('aria-label', `Ouvir o áudio de ${p.nome}`); pintar(); });
+audio.addEventListener('ended', () => { audio.currentTime = 0; bolha.classList.add('ouvido'); pintar(); });
+play.addEventListener('click', () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); });
+vel.addEventListener('click', () => {
+const v = { 1: 1.5, 1.5: 2, 2: 1 }[audio.playbackRate] || 1;
+audio.playbackRate = v;
+vel.textContent = `${String(v).replace('.', ',')}x`;
+});
+onda.addEventListener('click', (e) => {
+if (!audio.duration) return;
+const box = onda.getBoundingClientRect();
+audio.currentTime = Math.max(0, Math.min(1, (e.clientX - box.left) / box.width)) * audio.duration;
+pintar();
+});
+const transcricao = h('details', { class: 'zap-transcricao' }, h('summary', {}, 'Ler a transcrição'), h('p', {}, info.texto));
+const bolha = h('div', { class: 'zap-msg zap-audio' },
+h('p', { class: 'zap-autor' }, p.nome),
+h('div', { class: 'zap-player' },
+h('span', { class: 'zap-foto' }, fotoDe(p, false), h('span', { class: 'zap-mic', 'aria-hidden': 'true' }, iconeMic())),
+play, h('div', { class: 'zap-faixa' }, onda, h('span', { class: 'zap-rodape' }, tempo, vel))),
+transcricao,
+h('span', { class: 'zap-hora' }, horaZap(), h('span', { class: 'zap-check', 'aria-hidden': 'true' }, '✓✓')));
+return bolha;
+}
+const iconeMic = () => s('svg', { viewBox: '0 0 24 24', width: 14, height: 14 }, s('path', { d: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 6-6.9h-2z', fill: 'currentColor' }));
+const horaZap = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+function cartaoZap(r) {
+const v = (r.craques || [])[0];
+if (!v || SO_EMBUTIDO) return null;
+const p = v.jogador;
+const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
+const chave = `${r.partida.id}-${lado}`;
+const status = h('p', { class: 'zap-status' }, 'você e mais 9 pessoas');
+const corpo = h('div', { class: 'zap-corpo', 'aria-live': 'polite' });
+const card = h('section', { class: 'cartao zap', 'aria-label': `Áudio de ${p.nome} no grupo` },
+h('div', { class: 'zap-topo' },
+h('span', { class: 'zap-grupo-ic', 'aria-hidden': 'true' }, '🏆'),
+h('div', {}, h('p', { class: 'zap-grupo' }, 'Grupo do Culpado'), status)),
+corpo);
+const msgSistema = (txt) => h('p', { class: 'zap-sistema' }, txt);
+const mostrar = (...nos) => corpo.replaceChildren(msgSistema('O site encaminhou o veredito pro grupo.'), ...nos);
+let coach = null;
+
+const tocar = (info, urlMp3) => {
+status.textContent = 'você e mais 9 pessoas';
+mostrar(bolhaDeAudio(p, info, urlMp3));
+};
+const textoReserva = async (motivo) => {
+const R = await carregarRoteiro();
+const f = R && R.fatos(r);
+const g = f && R.gerar(f, chave);
+mostrar(h('div', { class: 'zap-msg' }, h('p', { class: 'zap-autor' }, p.nome),
+h('p', {}, g ? g.texto : 'Carreguei essa, tá no replay.'),
+h('span', { class: 'zap-hora' }, horaZap())), msgSistema(motivo));
+};
+const gravando = (desde) => {
+status.textContent = `${p.nome} está gravando áudio…`;
+status.classList.add('gravando');
+const cron = h('span', { class: 'zap-cron' }, '0:00');
+mostrar(h('div', { class: 'zap-msg zap-gravando' },
+h('span', { class: 'zap-rec', 'aria-hidden': 'true' }, iconeMic()),
+h('span', { class: 'zap-ondas', 'aria-hidden': 'true' }, Array.from({ length: 18 }, (_, i) => h('i', { style: `animation-delay:${(i * 0.09).toFixed(2)}s` }))),
+cron),
+msgSistema('A voz sai do nosso robô e leva de 5 a 10 minutos. Pode deixar a aba aberta que o áudio chega aqui.'));
+const t0 = desde || Date.now();
+const tic = setInterval(() => {
+if (!card.isConnected) return clearInterval(tic);
+cron.textContent = mmssAudio((Date.now() - t0) / 1000);
+}, 1000);
+return () => { clearInterval(tic); status.classList.remove('gravando'); };
+};
+const doCoach = async (caminho, opcoes) => {
+const res = await fetch(`${coach}${caminho}`, opcoes);
+return { ok: res.ok, status: res.status, j: await res.json().catch(() => ({})) };
+};
+const esperar = async (desde) => {
+const parar = gravando(desde);
+const t0 = Date.now();
+while (card.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
+await new Promise((ok) => setTimeout(ok, 15_000));
+if (!card.isConnected) break;
+try {
+const { ok, j } = await doCoach(`/audio/${chave}`);
+if (ok && j.pronto) {
+const info = await (await fetch(`${coach}/audio/${chave}/json`)).json();
+parar();
+return tocar(info, `${coach}/audio/${chave}/mp3`);
+}
+if (ok && j.falha && !j.naFila) { parar(); return textoReserva('O robô não conseguiu gravar este áudio. Ficou a versão escrita.'); }
+} catch (e) { /* rede: tenta de novo na próxima volta */ }
+}
+parar();
+if (card.isConnected) textoReserva('O áudio está demorando mais que o normal. Recarregue a página daqui a pouco.');
+};
+const pedir = async () => {
+try {
+const { ok, j } = await doCoach('/audio', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: String(r.partida.id), lado }) });
+if (ok && j.estado === 'pronto') return iniciar();
+if (ok) return esperar(Date.parse(j.pedidoEm) || Date.now());
+textoReserva(j.msg || 'Não deu pra pedir o áudio agora.');
+} catch (e) { textoReserva('Não deu pra pedir o áudio agora.'); }
+};
+const convite = () => {
+const botao = h('button', { class: 'zap-pedir', type: 'button', 'data-gtm': 'audio-vitoria-pedir' }, h('span', { 'aria-hidden': 'true' }, iconeMic()), ` Pedir o áudio de ${p.nome}`);
+botao.addEventListener('click', () => { botao.disabled = true; pedir(); });
+mostrar(h('div', { class: 'zap-msg zap-convite' }, h('p', {}, `${p.nome} carregou ${pct(v.fatia)} do mérito e tá doido pra mandar um áudio no grupo.`), botao));
+};
+const iniciar = async () => {
+corpo.replaceChildren(msgSistema('Carregando a conversa…'));
+// 1) já publicado no site (vitórias do grupo saem gravadas pelo robô)
+try {
+const res = await fetch(`audios/${chave}.json`, { cache: 'no-cache' });
+if (res.ok) return tocar(await res.json(), `audios/${chave}.mp3`);
+} catch (e) { /* segue para o coach */ }
+// 2) gravado há pouco (o site ainda não publicou) ou na fila: pergunta ao coach
+coach = await urlDoCoach();
+if (!coach) return textoReserva('O áudio ainda não está ligado neste site.');
+try {
+const { ok, j } = await doCoach(`/audio/${chave}`);
+if (ok && j.pronto) return tocar(await (await fetch(`${coach}/audio/${chave}/json`)).json(), `${coach}/audio/${chave}/mp3`);
+if (ok && j.naFila) return esperar(Date.parse(j.pedidoEm) || Date.now());
+} catch (e) { /* coach fora: ainda dá para pedir */ }
+convite();
+};
+iniciar();
+return card;
+}
+
 function secaoTopo(r) {
 const cs = culpados(r);
 const parcial = !r.partida.parseado;
@@ -6696,7 +6901,7 @@ rotulo.textContent = elo.hidden ? 'Ver o elo fraco' : 'Esconder o elo fraco';
 });
 const cartaz = documentoDoMerito(r);
 cartaz.append(barraCompartilhar(r));
-principal = h('div', { class: 'topo-vitoria' }, cartaz, botao, elo);
+principal = h('div', { class: 'topo-vitoria' }, cartaz, parcial ? null : cartaoZap(r), botao, elo);
 }
 return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
 r.partida.provisorio ? h('p', { class: 'selo-provisorio' }, 'Veredito provisório · só com o placar') : null,

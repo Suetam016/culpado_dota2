@@ -1,12 +1,16 @@
 {
-  "_como_usar": "Novidades do quadradinho do ranking dos amigos (ranking/). Para adicionar: ponha um item no topo da lista do dia (ou crie o dia no topo, com a data AAAA-MM-DD). Tags sugeridas: Replay, Home, Veredito, Ranking, Site.",
+  "_como_usar": "Novidades do quadradinho do ranking dos amigos (ranking/). NÃO é diário: só entra o que o visitante percebe e vai gostar de saber, ou seja, tela, aba, recurso ou modo novo, ou mudança grande no que ele já usa (ex.: herói novo com skills no replay, quadro novo no veredito). Fica de fora: ajuste de texto ou frase, frase nova, troca de ordem ou selo, correção de bug pequena, ajuste de tempo/velocidade, detalhe interno (robô, cache, contador, workflow). Na dúvida, não entra. No máximo 1 ou 2 itens por mudança, cada um com 1 frase curta em linguagem de jogador (até ~200 caracteres). Para adicionar: ponha o item no topo da lista do dia (ou crie o dia no topo, com a data AAAA-MM-DD). Tags sugeridas: Replay, Home, Veredito, Ranking, Liga, Site.",
   "dias": [
     {
       "data": "2026-11-04",
       "itens": [
         {
           "tag": "Veredito",
-          "texto": "As frases da vitória ganharam gíria e muito mais versões: solou, cancelou o CPF, fatiou e passou, botou pra mamar, buyback que virou dieback... São mais de 130 frases só nos lances decididos, e a tela evita repetir o que você viu nas últimas partidas. Split push agora também conta quantos inimigos voltaram pra defender e se ele saiu vivo."
+          "texto": "As frases da vitória ganharam gíria e muito mais versões: solou, cancelou o CPF, fatiou e passou, botou pra mamar, buyback que virou dieback... São mais de 130 frases só nos lances decisivos, e a tela evita repetir o que você viu nas últimas partidas. Split push agora também conta quantos inimigos voltaram pra defender e se ele saiu vivo."
+        },
+        {
+          "tag": "Vitória",
+          "texto": "Na vitória, quem carregou agora manda um áudio debochado no grupo, estilo zap, com os números reais da partida. Nas partidas de fora do grupo, é só pedir o áudio."
         },
         {
           "tag": "Liga",
@@ -15,10 +19,6 @@
         {
           "tag": "Ranking",
           "texto": "A Bolsa do grupo agora é a primeira aba e abre direto no ranking. O selo \"Novo\" ficou só nela (saiu de Duplas, Times e picks, Time fechado e Meta)."
-        },
-        {
-          "tag": "Ranking",
-          "texto": "Letreiro da Bolsa do grupo sem fofoca de quantidade de partidas: saíram \"volume de Faria Lima\" e \"papel deslistado\", e o monopólio de herói agora fala só do resultado."
         },
         {
           "tag": "Ranking",
