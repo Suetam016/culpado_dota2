@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-04T02:15:36.571Z",
+  "atualizadoEm": "2026-11-04T02:16:03.648Z",
   "semAnalise": 1,
   "ranking": [
     {
@@ -55,12 +55,12 @@
       "nome": "Suéter",
       "culpados": 11,
       "craques": 15,
-      "partidas": 228,
+      "partidas": 229,
       "vitorias": 115,
       "winRate": 50,
       "streak": "culpado",
       "mmrGanho": 2725,
-      "mmrPerdido": 2750
+      "mmrPerdido": 2775
     },
     {
       "accountId": "111257540",
@@ -77,14 +77,14 @@
     {
       "accountId": "1254464470",
       "nome": "Conhecido do Baia",
-      "culpados": 9,
+      "culpados": 10,
       "craques": 4,
-      "partidas": 114,
+      "partidas": 115,
       "vitorias": 52,
-      "winRate": 46,
-      "streak": null,
+      "winRate": 45,
+      "streak": "culpado",
       "mmrGanho": 1100,
-      "mmrPerdido": 1500
+      "mmrPerdido": 1525
     },
     {
       "accountId": "83300280",
@@ -103,12 +103,12 @@
       "nome": "charlinho",
       "culpados": 4,
       "craques": 6,
-      "partidas": 69,
+      "partidas": 70,
       "vitorias": 35,
-      "winRate": 51,
+      "winRate": 50,
       "streak": "craque",
       "mmrGanho": 875,
-      "mmrPerdido": 850
+      "mmrPerdido": 875
     }
   ],
   "historicos": {
@@ -4032,6 +4032,17 @@
         "heroi": 86,
         "culpa": 0.142,
         "merito": 0.159
+      },
+      {
+        "matchId": 9075236651,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793747451,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.053,
+        "merito": 0.242
       }
     ],
     "83300280": [
@@ -5224,6 +5235,17 @@
         "heroi": 131,
         "culpa": 0.127,
         "merito": 0.175
+      },
+      {
+        "matchId": 9075236651,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793747451,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 6,
+        "culpa": 0.064,
+        "merito": 0.144
       }
     ],
     "111257540": [
@@ -13570,6 +13592,17 @@
         "heroi": 123,
         "culpa": 0.055,
         "merito": 0.133
+      },
+      {
+        "matchId": 9075236651,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793747451,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 108,
+        "culpa": 0.558,
+        "merito": 0.107
       }
     ]
   },
