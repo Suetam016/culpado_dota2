@@ -40,6 +40,21 @@ jobs:
         if: steps.seg.outputs.ok == '1'
         with:
           node-version: "22"
+      # geladeira de partidas (KV "culpado-partidas"): cria na primeira vez e liga no wrangler.toml só nesta rodada.
+      # Se o token não puder mexer no KV, o Worker sobe sem ela e o site segue buscando direto no OpenDota.
+      - name: Geladeira de partidas (KV)
+        if: steps.seg.outputs.ok == '1'
+        working-directory: worker
+        run: |
+          achar() { npx --yes wrangler@4.150.0 kv namespace list 2>/dev/null | node -e 'let t="";process.stdin.on("data",d=>t+=d).on("end",()=>{try{const i=t.indexOf("[");const l=JSON.parse(t.slice(i));const n=l.find(x=>/culpado-partidas$/.test(x.title));if(n)console.log(n.id)}catch(e){}})'; }
+          ID=$(achar)
+          if [ -z "$ID" ]; then npx --yes wrangler@4.150.0 kv namespace create culpado-partidas || true; ID=$(achar); fi
+          if [ -n "$ID" ]; then
+            printf '\n[[kv_namespaces]]\nbinding = "PARTIDAS"\nid = "%s"\n' "$ID" >> wrangler.toml
+            echo "Geladeira de partidas ligada (KV $ID)" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Não consegui criar/achar o KV culpado-partidas (o token precisa de Workers KV Storage: Edit). O Worker sobe sem a geladeira."
+          fi
       - name: Publicar o Worker
         if: steps.seg.outputs.ok == '1'
         working-directory: worker
