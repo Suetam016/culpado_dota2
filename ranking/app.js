@@ -1270,7 +1270,7 @@ function fofocasDaBolsa(b) {
     const cont = new Map();
     lista.forEach(({ g, x }) => { if (!x[1]) return; const n = cont.get(x[1]) || { v: 0, l: 0 }; n[g.v ? 'v' : 'l']++; cont.set(x[1], n); });
     const top = [...cont].sort((a, b2) => (b2[1].v + b2[1].l) - (a[1].v + a[1].l))[0];
-    if (top && top[1].v + top[1].l >= 5) { const [h, n] = top; add('heroi', `${N(c)} jogou ${n.v + n.l} de <b>${esc(heroi(h))}</b> na semana (${n.v}V ${n.l}D): monopólio, o CADE está de olho`); }
+    if (top && top[1].v + top[1].l >= 5) { const [h, n] = top; add('heroi', `${N(c)} só quer saber de <b>${esc(heroi(h))}</b> (${n.v}V ${n.l}D): monopólio, o CADE está de olho`); }
     // troca de função
     const moda = arr => { const m = new Map(); arr.forEach(p => p && m.set(p, (m.get(p) || 0) + 1)); return [...m].sort((a, b2) => b2[1] - a[1])[0]; };
     const velha = moda(antes.flatMap(g => g.j.filter(x => x[0] === c).map(x => x[2])));
@@ -1308,9 +1308,6 @@ function fofocasDaBolsa(b) {
   const culp = conta('culpado'), craq = conta('craque');
   if (culp && culp[1] >= 3) frases.push(uma([`${N(culp[0])} foi o culpado ${culp[1]} vezes na semana: delação premiada em negociação`, `${N(culp[0])}, culpado ${culp[1]}x em 7 dias, convocado pra depor na CPI do feed`], culp[0]));
   if (craq && craq[1] >= 3) frases.push(`${N(craq[0])} carregou ${craq[1]} partidas na semana: bônus de fim de ano garantido`);
-  // volume
-  const vol = [...por].map(([c, l]) => [c, l.length, l.filter(({ g }) => g.v).length]).sort((a, b2) => b2[1] - a[1])[0];
-  if (vol && vol[1] >= 10) frases.push(vol[2] / vol[1] < 0.45 ? `${N(vol[0])}: ${vol[1]} partidas em 7 dias, volume de day trader e prejuízo de day trader também` : `${N(vol[0])}: ${vol[1]} partidas em 7 dias, volume de Faria Lima`);
   // madrugada
   const madru = sem.filter(g => { const h = new Date(g.t * 1000).getHours(); return h < 5; });
   const ml = madru.filter(g => !g.v).length;
@@ -1318,13 +1315,6 @@ function fofocasDaBolsa(b) {
     const quem = new Map(); madru.forEach(g => g.j.forEach(x => quem.set(x[0], (quem.get(x[0]) || 0) + 1)));
     const q = [...quem].sort((a, b2) => b2[1] - a[1])[0][0];
     frases.push(`Pregão da madrugada: ${ml} derrotas depois da meia-noite. Vai dormir, ${N(q)}`);
-  }
-  // sumido
-  const ultimo = new Map(); todos.forEach(g => g.j.forEach(x => ultimo.set(x[0], g.t)));
-  for (const c of Object.keys(ranking.historicos)) {
-    const t = ultimo.get(c); if (!t) continue;
-    const d = Math.floor((fim - t) / 86400);
-    if (d >= 7) frases.push(`${N(c)} não negocia há ${d} dias: papel deslistado por falta de liquidez`);
   }
   // time fechado
   const tf = (parceirosBase.timeFechado || []).filter(g => g.t > ini);
