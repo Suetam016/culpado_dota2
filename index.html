@@ -341,7 +341,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .cartao.veredito.vitoria.doc-zap{display:block;padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;color:#e9edef;font-family:system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 14px 34px -16px rgba(0,0,0,.7);max-width:560px}
 .doc-zap .zap-corpo{padding:14px 12px 18px;min-height:0}
 .doc-zap .zap-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(380px,62vw)}
-.zap-slot{display:flex;flex-direction:column;gap:8px}
+.zap-slot,.zap-conversa{display:flex;flex-direction:column;gap:8px}
 .zap-fw{display:block;font-size:12px;font-style:italic;color:#8696a0;margin-bottom:4px}
 .zap-com-cartao{padding:4px 4px 20px}
 .zap-com-cartao .zap-autor{padding:2px 4px 0}
@@ -6964,6 +6964,7 @@ h('span', { class: 'zap-foto' }, fotoDe(p, false), h('span', { class: 'zap-mic',
 play, h('div', { class: 'zap-faixa' }, onda, h('span', { class: 'zap-rodape' }, tempo, vel))),
 transcricao,
 h('span', { class: 'zap-hora' }, hora(), h('span', { class: 'zap-check', 'aria-hidden': 'true' }, '✓✓')));
+bolha.audio = audio; // a conversa (?conversa=1) encadeia um áudio no outro
 return bolha;
 }
 const iconeMic = () => s('svg', { viewBox: '0 0 24 24', width: 14, height: 14 }, s('path', { d: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 6-6.9h-2z', fill: 'currentColor' }));
@@ -7136,6 +7137,74 @@ try { (window.dataLayer = window.dataLayer || []).push({ event: 'victory_view', 
 // o áudio (com a voz do Mat), alguém dando +rep com a prova e a figurinha.
 const GRUPOS_ZAP = ['Dota dos crias 🎮', 'Grupo do Culpado 🏆', 'Rankeada é amanhã', '5 stack sem tilt', 'Os de sempre 🎮', 'Fonte da amizade'];
 const CORES_ZAP = ['#e26a6a', '#a78bfa', '#53bdeb', '#06cf9c', '#f5a524', '#ff7ab6'];
+// ---------- Conversa do zap (protótipo, ?visao=zap&conversa=1): em vez de um áudio comprido, o craque manda vários
+// áudios curtos e os amigos respondem entre eles (provocam, o mochila se defende, alguém dá +rep). Cada áudio é
+// gravado inteiro de uma vez no banco de falas (audios/banco/<chave>.mp3, Banco.audios), então nada é emendado.
+// A conversa vai aparecendo: quando um áudio acaba, o próximo amigo "digita" e o áudio seguinte já toca sozinho.
+const conversaLigada = () => { try { return new URLSearchParams(location.search).get('conversa') === '1'; } catch (e) { return false; } };
+function conversaDoZap(r, o) {
+const caixa = h('div', { class: 'zap-conversa' }, h('p', { class: 'zap-sistema' }, 'Carregando a conversa…'));
+const msgSistema = (txt) => h('p', { class: 'zap-sistema' }, txt);
+const dormir = (ms) => new Promise((ok) => setTimeout(ok, ms));
+const avisar = (txt) => { o.status.textContent = txt || o.statusBase; o.status.classList.toggle('gravando', Boolean(txt)); };
+(async () => {
+const [R, B] = await Promise.all([carregarRoteiro(), carregarBanco()]);
+const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
+const chave = `${r.partida.id}-${lado}`;
+const f = R && B && R.fatos(r);
+const g = f && R.gerar(f, chave);
+if (!g) return caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.'));
+const auds = B.audios(g.partes);
+const indice = await fetch('audios/banco/indice.json', { cache: 'no-cache' }).then((x) => x.json()).catch(() => ({}));
+const { craque } = o;
+// quem se defende é quem o craque zoa no áudio do mochila (pelo nome ou pelo herói); senão o elo fraco
+const textoMochila = (auds.find((a) => a.tipo === 'mochila') || {}).texto || '';
+const defensor = o.nos.find((q) => q !== craque && (textoMochila.includes(q.nome) || textoMochila.includes(q.heroi.nome))) || (o.fraco !== craque ? o.fraco : null);
+const provocador = [o.encaminhou, ...o.nos].find((q) => q && q !== craque && q !== defensor) || null;
+const provoca = o.rnd.um([`${o.merito}? tá se achando hein 🙄`, 'manda a prova então', 'lá vem ele 🙄', `${o.merito} e já quer palco kkkk`, 'foi sorte isso aí']);
+const passos = [];
+let faltam = 0;
+auds.forEach((a) => {
+if (a.tipo === 'prova' && provocador) passos.push({ q: provocador, conteudo: h('p', {}, provoca) });
+if (a.tipo === 'mochila' && defensor) passos.push({ q: defensor, conteudo: h('p', {}, o.choroDe(defensor)) });
+if (a.tipo === 'fecho' && o.deuRep && o.deuRep !== craque) passos.push({ q: o.deuRep, conteudo: [h('p', {}, o.rep), o.zoa ? h('p', { class: 'zap-zoa' }, `enquanto isso ${o.zoa}`) : null] });
+const c = B.chave(a.texto);
+if (indice[c]) passos.push({ audio: { id: r.partida.id, segundos: indice[c].s, texto: a.texto }, url: `audios/banco/${c}.mp3` });
+else { faltam++; passos.push({ q: craque, conteudo: h('p', {}, a.texto) }); }
+});
+caixa.replaceChildren();
+let i = 0, minuto = 1;
+const seguir = async (animar) => {
+while (i < passos.length && caixa.isConnected) {
+const p = passos[i++];
+minuto++;
+if (animar) {
+avisar(p.audio ? `${craque.nome} está gravando áudio…` : `${p.q.nome} está digitando…`);
+await dormir(p.audio ? 900 : 1300);
+avisar(null);
+}
+if (p.audio) {
+const m = minuto;
+const b = bolhaDeAudio(craque, p.audio, p.url, () => o.hora(m));
+b.classList.add('zap-entra');
+caixa.append(b);
+b.audio.addEventListener('ended', () => seguir(true), { once: true });
+if (animar) b.audio.play().catch(() => {});
+return;
+}
+caixa.append(o.bolha(p.q, p.conteudo, minuto));
+}
+if (i >= passos.length && o.fim && !o.fim.isConnected) {
+if (animar) await dormir(700);
+caixa.append(o.fim);
+if (faltam) caixa.append(msgSistema(`Protótipo: ${faltam} de ${auds.length} áudios desta partida ainda não estão no banco e foram escritos.`));
+}
+};
+seguir(false);
+})().catch((e) => { console.warn('conversa do zap', e); caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.')); });
+return caixa;
+}
+
 function visaoZap(r) {
 const rnd = sorteador(`zap-${r.partida.id}`, r.partida.id);
 const cs = craquesDe(r);
@@ -7168,23 +7237,24 @@ const msgVeredito = bolha(encaminhou, [h('span', { class: 'zap-fw' }, '↪ Encam
 
 // 2) o elo fraco reclama com o próprio número
 let msgFraco = null;
-if (fraco && fraco !== craque) {
+const choroDe = (fraco) => {
 const fr = fraco.raw || {};
 const wards = (fr.obs_placed || 0) + (fr.sen_placed || 0);
-const choro = (fr.deaths || 0) >= 7 ? rnd.um([`kkkkkkk ${merito} e eu morri ${fr.deaths} vezes 😭`, `${fr.deaths} mortes e ainda ganhei, obrigado ${craque.nome} 🙏`, `quem morreu ${fr.deaths} vezes foi o meu irmão tá`])
+return (fr.deaths || 0) >= 7 ? rnd.um([`kkkkkkk ${merito} e eu morri ${fr.deaths} vezes 😭`, `${fr.deaths} mortes e ainda ganhei, obrigado ${craque.nome} 🙏`, `quem morreu ${fr.deaths} vezes foi o meu irmão tá`])
 : fraco.posicao >= 4 ? rnd.um([`kkkkkkk ${merito} e eu de suporte com ${wards} ${wards === 1 ? 'ward' : 'wards'} 😭`, `ninguém fala das minhas ${wards} wards né`, `${wards} wards plantadas e nem uma menção honrosa`])
 : rnd.um([`e os meus ${fr.gold_per_min || 0} de GPM, ninguém comenta? 😭`, `${kdaDe(fraco)} e não ganhei nem uma estrelinha`, `eu tava lá também tá (${kdaDe(fraco)})`]);
-msgFraco = bolha(fraco, h('p', {}, choro), 1);
-}
+};
+if (fraco && fraco !== craque) msgFraco = bolha(fraco, h('p', {}, choroDe(fraco)), 1);
 
 // 3) o craque manda o áudio (o fluxo de gravar/pedir mora em audioDoCraque)
 const status = h('p', { class: 'zap-status' }, [...nos.filter((q) => q !== craque).map((q) => q.nome), craque.nome].slice(0, 4).join(', ') + ', você');
 const statusBase = status.textContent;
-const slot = audioDoCraque(r, (sim) => {
+const conversa = conversaLigada();
+const slot = conversa ? null : audioDoCraque(r, (sim) => {
 status.textContent = sim ? `${craque.nome} está gravando áudio…` : statusBase;
 status.classList.toggle('gravando', sim);
 }, () => hora(2));
-slot.classList.add('zap-entra');
+if (slot) slot.classList.add('zap-entra');
 
 // 4) alguém dá +rep com a prova e zoa o elo fraco
 const [fato] = fatosDoCraque(cs[0], r, 1);
@@ -7206,7 +7276,8 @@ h('span', { class: 'zap-grupo-ic', 'aria-hidden': 'true' }, '🏆'),
 h('div', {}, h('p', { class: 'zap-grupo' }, rnd.um(GRUPOS_ZAP)), status)),
 h('div', { class: 'zap-corpo' },
 h('p', { class: 'zap-sistema' }, `Hoje · Partida ${r.partida.id}`),
-msgVeredito, msgFraco, slot, msgRep, figurinhaRep),
+conversa ? [msgVeredito, conversaDoZap(r, { craque, fraco, encaminhou, deuRep, nos, bolha, hora, merito, choroDe, rep, zoa, rnd, status, statusBase, fim: figurinhaRep })]
+: [msgVeredito, msgFraco, slot, msgRep, figurinhaRep]),
 h('div', { class: 'zap-digitar', 'aria-hidden': 'true' }, h('span', {}, 'Mensagem'), h('i', {}, iconeMic())));
 return card;
 }

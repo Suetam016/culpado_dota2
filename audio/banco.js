@@ -3,6 +3,8 @@
  *
  *   Banco.frases(texto)  -> as frases do roteiro, do jeito que o banco guarda (frase inteira, com a pontuação)
  *   Banco.chave(frase)   -> nome do arquivo da frase no banco (hash curto do texto normalizado)
+ *   Banco.audios(partes) -> o roteiro dividido em áudios curtos para a conversa do zap (?conversa=1): cada áudio é
+ *                           gravado de uma vez só (sem emenda) e os amigos respondem entre um e outro
  *
  * Usado pelo site (window.Banco) e pelo robô que grava as frases que faltam (prototipos/banco-falas/faltam.js), para
  * os dois cortarem e nomearem as frases do mesmo jeito.
@@ -31,5 +33,14 @@
     return ('0000000' + h.toString(16)).slice(-8);
   }
 
-  return { frases: frases, chave: chave };
+  // abre (abertura + carreguei), prova (os destaques), mochila (zoa o mais fraco do time) e fecho (inimigo + fecho)
+  var GRUPOS = [['abre', ['abertura', 'carreguei']], ['prova', ['destaque']], ['mochila', ['mochila']], ['fecho', ['inimigo', 'fecho']]];
+  function audios(partes) {
+    return GRUPOS.map(function (g) {
+      var t = (partes || []).filter(function (p) { return g[1].indexOf(p.bloco) >= 0; }).map(function (p) { return p.texto; }).join(' ');
+      return { tipo: g[0], texto: t.replace(/\s+/g, ' ').trim() };
+    }).filter(function (a) { return a.texto; });
+  }
+
+  return { frases: frases, chave: chave, audios: audios };
 });
