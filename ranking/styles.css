@@ -1049,3 +1049,13 @@ body.modo-liga .aba-conteudo { display: none !important; }
   .liga-c-culpado { grid-area: culp; }
   .liga-pessoa b { max-width: none; }
 }
+
+/* ---------- Sistema da culpa (binario.js) ---------- */
+.binario { margin-bottom: 28px; }
+.binario-palco { position: relative; height: 520px; background: #04060a; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.binario-palco canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.binario-nomes { position: absolute; right: 12px; top: 12px; font: 500 11px var(--font-mono); color: #dfe8e2; background: rgba(10,14,18,.75); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+.binario-nomes[aria-pressed="true"] { border-color: #ffb547; color: #ffb547; }
+.binario-nota { color: var(--muted); font-size: 13px; margin-top: 10px; line-height: 1.5; }
+.binario-nota .r { color: #ff5c6c; } .binario-nota .g { color: #e0a93a; }
+@media (max-width: 700px) { .binario-palco { height: 420px; } }

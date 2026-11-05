@@ -1154,6 +1154,7 @@ function curvaDeElo(conta, tier) {
 
 function renderizarElo() {
   renderizarBolsa();
+  if (window.renderizarBinario) window.renderizarBinario();
   const alvo = $('elo-corrida');
   requestAnimationFrame(() => requestAnimationFrame(() => {
     alvo.querySelectorAll('.palito').forEach(p => { p.style.left = `${p.dataset.para}%`; });

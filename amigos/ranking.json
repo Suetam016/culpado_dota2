@@ -1,18 +1,18 @@
 {
-  "atualizadoEm": "2026-11-04T17:35:54.859Z",
+  "atualizadoEm": "2026-11-05T20:43:32.110Z",
   "semAnalise": 1,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
-      "culpados": 53,
-      "craques": 57,
-      "partidas": 221,
-      "vitorias": 108,
-      "winRate": 49,
+      "culpados": 54,
+      "craques": 58,
+      "partidas": 226,
+      "vitorias": 109,
+      "winRate": 48,
       "streak": null,
-      "mmrGanho": 2650,
-      "mmrPerdido": 2825
+      "mmrGanho": 2675,
+      "mmrPerdido": 2925
     },
     {
       "accountId": "241782761",
@@ -42,12 +42,12 @@
       "accountId": "77621319",
       "nome": "Jalim",
       "culpados": 11,
-      "craques": 10,
-      "partidas": 87,
-      "vitorias": 44,
+      "craques": 11,
+      "partidas": 88,
+      "vitorias": 45,
       "winRate": 51,
-      "streak": "culpado",
-      "mmrGanho": 1075,
+      "streak": null,
+      "mmrGanho": 1100,
       "mmrPerdido": 1075
     },
     {
@@ -55,11 +55,11 @@
       "nome": "Suéter",
       "culpados": 11,
       "craques": 15,
-      "partidas": 232,
-      "vitorias": 117,
-      "winRate": 50,
+      "partidas": 233,
+      "vitorias": 118,
+      "winRate": 51,
       "streak": "culpado",
-      "mmrGanho": 2775,
+      "mmrGanho": 2800,
       "mmrPerdido": 2800
     },
     {
@@ -1522,6 +1522,17 @@
         "heroi": 26,
         "culpa": 0.137,
         "merito": 0.241
+      },
+      {
+        "matchId": 9076561579,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1793827966,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 30,
+        "culpa": 0.07,
+        "merito": 0.262
       }
     ],
     "81918076": [
@@ -4076,6 +4087,17 @@
         "heroi": 107,
         "culpa": 0.356,
         "merito": 0.219
+      },
+      {
+        "matchId": 9076561579,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1793827966,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.168,
+        "merito": 0.175
       }
     ],
     "83300280": [
@@ -12413,6 +12435,61 @@
         "heroi": 86,
         "culpa": 0.245,
         "merito": 0.116
+      },
+      {
+        "matchId": 9076698674,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793842032,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 74,
+        "culpa": 0.239,
+        "merito": 0.216
+      },
+      {
+        "matchId": 9076732088,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793846062,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 36,
+        "culpa": 0.289,
+        "merito": 0.158
+      },
+      {
+        "matchId": 9076750275,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1793848227,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 25,
+        "culpa": 0.396,
+        "merito": 0.277
+      },
+      {
+        "matchId": 9076777089,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793851329,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 25,
+        "culpa": 0.224,
+        "merito": 0.324
+      },
+      {
+        "matchId": 9076799482,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793853975,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 46,
+        "culpa": 0.156,
+        "merito": 0.16
       }
     ],
     "1254464470": [
@@ -13721,7 +13798,7 @@
     },
     "1000265186": {
       "avatar": "https://avatars.steamstatic.com/740cfa81e42ad1e100c8e53da9db583c7e2dd29b_full.jpg",
-      "rankTier": 63,
+      "rankTier": 62,
       "leaderboard": null
     },
     "1254464470": {
@@ -13730,5 +13807,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-04T11:38:06.282Z"
+  "perfisEm": "2026-11-05T20:43:32.047Z"
 }

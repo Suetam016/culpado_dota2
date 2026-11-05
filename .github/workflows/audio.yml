@@ -16,12 +16,17 @@ on:
 permissions:
   contents: write
 
+# Pedido do site (push) e lote do grupo (depois do ranking) rodam em filas separadas: o visitante não espera o lote
+# de 3 áudios (~12 min) terminar para o dele começar.
 concurrency:
-  group: audio
+  group: audio-${{ github.event_name == 'push' && 'pedido' || 'lote' }}
   cancel-in-progress: false
 
 jobs:
   audio:
+    # Desligado em 04/11/2026 junto com a visão do zap na vitória: só grava se alguém rodar na mão.
+    # Para religar a gravação automática, crie a variável do repositório AUDIO_AUTOMATICO=true.
+    if: github.event_name == 'workflow_dispatch' || vars.AUDIO_AUTOMATICO == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -41,23 +46,32 @@ jobs:
           OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
         run: node audio/fila.js --max 3 --dias 3 | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/setup-python@v5
+        id: py
         if: steps.fila.outputs.fila != '0'
         with:
           python-version: "3.11"
-      # o pip e o modelo (~2,5 GB) ficam em cache: sem ele, a instalação leva ~3 min
+      # o ambiente Python já instalado (venv) e o modelo ficam em cache: com o venv pronto não roda pip nenhum
+      # (antes o cache era só dos downloads do pip e a instalação ainda levava ~1,5 min a cada rodada)
       - uses: actions/cache@v4
+        id: cache
         if: steps.fila.outputs.fila != '0'
         with:
           path: |
-            ~/.cache/pip
+            ~/venv-voz
             ~/.cache/huggingface
-          key: qwen-tts-0.6b-v1
+          key: qwen-tts-0.6b-venv-${{ steps.py.outputs.python-version }}-v1
       - name: Instalar a voz
         if: steps.fila.outputs.fila != '0'
         run: |
-          sudo apt-get install -y -qq ffmpeg sox >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox >/dev/null)
-          pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
-          pip install -q qwen-tts==0.1.1 soundfile numpy
+          if ! command -v ffmpeg >/dev/null || ! command -v sox >/dev/null; then
+            sudo apt-get install -y -qq ffmpeg sox >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox >/dev/null)
+          fi
+          if [ "${{ steps.cache.outputs.cache-hit }}" != "true" ]; then
+            python -m venv ~/venv-voz
+            ~/venv-voz/bin/pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
+            ~/venv-voz/bin/pip install -q qwen-tts==0.1.1 soundfile numpy
+          fi
+          echo "$HOME/venv-voz/bin" >> "$GITHUB_PATH"
       - name: Gravar
         if: steps.fila.outputs.fila != '0' || steps.fila.outputs.pedidos != '0'
         run: python audio/falar.py 2>&1 | grep -v -i -E "warn|pci_bus" | tail -30 | tee -a "$GITHUB_STEP_SUMMARY"
