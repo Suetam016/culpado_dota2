@@ -58,7 +58,7 @@ jobs:
           fi
           echo "$HOME/venv-voz/bin" >> "$GITHUB_PATH"
       - name: Gravar pedaços, emendar e gravar inteiro
-        run: set -o pipefail; python prototipos/banco-falas/emendar.py 2>&1 | grep -v -i -E "warn|pci_bus|pad_token" | tail -40 | tee -a "$GITHUB_STEP_SUMMARY"
+        run: set -o pipefail; python prototipos/banco-falas/emendar2.py 2>&1 | grep -v -i -E "warn|pci_bus|pad_token" | tail -40 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Salvar
         run: |
           git config user.name "github-actions[bot]"
