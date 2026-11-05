@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Banco de falas: monta o roteiro de cada partida listada (o mesmo do site, audio/fila.js), corta em frases
-// (audio/banco.js) e lista as que ainda não estão gravadas em audios/banco/.
+// (audio/banco.js) e lista as que ainda não estão gravadas em audios/banco/. Hoje grava os áudios da conversa
+// (Banco.audios: 3 a 4 áudios curtos por partida, cada um gravado de uma vez só).
 //   node prototipos/banco-falas/faltam.js <id> [<id>...]   -> prototipos/banco-falas/faltam.json [{chave, texto}]
 const fs = require('fs');
 const path = require('path');
@@ -20,13 +21,14 @@ for (const id of ids) {
   } catch (e) { console.error(`${id}: fila.js falhou`); continue; }
   const item = JSON.parse(fs.readFileSync(path.join(RAIZ, 'audio/fila.json'), 'utf8')).find((x) => !x.jaTem);
   if (!item) { console.error(`${id}: sem roteiro`); continue; }
-  const fs_ = Banco.frases(item.texto);
+  // conversa do zap: cada áudio curto é gravado inteiro (sem emenda)
+  const fs_ = Banco.audios(item.partes).map((a) => a.texto);
   let novas = 0;
   for (const t of fs_) {
     const c = Banco.chave(t);
     if (!indice[c] && !faltam.has(c)) { faltam.set(c, t); novas++; }
   }
-  console.log(`${item.arquivo}: ${fs_.length} frases, ${fs_.length - novas} já no banco`);
+  console.log(`${item.arquivo}: ${fs_.length} áudios, ${fs_.length - novas} já no banco`);
 }
 fs.writeFileSync(path.join(__dirname, 'faltam.json'), JSON.stringify([...faltam].map(([chave, texto]) => ({ chave, texto })), null, 1));
 console.log(`faltam ${faltam.size} frases`);
