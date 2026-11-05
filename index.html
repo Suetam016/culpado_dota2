@@ -238,7 +238,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </a>
   </div>
   <div class="home-grupo">
-    <div><strong>Quer o seu grupo na liga?</strong><span>É de graça enquanto estamos em teste. Mande o nome do grupo e o perfil da Steam dos amigos.</span></div>
+    <div><strong>Quer o seu grupo na liga?</strong><span>É de graça enquanto estamos em teste. Basta o ID de uma partida que vocês jogaram juntos.</span></div>
     <button type="button" class="botao secundario" id="home-pedir-grupo">Quero o meu grupo</button>
   </div>
 </section>
@@ -14883,14 +14883,8 @@ b.addEventListener('click', () => abrirDaHome(String(ultimo)));
 document.getElementById('home-ultima').hidden = false;
 }
 document.getElementById('home-pedir-grupo').addEventListener('click', () => {
-const botao = document.querySelector('.fb-botao');
-const caixa = document.querySelector('.fb-caixa');
-const texto = document.querySelector('.fb-texto');
-if (!botao || !caixa || !texto) return;
-if (caixa.hidden) botao.click();
-texto.value = 'Quero o meu grupo na Liga dos grupos!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
-texto.focus();
-texto.setSelectionRange(texto.value.indexOf('\n') + 16, texto.value.indexOf('\n') + 16);
+// o pedido agora é pelo ID de uma partida, no formulário da liga
+location.href = 'ranking/#pedir';
 });
 return true;
 }

@@ -1030,6 +1030,34 @@ body.modo-liga .aba-conteudo { display: none !important; }
 .liga-passos b { color: var(--ink); }
 .liga-pedir { justify-self: start; border: 0; border-radius: 999px; padding: 9px 16px; background: var(--gold); color: var(--on-gold); font: inherit; font-weight: 800; cursor: pointer; }
 .liga-pedir:hover { background: var(--gold-2); }
+.liga-pedir:disabled { opacity: .6; cursor: default; }
+.liga-form { display: grid; gap: 14px; background: var(--surface); border-radius: var(--radius-sm); padding: 14px; }
+.lf-passo { display: grid; gap: 8px; }
+.lf-passo p, .lf-passo label { margin: 0; font-size: 14px; color: var(--ink-2); }
+.lf-passo b { color: var(--ink); }
+.lf-linha { display: flex; flex-wrap: wrap; gap: 8px; }
+.lf-linha input { flex: 1 1 180px; min-width: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--ink); font: inherit; }
+.lf-buscar { border: 1px solid var(--line-strong); border-radius: 999px; padding: 9px 16px; background: var(--surface-3); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.lf-buscar:disabled { opacity: .6; cursor: default; }
+.lf-times-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.lf-time { display: grid; gap: 6px; text-align: left; border: 2px solid var(--line); border-radius: var(--radius-sm); padding: 10px; background: var(--surface-2); color: var(--ink); font: inherit; cursor: pointer; }
+.lf-time:hover { border-color: var(--line-strong); }
+.lf-time[aria-pressed="true"] { border-color: var(--gold); background: var(--gold-wash); }
+.lf-time-nome { font-weight: 800; font-size: 15px; }
+.lf-time-nome small { font-weight: 600; color: var(--muted); margin-left: 6px; }
+.lf-time ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; font-size: 13px; color: var(--ink-2); }
+.lf-time li, .lf-pessoa { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.lf-time li span, .lf-pessoa-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lf-time .heroi, .lf-pessoa .heroi { width: 36px; height: 20px; border-radius: 3px; flex: none; }
+.lf-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.lf-pessoa { width: 100%; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 10px; background: var(--surface-2); color: var(--ink); font: inherit; cursor: pointer; text-align: left; }
+.lf-pessoa-nome { flex: 1; }
+.lf-pessoa-nome small { display: block; color: var(--muted); font-size: 12px; }
+.lf-selo { flex: none; border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 800; background: var(--good-wash); color: var(--good-ink); }
+.lf-pessoa[aria-pressed="false"] { opacity: .75; }
+.lf-pessoa[aria-pressed="false"] .lf-selo { background: var(--surface-3); color: var(--muted); }
+.lf-status { margin: 0; font-size: 14px; color: var(--ink-2); min-height: 1em; }
+.lf-status:empty { display: none; }
 .voltar-liga { display: inline-block; margin-bottom: 12px; color: var(--gold-2); font-weight: 700; font-size: 14px; text-decoration: none; }
 .voltar-liga:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) { .liga-tabela tbody tr { transition: none; } }
