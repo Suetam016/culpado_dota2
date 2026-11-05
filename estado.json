@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2998",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-05T20:41:16Z",
+  "quando": "2026-11-05T22:18:51Z",
   "restante": {
-   "dia": 2989,
-   "minuto": 50
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -399,7 +399,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-05T20:41:06Z",
+   "em": "2026-11-05T22:18:51Z",
    "partidas": {
     "9055995872": 1792632688,
     "9056028885": 1792636469,
@@ -501,24 +501,6 @@
   }
  },
  "lo": {
-  "9032672883": {
-   "companheiros": [
-    120342442,
-    151312672,
-    1125523024,
-    1263985098
-   ],
-   "inicio": 1791320516
-  },
-  "9032713688": {
-   "companheiros": [
-    115600690,
-    121982106,
-    152103613,
-    169278134
-   ],
-   "inicio": 1791323666
-  },
   "9032738776": {
    "companheiros": [
     26668150,
@@ -2282,7 +2264,6 @@
   "1116193156": "ARTIFAC MOQUEGUA",
   "111939377": "Jhun",
   "111997561": "ᔕβ𝔲Ž𝐀เ𝐦𝓂",
-  "1125523024": "ADM F95zone",
   "1126109970": "daniel.arpex",
   "112651822": "Corvus",
   "112896929": "Voidreaper",
@@ -2296,7 +2277,6 @@
   "1152578362": "DaRoça",
   "115357158": "RicoSuave",
   "115364841": "uNnder",
-  "115600690": "FhPp",
   "115824323": " Uuaagh",
   "116352364": "Itaxi",
   "1166582746": "꧁️☠️Շѧмѯ_️θѵэя",
@@ -2307,14 +2287,12 @@
   "119559567": "Vraules",
   "119606119": "M[U]CHA",
   "119838604": "ThyNooB",
-  "120342442": "CleitonMultisensações",
   "120355673": "Zé",
   "120391656": "Mwins",
   "120460127": "El pintor austriaco is back",
   "120749445": "Crown Clown",
   "121094559": "Desastroso",
   "121382254": "W i i Gar\"",
-  "121982106": "n[0]Lust",
   "122209757": "Miokey'",
   "122344374": "Assando um caramelow",
   "122704756": "Gambazin",
@@ -2329,7 +2307,6 @@
   "125789198": "Juniorfs",
   "126307677": "Matvoliveira",
   "126312842": "LéO_r0x",
-  "1263985098": "Aug",
   "126401886": "BALEM SKINS 10",
   "127129533": "Towards to Collection",
   "127358557": "Creeping Death",
@@ -2366,8 +2343,6 @@
   "149153157": "LARGA TIXA",
   "149994738": "EL DESTROZA CARRYS",
   "150437875": "kludd",
-  "151312672": "Canhoto",
-  "152103613": "DIEGO",
   "152204082": "Dr. Mignon",
   "152767398": "og8",
   "153112978": "VODANAKARA",
@@ -2391,7 +2366,6 @@
   "168201926": "Viva Cristo Rey",
   "168751990": "100noção",
   "168818165": "capibara",
-  "169278134": "GGonza-",
   "170177199": "VIZCARRY",
   "175149042": "Sire saol-",
   "177095272": "THE RETURN",
@@ -2571,22 +2545,6 @@
  },
  "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 16,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-10-30T21:34:43Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2984,
-    "minuto": 44
-   },
-   "sobra_do_dia": 2728
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -3338,6 +3296,22 @@
     "minuto": 50
    },
    "sobra_do_dia": 2727
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-05T22:18:51Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2726
   }
  ],
  "uso": {
@@ -3354,6 +3328,6 @@
   "2026-11-02": 146,
   "2026-11-03": 117,
   "2026-11-04": 70,
-  "2026-11-05": 73
+  "2026-11-05": 74
  }
 }
