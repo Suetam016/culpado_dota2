@@ -27,11 +27,20 @@ Se um destes nomes mudar ou sumir, o evento para de chegar no GA4 **sem dar erro
 
 Desde 04/11/2026 o `/ranking/` sem `#` (ou com `#liga`) abre a **Liga dos grupos** (lista de grupos); o grupo Marocas
 fica em `/ranking/#elo` e nas outras abas. Então `ranking_open` agora significa "abriu a liga", e `page_type` = ranking
-vale para a liga e para o grupo. Elementos novos ainda sem gatilho: o botão `#liga-pedir-grupo` (pedir para entrar na liga),
+vale para a liga e para o grupo. Elementos novos ainda sem gatilho: o botão `#liga-pedir-grupo` (abre o formulário de pedido, ver abaixo),
 as linhas `#liga-grupos tr[data-grupo]` (clique num grupo) e o link `#voltar-liga`.
 
+**Pedido de grupo (desde 05/11/2026):** o pedido para entrar na liga virou um formulário próprio no `/ranking/`.
+`#liga-pedir-grupo` agora abre/fecha o `#liga-form` (antes abria a caixa de feedback). A pessoa cola o ID da partida
+(`#lf-partida` + `#lf-buscar`), escolhe o time (`.lf-time[data-lado="radiant|dire"]`), marca quem é do grupo e quem é
+completer (`.lf-pessoa`) e envia em `#lf-enviar`. No envio que dá certo o site manda
+`dataLayer.push({ event: 'group_request_submit', group_size: <pessoas do grupo>, completers: <randoms> })`.
+O botão da home `#home-pedir-grupo` (gatilho `group_request_click`) continua com o mesmo id, mas agora leva para
+`/ranking/#pedir`, que abre a liga com o formulário aberto (a URL vira `#liga`). O pedido não passa mais pelo feedback,
+então ele não conta como `feedback_submit`.
+
 O GTM também espera estes eventos no `dataLayer`, que **o site ainda não envia**:
-`match_judge_start`, `match_judge_success`, `match_judge_error`, `group_request_submit`, `feedback_submit`
+`match_judge_start`, `match_judge_success`, `match_judge_error`, `feedback_submit`
 (com `is_example`, `load_time_ms`, `verdict_doc`, `error_code`).
 
 ## Tela de vitória: visões sorteadas (desde 04/11/2026)

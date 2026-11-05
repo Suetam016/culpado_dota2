@@ -39,19 +39,14 @@ let ordem = 'culpados';
 const $ = id => document.getElementById(id);
 
 document.addEventListener('DOMContentLoaded', async () => {
-  modoLiga(!location.hash || location.hash === '#liga');
+  const pedirGrupo = location.hash === '#pedir'; // vindo do "Quero o meu grupo" da home
+  modoLiga(!location.hash || location.hash === '#liga' || pedirGrupo);
   mostrarPatchNotes();
   $('liga-grupos').addEventListener('click', e => {
     const tr = e.target.closest('tr[data-href]');
     if (tr && !e.target.closest('a')) location.hash = tr.dataset.href;
   });
-  $('liga-pedir-grupo').addEventListener('click', () => {
-    const caixa = $('fb-caixa');
-    if (caixa.hidden) $('fb-botao').click();
-    const campo = $('fb-texto');
-    if (!campo.value.trim()) campo.value = 'Quero o meu grupo na Liga dos grupos!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
-    campo.focus();
-  });
+  montarPedidoGrupo(pedirGrupo);
   document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => mudarAba(b.dataset.aba)));
   document.querySelectorAll('[data-ordem]').forEach(b => b.addEventListener('click', () => {
     ordem = b.dataset.ordem;
@@ -98,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pelaUrl = () => {
     const aba = location.hash.slice(1);
     if (!aba || aba === 'liga') { modoLiga(true); return; } // sem # abre a Liga dos grupos
+    if (aba === 'pedir') { modoLiga(true); if ($('liga-form').hidden) $('liga-pedir-grupo').click(); return; }
     modoLiga(false);
     mudarAba(document.querySelector(`.aba[data-aba="${aba}"]`) ? aba : 'elo'); // dentro do grupo, a Bolsa abre por padrão
   };
@@ -2053,6 +2049,135 @@ function montarAtualizacao() {
       status.textContent = 'Não deu pra pedir agora. Tente de novo em um minuto.';
       botao.disabled = false;
     }
+  });
+}
+
+/* ---------- Pedir para entrar na liga: ID da partida + time + quem é completer; o resto sai do OpenDota ---------- */
+
+function montarPedidoGrupo(abrirJa) {
+  const form = $('liga-form'), botao = $('liga-pedir-grupo'), status = $('lf-status');
+  const campo = $('lf-partida'), buscar = $('lf-buscar');
+  let partida = null, lado = null, pessoas = [];
+
+  const abrir = () => {
+    form.hidden = false;
+    botao.setAttribute('aria-expanded', 'true');
+    campo.focus();
+  };
+  botao.addEventListener('click', () => {
+    if (form.hidden) abrir();
+    else { form.hidden = true; botao.setAttribute('aria-expanded', 'false'); }
+  });
+  if (abrirJa) { abrir(); form.scrollIntoView({ block: 'center' }); }
+
+  const idDaPartida = txt => (String(txt).match(/\d{8,12}/) || [])[0] || null;
+  const nomeDe = p => (p.personaname || '').trim() || (p.account_id ? `Conta ${p.account_id}` : 'Perfil anônimo');
+  const iconeHeroi = id => (parceiros && parceiros.herois && parceiros.herois[id] ? heroi(id) : '');
+  const heroiTxt = id => (parceiros && parceiros.herois && parceiros.herois[id] ? nomeHeroi(id) : '');
+
+  async function carregarPartida() {
+    const id = idDaPartida(campo.value);
+    if (!id) { status.textContent = 'Cole o número da partida (ex.: 8012345678) ou o link dela.'; return; }
+    buscar.disabled = true;
+    status.textContent = 'Buscando a partida…';
+    $('lf-times').hidden = true; $('lf-pessoas').hidden = true;
+    try {
+      const r = await fetch(`https://api.opendota.com/api/matches/${id}`);
+      if (r.status === 404) throw new Error('nao-achou');
+      if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      if (!j || !Array.isArray(j.players) || !j.players.length) throw new Error('nao-achou');
+      partida = { id, quando: j.start_time, radiantVenceu: j.radiant_win, jogadores: j.players };
+      lado = null;
+      mostrarTimes();
+      status.textContent = '';
+    } catch (e) {
+      status.textContent = e.message === 'nao-achou'
+        ? 'Não achei essa partida. Confere o número (ele aparece no fim do jogo e no histórico do Dota).'
+        : 'O OpenDota não respondeu agora. Tenta de novo em um minuto.';
+    }
+    buscar.disabled = false;
+  }
+
+  function doLado(l) {
+    return partida.jogadores.filter(p => (p.isRadiant ?? p.player_slot < 128) === (l === 'radiant'));
+  }
+
+  function mostrarTimes() {
+    const quando = partida.quando ? new Date(partida.quando * 1000).toLocaleDateString('pt-BR') : '';
+    $('lf-times-grade').innerHTML = ['radiant', 'dire'].map(l => {
+      const venceu = partida.radiantVenceu == null ? '' : ((l === 'radiant') === partida.radiantVenceu ? 'venceu' : 'perdeu');
+      return `<button type="button" class="lf-time" data-lado="${l}" aria-pressed="false">
+        <span class="lf-time-nome">${l === 'radiant' ? 'Radiant' : 'Dire'}<small>${[venceu, quando].filter(Boolean).join(' · ')}</small></span>
+        <ul>${doLado(l).map(p => `<li>${iconeHeroi(p.hero_id)}<span>${esc(nomeDe(p))}</span></li>`).join('')}</ul>
+      </button>`;
+    }).join('');
+    $('lf-times').hidden = false;
+  }
+
+  $('lf-times-grade').addEventListener('click', e => {
+    const b = e.target.closest('[data-lado]');
+    if (!b) return;
+    lado = b.dataset.lado;
+    $('lf-times-grade').querySelectorAll('[data-lado]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    pessoas = doLado(lado).map(p => ({ conta: p.account_id || null, nome: nomeDe(p), heroi: p.hero_id, grupo: true }));
+    mostrarPessoas();
+    $('lf-pessoas').hidden = false;
+    status.textContent = '';
+  });
+
+  function mostrarPessoas() {
+    $('lf-lista').innerHTML = pessoas.map((p, i) => `<li><button type="button" class="lf-pessoa" data-i="${i}" aria-pressed="${p.grupo}">
+      ${iconeHeroi(p.heroi)}<span class="lf-pessoa-nome">${esc(p.nome)}<small>${[heroiTxt(p.heroi), p.conta ? '' : 'perfil fechado: o robô não consegue acompanhar'].filter(Boolean).join(' · ')}</small></span>
+      <span class="lf-selo">${p.grupo ? 'Do grupo' : 'Completer'}</span>
+    </button></li>`).join('');
+  }
+
+  $('lf-lista').addEventListener('click', e => {
+    const b = e.target.closest('[data-i]');
+    if (!b) return;
+    const p = pessoas[+b.dataset.i];
+    p.grupo = !p.grupo;
+    mostrarPessoas();
+    $('lf-lista').querySelector(`[data-i="${b.dataset.i}"]`).focus();
+  });
+
+  buscar.addEventListener('click', carregarPartida);
+  campo.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); carregarPartida(); } });
+
+  form.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    if (!partida || !lado) { status.textContent = 'Busque a partida e escolha o seu time primeiro.'; return; }
+    const grupo = pessoas.filter(p => p.grupo);
+    if (grupo.length < 2) { status.textContent = 'Marque pelo menos 2 pessoas do grupo (o resto pode ser completer).'; return; }
+    const url = await urlDoCoach();
+    if (!url) { status.textContent = 'O envio está desligado agora.'; return; }
+    const nomeGrupo = $('lf-nome-grupo').value.trim(), apelido = $('lf-apelido').value.trim();
+    const linha = p => `- ${p.nome}${p.conta ? ` (conta ${p.conta})` : ' (perfil fechado)'}`;
+    const texto = [
+      'Quero o meu grupo na Liga dos grupos!',
+      `Partida: ${partida.id} · time ${lado === 'radiant' ? 'Radiant' : 'Dire'}`,
+      nomeGrupo ? `Nome do grupo: ${nomeGrupo}` : '',
+      `Do grupo (${grupo.length}):`, ...grupo.map(linha),
+      ...(grupo.length < pessoas.length ? ['Completers:', ...pessoas.filter(p => !p.grupo).map(linha)] : []),
+    ].filter(Boolean).join('\n');
+    $('lf-enviar').disabled = true;
+    status.textContent = 'Enviando…';
+    try {
+      const r = await fetch(`${url}/feedback`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ texto, nome: apelido, partida: `grupo-${partida.id}` }),
+      });
+      if (!r.ok) throw new Error(r.status);
+      try { (window.dataLayer = window.dataLayer || []).push({ event: 'group_request_submit', group_size: grupo.length, completers: pessoas.length - grupo.length }); } catch (e) { /* sem GTM */ }
+      status.textContent = 'Pedido recebido! A gente confere e o grupo aparece aqui na liga em até um dia.';
+      $('lf-times').hidden = true; $('lf-pessoas').hidden = true;
+      campo.value = ''; partida = null; lado = null;
+    } catch (e) {
+      status.textContent = r429(e) ? 'Muitos envios seguidos. Tenta daqui a pouco.' : 'Não deu pra enviar. Tenta de novo daqui a pouco.';
+    }
+    $('lf-enviar').disabled = false;
   });
 }
 
