@@ -6841,6 +6841,88 @@ document.head.append(sc);
 }));
 const mmssAudio = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
+// ---------- Banco de falas (protótipo, só com ?banco=1): o áudio é montado na hora com frases já gravadas ----------
+// Cada frase do roteiro foi gravada uma vez na voz do Mat (audios/banco/<chave>.mp3, workflow banco-falas.yml). Aqui o
+// navegador escreve o roteiro da partida, acha cada frase no banco e emenda: pausas de zap, um ambiente baixinho
+// contínuo por baixo e o volume igualado. Sem espera nenhuma; se faltar frase, cai no fluxo normal.
+const bancoLigado = () => { try { return new URLSearchParams(location.search).get('banco') === '1'; } catch (e) { return false; } };
+let bancoJs = null;
+const carregarBanco = () => (bancoJs = bancoJs || new Promise((ok) => {
+if (window.Banco) return ok(window.Banco);
+const sc = document.createElement('script');
+sc.src = 'audio/banco.js';
+sc.onload = () => ok(window.Banco || null);
+sc.onerror = () => ok(null);
+document.head.append(sc);
+}));
+function wavDe(buf) {
+const d = buf.getChannelData(0), n = d.length, sr = buf.sampleRate;
+const v = new DataView(new ArrayBuffer(44 + n * 2));
+const txt = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+txt(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); txt(8, 'WAVE'); txt(12, 'fmt ');
+v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true);
+v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); txt(36, 'data'); v.setUint32(40, n * 2, true);
+for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, d[i])) * 0x7fff, true);
+return new Blob([v], { type: 'audio/wav' });
+}
+// Devolve {info, url, frases} pronto para a bolha, ou {faltam, total} quando o banco não tem todas as frases.
+async function audioDoBanco(r, chave) {
+const [R, B] = await Promise.all([carregarRoteiro(), carregarBanco()]);
+const f = R && B && R.fatos(r);
+const g = f && R.gerar(f, chave);
+if (!g) return null;
+const frases = B.frases(g.texto);
+const indice = await (await fetch('audios/banco/indice.json', { cache: 'no-cache' })).json().catch(() => ({}));
+const chaves = frases.map((t) => B.chave(t));
+const faltam = frases.filter((t, i) => !indice[chaves[i]]);
+if (faltam.length) return { faltam, total: frases.length };
+const SR = 24000;
+const ctx = new OfflineAudioContext(1, SR, SR); // só para decodificar
+const bufs = await Promise.all(chaves.map(async (c) => ctx.decodeAudioData(await (await fetch(`audios/banco/${c}.mp3`)).arrayBuffer())));
+const rnd = sorteador(`banco-${chave}`);
+const pausas = frases.map((t) => (/[?!]$/.test(t) ? 0.42 : 0.34) + rnd.um([-0.04, -0.02, 0, 0.02, 0.04, 0.06, 0.08]));
+const total = bufs.reduce((a, b, i) => a + b.duration + (i < bufs.length - 1 ? pausas[i] : 0), 0) + 0.15;
+const mix = new OfflineAudioContext(1, Math.ceil(total * SR), SR);
+// ambiente: ruído marrom bem baixo e contínuo, para o silêncio entre as frases não "cair"
+const ruido = mix.createBuffer(1, Math.ceil(total * SR), SR);
+const rd = ruido.getChannelData(0);
+let ult = 0, semente = 7;
+let soma = 0;
+for (let i = 0; i < rd.length; i++) { semente = (semente * 16807) % 2147483647; ult = (ult + 0.02 * ((semente / 2147483647) * 2 - 1)) / 1.02; rd[i] = ult; soma += ult * ult; }
+const kRuido = 0.003 / (Math.sqrt(soma / rd.length) || 1);
+for (let i = 0; i < rd.length; i++) rd[i] *= kRuido;
+const fonteRuido = mix.createBufferSource();
+fonteRuido.buffer = ruido;
+const comp = mix.createDynamicsCompressor();
+comp.threshold.value = -20; comp.ratio.value = 2.5; comp.attack.value = 0.005; comp.release.value = 0.12;
+const ganho = mix.createGain();
+ganho.gain.value = 2.5;
+const limite = mix.createDynamicsCompressor(); // segura os picos sem baixar o áudio todo
+limite.threshold.value = -4; limite.knee.value = 2; limite.ratio.value = 20; limite.attack.value = 0.001; limite.release.value = 0.08;
+comp.connect(ganho).connect(limite).connect(mix.destination);
+fonteRuido.connect(comp);
+fonteRuido.start(0);
+let t = 0.08;
+bufs.forEach((b, i) => {
+const src = mix.createBufferSource();
+src.buffer = b;
+const fade = mix.createGain();
+fade.gain.setValueAtTime(0, t);
+fade.gain.linearRampToValueAtTime(1, t + 0.02);
+fade.gain.setValueAtTime(1, t + b.duration - 0.03);
+fade.gain.linearRampToValueAtTime(0, t + b.duration);
+src.connect(fade).connect(comp);
+src.start(t);
+t += b.duration + (pausas[i] || 0);
+});
+const pronto = await mix.startRendering();
+const d = pronto.getChannelData(0);
+let pico = 0;
+for (let i = 0; i < d.length; i++) pico = Math.max(pico, Math.abs(d[i]));
+if (pico > 0.89) for (let i = 0; i < d.length; i++) d[i] *= 0.89 / pico;
+return { info: { id: r.partida.id, segundos: pronto.duration, texto: g.texto }, url: URL.createObjectURL(wavDe(pronto)), frases: frases.length };
+}
+
 function bolhaDeAudio(p, info, urlMp3, hora = horaZap) {
 const audio = new Audio();
 audio.preload = 'metadata';
@@ -6963,6 +7045,14 @@ h('span', { class: 'zap-hora' }, hora())));
 };
 const iniciar = async () => {
 mostrar(msgSistema('Carregando a conversa…'));
+// 0) protótipo do banco de falas (?banco=1): monta na hora com as frases já gravadas
+if (bancoLigado()) {
+try {
+const b = await audioDoBanco(r, chave);
+if (b && b.url) return mostrar(bolhaDeAudio(p, b.info, b.url, hora), msgSistema(`Montado na hora com ${b.frases} frases do banco de falas.`));
+if (b && b.faltam) return textoReserva(`Banco de falas: faltam ${b.faltam.length} de ${b.total} frases desta partida (${b.faltam.map((t) => `"${t}"`).join(', ')}).`);
+} catch (e) { console.warn('banco de falas', e); }
+}
 // 1) já publicado no site (vitórias do grupo saem gravadas pelo robô)
 try {
 const res = await fetch(`audios/${chave}.json`, { cache: 'no-cache' });

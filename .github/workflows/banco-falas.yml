@@ -1,13 +1,13 @@
 name: Teste do banco de falas (voz do Mat)
 
-# Protótipo: grava o roteiro de uma partida em pedaços soltos (como o banco de falas guardaria) e emendado, mais a
-# versão inteira para comparar. A partida vem da 1ª linha de prototipos/banco-falas/partida. Sai em
-# prototipos/banco-falas/saida/<id>-<lado>/. Não mexe no site.
+# Banco de falas: monta o roteiro das partidas listadas em prototipos/banco-falas/partida (um id por linha), corta
+# em frases (audio/banco.js) e grava na voz do Mat só as que ainda não estão em audios/banco/. O site emenda as
+# frases na hora (?visao=zap&banco=1). As versões de teste antigas (emendar.py/emendar2.py) ficam para comparação.
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["prototipos/banco-falas/partida", "prototipos/banco-falas/*.py", "prototipos/banco-falas/*.js", ".github/workflows/banco-falas.yml"]
+    paths: ["prototipos/banco-falas/partida", "prototipos/banco-falas/gravar_banco.py", "prototipos/banco-falas/faltam.js", "audio/banco.js", ".github/workflows/banco-falas.yml"]
 
 permissions:
   contents: write
@@ -19,7 +19,7 @@ concurrency:
 jobs:
   gravar:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,10 +31,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Roteiro em pedaços
+      - name: Frases que faltam no banco
         env:
           OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
-        run: set -o pipefail; node prototipos/banco-falas/montar.js "$(head -1 prototipos/banco-falas/partida | tr -dc '0-9')" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: set -o pipefail; node prototipos/banco-falas/faltam.js $(grep -oE '^[0-9]{9,12}' prototipos/banco-falas/partida) | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/setup-python@v5
         id: py
         with:
@@ -57,13 +57,15 @@ jobs:
             ~/venv-voz/bin/pip install -q qwen-tts==0.1.1 soundfile numpy
           fi
           echo "$HOME/venv-voz/bin" >> "$GITHUB_PATH"
-      - name: Gravar pedaços, emendar e gravar inteiro
-        run: set -o pipefail; python prototipos/banco-falas/emendar2.py 2>&1 | grep -v -i -E "warn|pci_bus|pad_token" | tail -40 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Gravar as frases
+        run: set -o pipefail; python prototipos/banco-falas/gravar_banco.py 2>&1 | grep -v -i -E "warn|pci_bus|pad_token" | tail -80 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Salvar
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add prototipos/banco-falas/saida prototipos/banco-falas/pedacos.json
+          [ -d audios/banco ] || exit 0
+          git add audios/banco
           git diff --cached --quiet && exit 0
-          git commit -m "Banco de falas: teste gravado"
+          git commit -m "Banco de falas: frases gravadas"
           for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
