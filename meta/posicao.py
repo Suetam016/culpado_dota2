@@ -42,7 +42,7 @@ ITENS_POR_HEROI = 14
 CUSTO_GRANDE = 1400
 # montados, mas quase sempre viram outro item: contam como degrau, não como item da build
 INTERMEDIARIOS = {'yasha', 'sange', 'kaya', 'pers', 'lesser_crit', 'oblivion_staff', 'ultimate_scepter_2', 'diffusal_blade_2',
-                  'wraith_pact', 'cornucopia'}
+                  'wraith_pact', 'cornucopia', 'soul_booster'}
 RANK_MAX = 99       # a base já é da faixa do grupo: não corta rank
 IGNORAR = re.compile(r'^(tango|clarity|flask|faerie_fire|enchanted_mango|ward_|tpscroll|smoke_of_deceit|dust|'
                      r'blood_grenade|recipe_|famango|great_famango|greater_famango|cheese|refresher_shard|aegis|'
