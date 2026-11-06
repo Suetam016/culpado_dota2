@@ -7002,9 +7002,10 @@ return corpo;
 // Para pôr uma visão nova (Plantão da Selva, Stories, Post...): escreva visaoX(r) devolvendo o <article> e some uma
 // linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força
 // (inclusive uma visão desligada). `ligada: false` tira a visão do sorteio sem apagar o código.
-// Zap religado em 06/11/2026 como conversa: o craque manda vários áudios curtos (banco de falas) e os amigos respondem.
+// Zap (conversa com vários áudios curtos do banco de falas) desligado de novo em 06/11/2026: o Mat achou cru.
+// ?visao=zap ainda força para testar; para religar, troque ligada para true.
 const VISOES_VITORIA = [
-{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: true, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
+{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
 ];
 const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega

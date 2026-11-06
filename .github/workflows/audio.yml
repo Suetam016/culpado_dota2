@@ -24,9 +24,9 @@ concurrency:
 
 jobs:
   audio:
-    # Religado em 06/11/2026 com a conversa do zap (vários áudios curtos no banco). Para desligar a gravação automática,
-    # crie a variável do repositório AUDIO_AUTOMATICO=false.
-    if: github.event_name == 'workflow_dispatch' || vars.AUDIO_AUTOMATICO != 'false'
+    # Desligado de novo em 06/11/2026 junto com a conversa do zap na vitória: só grava na mão. Para religar a gravação
+    # automática, crie a variável do repositório AUDIO_AUTOMATICO=true.
+    if: github.event_name == 'workflow_dispatch' || vars.AUDIO_AUTOMATICO == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
