@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-06T03:58:33Z",
+ "atualizadoEm": "2026-11-06T09:28:11Z",
  "desde": "2025-12-21",
- "partidasLidas": 656,
+ "partidasLidas": 661,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,9 +11,9 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 220,
-   "vitorias": 111,
-   "winRate": 50
+   "jogos": 221,
+   "vitorias": 112,
+   "winRate": 51
   },
   "26668150": {
    "nome": "3rvinha",
@@ -47,8 +47,8 @@
   },
   "96286191": {
    "nome": "charlinho",
-   "jogos": 74,
-   "vitorias": 39,
+   "jogos": 75,
+   "vitorias": 40,
    "winRate": 53
   },
   "83300280": {
@@ -1122,9 +1122,9 @@
    "b": "96286191",
    "nomeA": "Suéter",
    "nomeB": "charlinho",
-   "jogos": 63,
-   "vitorias": 33,
-   "winRate": 52,
+   "jogos": 64,
+   "vitorias": 34,
+   "winRate": 53,
    "rotas": [
     {
      "posA": 2,
@@ -1240,6 +1240,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9078053134,
+     "inicio": 1793937430,
+     "venceu": true,
+     "heroiA": 44,
+     "heroiB": 131,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9078021181,
      "inicio": 1793933745,
      "venceu": true,
@@ -1301,15 +1310,6 @@
      "heroiB": 67,
      "posA": 2,
      "posB": 1
-    },
-    {
-     "matchId": 9073969510,
-     "inicio": 1793674475,
-     "venceu": false,
-     "heroiA": 84,
-     "heroiB": 87,
-     "posA": 3,
-     "posB": 5
     }
    ]
   },
@@ -15211,6 +15211,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 44,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
     "heroi": 94,
     "pos": 1,
     "jogos": 1,
@@ -15463,8 +15469,8 @@
    {
     "heroi": 25,
     "pos": 2,
-    "jogos": 14,
-    "vitorias": 9
+    "jogos": 15,
+    "vitorias": 10
    },
    {
     "heroi": 34,
@@ -15797,12 +15803,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 25,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
     "heroi": 68,
     "pos": 5,
     "jogos": 1,
@@ -15997,6 +15997,30 @@
    {
     "heroi": 86,
     "pos": 1,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 41,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 7,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 46,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 74,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -16645,6 +16669,12 @@
    {
     "heroi": 5,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 131,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -30949,6 +30979,88 @@
     [
      "1000265186",
      25,
+     2,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "id": 9078046845,
+   "t": 1793936720,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     41,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9078053134,
+   "t": 1793937430,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     44,
+     0,
+     null,
+     null
+    ],
+    [
+     "96286191",
+     131,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9078083554,
+   "t": 1793940875,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     7,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9078124606,
+   "t": 1793945500,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     46,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9078148965,
+   "t": 1793948150,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     74,
      0,
      null,
      null
