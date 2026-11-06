@@ -3551,3 +3551,12 @@ Fila: [9078223411] (pedidos do site: [9078223411])
   2058 usos de skill/item de 3088 no combat log
 OK 9078223411
 1 mapas novos
+Fila: [9079021291]
+  replay http://replay445.valve.net/570/9079021291_30021857.dem.bz2 -> HTTP 200 application/octet-stream 31241045 inicio=b'(\xb5/\xfd\x00`d\x12\x0f>Y\x9e'
+  9079021291: 114202 eventos; tipos [('actions', 55511), ('interval', 18460), ('DOTA_COMBATLOG_DAMAGE', 15354), ('DOTA_COMBATLOG_MODIFIER_ADD', 6425), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 6363), ('DOTA_COMBATLOG_HEAL', 2673), ('DOTA_COMBATLOG_XP', 2623), ('DOTA_COMBATLOG_DEATH', 2368)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_PhantomAssassin", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 44, "variant": 0, "facet_hero_id": 44, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups"
+  exemplo de habilidade: {"time": -63, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_lycan", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "lycan_summon_wolves"}
+  1469 registros de dano herói->herói
+  910 usos de skill/item de 1397 no combat log
+OK 9079021291
+1 mapas novos
