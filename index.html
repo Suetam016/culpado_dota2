@@ -346,6 +346,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @media (prefers-reduced-motion:no-preference){.zap-ondas i{animation:zap-onda 1s ease-in-out infinite}.zap-rec{animation:zap-pisca 1.2s steps(2) infinite}}
 @keyframes zap-onda{50%{height:100%}}
 @keyframes zap-pisca{50%{opacity:.3}}.visao-vitoria{display:grid;gap:8px;width:100%;justify-items:start}.visao-vitoria>.cartao{width:100%}.visao-vitoria>.doc-zap{justify-self:center}
+.mt-visao{display:grid;gap:14px;padding:18px}.mt-corpo{display:grid;gap:14px}.mt-aviso{margin:0;color:var(--ink-2)}.mt-cab{display:grid;gap:6px}.mt-cab .eyebrow{margin:0}.mt-titulo{margin:0;font-size:1.6rem;line-height:1.1}.mt-sub{margin:0;color:var(--ink-2);max-width:62ch}.mt-times{display:flex;gap:8px;flex-wrap:wrap}.mt-times button{font:inherit;font-weight:600;font-size:.9rem;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}.mt-times button[aria-pressed="true"]{background:var(--ink);color:var(--bg,#fff);border-color:var(--ink)}.mt-grade{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}@media (max-width:760px){.mt-grade{grid-template-columns:1fr}}.mt-mapa{position:relative;width:100%;max-width:560px;aspect-ratio:1;border-radius:10px;overflow:hidden;border:2px solid #2a2e26;background:#1b2418}.mt-mapa canvas{position:absolute;inset:0;width:100%;height:100%}.mt-relogio{position:absolute;left:8px;top:8px;font-size:.8rem;font-variant-numeric:tabular-nums;color:#fff;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:6px}.mt-controles{margin-top:10px;max-width:560px}.mt-controles .botao[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}.mt-lado{display:grid;gap:10px}.mt-resumo{margin:0;font-size:1.6rem;font-weight:700;line-height:1}.mt-resumo small{display:block;font-size:.85rem;font-weight:400;color:var(--ink-2);margin-top:6px}.mt-lista{display:grid;gap:6px;margin:0;padding:0;list-style:none}.mt-heroi{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:none;cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit}.mt-heroi.apagado{opacity:.4}.mt-cor{width:12px;height:12px;border-radius:50%}.mt-nome{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mt-nome small{font-weight:400;color:var(--ink-2)}.mt-qtd{font-variant-numeric:tabular-nums}.mt-barra{grid-column:2/4;height:5px;border-radius:3px;background:var(--line);overflow:hidden}.mt-barra i{display:block;height:100%}.mt-dica{margin:0;font-size:.82rem;color:var(--ink-2)}.mt-zonas{display:grid;gap:3px;margin:0;padding:0;list-style:none;font-size:.9rem;color:var(--ink-2)}.mt-zonas b{color:var(--ink)}
 .trocar-visao{border:0;background:none;color:var(--muted);font-size:var(--t-sm);cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}.trocar-visao:hover{color:var(--ink)}
 .cartao.veredito.vitoria.doc-zap{display:block;padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;color:#e9edef;font-family:system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 14px 34px -16px rgba(0,0,0,.7);max-width:560px}
 .doc-zap .zap-corpo{padding:14px 12px 18px;min-height:0}
@@ -7158,6 +7159,8 @@ return corpo;
 const VISOES_VITORIA = [
 { id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
+// Mapa de mortes do time (06/11/2026): precisa do replay; sem ele a visão vira o documento
+{ id: 'mortes', nome: 'Mapa de mortes', peso: 3, pode: (r) => r.partida.parseado, montar: (r) => visaoMortes(r) },
 // Plantão da Selva: em teste, só abre com ?visao=plantao
 { id: 'plantao', nome: 'Plantão da Selva', peso: 3, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoPlantao(r) },
 ];
@@ -7222,6 +7225,192 @@ return { idx: i, slot: p.player_slot, radiant: p.isRadiant != null ? Boolean(p.i
 P.montar(palco, { match: dados.match, mapa, carry: v.jogador.idx, jog, est: ESTRUTURAS, arv: ARVORES_B64, tri: TRILHAS_B64, ladoNome, data, fatia: v.fatia, amigos: Object.values(AMIGOS) });
 }).catch((e) => { console.error('plantao', e); palco.replaceChildren(espera); espera.textContent = 'O plantão não carregou agora. Recarregue a página para tentar de novo.'; });
 return caixa;
+}
+
+// ---------- Mapa de mortes do time: a vitória mostra onde cada herói deles caiu, em mancha de calor com uma cor por
+// herói (quanto mais forte, mais mortes ali), com a janela de 10 min e o "Passar o jogo". Dá para trocar para as
+// mortes de vocês. Protótipo aprovado pelo Mat em 06/11/2026. Sem o mapa da partida (replay), vira o documento.
+const CORES_MORTES = ['#ff5a4e', '#3fb5ff', '#ffd23f', '#b46bff', '#4fe08a'];
+function mortesDoTime(r, mapa) {
+const ctx = E.ouro.contexto(r);
+if (!ctx || !mapa || !Array.isArray(mapa.slots) || !Array.isArray(mapa.x)) return null;
+const jog = ctx.jog.map((p) => {
+const k0 = mapa.slots.indexOf(p.raw.player_slot);
+const k = k0 >= 0 ? k0 : p.idx < mapa.slots.length ? p.idx : -1;
+const pos = (t) => {
+for (const dt of [1, 2, 0, 3]) {
+const i = Math.round(t - dt - (mapa.t0 || 0));
+const x = k >= 0 && mapa.x[k] ? mapa.x[k][i] : null; const y = k >= 0 && mapa.y[k] ? mapa.y[k][i] : null;
+if (x != null && y != null) return [x, y];
+}
+return null;
+};
+const mortes = ((ctx.mortes && ctx.mortes[p.idx]) || []).map((d) => { const q = pos(d.t); return q ? { t: d.t, x: q[0], y: q[1], assassino: d.assassino } : null; }).filter(Boolean);
+return { idx: p.idx, radiant: p.radiant, nome: p.nome, heroi: p.heroi.nome, mortes };
+});
+const total = jog.reduce((a, j) => a + j.mortes.length, 0);
+if (!total) return null;
+const dur = Math.max(ctx.duracao || r.partida.duracao || 0, ...jog.flatMap((j) => j.mortes.map((d) => d.t + 1)));
+return { jog, dur };
+}
+function visaoMortes(r) {
+const caixa = h('article', { class: 'cartao veredito vitoria mt-visao' });
+const palco = h('div', { class: 'mt-corpo' }, h('p', { class: 'mt-aviso' }, 'Montando o mapa…'));
+caixa.append(palco);
+const virarDocumento = () => { // sem replay: a vitória fica com o documento do mérito
+if (!caixa.isConnected && !caixa.parentNode) return;
+const doc = documentoDoMerito(r);
+palco.remove();
+caixa.className = doc.className;
+Object.assign(caixa.dataset, doc.dataset, { visao: 'documento' });
+if (caixa.parentNode && caixa.parentNode.dataset) caixa.parentNode.dataset.visao = 'documento';
+caixa.prepend(...doc.childNodes);
+};
+Promise.all([carregarMapa(r.partida.id), terrenoURL()]).then(([mapa, terreno]) => {
+const dados = mapa ? mortesDoTime(r, mapa) : null;
+if (!dados) { virarDocumento(); return; }
+palco.replaceChildren(...painelMortes(r, dados, terreno));
+}).catch((e) => { console.error('mortes', e); virarDocumento(); });
+return caixa;
+}
+function painelMortes(r, dados, terreno) {
+const nos = r.partida.ladoRadiant;
+const W = 768;
+const cv = h('canvas', { width: W, height: W, role: 'img', 'aria-label': 'Mapa de calor das mortes' });
+const g = cv.getContext('2d');
+const off = document.createElement('canvas'); off.width = off.height = W; const og = off.getContext('2d');
+const img = new Image(); if (terreno) img.src = terreno;
+const fimMin = Math.ceil(dados.dur / 60);
+const temJanela = fimMin > JANELA_MORTES_MIN;
+let time = 'eles'; let foco = null; let tudo = true; let ini = 0; let pontos = false; let tocando = null;
+const px = (x) => ((x - MAPA.min) / (MAPA.max - MAPA.min)) * W;
+const py = (y) => W - ((y - MAPA.min) / (MAPA.max - MAPA.min)) * W;
+const doTime = () => dados.jog.filter((j) => (j.radiant === nos) === (time === 'nos'));
+const corDe = (j) => CORES_MORTES[Math.max(0, doTime().indexOf(j)) % CORES_MORTES.length];
+const naJanela = (t) => tudo || (t >= ini * 60 && t < (ini + JANELA_MORTES_MIN) * 60);
+const fimJanela = () => Math.min(ini + JANELA_MORTES_MIN, fimMin);
+const rgb = (c) => { const n = parseInt(c.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; };
+const camada = (j, cor) => {
+og.clearRect(0, 0, W, W);
+og.globalCompositeOperation = 'lighter';
+const R = W * 0.065;
+let n = 0;
+for (const d of j.mortes) {
+if (!naJanela(d.t)) continue;
+n++;
+const X = px(d.x); const Y = py(d.y);
+const gr = og.createRadialGradient(X, Y, 0, X, Y, R);
+gr.addColorStop(0, 'rgba(255,255,255,0.5)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+og.fillStyle = gr; og.beginPath(); og.arc(X, Y, R, 0, Math.PI * 2); og.fill();
+}
+if (!n) return;
+// a intensidade fica no alfa (somado pelo 'lighter'); a cor do herói entra por cima
+const im = og.getImageData(0, 0, W, W); const d = im.data; const [cr, cg, cb] = rgb(cor);
+for (let i = 0; i < d.length; i += 4) {
+const v = d[i + 3] / 255;
+d[i] = cr; d[i + 1] = cg; d[i + 2] = cb;
+d[i + 3] = v <= 0.02 ? 0 : Math.min(235, Math.pow(v, 0.8) * 260);
+}
+og.putImageData(im, 0, 0);
+g.drawImage(off, 0, 0);
+};
+const relogio = h('span', { class: 'mt-relogio' });
+const resumo = h('p', { class: 'mt-resumo' });
+const lista = h('ul', { class: 'mt-lista' });
+const zonas = h('ul', { class: 'mt-zonas' });
+const rotulo = h('span', { class: 'mortes-janela-txt' });
+const slider = h('input', { type: 'range', class: 'mortes-slider', min: 0, max: Math.max(0, fimMin - JANELA_MORTES_MIN), step: 1, value: 0, 'aria-label': 'Começo da janela de 10 minutos' });
+const bTudo = h('button', { type: 'button', class: 'botao secundario', 'aria-pressed': 'true' }, 'Jogo inteiro');
+const bTocar = h('button', { type: 'button', class: 'botao secundario', 'data-gtm': 'vitoria-mortes-passar' }, '▶ Passar o jogo');
+const bPontos = h('button', { type: 'button', class: 'botao secundario', 'aria-pressed': 'false' }, 'Mostrar cada morte');
+const bEles = h('button', { type: 'button', 'aria-pressed': 'true', 'data-gtm': 'vitoria-mortes-eles' }, 'Eles');
+const bNos = h('button', { type: 'button', 'aria-pressed': 'false', 'data-gtm': 'vitoria-mortes-voces' }, 'Vocês');
+const titulo = h('h2', { class: 'mt-titulo' });
+const sub = h('p', { class: 'mt-sub' });
+const desenhar = () => {
+g.globalCompositeOperation = 'source-over';
+g.clearRect(0, 0, W, W);
+g.fillStyle = '#1b2418'; g.fillRect(0, 0, W, W);
+if (img.complete && img.naturalWidth) g.drawImage(img, 0, 0, W, W);
+g.fillStyle = 'rgba(0,0,0,0.38)'; g.fillRect(0, 0, W, W);
+const js = doTime();
+for (const j of js) if (foco == null || foco === j) camada(j, corDe(j));
+if (pontos) {
+for (const j of js) {
+if (foco != null && foco !== j) continue;
+for (const d of j.mortes) {
+if (!naJanela(d.t)) continue;
+const X = px(d.x); const Y = py(d.y); const k = 7;
+for (const [cor, lw] of [['#000', 5], [corDe(j), 2.6]]) {
+g.strokeStyle = cor; g.lineWidth = lw; g.lineCap = 'round';
+g.beginPath(); g.moveTo(X - k, Y - k); g.lineTo(X + k, Y + k); g.moveTo(X + k, Y - k); g.lineTo(X - k, Y + k); g.stroke();
+}
+}
+}
+}
+pintarLado();
+};
+const pintarLado = () => {
+const js = doTime();
+const conta = js.map((j) => j.mortes.filter((d) => naJanela(d.t)).length);
+const total = conta.reduce((a, b) => a + b, 0);
+const maior = Math.max(1, ...js.map((j) => j.mortes.length));
+const deles = time === 'eles';
+titulo.textContent = deles ? 'Onde eles caíram' : 'Onde vocês caíram';
+sub.textContent = deles ? `Vitória dos ${ladoNome(nos)}. Cada cor é um herói deles: onde a mancha fica mais forte, ele morreu mais vezes ali.`
+: 'Cada cor é um herói de vocês: onde a mancha fica mais forte, ele morreu mais vezes ali.';
+resumo.replaceChildren(plural(total, 'morte', 'mortes'), h('small', {}, `${tudo ? 'no jogo inteiro' : `dos ${ini} aos ${fimJanela()} min`}, ${deles ? 'do time deles' : 'do time de vocês'}${foco ? `, só ${foco.heroi}` : ''}`));
+lista.replaceChildren(...js.map((j, i) => {
+const cor = corDe(j);
+const b = h('button', { type: 'button', class: `mt-heroi${foco && foco !== j ? ' apagado' : ''}`, 'aria-pressed': String(foco === j) },
+h('span', { class: 'mt-cor', style: `background:${cor}` }),
+h('span', { class: 'mt-nome' }, j.heroi, h('small', {}, ` ${j.nome}`)),
+h('span', { class: 'mt-qtd' }, tudo ? String(conta[i]) : `${conta[i]} / ${j.mortes.length}`),
+h('span', { class: 'mt-barra' }, h('i', { style: `width:${(conta[i] / maior) * 100}%;background:${cor}` })));
+b.addEventListener('click', () => { foco = foco === j ? null : j; desenhar(); });
+return h('li', {}, b);
+}));
+const z = {};
+for (const j of js) {
+if (foco && foco !== j) continue;
+for (const d of j.mortes) if (naJanela(d.t)) { const n = ondeMorreuTexto(E.farm.zonaDe(d.x, d.y), nos); z[n] = (z[n] || 0) + 1; }
+}
+const zs = Object.entries(z).sort((a, b) => b[1] - a[1]).slice(0, 5);
+zonas.replaceChildren(...(zs.length ? zs.map(([n, q]) => h('li', {}, h('b', {}, String(q)), ` ${q === 1 ? 'morte' : 'mortes'} ${n}`)) : [h('li', {}, 'Nenhuma morte nessa janela.')]));
+rotulo.textContent = tudo ? 'Jogo inteiro' : `Dos ${ini} aos ${fimJanela()} min`;
+relogio.textContent = tudo ? `0:00 a ${mmss(dados.dur)}` : `${ini}:00 a ${fimJanela()}:00`;
+bTudo.setAttribute('aria-pressed', String(tudo));
+slider.classList.toggle('solto', tudo);
+};
+const parar = () => { if (tocando) { clearInterval(tocando); tocando = null; bTocar.textContent = '▶ Passar o jogo'; } };
+slider.addEventListener('input', () => { tudo = false; ini = Number(slider.value); parar(); desenhar(); });
+bTudo.addEventListener('click', () => { tudo = !tudo; parar(); desenhar(); });
+bPontos.addEventListener('click', () => { pontos = !pontos; bPontos.setAttribute('aria-pressed', String(pontos)); desenhar(); });
+bTocar.addEventListener('click', () => {
+if (tocando) { parar(); return; }
+tudo = false; ini = 0; slider.value = 0; desenhar(); bTocar.textContent = '❚❚ Pausar';
+tocando = setInterval(() => {
+if (!cv.isConnected || ini >= Number(slider.max)) { parar(); return; }
+ini++; slider.value = ini; desenhar();
+}, matchMedia('(prefers-reduced-motion: reduce)').matches ? 1200 : 700);
+});
+for (const [b, t] of [[bEles, 'eles'], [bNos, 'nos']]) {
+b.addEventListener('click', () => {
+time = t; foco = null;
+bEles.setAttribute('aria-pressed', String(t === 'eles')); bNos.setAttribute('aria-pressed', String(t === 'nos'));
+desenhar();
+});
+}
+img.onload = desenhar;
+desenhar();
+return [
+h('div', { class: 'mt-cab' }, h('p', { class: 'eyebrow' }, 'Mapa de mortes'), titulo, sub,
+h('div', { class: 'mt-times', role: 'group', 'aria-label': 'De qual time ver as mortes' }, bEles, bNos)),
+h('div', { class: 'mt-grade' },
+h('div', {},
+h('div', { class: 'mt-mapa' }, cv, relogio),
+h('div', { class: 'mortes-controles mt-controles' }, rotulo, temJanela ? slider : null, temJanela ? bTudo : null, temJanela ? bTocar : null, bPontos)),
+h('div', { class: 'mt-lado' }, resumo, lista, h('p', { class: 'mt-dica' }, 'Toque num herói para ver só ele. Toque de novo para ver todos.'), zonas))];
 }
 
 function telaDaVitoria(r) {
