@@ -3681,6 +3681,74 @@ return partes.join(' ');
 
 
 
+// Build lida pela POSIÇÃO (meta/posicao.json, build típica de cada herói em cada posição, das partidas da base):
+// 1) itens de outra posição (ex.: herói de pos 3 jogado de pos 1 com a build de pos 3, e faltou dano no fim);
+// 2) item de farm que a posição faz cedo e veio depois de um item de luta (ex.: Manta antes da Battle Fury).
+// Só texto na leitura da build, sem peso na culpa (por enquanto).
+const DEGRAUS_BUILD = new Set(['yasha', 'sange', 'kaya', 'pers', 'lesser_crit', 'oblivion_staff', 'ultimate_scepter_2', 'wraith_pact', 'cornucopia', 'soul_booster']);
+function buildDaPosicao(v, ctx) {
+const p = v.jogador;
+const base = ctx.contexto && ctx.contexto.posicao;
+const perfis = base && base.build && base.build.h;
+if (!perfis || ![1, 2, 3].includes(p.posicao)) return [];
+const hid = p.raw.hero_id;
+const meu = perfis[`${hid}.${p.posicao}`];
+const minha = [];
+const vistos = new Set();
+for (const c of v.itens.compras || []) {
+if ((c.custo || 0) < 1400 || DEGRAUS_BUILD.has(c.key) || intencaoDe(c.key) === 'botas' || vistos.has(c.key)) continue;
+vistos.add(c.key);
+minha.push(c);
+}
+if (minha.length < 2) return [];
+const nomeDe = (k) => itemInfo(ctx.items, k).nome;
+const pctNo = (perfil, k) => { const x = perfil.i.find((y) => y[0] === k); return x ? x[1] : 0; };
+const parecido = (perfil) => minha.slice(0, 5).reduce((a, c) => a + pctNo(perfil, c.key), 0) / Math.min(5, minha.length);
+const out = [];
+
+if (meu) {
+const simMeu = parecido(meu);
+let outra = null;
+for (let q = 1; q <= 5; q++) {
+// só o que pesa: carry com build de offlane ou de suporte, ou qualquer core com build de suporte
+if (q === p.posicao || !((p.posicao === 1 && q >= 3) || q >= 4)) continue;
+const perfil = perfis[`${hid}.${q}`];
+if (!perfil) continue;
+const sim = parecido(perfil);
+if (sim >= 0.4 && sim >= simMeu + 0.2 && (!outra || sim > outra.sim)) outra = { q, sim, perfil };
+}
+const tipicosDaPos = () => meu.i.filter((x) => x[1] >= 0.3 && !vistos.has(x[0]) && ['farm', 'dano'].includes(intencaoDe(x[0]))).slice(0, 3);
+const primeiros = minha.slice(0, 4);
+const semFarmNemDano = p.posicao === 1 && primeiros.length >= 3 && primeiros.every((c) => !['farm', 'dano'].includes(intencaoDe(c.key)));
+if (!outra && semFarmNemDano && tipicosDaPos().length) {
+const dano = p.stats.bench.hero_damage_per_min;
+out.push(`De pos 1, os seus primeiros itens (${juntarNomes(primeiros.map((c) => c.nome))}) são de luta e defesa, sem nenhum de farm ou de dano. De ${p.heroi.nome} pos 1, o comum é ${juntarNomes(tipicosDaPos().map((x) => nomeDe(x[0])))}: é isso que faz o carry carregar o fim do jogo.`
++ (dano != null && dano < 0.4 ? ` E no fim faltou dano: percentil ${pct(dano)} de dano em heróis de quem joga de ${p.heroi.nome}.` : ''));
+}
+if (outra) {
+const faltou = meu.i.filter((x) => x[1] >= 0.3 && !vistos.has(x[0]) && !DEGRAUS_BUILD.has(x[0]) && intencaoDe(x[0]) !== 'botas').slice(0, 3);
+const dano = p.stats.bench.hero_damage_per_min;
+const tipicos = minha.slice(0, 4).filter((c) => pctNo(outra.perfil, c.key) >= 0.25).map((c) => c.nome);
+out.push(`Essa é a build de quem joga de ${p.heroi.nome} de pos ${outra.q}${tipicos.length ? ` (${juntarNomes(tipicos)})` : ''}, mas você foi de pos ${p.posicao}.`
++ (faltou.length ? ` De pos ${p.posicao}, o comum é ${juntarNomes(faltou.map((x) => nomeDe(x[0])))}: o ouro de core precisa virar ${p.posicao === 1 ? 'farm e dano para carregar o fim do jogo' : 'impacto na hora das lutas'}.` : '')
++ (dano != null && dano < 0.4 ? ` E no fim faltou dano: percentil ${pct(dano)} de dano em heróis de quem joga de ${p.heroi.nome}.` : ''));
+}
+}
+
+const farmTipico = meu ? meu.i.filter((x) => intencaoDe(x[0]) === 'farm' && x[1] >= 0.3) : [];
+for (const [fk, fpct, fmin, fordem] of farmTipico) {
+const iF = minha.findIndex((c) => c.key === fk);
+if (iF <= 0) continue;
+const antes = minha.slice(0, iF).filter((c) => intencaoDe(c.key) !== 'farm' && (c.custo || 0) >= 1800 && (pctNo(meu, c.key) === 0 || (meu.i.find((x) => x[0] === c.key) || [])[3] > fordem));
+const f = minha[iF];
+if (!antes.length || f.t / 60 < fmin + 3) continue;
+const x = antes[0];
+out.push(`Você fez ${x.nome} (aos ${Math.round(x.t / 60)} min) antes de ${f.nome} (aos ${Math.round(f.t / 60)} min). De ${p.heroi.nome} pos ${p.posicao}, ${f.nome} costuma vir antes, perto dos ${Math.round(fmin)} min (em ${pct(fpct)} dos jogos), porque é ${f.nome} que acelera o farm para o resto da build.`);
+break;
+}
+return out;
+}
+
 function leituraDaBuild(v, ctx) {
 const p = v.jogador;
 const it = v.itens;
@@ -3715,6 +3783,8 @@ paragrafos.push(`${tPrimeiro.texto} Essa foi a melhor parte da sua build.`);
 }
 }
 
+
+for (const t of buildDaPosicao(v, ctx)) paragrafos.push(t);
 
 const pj = v.papelJogo;
 if (pj && pj.virou) {
@@ -4883,7 +4953,7 @@ ctx.matchups = dados.matchups || {};
 
 
 const ctxSalvo = match.culpado_contexto || { duracoes: dados.duracoes || {}, matchups: dados.matchups || {} };
-ctx.contexto = { ...ctxSalvo, rotas: dados.rotas || ctxSalvo.rotas || null };
+ctx.contexto = { ...ctxSalvo, rotas: dados.rotas || ctxSalvo.rotas || null, posicao: dados.posicao || ctxSalvo.posicao || null };
 avaliarRotas(ctx);
 
 const vereditos = julgar(ctx, match);
