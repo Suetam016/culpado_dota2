@@ -30,6 +30,10 @@ fica em `/ranking/#elo` e nas outras abas. Então `ranking_open` agora significa
 vale para a liga e para o grupo. Elementos novos ainda sem gatilho: o botão `#liga-pedir-grupo` (abre o formulário de pedido, ver abaixo),
 as linhas `#liga-grupos tr[data-grupo]` (clique num grupo) e o link `#voltar-liga`.
 
+**Períodos da Bolsa (desde 06/11/2026):** a Bolsa do grupo (`#bolsa`, aba `elo`) ganhou botões de período
+`#bolsa [data-periodo]` com valores `1s`, `1m`, `3m` (padrão), `6m` e `tudo`. Ainda sem gatilho; se quiser medir, o
+parâmetro natural é o `data-periodo` do botão clicado. Nenhum id ou classe antiga mudou.
+
 **Pedido de grupo (desde 05/11/2026):** o pedido para entrar na liga virou um formulário próprio no `/ranking/`.
 `#liga-pedir-grupo` agora abre/fecha o `#liga-form` (antes abria a caixa de feedback). A pessoa cola o ID da partida
 (`#lf-partida` + `#lf-buscar`), escolhe o time (`.lf-time[data-lado="radiant|dire"]`), marca quem é do grupo e quem é
