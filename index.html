@@ -7048,6 +7048,8 @@ return corpo;
 const VISOES_VITORIA = [
 { id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
+// Plantão da Selva: em teste, só abre com ?visao=plantao
+{ id: 'plantao', nome: 'Plantão da Selva', peso: 3, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoPlantao(r) },
 ];
 const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega
 
@@ -7073,6 +7075,43 @@ let sorte = Math.random() * total;
 const escolhida = lista.find((x) => (sorte -= x.peso) < 0) || lista[0];
 visaoSorteada.set(chave, escolhida.id);
 return escolhida;
+}
+
+// ---------- Plantão da Selva: a vitória como plantão policial. Um helicóptero persegue quem carregou nos 2 minutos
+// finais do replay (mapas/<id>.json), com o locutor tocando falas do banco pré-gravado na voz do Mat (audio/plantao/:
+// nada é gerado na hora). O motor fica em plantao/plantao.js e só é baixado quando esta visão abre.
+let plantaoJs = null;
+function carregarPlantao() {
+if (!plantaoJs) plantaoJs = new Promise((ok, erro) => {
+document.head.append(h('link', { rel: 'stylesheet', href: 'plantao/plantao.css' }), h('link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap' }));
+const js = document.createElement('script');
+js.src = 'plantao/plantao.js';
+js.onload = () => ok(window.Plantao);
+js.onerror = () => { plantaoJs = null; erro(new Error('plantao')); };
+document.head.append(js);
+});
+return plantaoJs;
+}
+function visaoPlantao(r) {
+const v = craquesDe(r)[0];
+const caixa = h('article', { class: 'cartao veredito vitoria plantao-visao' },
+h('div', { class: 'pl-cab' }, h('b', {}, 'Plantão da Selva · em teste'), h('span', {}, `${v.jogador.nome} de ${v.jogador.heroi.nome} · ${pct(v.fatia)} do mérito`)));
+const espera = h('p', { class: 'pl-aviso' }, 'Ligando o helicóptero…');
+const palco = h('div', { class: 'pl-palco' }, espera); // o plantão entra aqui, antes da barra de compartilhar
+caixa.append(palco);
+const dados = estado.dados;
+const d = new Date(((dados && dados.match && dados.match.start_time) || 0) * 1000);
+const data = `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)}`;
+Promise.all([dados && dados.mapa ? dados.mapa : carregarMapa(r.partida.id), carregarPlantao()]).then(([mapa, P]) => {
+if (!mapa || !mapa.x) { espera.textContent = 'Esta partida ainda não tem o mapa com as posições dos heróis, e o plantão precisa dele.'; return; }
+espera.remove();
+const jog = dados.match.players.map((p, i) => {
+const he = (dados.heroes && (dados.heroes[p.hero_id] || dados.heroes[String(p.hero_id)])) || {};
+return { idx: i, slot: p.player_slot, radiant: p.isRadiant != null ? Boolean(p.isRadiant) : p.player_slot < 128, nome: (p.account_id != null && AMIGOS[p.account_id]) || p.personaname || 'Anônimo', heroi: { nome: he.localized_name || p.hero_localized_name || '?', npc: he.name || p.hero_name || null } };
+});
+P.montar(palco, { match: dados.match, mapa, carry: v.jogador.idx, jog, est: ESTRUTURAS, arv: ARVORES_B64, tri: TRILHAS_B64, ladoNome, data, fatia: v.fatia, amigos: Object.values(AMIGOS) });
+}).catch((e) => { console.error('plantao', e); palco.replaceChildren(espera); espera.textContent = 'O plantão não carregou agora. Recarregue a página para tentar de novo.'; });
+return caixa;
 }
 
 function telaDaVitoria(r) {
