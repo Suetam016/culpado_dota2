@@ -227,7 +227,19 @@ async function main() {
       if (mid === arq || mid in indice) continue;
       try {
         const m = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(pastaProv, arq))));
-        if ((m.start_time || 0) >= desde && (m.players || []).some((p) => idsAmigos.has(p.account_id))) conta.semAnalise++;
+        if ((m.start_time || 0) < desde || !(m.players || []).some((p) => idsAmigos.has(p.account_id))) continue;
+        conta.semAnalise++;
+        // já entra no ranking como vitória ou derrota (partidas, MMR, Bolsa); o culpado e o craque chegam com a análise
+        for (const lado of ['radiant', 'dire']) {
+          const doLado = m.players.filter((p) => idsAmigos.has(p.account_id) && p.isRadiant === (lado === 'radiant'));
+          const venceu = (m.radiant_win === true) === (lado === 'radiant');
+          for (const p of doLado) {
+            if (!historicos[String(p.account_id)] || m.radiant_win == null) continue;
+            historicos[String(p.account_id)].push({ matchId: Number(mid), lado, tipo: venceu ? 'vitoria' : 'derrota', inicio: m.start_time,
+              comStack: doLado.length >= 2, ranqueada: m.lobby_type === LOBBY_RANQUEADA, heroi: p.hero_id ?? null, culpa: null, merito: null,
+              provisoria: true });
+          }
+        }
       } catch (e) { /* arquivo ruim: ignora */ }
     }
   }
@@ -236,7 +248,7 @@ async function main() {
   for (const [c, xs] of Object.entries(anterior.historicos || {})) {
     if (!historicos[c]) continue;
     for (const e of xs) {
-      if (!(String(e.matchId) in indice) && (e.inicio || 0) >= desde) { historicos[c].push(e); legado++; }
+      if (!e.provisoria && !(String(e.matchId) in indice) && (e.inicio || 0) >= desde) { historicos[c].push(e); legado++; }
     }
   }
   if (legado) console.log(`${legado} julgamentos do ranking antigo que não estão na base foram mantidos`);

@@ -12998,15 +12998,28 @@ const campo = (rotulo, valor, classe) => h('div', { class: `doc-campo${classe ? 
 
 // Foto do réu nos pôsteres: amigo do grupo aparece com o avatar da Steam (amigos/ranking.json, robô do ranking);
 // o resto, com o herói. O avatar só entra depois de carregar, então nunca fica buraco na moldura.
+// Os grupos cadastrados na Liga (grupos/grupos.json) entram igual: quem é de um deles também aparece com a foto.
 let perfisAmigos = null;
+const pegarJson = (url) => fetch(url, { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
 function carregarPerfis() {
-return perfisAmigos || (perfisAmigos = fetch('amigos/ranking.json', { cache: 'no-cache' })
-.then((r) => (r.ok ? r.json() : null)).then((j) => (j && j.perfis) || {}).catch(() => ({})));
+return perfisAmigos || (perfisAmigos = Promise.all([pegarJson('amigos/ranking.json'), carregarGrupos()])
+.then(([j, gs]) => Object.assign({}, ...gs.map((g) => g.perfis), (j && j.perfis) || {})));
 }
+// grupos da Liga além do Marocas: [{id, nome, contas: {conta: nome}, perfis}]
+let gruposDaLiga = null;
+function carregarGrupos() {
+if (SO_EMBUTIDO) return Promise.resolve([]);
+return gruposDaLiga || (gruposDaLiga = pegarJson('grupos/grupos.json').then((lista) => Promise.all((Array.isArray(lista) ? lista : [])
+.filter((g) => g && /^[a-z0-9-]+$/.test(g.id || ''))
+.map((g) => Promise.all([pegarJson(`grupos/${g.id}/amigos.json`), pegarJson(`grupos/${g.id}/ranking.json`)])
+.then(([contas, rk]) => ({ id: g.id, nome: g.nome, contas: contas || {}, perfis: (rk && rk.perfis) || {} }))))));
+}
+const deAlgumGrupo = (conta, grupos) => conta != null && (AMIGOS[conta] || grupos.some((g) => g.contas[String(conta)]));
 function fotoDe(p, grande = true) {
 const box = retrato(p.heroi, grande);
-if (SO_EMBUTIDO || p.conta == null || !AMIGOS[p.conta]) return box;
-carregarPerfis().then((perfis) => {
+if (SO_EMBUTIDO || p.conta == null) return box;
+Promise.all([carregarPerfis(), carregarGrupos()]).then(([perfis, grupos]) => {
+if (!deAlgumGrupo(p.conta, grupos)) return;
 const av = perfis[String(p.conta)] && perfis[String(p.conta)].avatar;
 if (!av) return;
 const img = new Image();
@@ -14858,6 +14871,10 @@ const todos = [...r.nos, ...r.eles];
 const eu = todos.find((p) => p.conta != null && String(p.conta) === quem);
 if (eu) return (r.nos.includes(eu) === r.partida.ladoRadiant) ? 'radiant' : 'dire';
 if (todos.some((p) => p.conta != null && AMIGOS[p.conta])) return null; // o lado do grupo, como sempre
+// gente de outro grupo da Liga na partida: abre direto pelo lado dela, sem perguntar o time
+const grupos = await carregarGrupos();
+const doGrupo = todos.find((p) => deAlgumGrupo(p.conta, grupos));
+if (doGrupo) return (r.nos.includes(doGrupo) === r.partida.ladoRadiant) ? 'radiant' : 'dire';
 const chave = `culpado-lado-${id}`;
 try { const salvo = localStorage.getItem(chave); if (salvo) return salvo === 'nenhum' ? null : salvo; } catch (e) { /* segue */ }
 const escolha = await escolherTime(r);
