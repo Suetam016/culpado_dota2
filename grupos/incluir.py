@@ -11,7 +11,8 @@ O que ele faz (com --aplicar):
   2. a linha do grupo em grupos/grupos.json (nome, data, código da ação na Bolsa, arquivo do pedido);
   3. o letreiro de boas-vindas da home (GRUPO_NOVO no index.html) passa a anunciar este grupo;
   4. coleta/disparar: o merge na main roda a coleta (últimos 14 dias de cada um + histórico) e, depois, o ranking
-     (culpados, craques, fotos da Steam e medalhas).
+     (culpados, craques, fotos da Steam e medalhas). O tribunal da home lê grupos.json + amigos.json + ranking.json:
+     quem é do grupo aparece com a foto e a partida abre pelo lado do grupo, sem passo extra.
 Depois é só commit, PR e merge. O e-mail (se houver) só é mostrado na tela: nunca vai para o repositório.
 Só biblioteca padrão (o e-mail usa o openssl da máquina).
 """

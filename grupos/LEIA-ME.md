@@ -25,7 +25,11 @@ na lista manual, então as partidas deles entram na base sozinhas; o ranking apa
    entra aqui) e, com a sobra da cota, o histórico mais antigo. Partida recente que o OpenDota ainda não analisou fica
    em `provisorias/` e a coleta pede a análise do replay.
 3. O ranking roda depois da coleta: foto da Steam e medalha de cada um (perfis), culpados e craques das partidas já
-   analisadas. As que esperam a análise aparecem no site como "partidas recentes ainda esperam a análise".
+   analisadas. As que esperam a análise já entram como vitória ou derrota (partidas, MMR, Bolsa, Liga) e ganham o
+   culpado e o craque quando o replay for analisado.
+   No tribunal (home), quem é de qualquer grupo da Liga aparece com a foto da Steam (lida de `<id>/ranking.json`) e a
+   partida abre direto pelo lado do grupo, sem perguntar o time. Não há nada a fazer: vale assim que o grupo está em
+   `grupos.json` com o `amigos.json` dele.
 4. A análise do OpenDota costuma sair em minutos ou poucas horas; a coleta volta a olhar a cada rodada. Como o
    agendamento do GitHub pula rodadas, para acelerar a entrada de um grupo dá para disparar a coleta com um push em
    `coleta/disparar` (qualquer conteúdo).
