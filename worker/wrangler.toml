@@ -15,3 +15,7 @@ class_name = "Visitas"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Visitas"]
+
+# a cada 20 min: dispara a coleta quando o agendamento do GitHub atrasa (cutucarColeta no coach.js)
+[triggers]
+crons = ["*/20 * * * *"]
