@@ -368,7 +368,7 @@
     var primeiraQueda = D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; }).sort(function (a, b) { return a - b; })[0];
 
     // ----- estado
-    var FX = efeitos(D), ICONES = {};
+    var FX = [], ICONES = {}; // forma genérica (efeitos) desligada em 06/11 a pedido do Mat: só desenho próprio (ASSIN)
     // desenhos próprios das skills, os mesmos do replay do site (ASSIN no index.html), num SVG por cima do canvas;
     // a forma genérica (efeitos) fica só para as skills que ainda não têm desenho
     var RX = null;
