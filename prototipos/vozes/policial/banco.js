@@ -99,6 +99,8 @@
   const NUMEROS = ['{Num} de dano num tapa só!', 'Olha o número, Brasil: {num} de dano!'];
   const HEROI = { quem: 'É {o_heroi}! {O_heroi} tá na base deles!', vitima: '{O_heroi} no chão!' };
   const AMIGO = { quem: 'É o {nick}! O {nick} não tem limite!', dono: 'Chama a mamãe, {nick}!' };
+  // nick do jeito que se fala (o TTS não lê número, colchete nem sigla grudada)
+  const FALADO = { '3rvinha': 'Ervinha', 'ptn': 'pê tê ene', '[Pau]DeCamelo': 'Pau de Camelo', 'gustavoDotinhaPro': 'Gustavo Dotinha Pró' };
 
   const FEM = new Set(['mirana', 'drow_ranger', 'crystal_maiden', 'lina', 'windrunner', 'luna', 'medusa', 'templar_assassin',
     'vengefulspirit', 'death_prophet', 'queenofpain', 'phantom_assassin', 'spectre', 'naga_siren', 'enchantress', 'broodmother',
@@ -118,7 +120,7 @@
     for (let n = 2; n <= 5; n++) QUANTOS.forEach((t, i) => out.push({ id: `n.${n}.${i}`, texto: preencher(t, { n: extenso(n) }), ref: 'c' }));
     for (let v = 500; v <= 3000; v += 100) NUMEROS.forEach((t, i) => out.push({ id: `d.${v}.${i}`, texto: preencher(t, { num: extenso(v) }), ref: 'c' }));
     for (const [h, nome] of Object.entries(herois)) for (const [k, t] of Object.entries(HEROI)) out.push({ id: `h.${h}.${k}`, texto: preencher(t, { o_heroi: `${art(h)} ${nome}` }), ref: k === 'quem' ? 'c' : 'c' });
-    for (const nick of amigos) for (const [k, t] of Object.entries(AMIGO)) out.push({ id: `a.${slug(nick)}.${k}`, texto: preencher(t, { nick }), ref: 'c' });
+    for (const nick of amigos) for (const [k, t] of Object.entries(AMIGO)) out.push({ id: `a.${slug(nick)}.${k}`, texto: preencher(t, { nick: FALADO[nick] || nick }), ref: 'c' });
     return out;
   }
   const slug = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
