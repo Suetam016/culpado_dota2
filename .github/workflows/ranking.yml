@@ -42,6 +42,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # farm e build por herói e posição, das partidas da base (meta/posicao.json): o motor compara o farm só com
+      # quem jogou na mesma posição. Se falhar, fica a base anterior.
+      - name: Base por posição (branch dados)
+        continue-on-error: true
+        run: python meta/posicao.py --dados .dados
       - name: Ranking (OpenDota)
         id: ranking
         continue-on-error: true
@@ -84,6 +89,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add amigos/ranking.json amigos/parceiros.json
+          if [ -f meta/posicao.json ]; then git add meta/posicao.json; fi
           for f in grupos/*/ranking.json grupos/*/parceiros.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           git diff --cached --quiet && exit 0
           git commit -m "Ranking: culpados, MMR e parceiros"
