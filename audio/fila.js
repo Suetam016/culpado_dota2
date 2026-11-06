@@ -14,6 +14,7 @@ const path = require('path');
 const zlib = require('zlib');
 const { carregarMotor, dadosEmbutidos } = require('../ranking/gerar.js');
 const Roteiro = require('./roteiro.js');
+const Banco = require('./banco.js');
 
 const RAIZ = path.resolve(__dirname, '..');
 const DADOS = process.env.DADOS || path.join(RAIZ, '.dados');
@@ -38,7 +39,10 @@ const pedidoNaGpu = (id) => {
 };
 
 const ler = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
-const temAudio = (id, lado) => fs.existsSync(path.join(PASTA, `${id}-${lado}.json`));
+// pronto = já tem a conversa gravada (os áudios compridos antigos, de antes de 06/11/2026, não contam)
+const temAudio = (id, lado) => {
+  try { return Boolean(ler(path.join(PASTA, `${id}-${lado}.json`)).conversa); } catch (e) { return false; }
+};
 
 async function baixar(id) {
   const chave = process.env.OPENDOTA_API_KEY ? `?api_key=${process.env.OPENDOTA_API_KEY}` : '';
@@ -91,7 +95,8 @@ async function main() {
       const f = Roteiro.fatos(r);
       if (!f) { console.error(`${c.id}: sem craque`); continue; }
       const g = Roteiro.gerar(f, `${c.id}-${lado}`);
-      fila.push({ id: c.id, lado, arquivo: `${c.id}-${lado}`, texto: g.texto, partes: g.partes, eu: f.eu, conta: f.conta,
+      fila.push({ id: c.id, lado, arquivo: `${c.id}-${lado}`, texto: g.texto, partes: g.partes,
+        audios: Banco.audios(g.partes).map((a) => ({ ...a, chave: Banco.chave(a.texto) })), eu: f.eu, conta: f.conta,
         heroi: f.heroi, fatia: f.fatia, pedido: !!c.pedido });
       console.log(`${c.id} ${lado} (${f.eu}, ${f.heroi}, ${f.fatia}%): ${g.texto}`);
     } catch (e) {

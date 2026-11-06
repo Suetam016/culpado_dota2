@@ -2,7 +2,7 @@ name: Áudio da vitória (voz do Mat)
 
 # Quem carregou manda um áudio debochado no grupo: o roteiro sai dos números da partida (audio/roteiro.js) e a voz é a
 # do Mat, clonada no Qwen3-TTS 0.6B (Apache 2.0) a partir do trecho que ele publicou (audio/voz/mat.wav), na CPU.
-# Grava em audios/<id>-<lado>.mp3 + .json. Roda depois de cada ranking (vitórias do grupo dos últimos dias), na mão,
+# Grava a conversa do zap: 3 a 4 áudios curtos em audios/banco/<chave>.mp3 e audios/<id>-<lado>.json. Roda depois de cada ranking (vitórias do grupo dos últimos dias), na mão,
 # ou na hora com um push em audio/pedidos/<id> (pedido do site, para partida de qualquer pessoa).
 on:
   workflow_run:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["audio/pedidos/**", "audio/roteiro.js", "audio/fila.js", "audio/falar.py", ".github/workflows/audio.yml"]
+    paths: ["audio/pedidos/**", "audio/roteiro.js", "audio/fila.js", "audio/falar.py", "audio/banco.js", ".github/workflows/audio.yml"]
 
 permissions:
   contents: write
@@ -24,9 +24,9 @@ concurrency:
 
 jobs:
   audio:
-    # Desligado em 04/11/2026 junto com a visão do zap na vitória: só grava se alguém rodar na mão.
-    # Para religar a gravação automática, crie a variável do repositório AUDIO_AUTOMATICO=true.
-    if: github.event_name == 'workflow_dispatch' || vars.AUDIO_AUTOMATICO == 'true'
+    # Religado em 06/11/2026 com a conversa do zap (vários áudios curtos no banco). Para desligar a gravação automática,
+    # crie a variável do repositório AUDIO_AUTOMATICO=false.
+    if: github.event_name == 'workflow_dispatch' || vars.AUDIO_AUTOMATICO != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -83,7 +83,7 @@ jobs:
           mkdir -p audios
           git add -A audios audio/pedidos audio/falhas.json 2>/dev/null || git add -A audios
           git diff --cached --quiet && exit 0
-          git commit -m "Áudio da vitória: $(git diff --cached --name-only -- audios | grep -c '\.mp3$') novo(s)"
+          git commit -m "Áudio da vitória: $(git diff --cached --name-only -- audios/banco | grep -c '\.mp3$') áudio(s) novo(s)"
           for i in 1 2 3; do
             if ! git pull --rebase -X theirs origin main; then
               git diff --name-only --diff-filter=U -- audio/pedidos | xargs -r git rm -q --
