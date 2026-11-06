@@ -1,8 +1,12 @@
 /* Ranking do grupo Marocas: culpados/craques (amigos/ranking.json), duplas e composições (amigos/parceiros.json)
  * e meta do Reddit (reddit/insights.json). */
 
-const RANKING_URL = '../amigos/ranking.json';
-const PARCEIROS_URL = '../amigos/parceiros.json';
+// ?grupo=<id> abre outro grupo da Liga (grupos/<id>/); sem ele é o Marocas (amigos/)
+const GRUPO = (() => { try { const g = new URLSearchParams(location.search).get('grupo'); return g && /^[a-z0-9-]+$/.test(g) && g !== 'marocas' ? g : null; } catch (e) { return null; } })();
+const PASTA_GRUPO = GRUPO ? `../grupos/${GRUPO}` : '../amigos';
+const RANKING_URL = `${PASTA_GRUPO}/ranking.json`;
+const PARCEIROS_URL = `${PASTA_GRUPO}/parceiros.json`;
+const GRUPOS_URL = '../grupos/grupos.json';
 const INSIGHTS_URL = '../reddit/insights.json';
 const META_URL = '../meta/meta.json';
 const ITEM_IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/';
@@ -29,6 +33,8 @@ const CHAVE_PERIODO = 'ranking-periodo';
 
 let ranking = null;
 let parceiros = null;
+let nomeGrupo = 'Marocas';
+let GRUPOS = [{ id: 'marocas', nome: 'Marocas', fundador: true, href: './#elo' }];
 let parceirosBase = null;
 let periodo = 'tudo';
 let insights = null;
@@ -44,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   mostrarPatchNotes();
   $('liga-grupos').addEventListener('click', e => {
     const tr = e.target.closest('tr[data-href]');
-    if (tr && !e.target.closest('a')) location.hash = tr.dataset.href;
+    if (tr && !e.target.closest('a')) location.href = tr.dataset.href;
   });
   montarPedidoGrupo(pedirGrupo);
   document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => mudarAba(b.dataset.aba)));
@@ -69,9 +75,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
-  [ranking, parceiros, insights, meta, estadoAtt] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking()]);
+  let lista;
+  [ranking, parceiros, insights, meta, estadoAtt, lista] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking(), pegar(GRUPOS_URL)]);
+  GRUPOS = GRUPOS.concat((Array.isArray(lista) ? lista : []).filter(g => g && /^[a-z0-9-]+$/.test(g.id || ''))
+    .map(g => ({ id: g.id, nome: String(g.nome || g.id), href: `./?grupo=${g.id}#elo` })));
+  if (GRUPO) {
+    const g = GRUPOS.find(x => x.id === GRUPO);
+    nomeGrupo = g ? g.nome : GRUPO;
+  }
   // o GitHub Pages pode levar minutos para publicar o ranking novo: se o repositório já tem um mais novo, usa ele
-  if (estadoAtt && estadoAtt.atualizadoEm && (!ranking || Date.parse(estadoAtt.atualizadoEm) > Date.parse(ranking.atualizadoEm))) {
+  // (o Worker só guarda o do Marocas)
+  if (!GRUPO && estadoAtt && estadoAtt.atualizadoEm && (!ranking || Date.parse(estadoAtt.atualizadoEm) > Date.parse(ranking.atualizadoEm))) {
     const url = await urlDoCoach();
     const [r2, p2] = await Promise.all([pegar(`${url}/ranking/arquivo/ranking`), pegar(`${url}/ranking/arquivo/parceiros`)]);
     if (r2 && r2.historicos) ranking = r2;
@@ -79,7 +93,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!ranking || !ranking.historicos) {
-    $('carregando').textContent = 'Não deu pra carregar o ranking. Tente recarregar.';
+    $('carregando').textContent = GRUPO
+      ? `O ranking de ${nomeGrupo} ainda está sendo montado: o robô está baixando as partidas do grupo. Normalmente leva até 1 dia.`
+      : 'Não deu pra carregar o ranking. Tente recarregar.';
+    if (GRUPO) { modoLiga(true); renderizarLiga(); }
     return;
   }
   $('carregando').hidden = true;
@@ -102,14 +119,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /* ---------- Liga dos grupos ---------- */
-// Os grupos da liga. Hoje só o Marocas, que usa os dados desta página; grupo novo entra aqui com os arquivos dele.
-const GRUPOS = [{ id: 'marocas', nome: 'Marocas', fundador: true, href: 'elo' }];
+// Os grupos da liga: o Marocas (fundador, amigos/) e os de grupos/grupos.json (cada um com grupos/<id>/).
 
 function modoLiga(liga) {
   document.body.classList.toggle('modo-liga', liga);
   $('marca-tag').textContent = liga ? 'A comunidade do culpado' : 'Liga dos grupos';
-  $('marca-nome').textContent = liga ? 'Liga dos grupos' : 'Marocas';
-  document.title = liga ? 'Liga dos grupos' : 'Ranking — Marocas';
+  $('marca-nome').textContent = liga ? 'Liga dos grupos' : nomeGrupo;
+  document.title = liga ? 'Liga dos grupos' : `Ranking — ${nomeGrupo}`;
   if (liga && location.hash !== '#liga') history.replaceState(null, '', '#liga');
 }
 
@@ -139,10 +155,26 @@ function semanaDoGrupo(r, p) {
   };
 }
 
-function renderizarLiga() {
+// os dados de cada grupo da liga (o grupo aberto já veio carregado)
+const dadosDaLiga = {};
+async function dadosDoGrupo(g) {
+  if ((g.id === 'marocas' && !GRUPO) || g.id === GRUPO) return { r: ranking, p: parceirosBase };
+  if (!dadosDaLiga[g.id]) {
+    const pasta = g.id === 'marocas' ? '../amigos' : `../grupos/${g.id}`;
+    const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    dadosDaLiga[g.id] = Promise.all([pegar(`${pasta}/ranking.json`), pegar(`${pasta}/parceiros.json`)]).then(([r, p]) => ({ r, p }));
+  }
+  return dadosDaLiga[g.id];
+}
+
+async function renderizarLiga() {
   const corpo = $('liga-grupos');
-  if (!corpo || !ranking) return;
-  const linhas = GRUPOS.map(g => ({ ...g, s: semanaDoGrupo(ranking, parceirosBase) })).sort((a, b) => b.s.mmr - a.s.mmr);
+  if (!corpo) return;
+  const vazio = { pessoas: 0, partidas: 0, vit: 0, mmr: 0, craque: null, culpado: null, inicio: desdePeriodo('semana') };
+  const linhas = (await Promise.all(GRUPOS.map(async g => {
+    const { r, p } = await dadosDoGrupo(g);
+    return r && r.historicos ? { ...g, s: semanaDoGrupo(r, p) } : { ...g, chegando: true, s: vazio };
+  }))).sort((a, b) => (a.chegando - b.chegando) || b.s.mmr - a.s.mmr);
   const ini = new Date(linhas[0].s.inicio * 1000);
   const fim = new Date(ini); fim.setDate(fim.getDate() + 6);
   const dm = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
@@ -152,9 +184,9 @@ function renderizarLiga() {
   const pessoa = (x, k, papel, cls) => x
     ? `<span class="liga-pessoa ${cls}">${rosto(x)}<span><b>${esc(x.nome)}</b><small>${papel} ${x[k]}x em ${x.partidas}</small></span></span>`
     : '<span class="liga-vazio">ninguém ainda</span>';
-  corpo.innerHTML = linhas.map((g, i) => `<tr data-href="${g.href}" data-grupo="${g.id}">
+  corpo.innerHTML = linhas.map((g, i) => `<tr data-href="${esc(g.href)}" data-grupo="${g.id}">
     <td class="liga-pos">${i + 1}</td>
-    <td><a class="liga-nome" href="#${g.href}">${esc(g.nome)}</a>${g.fundador ? '<span class="liga-fund">Fundador</span>' : ''}<span class="liga-sub">${g.s.partidas} partidas · ${g.s.vit}V ${g.s.partidas - g.s.vit}D</span></td>
+    <td><a class="liga-nome" href="${esc(g.href)}">${esc(g.nome)}</a>${g.fundador ? '<span class="liga-fund">Fundador</span>' : ''}${g.chegando ? '<span class="liga-fund">Chegando</span>' : ''}<span class="liga-sub">${g.chegando ? 'o robô está baixando as partidas' : `${g.s.partidas} partidas · ${g.s.vit}V ${g.s.partidas - g.s.vit}D`}</span></td>
     <td class="liga-num liga-pessoas">${g.s.pessoas}</td>
     <td class="liga-mmr">${mmr(g.s.mmr)}</td>
     <td class="liga-c-craque">${pessoa(g.s.craque, 'craques', 'craque', 'liga-craque')}</td>
@@ -2153,6 +2185,13 @@ function montarPedidoGrupo(abrirJa) {
     const url = await urlDoCoach();
     if (!url) { status.textContent = 'O envio está desligado agora.'; return; }
     const nomeGrupo = $('lf-nome-grupo').value.trim(), apelido = $('lf-apelido').value.trim();
+    const email = $('lf-email').value.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { status.textContent = 'Esse e-mail parece errado. Confere ou deixa em branco.'; return; }
+    // o pedido vai para um repositório público: o e-mail sai daqui cifrado e só a gente consegue abrir
+    let emailCifrado = '';
+    if (email) {
+      try { emailCifrado = await cifrarEmail(email); } catch (e) { status.textContent = 'Não deu pra guardar o e-mail neste navegador. Tenta sem ele.'; return; }
+    }
     const linha = p => `- ${p.nome}${p.conta ? ` (conta ${p.conta})` : ' (perfil fechado)'}`;
     const texto = [
       'Quero o meu grupo na Liga dos grupos!',
@@ -2160,6 +2199,7 @@ function montarPedidoGrupo(abrirJa) {
       nomeGrupo ? `Nome do grupo: ${nomeGrupo}` : '',
       `Do grupo (${grupo.length}):`, ...grupo.map(linha),
       ...(grupo.length < pessoas.length ? ['Completers:', ...pessoas.filter(p => !p.grupo).map(linha)] : []),
+      emailCifrado ? `E-mail para avisar (cifrado): ${emailCifrado}` : '',
     ].filter(Boolean).join('\n');
     $('lf-enviar').disabled = true;
     status.textContent = 'Enviando…';
@@ -2170,8 +2210,11 @@ function montarPedidoGrupo(abrirJa) {
         body: JSON.stringify({ texto, nome: apelido, partida: `grupo-${partida.id}` }),
       });
       if (!r.ok) throw new Error(r.status);
-      try { (window.dataLayer = window.dataLayer || []).push({ event: 'group_request_submit', group_size: grupo.length, completers: pessoas.length - grupo.length }); } catch (e) { /* sem GTM */ }
-      status.textContent = 'Pedido recebido! A gente confere e o grupo aparece aqui na liga em até um dia.';
+      try { (window.dataLayer = window.dataLayer || []).push({ event: 'group_request_submit', group_size: grupo.length, completers: pessoas.length - grupo.length, email_informado: Boolean(emailCifrado) }); } catch (e) { /* sem GTM */ }
+      status.textContent = emailCifrado
+        ? 'Pedido recebido! A gente confere e te avisa por e-mail quando a página do grupo subir. Normalmente demora 1 dia.'
+        : 'Pedido recebido! A gente confere e o grupo aparece aqui na liga. Normalmente demora 1 dia.';
+      $('lf-email').value = '';
       $('lf-times').hidden = true; $('lf-pessoas').hidden = true;
       campo.value = ''; partida = null; lado = null;
     } catch (e) {
@@ -2220,6 +2263,15 @@ function montarFeedback() {
     }
     enviar.disabled = false;
   });
+}
+
+// chave pública RSA-OAEP (SHA-256) dos pedidos de grupo; a privada fica fora do repositório
+const CHAVE_EMAILS = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA06DndkdNfFTFD8iZF/IeCNUG620ShqbsoLWpmQesfmdF617jdK4LBR2yEhQRSON7J/Tx5qUkej9UGDDtWQfZUwV2Zd4fMy+qA4Wb3Rdl6l6oPdsFQaOmBZ7dXOgD4LMHMxT47SzcxtCqzbC+CQmWxeJyjCjZWVZRrEUE0CZk9/CjknSG/SeYX9SrHBADVnbMo7K8JFFuHaWIiWL4Foa4IaHa8jA4MaiH6T9uYwgWoEjB7dz9EBxDlECBll5usKbTGMOFHAK/Lc2TDKHV9cQkGud25KyP8kc1/r+GTbhPohHrUAf8MjVNtaZrdFB/VIm9YSTMOXHprDpKpH69hSVNlwIDAQAB';
+async function cifrarEmail(email) {
+  const der = Uint8Array.from(atob(CHAVE_EMAILS), c => c.charCodeAt(0));
+  const chave = await crypto.subtle.importKey('spki', der, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+  const cifra = new Uint8Array(await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, chave, new TextEncoder().encode(email)));
+  return btoa(String.fromCharCode(...cifra));
 }
 
 function r429(e) {

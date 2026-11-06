@@ -49,7 +49,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <ol class="liga-passos">
           <li><b>Mande o ID de uma partida</b> em que vocês jogaram juntos.</li>
           <li><b>Diga qual era o seu time</b> e quem ali era completer (random que não é do grupo).</li>
-          <li><b>A gente se vira com o resto:</b> confere, aprova e o grupo aparece aqui com a própria Bolsa. É de graça enquanto estamos em teste.</li>
+          <li><b>A gente se vira com o resto:</b> confere, aprova e o grupo aparece aqui com a própria Bolsa. Normalmente demora 1 dia. É de graça enquanto estamos em teste.</li>
         </ol>
         <button type="button" class="liga-pedir" id="liga-pedir-grupo" aria-expanded="false" aria-controls="liga-form">Adicionar meu grupo</button>
         <form class="liga-form" id="liga-form" hidden novalidate>
@@ -71,6 +71,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <input id="lf-nome-grupo" maxlength="40" placeholder="Nome do grupo (opcional)">
               <input id="lf-apelido" maxlength="40" placeholder="Seu apelido (opcional)">
             </div>
+            <div class="lf-linha lf-extras">
+              <input id="lf-email" type="email" maxlength="120" autocomplete="email" placeholder="Seu e-mail (opcional)">
+            </div>
+            <p class="lf-dica">Se quiser, deixe seu e-mail que a gente avisa quando subir a página do seu grupo. É opcional, só a gente vê. Normalmente demora 1 dia.</p>
             <button type="submit" class="liga-pedir" id="lf-enviar">Pedir para entrar na liga</button>
           </div>
           <p class="lf-status" id="lf-status" role="status"></p>

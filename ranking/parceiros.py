@@ -107,9 +107,13 @@ def main():
     ap.add_argument('--dados', required=True, help='pasta com o branch "dados" (tem partidas/)')
     ap.add_argument('--dias', type=int, default=365, help='só partidas desse período (0 = todas)')
     ap.add_argument('--recentes', help='pasta com <id>.json que o gerar.js acabou de baixar (entram as que a coleta ainda não tem)')
+    ap.add_argument('--grupo', help='id de outro grupo da Liga (grupos/<id>/amigos.json -> grupos/<id>/parceiros.json)')
     args = ap.parse_args()
+    if args.grupo and not re.fullmatch(r'[a-z0-9-]+', args.grupo):
+        raise SystemExit(f'grupo inválido: {args.grupo}')
+    pasta = RAIZ / 'grupos' / args.grupo if args.grupo else None
 
-    amigos = {int(k): v for k, v in json.loads((RAIZ / 'amigos.json').read_text(encoding='utf-8')).items()}
+    amigos = {int(k): v for k, v in json.loads(((pasta or RAIZ) / 'amigos.json').read_text(encoding='utf-8')).items()}
     herois = dados_herois()
     desde = time.time() - args.dias * 86400 if args.dias else 0
     usados = set()
@@ -246,7 +250,7 @@ def main():
         })
     composicoes.sort(key=lambda x: (-x['winRate'], -x['jogos']))
 
-    destino = RAIZ / 'amigos' / 'parceiros.json'
+    destino = pasta / 'parceiros.json' if pasta else RAIZ / 'amigos' / 'parceiros.json'
     novo = {
         'desde': time.strftime('%Y-%m-%d', time.gmtime(inicio_mais_antigo)) if inicio_mais_antigo else None,
         'partidasLidas': lidas,
