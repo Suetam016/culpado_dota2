@@ -69,6 +69,8 @@ PAUSA_SESSAO_S = 7 * 3600     # entre o início de uma partida do LO e o da segu
 INTERVALO_LISTA_AMIGO_S = 2 * 3600  # a lista de partidas de cada amigo é consultada de novo depois disso
 INTERVALO_HISTORICO_S = 24 * 3600   # histórico completo (fase opcional): uma consulta por conta por dia
 PRIMEIRA_ESPERA_S = 30 * 60   # depois do pedido de análise: tenta o GET de novo na rodada seguinte
+JANELA_CURTA_S = 6 * 3600     # até 6 h depois do pedido de análise...
+ESPERA_CURTA_S = 15 * 60       # ...a partida pendente é olhada de novo a cada ~15 min (rodadas a cada 20 min)
 MAX_ESPERA_S = 12 * 3600      # espera entre GETs de uma partida pendente: 1 h, 2 h, 4 h, 8 h, 12 h, 12 h...
 ESPERA_ANALISE_S = 3 * 86400
 PAUSAS_PEDIDO = int(os.environ.get("COLETA_PAUSAS_PEDIDO", "15"))  # esperas de 1 min por 429 no pedido de análise  # depois do pedido, desiste em ~3 dias
@@ -722,7 +724,12 @@ class Rodada:
             self.desistir(k, corpo, m, "o OpenDota não analisou em 3 dias")
             return
         n = p["tentativas"]
-        p["proxima"] = iso(agora + (PRIMEIRA_ESPERA_S if n == 0 else min(MAX_ESPERA_S, 3600 * 2 ** (n - 1))))
+        pedida = de_iso(p.get("pedido_em"))
+        if pedida and agora - pedida < JANELA_CURTA_S:
+            # nas primeiras horas depois do pedido o OpenDota costuma terminar a análise: olha a cada rodada
+            p["proxima"] = iso(agora + ESPERA_CURTA_S)
+        else:
+            p["proxima"] = iso(agora + (PRIMEIRA_ESPERA_S if n == 0 else min(MAX_ESPERA_S, 3600 * 2 ** (n - 1))))
         if p.get("pedido_em"):
             self.log(f"  {k}: ainda sem análise (tentativa {n}); próxima depois de {p['proxima']}")
             return
