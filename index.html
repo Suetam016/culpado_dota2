@@ -7948,8 +7948,22 @@ return audioCtx;
 function criarSaida(volInicial) {
 let ganho = null;
 let vol = volInicial;
+const soando = new Set(); // sons que ainda tocam neste player, para a pausa cortar na hora
 return {
 get vol() { return vol; },
+soar(fonte, g) {
+const item = { fonte, g };
+soando.add(item);
+fonte.onended = () => soando.delete(item);
+},
+calar() {
+if (!audioCtx) return;
+const agora = audioCtx.currentTime;
+for (const { fonte, g } of soando) {
+try { g.gain.cancelScheduledValues(agora); g.gain.setTargetAtTime(0, agora, 0.015); fonte.stop(agora + 0.08); } catch (e) {}
+}
+soando.clear();
+},
 no() {
 const ac = contextoAudio();
 if (!ganho) {
@@ -7983,6 +7997,7 @@ g.gain.exponentialRampToValueAtTime(0.001, t0 + (forte ? 0.8 : 0.3));
 osc.connect(g).connect(saida);
 osc.start(t0);
 osc.stop(t0 + 0.85);
+if (destino.soar) destino.soar(osc, g);
 }
 
 
@@ -8009,6 +8024,7 @@ const g = ac.createGain();
 g.gain.value = forte ? 1 : 0.7;
 fonte.connect(g).connect(saida);
 fonte.start();
+if (destino.soar) destino.soar(fonte, g);
 };
 if (chave in buffersSom) {
 Promise.resolve(buffersSom[chave]).then(tocar);
@@ -11736,7 +11752,7 @@ palco.append(hud, veu, bGrande);
 palco.setAttribute('tabindex', '0');
 palco.setAttribute('role', 'group');
 palco.setAttribute('aria-label', 'Replay do lance no mapa. Espaço toca ou pausa.');
-const parar = () => { if (tocando) { tocando = false; pintarPlay(); } };
+const parar = () => { saida.calar(); if (tocando) { tocando = false; pintarPlay(); } };
 const eu = { pausar: () => { parar(); if (ganchos.pausou) ganchos.pausou(); } };
 for (const o of playersMapa) if (!o.vivo()) playersMapa.delete(o); // players de telas antigas
 eu.vivo = () => palco.isConnected;
