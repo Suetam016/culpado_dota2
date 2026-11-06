@@ -1,0 +1,29 @@
+name: Vozes (protótipo)
+
+# Baixa falas originais da Mirana para o protótipo de áudio do veredito. Só roda neste branch.
+on:
+  push:
+    branches: ["claude/project-thread-tws8d6"]
+    paths: ["prototipos/vozes/baixar.py", ".github/workflows/vozes-teste.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  vozes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python prototipos/vozes/baixar.py | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/vozes
+          git diff --cached --quiet && exit 0
+          git commit -m "Vozes: falas da Mirana para o protótipo"
+          git push origin HEAD:claude/project-thread-tws8d6
