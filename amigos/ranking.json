@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-06T20:43:17.943Z",
-  "semAnalise": 3,
+  "atualizadoEm": "2026-11-06T21:21:50.961Z",
+  "semAnalise": 1,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -51,6 +51,18 @@
       "mmrPerdido": 575
     },
     {
+      "accountId": "111257540",
+      "nome": "Kuscomem",
+      "culpados": 11,
+      "craques": 4,
+      "partidas": 112,
+      "vitorias": 48,
+      "winRate": 43,
+      "streak": "culpado",
+      "mmrGanho": 1200,
+      "mmrPerdido": 1575
+    },
+    {
       "accountId": "77621319",
       "nome": "Jalim",
       "culpados": 10,
@@ -61,18 +73,6 @@
       "streak": null,
       "mmrGanho": 1100,
       "mmrPerdido": 1075
-    },
-    {
-      "accountId": "111257540",
-      "nome": "Kuscomem",
-      "culpados": 10,
-      "craques": 4,
-      "partidas": 112,
-      "vitorias": 48,
-      "winRate": 43,
-      "streak": null,
-      "mmrGanho": 1200,
-      "mmrPerdido": 1575
     },
     {
       "accountId": "83300280",
@@ -6671,14 +6671,13 @@
       {
         "matchId": 9078907539,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1793987671,
         "comStack": false,
         "ranqueada": true,
         "heroi": 37,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.241,
+        "merito": 0.115
       },
       {
         "matchId": 9079021291,
@@ -6688,9 +6687,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 112,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.147,
+        "merito": 0.166
       }
     ],
     "241782761": [
