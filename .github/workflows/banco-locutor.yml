@@ -1,0 +1,60 @@
+name: Banco do locutor do Plantão (falas pré-gravadas)
+
+# Grava, uma vez só, todas as falas do banco fechado do locutor (prototipos/vozes/policial/banco/lista.json) com a
+# voz do Mat, em 8 partes paralelas. Depois disso o site só escolhe e toca: zero espera em qualquer partida.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-48ueuw]
+    paths: ["prototipos/vozes/policial/banco/lista.json", "prototipos/vozes/policial/gravar_banco.py", ".github/workflows/banco-locutor.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  gravar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        parte: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        id: py
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            ~/venv-voz
+            ~/.cache/huggingface
+          key: qwen-tts-0.6b-venv-${{ steps.py.outputs.python-version }}-v1
+      - name: Instalar a voz
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get install -y -qq ffmpeg sox >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox >/dev/null)
+          fi
+          if [ "${{ steps.cache.outputs.cache-hit }}" != "true" ]; then
+            python -m venv ~/venv-voz
+            ~/venv-voz/bin/pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
+            ~/venv-voz/bin/pip install -q qwen-tts==0.1.1 soundfile numpy
+          fi
+          echo "$HOME/venv-voz/bin" >> "$GITHUB_PATH"
+      - name: Gravar
+        run: python prototipos/vozes/policial/gravar_banco.py --parte ${{ matrix.parte }} --de 8 2>&1 | grep -v -i -E "warn|pci_bus" | tail -400
+      - name: Salvar
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/vozes/policial/banco/*.mp3 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Banco do locutor: parte ${{ matrix.parte }}"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin ${{ github.ref_name }} && git push -q origin HEAD:${{ github.ref_name }} && exit 0
+            sleep $((RANDOM % 10 + 3))
+          done
+          exit 1
