@@ -56,6 +56,37 @@
       'Acabou a brincadeira!',
       'Virou freguês!',
       'Me dá o replay disso!',
+      'Mais um pro caderninho!',
+      'A lista só aumenta, Brasil!',
+      'Olha o placar subindo!',
+    ]],
+    // morte com contexto (06/11, pedido do Mat: menos zoeira automática, mais leitura do lance)
+    abate_solo: ['c', [
+      'Sozinho! Foi no mano a mano, sem pedir ajuda!',
+      'Um contra um! Encarou e levou!',
+      'Ninguém ajudou! Resolveu sozinho, minha gente!',
+      'Solou! Solou! Sem dó nem piedade!',
+    ]],
+    abate_pickoff: ['c', [
+      'Tava desgarrado! Andando sozinho na selva, olha o que dá!',
+      'Pegou o desgarrado! Quem manda passear sozinho?',
+      'Pegou o coitado longe do time! Ninguém veio salvar!',
+      'Saiu sozinho pra farmar... e não voltou mais!',
+    ]],
+    abate_luta: ['c', [
+      'No meio da pancadaria! Foi no bolo!',
+      'Briga generalizada, Brasil! E ele lá no meio!',
+      'Confusão na selva! Um a menos do lado de lá!',
+    ]],
+    abate_torre: ['c', [
+      'Debaixo da torre! Foi buscar dentro de casa!',
+      'Mergulhou na torre! Isso é falta de respeito!',
+      'Entrou debaixo da torre e saiu vivo! Que coragem!',
+    ]],
+    abate_equipe: ['c', [
+      'Trabalho em equipe! Cercaram e pegaram!',
+      'Foi a quadrilha toda! Não sobrou nada!',
+      'Fecharam o cerco! Não tinha pra onde correr!',
     ]],
     torre: ['c', [
       'Caiu a torre! Cadê a segurança dessa base?',
@@ -144,18 +175,26 @@
       return `g.${tipo}.${i}`;
     };
     const amigo = (nick) => nick && ctx.amigos && ctx.amigos.has(nick);
-    let abates = 0;
+    const tem = (id) => !ctx.tem || ctx.tem(id); // só fala que já foi gravada
+    let abates = 0; let mamae = false; let calado = 0;
     return eventos.map((e) => {
       const ids = [];
       if (e.tipo === 'abertura') {
         ids.push(tira('abertura'));
         ids.push(amigo(ctx.quem) && rnd() < 0.6 ? `a.${slug(ctx.quem)}.quem` : `h.${ctx.heroi}.quem`);
       } else if (e.tipo === 'abate') {
+        // nem toda morte ganha fala (no máximo 2 seguidas), e o lance é lido pelo contexto: solado, pick-off, briga,
+        // debaixo da torre ou em equipe. A zoeira do amigo ("chama a mamãe") sai uma vez só por sorteio.
         const primeiro = !abates++;
-        if (primeiro || rnd() < 0.5) ids.push(tira(primeiro ? 'abate' : 'abate2'));
-        ids.push(`h.${e.vitima}.vitima`);
-        if (amigo(e.dono)) ids.push(`a.${slug(e.dono)}.dono`);
-        else if (!primeiro && ids.length < 2) ids.push(tira('abate2'));
+        if (!primeiro && calado < 1 && abates > 2 && rnd() < 0.45) { calado++; return { t: e.t, tipo: e.tipo, ids }; }
+        calado = 0;
+        const tipoCtx = e.ctx && GENERICAS[`abate_${e.ctx}`] ? `abate_${e.ctx}` : null;
+        const ctxId = tipoCtx ? tira(tipoCtx) : null;
+        const ctxOk = ctxId && tem(ctxId);
+        if (ctxOk && rnd() < 0.75) ids.push(ctxId);
+        else ids.push(tira(primeiro ? 'abate' : 'abate2'));
+        if (rnd() < 0.6) ids.push(`h.${e.vitima}.vitima`);
+        if (amigo(e.dono) && !mamae && rnd() < 0.5) { mamae = true; ids.push(`a.${slug(e.dono)}.dono`); }
       } else if (e.tipo === 'varios') ids.push(`n.${Math.max(2, Math.min(5, e.n))}.${Math.floor(rnd() * QUANTOS.length)}`);
       else if (e.tipo === 'dano') ids.push(`d.${danoBalde(e.num)}.${Math.floor(rnd() * NUMEROS.length)}`);
       else if (GENERICAS[e.tipo]) ids.push(tira(e.tipo));
