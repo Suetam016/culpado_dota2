@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-06T15:04:35Z",
+ "atualizadoEm": "2026-11-06T16:14:31Z",
  "desde": "2026-03-31",
  "partidasLidas": 1120,
  "jogadores": {
@@ -49,9 +49,9 @@
     {
      "posA": 2,
      "posB": 1,
-     "jogos": 4,
+     "jogos": 5,
      "vitorias": 2,
-     "winRate": 50
+     "winRate": 40
     },
     {
      "posA": 4,
@@ -68,6 +68,13 @@
      "jogos": 5,
      "vitorias": 0,
      "winRate": 0
+    },
+    {
+     "posA": 2,
+     "posB": 1,
+     "jogos": 5,
+     "vitorias": 2,
+     "winRate": 40
     }
    ],
    "herois": [
@@ -538,13 +545,13 @@
    {
     "heroi": 43,
     "pos": 0,
-    "jogos": 25,
+    "jogos": 24,
     "vitorias": 16
    },
    {
     "heroi": 43,
     "pos": 2,
-    "jogos": 21,
+    "jogos": 22,
     "vitorias": 11
    },
    {
@@ -1038,7 +1045,7 @@
    {
     "heroi": 6,
     "pos": 1,
-    "jogos": 24,
+    "jogos": 25,
     "vitorias": 9
    },
    {
@@ -1050,13 +1057,13 @@
    {
     "heroi": 36,
     "pos": 1,
-    "jogos": 18,
+    "jogos": 19,
     "vitorias": 10
    },
    {
     "heroi": 54,
     "pos": 1,
-    "jogos": 12,
+    "jogos": 13,
     "vitorias": 8
    },
    {
@@ -1166,12 +1173,6 @@
     "pos": 0,
     "jogos": 2,
     "vitorias": 1
-   },
-   {
-    "heroi": 6,
-    "pos": 0,
-    "jogos": 2,
-    "vitorias": 0
    },
    {
     "heroi": 4,
@@ -1312,13 +1313,7 @@
     "vitorias": 0
    },
    {
-    "heroi": 54,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 36,
+    "heroi": 6,
     "pos": 0,
     "jogos": 1,
     "vitorias": 0
@@ -6868,9 +6863,9 @@
     [
      "200957620",
      54,
-     0,
-     null,
-     null
+     1,
+     3,
+     1
     ]
    ]
   },
@@ -7023,9 +7018,9 @@
     [
      "200957620",
      36,
-     0,
-     null,
-     null
+     1,
+     1,
+     -1
     ]
    ]
   },
@@ -7090,16 +7085,16 @@
     [
      "200957620",
      6,
-     0,
-     null,
-     null
+     1,
+     1,
+     0
     ],
     [
      "86736516",
      43,
-     0,
-     null,
-     null
+     2,
+     2,
+     1
     ]
    ]
   },
