@@ -336,7 +336,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .zap-pedir{margin-top:8px;background:#00a884;color:#0b141a;border:0;border-radius:18px;padding:8px 14px;font:600 14px system-ui,sans-serif;display:inline-flex;gap:6px;align-items:center;cursor:pointer}.zap-pedir:hover{background:#06cf9c}.zap-pedir:disabled{opacity:.6;cursor:default}
 @media (prefers-reduced-motion:no-preference){.zap-ondas i{animation:zap-onda 1s ease-in-out infinite}.zap-rec{animation:zap-pisca 1.2s steps(2) infinite}}
 @keyframes zap-onda{50%{height:100%}}
-@keyframes zap-pisca{50%{opacity:.3}}.visao-vitoria{display:grid;gap:8px;width:100%;justify-items:start}.visao-vitoria>.cartao{width:100%}
+@keyframes zap-pisca{50%{opacity:.3}}.visao-vitoria{display:grid;gap:8px;width:100%;justify-items:start}.visao-vitoria>.cartao{width:100%}.visao-vitoria>.doc-zap{justify-self:center}
 .trocar-visao{border:0;background:none;color:var(--muted);font-size:var(--t-sm);cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}.trocar-visao:hover{color:var(--ink)}
 .cartao.veredito.vitoria.doc-zap{display:block;padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;color:#e9edef;font-family:system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 14px 34px -16px rgba(0,0,0,.7);max-width:560px}
 .doc-zap .zap-corpo{padding:14px 12px 18px;min-height:0}
@@ -7002,9 +7002,9 @@ return corpo;
 // Para pôr uma visão nova (Plantão da Selva, Stories, Post...): escreva visaoX(r) devolvendo o <article> e some uma
 // linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força
 // (inclusive uma visão desligada). `ligada: false` tira a visão do sorteio sem apagar o código.
-// Zap desligado em 04/11/2026 (o áudio demorava para gravar e o visual não agradou); para religar, troque para true.
+// Zap religado em 06/11/2026 como conversa: o craque manda vários áudios curtos (banco de falas) e os amigos respondem.
 const VISOES_VITORIA = [
-{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
+{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: true, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
 ];
 const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega
@@ -7062,45 +7062,52 @@ try { (window.dataLayer = window.dataLayer || []).push({ event: 'victory_view', 
 // o áudio (com a voz do Mat), alguém dando +rep com a prova e a figurinha.
 const GRUPOS_ZAP = ['Dota dos crias 🎮', 'Grupo do Culpado 🏆', 'Rankeada é amanhã', '5 stack sem tilt', 'Os de sempre 🎮', 'Fonte da amizade'];
 const CORES_ZAP = ['#e26a6a', '#a78bfa', '#53bdeb', '#06cf9c', '#f5a524', '#ff7ab6'];
-// ---------- Conversa do zap (protótipo, ?visao=zap&conversa=1): em vez de um áudio comprido, o craque manda vários
-// áudios curtos e os amigos respondem entre eles (provocam, o mochila se defende, alguém dá +rep). Cada áudio é
-// gravado inteiro de uma vez no banco de falas (audios/banco/<chave>.mp3, Banco.audios), então nada é emendado.
+// ---------- Conversa do zap: em vez de um áudio comprido, o craque manda vários áudios curtos e os amigos respondem
+// entre eles (provocam, o zoado se defende, alguém dá +rep). Cada áudio é gravado inteiro de uma vez no banco
+// (audios/banco/<chave>.mp3, Banco.audios; o robô do audio.yml grava as vitórias do grupo e os pedidos do site).
 // A conversa vai aparecendo: quando um áudio acaba, o próximo amigo "digita" e o áudio seguinte já toca sozinho.
-const conversaLigada = () => { try { return new URLSearchParams(location.search).get('conversa') === '1'; } catch (e) { return false; } };
+// Sem os áudios no banco, as falas do craque aparecem escritas e dá para pedir a gravação. ?conversa=0 volta ao
+// áudio único antigo (audioDoCraque).
+const conversaLigada = () => { try { return new URLSearchParams(location.search).get('conversa') !== '0'; } catch (e) { return true; } };
+const lerIndiceBanco = (fresco) => fetch(`audios/banco/indice.json${fresco ? `?t=${Date.now()}` : ''}`, { cache: 'no-cache' }).then((x) => (x.ok ? x.json() : {})).catch(() => ({}));
 function conversaDoZap(r, o) {
 const caixa = h('div', { class: 'zap-conversa' }, h('p', { class: 'zap-sistema' }, 'Carregando a conversa…'));
 const msgSistema = (txt) => h('p', { class: 'zap-sistema' }, txt);
 const dormir = (ms) => new Promise((ok) => setTimeout(ok, ms));
 const avisar = (txt) => { o.status.textContent = txt || o.statusBase; o.status.classList.toggle('gravando', Boolean(txt)); };
-(async () => {
-const [R, B] = await Promise.all([carregarRoteiro(), carregarBanco()]);
 const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
 const chave = `${r.partida.id}-${lado}`;
+const { craque } = o;
+let rodada = 0;
+const montar = async (indice) => {
+const minha = ++rodada;
+const [R, B] = await Promise.all([carregarRoteiro(), carregarBanco()]);
 const f = R && B && R.fatos(r);
 const g = f && R.gerar(f, chave);
 if (!g) return caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.'));
 const auds = B.audios(g.partes);
-const indice = await fetch('audios/banco/indice.json', { cache: 'no-cache' }).then((x) => x.json()).catch(() => ({}));
-const { craque } = o;
 // quem se defende é quem o craque zoa no áudio do mochila (pelo nome ou pelo herói); senão o elo fraco
 const textoMochila = (auds.find((a) => a.tipo === 'mochila') || {}).texto || '';
 const defensor = o.nos.find((q) => q !== craque && (textoMochila.includes(q.nome) || textoMochila.includes(q.heroi.nome))) || (o.fraco !== craque ? o.fraco : null);
 const provocador = [o.encaminhou, ...o.nos].find((q) => q && q !== craque && q !== defensor) || null;
 const provoca = o.rnd.um([`${o.merito}? tá se achando hein 🙄`, 'manda a prova então', 'lá vem ele 🙄', `${o.merito} e já quer palco kkkk`, 'foi sorte isso aí']);
+const choro = defensor ? o.choroDe(defensor) : '';
+const quemDaRep = [o.deuRep, ...o.nos].find((q) => q && q !== craque && q !== defensor && q !== provocador) || o.deuRep;
 const passos = [];
 let faltam = 0;
 auds.forEach((a) => {
 if (a.tipo === 'prova' && provocador) passos.push({ q: provocador, conteudo: h('p', {}, provoca) });
-if (a.tipo === 'mochila' && defensor) passos.push({ q: defensor, conteudo: h('p', {}, o.choroDe(defensor)) });
-if (a.tipo === 'fecho' && o.deuRep && o.deuRep !== craque) passos.push({ q: o.deuRep, conteudo: [h('p', {}, o.rep), o.zoa ? h('p', { class: 'zap-zoa' }, `enquanto isso ${o.zoa}`) : null] });
+if (a.tipo === 'mochila' && defensor) passos.push({ q: defensor, conteudo: h('p', {}, choro) });
+if (a.tipo === 'fecho' && quemDaRep && quemDaRep !== craque) passos.push({ q: quemDaRep, conteudo: [h('p', {}, o.rep), o.zoa ? h('p', { class: 'zap-zoa' }, `enquanto isso ${o.zoa}`) : null] });
 const c = B.chave(a.texto);
 if (indice[c]) passos.push({ audio: { id: r.partida.id, segundos: indice[c].s, texto: a.texto }, url: `audios/banco/${c}.mp3` });
 else { faltam++; passos.push({ q: craque, conteudo: h('p', {}, a.texto) }); }
 });
 caixa.replaceChildren();
+if (faltam) caixa.append(convitePedir());
 let i = 0, minuto = 1;
 const seguir = async (animar) => {
-while (i < passos.length && caixa.isConnected) {
+while (i < passos.length && caixa.isConnected && minha === rodada) {
 const p = passos[i++];
 minuto++;
 if (animar) {
@@ -7119,14 +7126,51 @@ return;
 }
 caixa.append(o.bolha(p.q, p.conteudo, minuto));
 }
-if (i >= passos.length && o.fim && !o.fim.isConnected) {
+if (i >= passos.length && minha === rodada && o.fim && !o.fim.isConnected) {
 if (animar) await dormir(700);
 caixa.append(o.fim);
-if (faltam) caixa.append(msgSistema(`Protótipo: ${faltam} de ${auds.length} áudios desta partida ainda não estão no banco e foram escritos.`));
 }
 };
 seguir(false);
-})().catch((e) => { console.warn('conversa do zap', e); caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.')); });
+};
+// sem os áudios no banco: pede ao robô (Worker -> audio/pedidos/<id> -> audio.yml) e espera eles aparecerem no site
+const convitePedir = () => {
+const botao = h('button', { class: 'zap-pedir', type: 'button', 'data-gtm': 'audio-vitoria-pedir' }, h('span', { 'aria-hidden': 'true' }, iconeMic()), ` Pedir os áudios de ${craque.nome}`);
+const nota = h('p', { class: 'zap-sistema' }, `Os áudios de ${craque.nome} desta partida ainda não foram gravados.`, h('br'), botao);
+botao.addEventListener('click', async () => {
+botao.disabled = true;
+try {
+const coach = await urlDoCoach();
+if (!coach) throw new Error('sem coach');
+const res = await fetch(`${coach}/audio`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: String(r.partida.id), lado }) });
+const j = await res.json().catch(() => ({}));
+if (!res.ok) throw new Error(j.msg || 'recusado');
+} catch (e) {
+nota.replaceChildren('Não deu pra pedir os áudios agora. Tente de novo daqui a pouco.');
+return;
+}
+const t0 = Date.now();
+const cron = h('span', { class: 'zap-cron' }, '0:00');
+nota.replaceChildren(`${craque.nome} está gravando os áudios… `, cron, h('br'), 'A voz sai do nosso robô e leva uns 5 minutos. Pode deixar a aba aberta que os áudios chegam aqui.');
+avisar(`${craque.nome} está gravando áudio…`);
+const tic = setInterval(() => { if (!caixa.isConnected) return clearInterval(tic); cron.textContent = mmssAudio((Date.now() - t0) / 1000); }, 1000);
+const B = await carregarBanco();
+const R = await carregarRoteiro();
+const f = R && R.fatos(r);
+const g = f && R.gerar(f, chave);
+const chaves = g ? B.audios(g.partes).map((a) => B.chave(a.texto)) : [];
+while (caixa.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
+await dormir(20_000);
+const indice = await lerIndiceBanco(true);
+if (chaves.length && chaves.every((c) => indice[c])) { clearInterval(tic); avisar(null); return montar(indice); }
+}
+clearInterval(tic);
+avisar(null);
+if (caixa.isConnected) nota.replaceChildren('Os áudios estão demorando mais que o normal. Recarregue a página daqui a pouco.');
+});
+return nota;
+};
+lerIndiceBanco(false).then(montar).catch((e) => { console.warn('conversa do zap', e); caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.')); });
 return caixa;
 }
 
