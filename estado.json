@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-06T18:02:04Z",
+  "quando": "2026-11-06T18:30:17Z",
   "restante": {
-   "dia": 2954,
-   "minuto": 14
+   "dia": 2959,
+   "minuto": 44
   }
  },
  "desistencias": {
@@ -126,96 +126,7 @@
    "salva": true
   }
  },
- "falhas": {
-  "9069572152": {
-   "inicio": 1793431699,
-   "motivo": "HTTP 500",
-   "n": 0,
-   "proxima": "2026-11-06T16:42:46Z",
-   "quando": "2026-11-06T16:12:46Z",
-   "t": 1
-  },
-  "9069828752": {
-   "inicio": 1793446210,
-   "motivo": "HTTP 500",
-   "n": 0,
-   "proxima": "2026-11-06T16:42:59Z",
-   "quando": "2026-11-06T16:12:59Z",
-   "t": 1
-  },
-  "9069892457": {
-   "inicio": 1793449009,
-   "motivo": "HTTP 500",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:04Z",
-   "quando": "2026-11-06T16:13:04Z",
-   "t": 1
-  },
-  "9069968400": {
-   "inicio": 1793452071,
-   "motivo": "HTTP 500",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:09Z",
-   "quando": "2026-11-06T16:13:09Z",
-   "t": 1
-  },
-  "9070498185": {
-   "inicio": 1793471419,
-   "motivo": "HTTP 500",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:17Z",
-   "quando": "2026-11-06T16:13:17Z",
-   "t": 1
-  },
-  "9070668016": {
-   "inicio": 1793478460,
-   "motivo": "HTTP 500",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:22Z",
-   "quando": "2026-11-06T16:13:22Z",
-   "t": 1
-  },
-  "9070810752": {
-   "inicio": 1793486125,
-   "motivo": "HTTP 500 (OpenDota fora do ar: não conta para descarte)",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:29Z",
-   "quando": "2026-11-06T16:13:29Z",
-   "t": 1
-  },
-  "9071139848": {
-   "inicio": 1793515285,
-   "motivo": "HTTP 500 (OpenDota fora do ar: não conta para descarte)",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:34Z",
-   "quando": "2026-11-06T16:13:34Z",
-   "t": 1
-  },
-  "9071180655": {
-   "inicio": 1793518015,
-   "motivo": "HTTP 500 (OpenDota fora do ar: não conta para descarte)",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:39Z",
-   "quando": "2026-11-06T16:13:39Z",
-   "t": 1
-  },
-  "9071303283": {
-   "inicio": 1793525016,
-   "motivo": "HTTP 500 (OpenDota fora do ar: não conta para descarte)",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:44Z",
-   "quando": "2026-11-06T16:13:44Z",
-   "t": 1
-  },
-  "9071403185": {
-   "inicio": 1793530010,
-   "motivo": "HTTP 500 (OpenDota fora do ar: não conta para descarte)",
-   "n": 0,
-   "proxima": "2026-11-06T16:43:49Z",
-   "quando": "2026-11-06T16:13:49Z",
-   "t": 1
-  }
- },
+ "falhas": {},
  "historico": {
   "1000265186": {
    "analisadas": {},
@@ -537,7 +448,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-06T18:01:13Z",
+   "em": "2026-11-06T18:29:33Z",
    "partidas": {
     "9057385248": 1792719430,
     "9057420656": 1792723350,
@@ -2820,305 +2731,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9069572152": {
-   "inicio": 1793431699,
-   "pedido_em": "2026-11-06T17:13:19Z",
-   "primeira_vez": "2026-11-06T14:23:30Z",
-   "proxima": "2026-11-06T18:13:18Z",
-   "tentativas": 1
-  },
-  "9069828752": {
-   "inicio": 1793446210,
-   "pedido_em": "2026-11-06T17:13:22Z",
-   "primeira_vez": "2026-11-06T14:23:34Z",
-   "proxima": "2026-11-06T18:13:22Z",
-   "tentativas": 1
-  },
-  "9069892457": {
-   "inicio": 1793449009,
-   "pedido_em": "2026-11-06T17:13:24Z",
-   "primeira_vez": "2026-11-06T14:23:35Z",
-   "proxima": "2026-11-06T18:13:24Z",
-   "tentativas": 1
-  },
-  "9069968400": {
-   "inicio": 1793452071,
-   "pedido_em": "2026-11-06T17:13:27Z",
-   "primeira_vez": "2026-11-06T14:23:36Z",
-   "proxima": "2026-11-06T18:13:26Z",
-   "tentativas": 1
-  },
-  "9070498185": {
-   "inicio": 1793471419,
-   "pedido_em": "2026-11-06T17:15:32Z",
-   "primeira_vez": "2026-11-06T14:23:39Z",
-   "proxima": "2026-11-06T18:13:29Z",
-   "tentativas": 1
-  },
-  "9070668016": {
-   "inicio": 1793478460,
-   "pedido_em": "2026-11-06T17:15:34Z",
-   "primeira_vez": "2026-11-06T14:23:42Z",
-   "proxima": "2026-11-06T18:15:34Z",
-   "tentativas": 1
-  },
-  "9070810752": {
-   "inicio": 1793486125,
-   "pedido_em": "2026-11-06T17:15:36Z",
-   "primeira_vez": "2026-11-06T14:23:45Z",
-   "proxima": "2026-11-06T18:15:36Z",
-   "tentativas": 1
-  },
-  "9071139848": {
-   "inicio": 1793515285,
-   "pedido_em": "2026-11-06T17:15:39Z",
-   "primeira_vez": "2026-11-06T14:23:46Z",
-   "proxima": "2026-11-06T18:15:38Z",
-   "tentativas": 1
-  },
-  "9071180655": {
-   "inicio": 1793518015,
-   "pedido_em": "2026-11-06T17:15:41Z",
-   "primeira_vez": "2026-11-06T14:23:47Z",
-   "proxima": "2026-11-06T18:15:41Z",
-   "tentativas": 1
-  },
-  "9071303283": {
-   "inicio": 1793525016,
-   "pedido_em": "2026-11-06T17:17:45Z",
-   "primeira_vez": "2026-11-06T14:23:49Z",
-   "proxima": "2026-11-06T18:15:42Z",
-   "tentativas": 1
-  },
-  "9071403185": {
-   "inicio": 1793530010,
-   "pedido_em": "2026-11-06T17:17:47Z",
-   "primeira_vez": "2026-11-06T14:23:50Z",
-   "proxima": "2026-11-06T18:17:47Z",
-   "tentativas": 1
-  },
-  "9075790581": {
-   "inicio": 1793794041,
-   "pedido_em": "2026-11-06T17:01:39Z",
-   "primeira_vez": "2026-11-06T14:24:23Z",
-   "proxima": "2026-11-06T18:01:38Z",
-   "tentativas": 1
-  },
-  "9075899048": {
-   "inicio": 1793798557,
-   "pedido_em": "2026-11-06T17:01:41Z",
-   "primeira_vez": "2026-11-06T14:24:24Z",
-   "proxima": "2026-11-06T18:01:40Z",
-   "tentativas": 1
-  },
-  "9076441940": {
-   "inicio": 1793821097,
-   "pedido_em": "2026-11-06T17:01:43Z",
-   "primeira_vez": "2026-11-06T14:24:25Z",
-   "proxima": "2026-11-06T18:01:43Z",
-   "tentativas": 1
-  },
-  "9076498032": {
-   "inicio": 1793823982,
-   "pedido_em": "2026-11-06T17:01:45Z",
-   "primeira_vez": "2026-11-06T14:24:26Z",
-   "proxima": "2026-11-06T18:01:44Z",
-   "tentativas": 1
-  },
-  "9076531873": {
-   "inicio": 1793825991,
-   "pedido_em": "2026-11-06T17:03:50Z",
-   "primeira_vez": "2026-11-06T14:24:27Z",
-   "proxima": "2026-11-06T18:01:47Z",
-   "tentativas": 1
-  },
-  "9076582452": {
-   "inicio": 1793829541,
-   "pedido_em": "2026-11-06T17:03:52Z",
-   "primeira_vez": "2026-11-06T14:24:29Z",
-   "proxima": "2026-11-06T18:03:51Z",
-   "tentativas": 1
-  },
-  "9076612754": {
-   "inicio": 1793832147,
-   "pedido_em": "2026-11-06T17:03:54Z",
-   "primeira_vez": "2026-11-06T14:24:30Z",
-   "proxima": "2026-11-06T18:03:54Z",
-   "tentativas": 1
-  },
-  "9076866256": {
-   "inicio": 1793861715,
-   "pedido_em": "2026-11-06T17:03:56Z",
-   "primeira_vez": "2026-11-06T14:24:31Z",
-   "proxima": "2026-11-06T18:03:56Z",
-   "tentativas": 1
-  },
-  "9076903761": {
-   "inicio": 1793865554,
-   "pedido_em": "2026-11-06T17:03:59Z",
-   "primeira_vez": "2026-11-06T14:24:32Z",
-   "proxima": "2026-11-06T18:03:58Z",
-   "tentativas": 1
-  },
-  "9076991048": {
-   "inicio": 1793873290,
-   "pedido_em": "2026-11-06T17:04:01Z",
-   "primeira_vez": "2026-11-06T14:24:33Z",
-   "proxima": "2026-11-06T18:04:00Z",
-   "tentativas": 1
-  },
-  "9077034290": {
-   "inicio": 1793876369,
-   "pedido_em": "2026-11-06T17:04:03Z",
-   "primeira_vez": "2026-11-06T14:24:34Z",
-   "proxima": "2026-11-06T18:04:02Z",
-   "tentativas": 1
-  },
-  "9077123502": {
-   "inicio": 1793881540,
-   "pedido_em": "2026-11-06T17:04:05Z",
-   "primeira_vez": "2026-11-06T14:24:35Z",
-   "proxima": "2026-11-06T18:04:04Z",
-   "tentativas": 1
-  },
-  "9077167860": {
-   "inicio": 1793883711,
-   "pedido_em": "2026-11-06T17:04:07Z",
-   "primeira_vez": "2026-11-06T14:24:36Z",
-   "proxima": "2026-11-06T18:04:07Z",
-   "tentativas": 1
-  },
-  "9077215032": {
-   "inicio": 1793885821,
-   "pedido_em": "2026-11-06T17:04:10Z",
-   "primeira_vez": "2026-11-06T14:24:38Z",
-   "proxima": "2026-11-06T18:04:09Z",
-   "tentativas": 1
-  },
-  "9077293684": {
-   "inicio": 1793889111,
-   "pedido_em": "2026-11-06T17:06:15Z",
-   "primeira_vez": "2026-11-06T14:24:39Z",
-   "proxima": "2026-11-06T18:04:11Z",
-   "tentativas": 1
-  },
-  "9077354768": {
-   "inicio": 1793891625,
-   "pedido_em": "2026-11-06T17:06:17Z",
-   "primeira_vez": "2026-11-06T14:24:40Z",
-   "proxima": "2026-11-06T18:06:16Z",
-   "tentativas": 1
-  },
-  "9077666325": {
-   "inicio": 1793905206,
-   "pedido_em": "2026-11-06T17:06:19Z",
-   "primeira_vez": "2026-11-06T14:24:41Z",
-   "proxima": "2026-11-06T18:06:18Z",
-   "tentativas": 1
-  },
-  "9077716131": {
-   "inicio": 1793907596,
-   "pedido_em": "2026-11-06T17:06:21Z",
-   "primeira_vez": "2026-11-06T14:24:42Z",
-   "proxima": "2026-11-06T18:06:21Z",
-   "tentativas": 1
-  },
-  "9077782072": {
-   "inicio": 1793911370,
-   "pedido_em": "2026-11-06T17:06:23Z",
-   "primeira_vez": "2026-11-06T14:24:43Z",
-   "proxima": "2026-11-06T18:06:22Z",
-   "tentativas": 1
-  },
-  "9077841458": {
-   "inicio": 1793915020,
-   "pedido_em": "2026-11-06T17:08:28Z",
-   "primeira_vez": "2026-11-06T14:24:44Z",
-   "proxima": "2026-11-06T18:06:25Z",
-   "tentativas": 1
-  },
-  "9077881163": {
-   "inicio": 1793917910,
-   "pedido_em": "2026-11-06T17:08:30Z",
-   "primeira_vez": "2026-11-06T14:24:45Z",
-   "proxima": "2026-11-06T18:08:29Z",
-   "tentativas": 1
-  },
-  "9077908534": {
-   "inicio": 1793920599,
-   "pedido_em": "2026-11-06T17:08:32Z",
-   "primeira_vez": "2026-11-06T14:24:47Z",
-   "proxima": "2026-11-06T18:08:31Z",
-   "tentativas": 1
-  },
-  "9077939183": {
-   "inicio": 1793924135,
-   "pedido_em": "2026-11-06T17:08:34Z",
-   "primeira_vez": "2026-11-06T14:24:47Z",
-   "proxima": "2026-11-06T18:08:33Z",
-   "tentativas": 1
-  },
-  "9077961855": {
-   "inicio": 1793926875,
-   "pedido_em": "2026-11-06T17:08:36Z",
-   "primeira_vez": "2026-11-06T14:24:49Z",
-   "proxima": "2026-11-06T18:08:36Z",
-   "tentativas": 1
-  },
-  "9077988842": {
-   "inicio": 1793930094,
-   "pedido_em": "2026-11-06T17:10:41Z",
-   "primeira_vez": "2026-11-06T14:24:49Z",
-   "proxima": "2026-11-06T18:08:38Z",
-   "tentativas": 1
-  },
-  "9078223411": {
-   "inicio": 1793955080,
-   "pedido_em": "2026-11-06T17:10:43Z",
-   "primeira_vez": "2026-11-06T14:24:52Z",
-   "proxima": "2026-11-06T18:10:42Z",
-   "tentativas": 1
-  },
-  "9078288720": {
-   "inicio": 1793960231,
-   "pedido_em": "2026-11-06T17:10:45Z",
-   "primeira_vez": "2026-11-06T14:24:53Z",
-   "proxima": "2026-11-06T18:10:44Z",
-   "tentativas": 1
-  },
-  "9078327579": {
-   "inicio": 1793962901,
-   "pedido_em": "2026-11-06T17:10:47Z",
-   "primeira_vez": "2026-11-06T14:24:54Z",
-   "proxima": "2026-11-06T18:10:46Z",
-   "tentativas": 1
-  },
-  "9078380262": {
-   "inicio": 1793965941,
-   "pedido_em": "2026-11-06T17:10:49Z",
-   "primeira_vez": "2026-11-06T14:24:55Z",
-   "proxima": "2026-11-06T18:10:48Z",
-   "tentativas": 1
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 31,
-   "descartadas": [],
-   "faltam": 7,
-   "fim": "fila vazia",
-   "inicio": "2026-11-01T23:06:02Z",
-   "novas": 2,
-   "pedidos": 4,
-   "pendentes": 7,
-   "restante": {
-    "dia": 2924,
-    "minuto": 51
-   },
-   "sobra_do_dia": 2664
-  },
   {
    "basicas": 0,
    "chamadas": 7,
@@ -3870,6 +3484,22 @@
     "minuto": 14
    },
    "sobra_do_dia": 1578
+  },
+  {
+   "basicas": 0,
+   "chamadas": 41,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-06T18:29:33Z",
+   "novas": 40,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2959,
+    "minuto": 44
+   },
+   "sobra_do_dia": 1537
   }
  ],
  "uso": {
@@ -3886,6 +3516,6 @@
   "2026-11-03": 117,
   "2026-11-04": 70,
   "2026-11-05": 74,
-  "2026-11-06": 1222
+  "2026-11-06": 1263
  }
 }
