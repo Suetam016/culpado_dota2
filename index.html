@@ -630,25 +630,27 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 :root[data-theme="light"]{--splash:#b07800;--splash-sombra:#f3e2b0}
 .letreiro{display:none}
 html.em-home .letreiro:not([hidden]){display:block;border-bottom:1px solid var(--line);background:linear-gradient(90deg,var(--gold-wash),transparent 85%)}
-.letreiro-inner{max-width:1160px;margin:0 auto;padding-inline:20px;height:44px;display:flex;align-items:center;gap:12px}
+.letreiro-inner{max-width:1160px;margin:0 auto;padding-inline:20px;height:36px;display:flex;align-items:center;gap:12px}
 .letreiro-tag{flex:none;font:700 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;background:var(--gold);color:var(--on-gold);padding:3px 7px;border-radius:3px}
-.letreiro-janela{position:relative;flex:1;min-width:0;height:44px;overflow:hidden}
-.letreiro-frase{position:absolute;inset:0;display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translateY(100%);opacity:0;transition:transform .5s ease,opacity .5s ease}
-.letreiro-frase b{color:var(--gold-2)}
+.letreiro-janela{position:relative;flex:1;min-width:0;height:36px;overflow:hidden}
+.letreiro-frase{position:absolute;inset:0;display:flex;align-items:center;gap:6px;font-weight:500;font-size:14px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translateY(100%);opacity:0;transition:transform .5s ease,opacity .5s ease}
+.letreiro-frase b{color:var(--gold-2);font-weight:700}
 .letreiro-frase.on{transform:translateY(0);opacity:1}
 .letreiro-frase.sai{transform:translateY(-100%);opacity:0}
-.letreiro-link{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--gold-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.letreiro-link{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--gold-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .letreiro-pontos{flex:none;display:flex;gap:5px}
 .letreiro-pontos i{width:6px;height:6px;border-radius:50%;background:var(--line-strong)}
 .letreiro-pontos i.on{background:var(--gold)}
-.letreiro-x{flex:none;background:none;border:0;color:var(--muted);font-size:22px;line-height:1;padding:4px 6px;cursor:pointer}
+.letreiro-x{flex:none;background:none;border:0;color:var(--muted);font-size:20px;line-height:1;padding:4px 6px;cursor:pointer}
 .letreiro-x:hover{color:var(--ink)}
 .home-hero h2 em{position:relative}
-.home-splash{position:absolute;right:-6.2em;top:-1.6em;transform:rotate(-17deg);font:800 clamp(15px,2vw,20px)/1 var(--font-body);text-transform:none;letter-spacing:0;color:var(--splash);text-shadow:2px 2px 0 var(--splash-sombra);white-space:nowrap;text-decoration:none}
+/* com o letreiro aberto, o topo da home encolhe para os cartões continuarem na primeira tela */
+html.em-home .letreiro:not([hidden]) + .home{padding-top:clamp(16px,3vw,28px)}
+.home-splash{position:absolute;right:-8.4em;top:-3.3em;transform:rotate(-17deg);font:800 clamp(14px,1.6vw,18px)/1 var(--font-body);text-transform:none;letter-spacing:0;color:var(--splash);text-shadow:2px 2px 0 var(--splash-sombra);white-space:nowrap;text-decoration:none}
 .home-splash span{display:inline-block;animation:splash-pulsa .9s ease-in-out infinite alternate}
 @keyframes splash-pulsa{from{transform:scale(1)}to{transform:scale(1.09)}}
 @media (max-width:720px){
-  .home-splash{position:relative;right:auto;top:auto;display:block;width:max-content;margin:12px auto 0;transform:rotate(-6deg)}
+  .home-splash{position:relative;right:auto;top:auto;display:block;width:max-content;margin:6px auto -4px;transform:rotate(-6deg)}
   .letreiro-pontos{display:none}
   .letreiro-frase{font-size:14px}
 }
