@@ -210,10 +210,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="som" id="som" type="button" aria-pressed="true" title="Som da revelação"><svg class="som-icone" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="som-ondas" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="som-x" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="som-txt">Som</span></button>
   </div>
 </header>
+<div class="letreiro" id="home-letreiro" role="region" aria-label="Novidades" hidden>
+  <div class="letreiro-inner">
+    <span class="letreiro-tag">Novo</span>
+    <div class="letreiro-janela" id="letreiro-janela" aria-live="off"></div>
+    <span class="letreiro-pontos" id="letreiro-pontos" aria-hidden="true"></span>
+    <button type="button" class="letreiro-x" id="letreiro-fechar" aria-label="Fechar aviso">×</button>
+  </div>
+</div>
 <section class="home" id="home" aria-labelledby="home-titulo">
   <div class="home-hero">
     <p class="home-eyebrow">O tribunal das suas partidas de Dota 2</p>
-    <h2 id="home-titulo">Quem perdeu o jogo <em>pra vocês?</em></h2>
+    <h2 id="home-titulo">Quem perdeu o jogo <em>pra vocês?<a class="home-splash" id="home-splash" href="ranking/#liga" hidden><span></span></a></em></h2>
     <p class="home-sub">Cole o ID da partida e o tribunal decide: o culpado, os craques e o replay dos lances no mapinha. De graça.</p>
     <form class="home-busca" id="home-busca" role="search" autocomplete="off">
       <label><span class="sr-only">ID da partida</span><input id="home-id" inputmode="numeric" placeholder="ID da partida, ex.: 9041118764"></label>
@@ -614,6 +622,37 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 .visitas-site i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;animation:visitas-pulsa 2s infinite}
 @keyframes visitas-pulsa{70%{box-shadow:0 0 0 6px transparent}0%{box-shadow:0 0 0 0 var(--good)}}
 @media (prefers-reduced-motion:reduce){.visitas-site i{animation:none}}
+</style>
+<style>
+/* ---------- home: boas-vindas a grupo novo (splash amarelo ao lado do título + letreiro que gira embaixo do topo) ---------- */
+:root{--splash:#ffff3f;--splash-sombra:#3f3f00}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--splash:#b07800;--splash-sombra:#f3e2b0}}
+:root[data-theme="light"]{--splash:#b07800;--splash-sombra:#f3e2b0}
+.letreiro{display:none}
+html.em-home .letreiro:not([hidden]){display:block;border-bottom:1px solid var(--line);background:linear-gradient(90deg,var(--gold-wash),transparent 85%)}
+.letreiro-inner{max-width:1160px;margin:0 auto;padding-inline:20px;height:44px;display:flex;align-items:center;gap:12px}
+.letreiro-tag{flex:none;font:700 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;background:var(--gold);color:var(--on-gold);padding:3px 7px;border-radius:3px}
+.letreiro-janela{position:relative;flex:1;min-width:0;height:44px;overflow:hidden}
+.letreiro-frase{position:absolute;inset:0;display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translateY(100%);opacity:0;transition:transform .5s ease,opacity .5s ease}
+.letreiro-frase b{color:var(--gold-2)}
+.letreiro-frase.on{transform:translateY(0);opacity:1}
+.letreiro-frase.sai{transform:translateY(-100%);opacity:0}
+.letreiro-link{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--gold-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.letreiro-pontos{flex:none;display:flex;gap:5px}
+.letreiro-pontos i{width:6px;height:6px;border-radius:50%;background:var(--line-strong)}
+.letreiro-pontos i.on{background:var(--gold)}
+.letreiro-x{flex:none;background:none;border:0;color:var(--muted);font-size:22px;line-height:1;padding:4px 6px;cursor:pointer}
+.letreiro-x:hover{color:var(--ink)}
+.home-hero h2 em{position:relative}
+.home-splash{position:absolute;right:-6.2em;top:-1.6em;transform:rotate(-17deg);font:800 clamp(15px,2vw,20px)/1 var(--font-body);text-transform:none;letter-spacing:0;color:var(--splash);text-shadow:2px 2px 0 var(--splash-sombra);white-space:nowrap;text-decoration:none}
+.home-splash span{display:inline-block;animation:splash-pulsa .9s ease-in-out infinite alternate}
+@keyframes splash-pulsa{from{transform:scale(1)}to{transform:scale(1.09)}}
+@media (max-width:720px){
+  .home-splash{position:relative;right:auto;top:auto;display:block;width:max-content;margin:12px auto 0;transform:rotate(-6deg)}
+  .letreiro-pontos{display:none}
+  .letreiro-frase{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){.home-splash span{animation:none}.letreiro-frase{transition:none}}
 </style>
 <style>
 /* ---------- home: uma ação (colar a partida) e três destaques ---------- */
@@ -14660,6 +14699,59 @@ botao.addEventListener('click', () => { caixa.hidden = !caixa.hidden; if (!caixa
 document.body.append(caixa, botao);
 }
 
+// ---------- Boas-vindas a grupo novo na home: splash amarelo ao lado do título e letreiro com frases que giram.
+// Grupo novo: troque GRUPO_NOVO (o id muda a chave do "fechar", então o letreiro volta para quem fechou o anterior).
+// GTM: os cliques mandam dataLayer.push({ event: 'home_banner_click', banner: 'splash'|'letreiro', banner_item }).
+const GRUPO_NOVO = { id: 'kushitas', nome: 'Os Kushitas', splash: 'Bem-vindos, Kushitas!', membros: ['Madruga', 'Danylera', 'Rannis'], grupos: 2 };
+function montarBoasVindas() {
+if (SO_EMBUTIDO) return;
+const medir = (banner, item) => { try { (window.dataLayer = window.dataLayer || []).push({ event: 'home_banner_click', banner, banner_item: item }); } catch (e) { /* sem GTM */ } };
+const splash = document.getElementById('home-splash');
+if (splash && GRUPO_NOVO.splash) {
+splash.firstChild.textContent = GRUPO_NOVO.splash;
+splash.hidden = false;
+splash.addEventListener('click', () => medir('splash', 'grupo'));
+}
+const faixa = document.getElementById('home-letreiro');
+if (!faixa) return;
+const chave = 'culpado:letreiro-fechado';
+if (ler(chave) === GRUPO_NOVO.id) return;
+const abrirFeedback = (inicio) => {
+const botao = document.querySelector('.fb-botao'); const caixa = document.querySelector('.fb-caixa');
+if (!botao || !caixa) return;
+if (caixa.hidden) botao.click();
+const campo = caixa.querySelector('.fb-texto');
+if (campo && inicio && !campo.value.trim()) { campo.value = inicio; campo.setSelectionRange(campo.value.length, campo.value.length); }
+};
+const link = (txt, item, acao) => h('button', { type: 'button', class: 'letreiro-link', 'data-gtm': 'letreiro-' + item, onclick: () => { medir('letreiro', item); acao(); } }, txt);
+const m = GRUPO_NOVO.membros.map((n) => h('b', {}, n));
+const frases = [
+['Grupo adicionado: ', h('b', {}, GRUPO_NOVO.nome)],
+['Bem-vindos, ', ...m.flatMap((b, i) => i === 0 ? [b] : [i === m.length - 1 ? ' e ' : ', ', b]), '!'],
+['Já são ', h('b', {}, GRUPO_NOVO.grupos + ' grupos'), ' no tribunal'],
+['Seu grupo também pode entrar. ', link('Pedir o meu grupo', 'pedir_grupo', () => { location.href = 'ranking/#pedir'; })],
+['Achou algum julgamento injusto? ', link('Deixe seu feedback', 'feedback_injusto', () => abrirFeedback('Julgamento injusto (cole o ID da partida): '))],
+['Quer uma novidade no site? ', link('Peça no feedback', 'feedback_novidade', () => abrirFeedback('Ideia para o site: '))],
+].map((partes) => h('span', { class: 'letreiro-frase' }, ...partes));
+const janela = document.getElementById('letreiro-janela'); const pontos = document.getElementById('letreiro-pontos');
+janela.append(...frases);
+const bolinhas = frases.map(() => h('i')); pontos.append(...bolinhas);
+let atual = -1; let timer = 0; let parado = false;
+const mostrar = (n) => {
+frases.forEach((f, k) => { f.classList.toggle('sai', k === atual && k !== n); f.classList.toggle('on', k === n); f.inert = k !== n; });
+bolinhas.forEach((b, k) => b.classList.toggle('on', k === n));
+atual = n;
+};
+mostrar(0);
+timer = setInterval(() => { if (!parado && !document.hidden) mostrar((atual + 1) % frases.length); }, 3500);
+faixa.addEventListener('mouseenter', () => { parado = true; });
+faixa.addEventListener('mouseleave', () => { parado = false; });
+faixa.addEventListener('focusin', () => { parado = true; });
+faixa.addEventListener('focusout', () => { parado = false; });
+document.getElementById('letreiro-fechar').addEventListener('click', () => { clearInterval(timer); faixa.hidden = true; guardar(chave, GRUPO_NOVO.id); medir('letreiro', 'fechar'); });
+faixa.hidden = false;
+}
+
 // Aviso do ranking: aparece toda vez que a página abre e a cada partida julgada; o × fecha só até a próxima.
 let avisoRanking = null;
 let avisoTimer = 0;
@@ -14872,6 +14964,7 @@ if (montarHome(ler('culpado:ultimo'))) voltarParaHome();
 
 function iniciar() {
 montarFeedback();
+montarBoasVindas();
 urlDoCoach().then(contarVisita); // lê o config.json do coach em paralelo com a partida
 rotasDoSite(); // e a base de rotas
 const [, doHash, ladoHash] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];
