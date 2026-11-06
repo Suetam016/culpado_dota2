@@ -1,42 +1,42 @@
 {
-  "atualizadoEm": "2026-11-06T17:13:32.119Z",
-  "semAnalise": 93,
+  "atualizadoEm": "2026-11-06T17:18:25.233Z",
+  "semAnalise": 86,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
-      "culpados": 53,
-      "craques": 24,
-      "partidas": 206,
-      "vitorias": 98,
+      "culpados": 54,
+      "craques": 25,
+      "partidas": 211,
+      "vitorias": 101,
       "winRate": 48,
-      "streak": null,
-      "mmrGanho": 2450,
-      "mmrPerdido": 2700
+      "streak": "craque",
+      "mmrGanho": 2525,
+      "mmrPerdido": 2750
     },
     {
       "accountId": "200957620",
       "nome": "Danylera",
       "culpados": 26,
       "craques": 38,
-      "partidas": 180,
+      "partidas": 182,
       "vitorias": 88,
-      "winRate": 49,
+      "winRate": 48,
       "streak": null,
       "mmrGanho": 2150,
-      "mmrPerdido": 2250
+      "mmrPerdido": 2300
     },
     {
       "accountId": "85686824",
       "nome": "Rannis",
       "culpados": 4,
       "craques": 3,
-      "partidas": 25,
+      "partidas": 26,
       "vitorias": 10,
-      "winRate": 40,
+      "winRate": 38,
       "streak": null,
       "mmrGanho": 250,
-      "mmrPerdido": 375
+      "mmrPerdido": 400
     }
   ],
   "historicos": {
@@ -282,6 +282,17 @@
         "heroi": 5,
         "culpa": 0.164,
         "merito": 0.122
+      },
+      {
+        "matchId": 9070403819,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793467831,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 50,
+        "culpa": 0.184,
+        "merito": 0.281
       },
       {
         "matchId": 9070584010,
@@ -2552,6 +2563,28 @@
         "merito": 0.206
       },
       {
+        "matchId": 9067672421,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793306854,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 19,
+        "culpa": 0.444,
+        "merito": 0.167
+      },
+      {
+        "matchId": 9068205970,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793355610,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": 0.231,
+        "merito": 0.24
+      },
+      {
         "matchId": 9068747135,
         "lado": "radiant",
         "tipo": "culpado",
@@ -2561,6 +2594,39 @@
         "heroi": 14,
         "culpa": 0.249,
         "merito": 0.286
+      },
+      {
+        "matchId": 9068891804,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793384495,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 104,
+        "culpa": 0.261,
+        "merito": 0.182
+      },
+      {
+        "matchId": 9069450631,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793421999,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 7,
+        "culpa": 0.207,
+        "merito": 0.23
+      },
+      {
+        "matchId": 9069757419,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1793442704,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 73,
+        "culpa": 0.307,
+        "merito": 0.312
       },
       {
         "matchId": 9070584010,
@@ -4534,6 +4600,17 @@
         "merito": 0.157
       },
       {
+        "matchId": 9066472259,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793235281,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 93,
+        "culpa": 0.179,
+        "merito": 0.115
+      },
+      {
         "matchId": 9070338939,
         "lado": "radiant",
         "tipo": "vitoria",
@@ -4543,6 +4620,17 @@
         "heroi": 67,
         "culpa": 0.189,
         "merito": 0.194
+      },
+      {
+        "matchId": 9070403819,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1793467831,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 93,
+        "culpa": 0.222,
+        "merito": 0.208
       },
       {
         "matchId": 9070584010,
