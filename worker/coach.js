@@ -1407,7 +1407,42 @@ async function rotaPartida(req, env, origem, id) {
   return json(200, { ok: true }, origem, env);
 }
 
+// ------------------------------------------------------------------ Coleta mais frequente
+// O agendamento do GitHub pula rodadas da coleta (chegou a 6 h parado). A cada 20 min (cron do Worker) olha o
+// estado.json do branch "dados": se há partidas esperando a análise do OpenDota (ex.: grupo novo entrando) e a última
+// rodada foi há mais de 25 min, ou se a coleta está parada há mais de 2 h, mexe em coleta/disparar na main, o que
+// roda a coleta. Mesma cota e mesmo IP do robô de sempre: só tira o atraso do agendamento.
+const COLETA_PARADA_MIN = 25;
+const COLETA_SEM_RODAR_MIN = 120;
+async function cutucarColeta(env, agora = Date.now()) {
+  if (!tokenGithub(env)) return 'sem token';
+  const r = await github(env, 'GET', 'estado.json?ref=dados', null, 'application/vnd.github.raw');
+  if (!r.ok) { descartar(r); return `estado.json: HTTP ${r.status}`; }
+  const est = await r.json().catch(() => null);
+  if (!est) return 'estado.json ilegível';
+  const rodadas = Array.isArray(est.rodadas) ? est.rodadas : [];
+  const ultima = Date.parse((rodadas[rodadas.length - 1] || {}).inicio || 0) || 0;
+  const pendentes = Object.keys(est.pendentes || {}).length;
+  const min = (agora - ultima) / 60_000;
+  if (!(pendentes > 0 && min > COLETA_PARADA_MIN) && !(min > COLETA_SEM_RODAR_MIN)) return `nada (pendentes ${pendentes}, última rodada há ${Math.round(min)} min)`;
+  const atual = await github(env, 'GET', 'coleta/disparar?ref=main');
+  const sha = atual.ok ? (await atual.json().catch(() => ({}))).sha : undefined;
+  if (!atual.ok) descartar(atual);
+  const quando = new Date(agora).toISOString();
+  const put = await github(env, 'PUT', 'coleta/disparar', {
+    message: `Coleta: rodada extra (${pendentes} partidas esperando análise)`, branch: 'main', sha,
+    content: base64(quando + '\n'),
+  });
+  descartar(put);
+  return `disparou (pendentes ${pendentes}, última rodada há ${Math.round(min)} min): HTTP ${put.status}`;
+}
+
 export default {
+  async scheduled(evento, env = {}, ctx) {
+    const tarefa = cutucarColeta(env).then((m) => console.log('cron coleta:', m)).catch((e) => console.log('cron coleta erro', e && e.message));
+    if (ctx && ctx.waitUntil) ctx.waitUntil(tarefa); else await tarefa;
+  },
+
   async fetch(req, env = {}) {
     const origem = (req.headers.get('Origin') || '').replace(/\/$/, '');
     const url = new URL(req.url);
