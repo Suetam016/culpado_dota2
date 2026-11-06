@@ -26,6 +26,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       base: exemplo ? null : f('https://raw.githubusercontent.com/Suetam016/culpado_dota2/dados/partidas/' + id + '.json.gz'),
       mapa: f('mapas/' + id + '.json', { cache: 'no-cache' }),
       rotas: f('rotas/base.json', { cache: 'no-cache' }),
+      posicao: f('meta/posicao.json', { cache: 'no-cache' }),
       config: f('config.json', { cache: 'no-cache' }) };
   } catch (e) { /* navegador sem fetch: o painel busca sozinho */ }
 })();
@@ -1531,6 +1532,33 @@ return L;
 
 
 
+// Farm comparado com quem jogou na MESMA posição (meta/posicao.json, das partidas da base do grupo): herói na
+// posição com amostra boa, senão a posição inteira. O percentil do OpenDota (todas as posições) fica só de reserva.
+function percentilNaCurva(qs, Q, x) {
+if (!Array.isArray(qs) || qs.length !== Q.length || x == null) return null;
+if (x <= qs[0]) return Math.max(0.01, (Q[0] / 100) * (qs[0] > 0 ? x / qs[0] : 0));
+for (let i = 1; i < qs.length; i++) {
+if (x <= qs[i]) return (Q[i - 1] + (Q[i] - Q[i - 1]) * ((x - qs[i - 1]) / Math.max(1e-9, qs[i] - qs[i - 1]))) / 100;
+}
+return Math.min(0.99, Q[Q.length - 1] / 100 + 0.04 * Math.min(1, (x - qs[qs.length - 1]) / Math.max(1, qs[qs.length - 1] * 0.15)));
+}
+function farmDaPosicao(p, base) {
+const s = p.stats;
+s.refFarm = `de quem joga de ${p.heroi.nome} (todas as posições)`;
+if (!base || !base.farm || !Array.isArray(base.q) || !p.posicao || s.gpm == null) return;
+const hid = p.raw.hero_id;
+const doHeroi = base.farm.h && base.farm.h[`${hid}.${p.posicao}`];
+const daPos = base.farm.p && base.farm.p[String(p.posicao)];
+const ref = doHeroi && doHeroi.gpm && doHeroi.n >= (base.min_n || 15) ? doHeroi : daPos && daPos.gpm ? daPos : null;
+if (!ref) return;
+const pc = percentilNaCurva(ref.gpm, base.q, Number(s.gpm));
+if (pc == null) return;
+s.benchOpenDota = s.bench.gold_per_min;
+s.bench.gold_per_min = pc;
+s.refFarm = ref === doHeroi ? `de quem joga de ${p.heroi.nome} de pos ${p.posicao}` : `de quem joga de pos ${p.posicao}`;
+s.farmPosicao = { fonte: ref === doHeroi ? 'heroi' : 'posicao', n: ref.n, mediana: ref.gpm[base.q.indexOf(50)] };
+}
+
 function statsDoJogador(p, mortes, lutas, lead, resultadoRuim) {
 const r = p.raw;
 const bench = {};
@@ -1829,7 +1857,10 @@ case 'ausencia': return `vivo e fora de ${plural(n, 'luta perdida', 'lutas perdi
 case 'farm':
 case 'dano': {
 const { pc, espaco } = infos[0];
-return `${k === 'farm' ? 'GPM' : 'dano em heróis'} no percentil ${pct(pc)} de quem joga de ${p.heroi.nome} (todas as posições${p.posicao === 3 ? '; na offlane pesa menos' : ''}${espaco < 1 ? '; o time estava muito atrás aos 20 min: pesa menos' : ''})`;
+const notas = [p.posicao === 3 ? 'na offlane pesa menos' : null, espaco < 1 ? 'o time estava muito atrás aos 20 min: pesa menos' : null];
+return k === 'farm'
+? `GPM no percentil ${pct(pc)} ${p.stats.refFarm || `de quem joga de ${p.heroi.nome}`}${notas.some(Boolean) ? ` (${notas.filter(Boolean).join('; ')})` : ''}`
+: `dano em heróis no percentil ${pct(pc)} de quem joga de ${p.heroi.nome} (${['todas as posições', ...notas].filter(Boolean).join('; ')})`;
 }
 case 'visao': {
 const { wards, esperado, roamer, pos } = infos[0];
@@ -2144,7 +2175,7 @@ const partes = [tor ? `deu o último golpe em ${plural(tor, 'torre', 'torres')}`
 return `${partes.length ? `${partes.join(' e ')}; ` : ''}${fmtK(p.raw.tower_damage || 0)} de dano em estrutura`;
 }
 case 'roshan': return `pegou o Aegis ${plural(n, 'vez', 'vezes')}`;
-case 'farm': return `GPM no percentil ${pct(c.infos[0])} de quem joga de ${p.heroi.nome} (todas as posições)`;
+case 'farm': return `GPM no percentil ${pct(c.infos[0])} ${p.stats.refFarm || `de quem joga de ${p.heroi.nome}`}`;
 case 'dano': return `dano em herói no percentil ${pct(c.infos[0])} de quem joga de ${p.heroi.nome} (todas as posições)`;
 case 'vivo': return `${plural(c.infos[0], 'morte', 'mortes')} em ${Math.round(minutos)} min`;
 case 'visao': return `${plural(c.infos[0].wards, 'ward', 'wards')}, acima das ~${Math.round(c.infos[0].esperado)} esperadas para ${c.infos[0].roamer ? 'um pos4 que roama' : `pos${c.infos[0].pos}`}`;
@@ -2395,7 +2426,7 @@ const ts = (ctx.mortes ? ctx.mortes[p.idx] : []).filter((d) => { const m = Math.
 add('ruim', `Morreu com o time +2k de ouro na frente: ${ts.join(', ')}.`, 0.9);
 }
 const farm = s.bench.gold_per_min;
-if (farm != null && farm >= 0.6 && p.funcao === 'core') add('bom', `${s.gpm} GPM: percentil ${pct(farm)} de quem joga de ${p.heroi.nome} (todas as posições).`, 0.6);
+if (farm != null && farm >= 0.6 && p.funcao === 'core') add('bom', `${s.gpm} GPM: percentil ${pct(farm)} ${s.refFarm || `de quem joga de ${p.heroi.nome}`}.`, 0.6);
 
 return provas.sort((a, b) => (a.tipo === 'bom') - (b.tipo === 'bom') || b.peso - a.peso);
 }
@@ -4048,7 +4079,7 @@ const shareDano = dano / danoTime;
 if (dano === maxDe((q) => q.raw.hero_damage || 0) && (shareDano >= 0.3 || (s.bench.hero_damage_per_min || 0) >= 0.85)) {
 add('mao-pesada', 'Mão Pesada', 5, `${fmtK(dano)} de dano em heróis, ${pct(shareDano)} do time${(s.bench.hero_damage_per_min || 0) >= 0.8 ? `, mais que ${pct(s.bench.hero_damage_per_min)} de quem joga de ${p.heroi.nome}` : ''}. Cada hit dele vinha com nota fiscal.`);
 }
-if (p.posicao <= 3 && (s.bench.gold_per_min || 0) >= 0.8) add('agro', 'Agro É Pop', 4, `Farm acima de ${pct(s.bench.gold_per_min)} de quem joga de ${p.heroi.nome} (${s.gpm} GPM). O agro é tech, o agro é pop, o agro é ${p.heroi.nome}.`);
+if (p.posicao <= 3 && (s.bench.gold_per_min || 0) >= 0.8) add('agro', 'Agro É Pop', 4, `Farm acima de ${pct(s.bench.gold_per_min)} ${s.refFarm || `de quem joga de ${p.heroi.nome}`} (${s.gpm} GPM). O agro é tech, o agro é pop, o agro é ${p.heroi.nome}.`);
 if ((r.stuns || 0) >= 40 && (r.stuns || 0) === maxDe((q) => q.raw.stuns || 0)) add('rei-do-stun', 'Rei do Stun', 3, `Deixou os inimigos ${Math.round(r.stuns)} segundos parados. Mais travados que PC de lan house em dia de atualização.`);
 
 
@@ -4421,7 +4452,7 @@ frases.push(`${frase(evid(top[0]))}${s.tfp != null ? `: esteve em ${pct(s.tfp)} 
 } else if (top[0] === 'throw' && s.deathsAhead != null) {
 frases.push(`Com o time na frente você morreu ${s.deathsAhead} ${s.deathsAhead === 1 ? 'vez' : 'vezes'}, e cada uma devolveu ouro que o time tinha construído${quem ? `; no jogo todo, quem mais te pegou foi ${quem}` : ''}.`);
 } else if (top[0] === 'farm' && s.bench.gold_per_min != null) {
-frases.push(`Seu farm ficou no percentil ${pct(s.bench.gold_per_min)} de quem joga de ${p.heroi.nome} em qualquer posição (${s.gpm} GPM): os itens chegaram tarde para as lutas do mid game.`);
+frases.push(`Seu farm ficou no percentil ${pct(s.bench.gold_per_min)} ${s.refFarm || `de quem joga de ${p.heroi.nome}`} (${s.gpm} GPM): os itens chegaram tarde para as lutas do mid game.`);
 } else if (top[0] === 'visao' && s.obs != null && s.sen != null) {
 frases.push(`${s.obs} obs e ${s.sen} sentries numa partida de ${Math.round(s.duracao / 60)} min: o time lutou sem saber onde eles estavam.`);
 } else if (top[0]) {
@@ -4835,6 +4866,7 @@ for (const p of jog) {
 const meu = p.radiant === ladoRadiant;
 p.stats = statsDoJogador(p, mortes, lutas, meu ? lead : lead && lead.map((g) => -g), meu ? 'perdeu' : 'venceu');
 p.stats.duracao = duracao;
+farmDaPosicao(p, dados.posicao || (match.culpado_contexto && match.culpado_contexto.posicao) || null);
 }
 
 const ctx = { jog, nos, eles, mortes, lutas, eventos, lead, leadXp, items, duracao, itensNos, itensEles };
@@ -6092,6 +6124,14 @@ const rotasDoSite = () => (rotasPromessa = rotasPromessa || (SO_EMBUTIDO
 ? Promise.resolve(null)
 : (tomarPre('rotas') || fetch('rotas/base.json', { cache: 'no-cache' }))
 .then((r) => (r && r.ok ? r.json() : null)).catch(() => null)));
+// farm e build por herói e posição (meta/posicao.json); sem ela o motor volta ao percentil do OpenDota
+let posicaoPromessa = null;
+function baseDePosicao() {
+posicaoPromessa = posicaoPromessa || (SO_EMBUTIDO ? Promise.resolve(null)
+: (tomarPre('posicao') || fetch('meta/posicao.json', { cache: 'no-cache' }))
+.then((r) => (r && r.ok ? r.json() : null)).then((b) => (b && b.farm ? b : null)).catch(() => null));
+return Promise.race([posicaoPromessa, new Promise((ok) => setTimeout(() => ok(null), ESPERA_ROTAS))]);
+}
 function baseDeRotas() {
 const embutida = valida(EMBUTIDO.rotas);
 return Promise.race([rotasDoSite(), new Promise((ok) => setTimeout(() => ok(null), ESPERA_ROTAS))]).then((b) => {
@@ -6131,7 +6171,7 @@ if (!ehEmbutida(id) && !SO_EMBUTIDO) iniciarProgresso(id);
 const dados = await dadosDaPartida(id, signal);
 avancarProgresso(1);
 dados.amigos = AMIGOS;
-dados.rotas = await baseDeRotas();
+[dados.rotas, dados.posicao] = await Promise.all([baseDeRotas(), baseDePosicao()]);
 if (!vivo()) return;
 if (mapaJa && !dados.mapa) dados.mapa = mapaJa;
 Object.assign(estado, { id, dados, lado: lado || (mesma ? estado.lado : null), exemplo, f3: dados.embutida ? 'pronto' : 'carregando' });

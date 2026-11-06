@@ -153,6 +153,9 @@ async function main() {
   const rotas = fs.existsSync(path.join(RAIZ, 'rotas', 'base.json'))
     ? JSON.parse(fs.readFileSync(path.join(RAIZ, 'rotas', 'base.json'), 'utf8'))
     : null;
+  const posicao = fs.existsSync(path.join(RAIZ, 'meta', 'posicao.json'))
+    ? JSON.parse(fs.readFileSync(path.join(RAIZ, 'meta', 'posicao.json'), 'utf8'))
+    : null;
   // GRUPO=<id> gera o ranking de outro grupo da Liga (grupos/<id>/amigos.json -> grupos/<id>/ranking.json); sem ele, o Marocas
   const grupo = (process.env.GRUPO || '').trim();
   if (grupo && !/^[a-z0-9-]+$/.test(grupo)) throw new Error(`GRUPO inválido: ${grupo}`);
@@ -198,7 +201,7 @@ async function main() {
         const doLado = match.players.filter((p) => idsAmigos.has(p.account_id) && p.isRadiant === (lado === 'radiant'));
         if (!doLado.length) continue;
         try {
-          const r = motor.analisar({ match, heroes, items, itemIds, amigos, rotas, timings: {}, matchups: {}, duracoes: {}, mapa: null }, { lado });
+          const r = motor.analisar({ match, heroes, items, itemIds, amigos, rotas, posicao, timings: {}, matchups: {}, duracoes: {}, mapa: null }, { lado });
           analise.lados[lado] = resumoDaAnalise(r, doLado);
         } catch (erro) {
           console.error(`  partida ${mid} (${lado}): motor falhou (${erro.message})`);
