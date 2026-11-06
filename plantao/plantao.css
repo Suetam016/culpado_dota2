@@ -1,0 +1,54 @@
+/* Plantão da Selva: a tela de vitória como plantão policial, com câmera de helicóptero perseguindo quem carregou no
+   replay de verdade. Carregado só quando a visão "plantao" é aberta (index.html, visaoPlantao). Tudo medido em cqw. */
+.plantao-visao{display:grid;gap:10px}
+.plantao-visao .pl-palco{display:grid;gap:10px}
+.plantao-visao .pl-cab{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.plantao-visao .pl-cab b{font:600 .75rem/1 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#ff6a5c}
+.plantao-visao .pl-cab span{color:inherit;opacity:.75;font-size:.9rem}
+.plantao-visao .pl-info{display:flex;flex-wrap:wrap;gap:6px 16px;font:500 .8rem/1.4 "IBM Plex Mono",monospace;opacity:.85}
+.plantao-visao .pl-info label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.plantao-visao .pl-info .ok{color:#7fd36a}
+.plantao-visao .pl-aviso{margin:0;padding:14px;border:1px dashed currentColor;border-radius:10px;opacity:.85}
+.pl.peca{container-type:inline-size;width:100%;max-width:560px;aspect-ratio:4/5;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 18px 40px -22px rgba(0,0,0,.55);margin:0 auto}
+.pl.peca *{box-sizing:border-box}
+.pl{background:#06080f;color:#fff;font-family:"Archivo",sans-serif}
+.pl canvas{position:absolute;top:11cqw;left:0;width:100%;height:94cqw;display:block;cursor:pointer}
+.pl-topo{position:absolute;top:0;left:0;right:0;height:11cqw;display:flex;align-items:stretch;background:#0a1430;z-index:2}
+.pl-topo .vin{background:linear-gradient(90deg,#c81414,#ff3b2f);display:flex;align-items:center;gap:2cqw;padding:0 3cqw;box-shadow:inset 0 -.8cqw 0 #ffd400}
+.pl-topo .vin b{font:400 6.4cqw/1 "Anton",Impact,sans-serif;letter-spacing:.03em}
+.pl-topo .vin small{font:800 2.2cqw/1.1 "Archivo";text-transform:uppercase;letter-spacing:.1em;border-left:.3cqw solid rgba(255,255,255,.6);padding-left:2cqw}
+.pl-topo .vivo{display:flex;align-items:center;gap:1.2cqw;padding:0 2.4cqw;font:800 2.4cqw/1 "Archivo";letter-spacing:.12em}
+.pl-topo .vivo i{width:1.8cqw;height:1.8cqw;border-radius:50%;background:#ff2d2d;animation:pl-pisca 1.2s infinite}
+.pl-topo .plc{margin-left:auto;display:flex;align-items:center;font:400 4.4cqw/1 "Anton",Impact,sans-serif}
+.pl-topo .plc span{padding:0 2cqw;height:100%;display:grid;place-items:center}
+.pl-topo .plc .t{background:#fff;color:#0a1430;font-size:3.2cqw}
+.pl-topo .plc .n{background:#ffd400;color:#0a1430;min-width:8cqw;font-variant-numeric:tabular-nums}
+.pl-gc{position:absolute;left:0;top:77cqw;z-index:2;max-width:94cqw}
+.pl-gc .nome{display:inline-flex;align-items:center;gap:2cqw;background:#fff;color:#0a1430;font:400 7.6cqw/1 "Anton",Impact,sans-serif;padding:1.4cqw 3cqw 1.4cqw 4cqw;text-transform:uppercase}
+.pl-gc .nome img{width:8cqw;height:8cqw;border-radius:50%;object-fit:cover;object-position:50% 20%;border:.5cqw solid #5fe36a}
+.pl-gc .sub{background:#ffd400;color:#0a1430;font:800 3cqw/1.2 "Archivo";padding:1.4cqw 3cqw 1.4cqw 4cqw;text-transform:uppercase;display:inline-block}
+.pl-gc .sub.nova{animation:pl-entra .45s ease-out}
+.pl-chips{position:absolute;top:26cqw;right:3cqw;z-index:2;display:flex;flex-direction:column;gap:1cqw;align-items:flex-end;pointer-events:none}
+.pl-chips div{background:rgba(6,8,15,.72);border-left:.8cqw solid #ffd400;font:700 2.3cqw/1 "JetBrains Mono",monospace;padding:1.2cqw 2cqw;letter-spacing:.06em}
+.pl-chips b{font:400 3.6cqw/1 "Anton",Impact,sans-serif;color:#ffd400;margin-right:1.2cqw;display:inline-block;font-variant-numeric:tabular-nums}
+.pl-fala{position:absolute;left:0;right:0;top:105cqw;height:11cqw;background:#0a0d18;display:flex;align-items:center;gap:2.4cqw;padding:0 3cqw;z-index:2;border-top:.4cqw solid #c81414}
+.pl-fala small{flex:none;background:#c81414;font:800 2cqw/1 "Archivo";letter-spacing:.12em;padding:1cqw 1.6cqw;border-radius:.6cqw}
+.pl-fala span{font:600 3.1cqw/1.25 "Archivo";min-width:0}
+.pl-fala.nova span{animation:pl-entra .35s ease-out}
+.pl-tk{position:absolute;bottom:0;left:0;right:0;height:9cqw;background:#ffd400;color:#0a1430;display:flex;align-items:center;overflow:hidden;z-index:2}
+.pl-tk b{flex:none;height:100%;display:grid;place-items:center;background:#c81414;color:#fff;font:400 3.8cqw/1 "Anton",Impact,sans-serif;padding:0 2.6cqw;z-index:1}
+.pl-tk div{white-space:nowrap;font:800 2.9cqw/1 "Archivo";text-transform:uppercase;padding-left:4cqw;animation:pl-corre 30s linear infinite}
+.pl .pulso{animation:pl-pulso .6s ease-out}
+@keyframes pl-pulso{0%{transform:scale(1.7);background:#fff}100%{transform:scale(1)}}
+@keyframes pl-entra{from{transform:translateX(-6cqw);opacity:0}to{transform:none;opacity:1}}
+@keyframes pl-pisca{50%{opacity:.25}}
+@keyframes pl-corre{to{transform:translateX(-50%)}}
+.pl-play{position:absolute;inset:11cqw 0 20cqw 0;z-index:3;display:grid;place-items:center;background:rgba(4,6,12,.38);border:0;color:#fff;cursor:pointer;font:inherit}
+.pl-play span{display:flex;align-items:center;gap:2.4cqw;background:#c81414;padding:2.6cqw 4.4cqw;border-radius:99px;box-shadow:0 1.4cqw 4cqw rgba(0,0,0,.5)}
+.pl-play i{width:0;height:0;border-left:3.4cqw solid #fff;border-top:2.1cqw solid transparent;border-bottom:2.1cqw solid transparent}
+.pl-play b{font:800 3.6cqw/1 "Archivo"}
+.pl-play[hidden]{display:none}
+.pl-play:disabled{cursor:progress}
+.pl-play:disabled span{background:#555}
+.pl-play:focus-visible span{outline:.6cqw solid #ffd400;outline-offset:.6cqw}
+@media (prefers-reduced-motion:reduce){.pl-topo .vivo i,.pl-tk div,.pl .pulso,.pl-fala.nova span,.pl-gc .sub.nova{animation:none!important}}
