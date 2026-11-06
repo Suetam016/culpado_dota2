@@ -153,9 +153,13 @@ async function main() {
   const rotas = fs.existsSync(path.join(RAIZ, 'rotas', 'base.json'))
     ? JSON.parse(fs.readFileSync(path.join(RAIZ, 'rotas', 'base.json'), 'utf8'))
     : null;
-  const amigos = JSON.parse(fs.readFileSync(path.join(RAIZ, 'amigos.json'), 'utf8'));
+  // GRUPO=<id> gera o ranking de outro grupo da Liga (grupos/<id>/amigos.json -> grupos/<id>/ranking.json); sem ele, o Marocas
+  const grupo = (process.env.GRUPO || '').trim();
+  if (grupo && !/^[a-z0-9-]+$/.test(grupo)) throw new Error(`GRUPO inválido: ${grupo}`);
+  const pastaGrupo = grupo ? path.join(RAIZ, 'grupos', grupo) : null;
+  const amigos = JSON.parse(fs.readFileSync(grupo ? path.join(pastaGrupo, 'amigos.json') : path.join(RAIZ, 'amigos.json'), 'utf8'));
   const idsAmigos = new Set(Object.keys(amigos).map(Number));
-  const saida = path.join(RAIZ, 'amigos', 'ranking.json');
+  const saida = grupo ? path.join(pastaGrupo, 'ranking.json') : path.join(RAIZ, 'amigos', 'ranking.json');
   const anterior = fs.existsSync(saida) ? JSON.parse(fs.readFileSync(saida, 'utf8')) : {};
 
   if (!fs.existsSync(path.join(DADOS, 'indice.json'))) {
@@ -163,7 +167,8 @@ async function main() {
     process.exit(1);
   }
   const indice = JSON.parse(fs.readFileSync(path.join(DADOS, 'indice.json'), 'utf8'));
-  const pastaAnalises = path.join(DADOS, 'analises');
+  // cada grupo guarda as análises dele (o resumo de cada lado leva as contas do grupo)
+  const pastaAnalises = grupo ? path.join(DADOS, 'analises', 'grupos', grupo) : path.join(DADOS, 'analises');
   fs.mkdirSync(pastaAnalises, { recursive: true });
 
   const desde = Date.now() / 1000 - DIAS_HISTORICO * 86400;
@@ -211,6 +216,19 @@ async function main() {
         historicos[String(c)].push({ matchId: analise.matchId, lado, tipo, inicio: analise.inicio, comStack: a.amigos.length >= 2, ranqueada: analise.ranqueada,
           heroi: eu.heroi ?? null, culpa: eu.culpa ?? null, merito: ((a.merito || []).find((m) => m.conta === c) || {}).fatia ?? null });
       }
+    }
+  }
+  // partidas que a coleta já achou mas que ainda esperam a análise do replay no OpenDota (provisorias/): o site avisa
+  // quantas faltam (grupo recém-chegado tem várias de uma vez)
+  const pastaProv = path.join(DADOS, 'provisorias');
+  if (fs.existsSync(pastaProv)) {
+    for (const arq of fs.readdirSync(pastaProv)) {
+      const mid = arq.replace(/\.json\.gz$/, '');
+      if (mid === arq || mid in indice) continue;
+      try {
+        const m = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(pastaProv, arq))));
+        if ((m.start_time || 0) >= desde && (m.players || []).some((p) => idsAmigos.has(p.account_id))) conta.semAnalise++;
+      } catch (e) { /* arquivo ruim: ignora */ }
     }
   }
   // partidas que só existem no ranking antigo (de quando este robô baixava direto do OpenDota) não se perdem
@@ -286,6 +304,8 @@ async function main() {
   }).sort((a, b) => b.culpados - a.culpados);
 
   if (!Object.values(historicos).some((xs) => xs.length)) {
+    // grupo recém-chegado: a coleta ainda está baixando as partidas dele; não é erro
+    if (grupo) { console.log(`${grupo}: nenhuma partida julgada ainda (a coleta está baixando)`); return; }
     console.error('Nenhuma partida julgada; ranking.json fica como está.');
     process.exit(1);
   }

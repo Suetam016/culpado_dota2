@@ -3,6 +3,7 @@
 // tira os fatos da partida e escreve o roteiro (audio/roteiro.js). A voz sai depois, no audio/falar.py.
 //
 //   node audio/fila.js [--max N] [--dias D]
+//   node audio/fila.js --id <partida> [--lado radiant|dire]   (uma partida só, para a voz na GPU: audio/gpu.py)
 //
 // Entram primeiro os pedidos do site (audio/pedidos/<id>, partida de qualquer pessoa: vem do OpenDota) e depois as
 // vitórias do grupo dos últimos D dias que ainda não têm áudio (vêm da base, branch "dados", em .dados).
@@ -13,6 +14,7 @@ const path = require('path');
 const zlib = require('zlib');
 const { carregarMotor, dadosEmbutidos } = require('../ranking/gerar.js');
 const Roteiro = require('./roteiro.js');
+const Banco = require('./banco.js');
 
 const RAIZ = path.resolve(__dirname, '..');
 const DADOS = process.env.DADOS || path.join(RAIZ, '.dados');
@@ -24,9 +26,23 @@ const arg = (nome, padrao) => {
 };
 const MAX = arg('max', 3);
 const DIAS = arg('dias', 3);
+const SO_ID = arg('id', null);
+const SO_LADO = (() => { const i = process.argv.indexOf('--lado'); return i > 0 ? process.argv[i + 1] : null; })();
+// pedido que o Worker mandou para a GPU (audio/gpu.py): o robô do Actions só pega se a GPU não der conta em 15 min
+const GPU_ESPERA_MS = 15 * 60_000;
+const pedidoNaGpu = (id) => {
+  try {
+    const txt = fs.readFileSync(path.join(PEDIDOS, id), 'utf8');
+    const quando = Date.parse((txt.match(/\d{4}-\d\d-\d\dT[\d:.]+Z/) || [])[0]);
+    return /\(gpu\)/.test(txt) && Number.isFinite(quando) && Date.now() - quando < GPU_ESPERA_MS;
+  } catch (e) { return false; }
+};
 
 const ler = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
-const temAudio = (id, lado) => fs.existsSync(path.join(PASTA, `${id}-${lado}.json`));
+// pronto = já tem a conversa gravada (os áudios compridos antigos, de antes de 06/11/2026, não contam)
+const temAudio = (id, lado) => {
+  try { return Boolean(ler(path.join(PASTA, `${id}-${lado}.json`)).conversa); } catch (e) { return false; }
+};
 
 async function baixar(id) {
   const chave = process.env.OPENDOTA_API_KEY ? `?api_key=${process.env.OPENDOTA_API_KEY}` : '';
@@ -45,10 +61,13 @@ async function main() {
 
   const candidatos = [];
   // 1) pedidos do site (quem pediu está esperando na página)
-  const pedidos = fs.existsSync(PEDIDOS) ? fs.readdirSync(PEDIDOS).filter((f) => /^\d+$/.test(f)) : [];
+  const pedidos = SO_ID ? [] : fs.existsSync(PEDIDOS) ? fs.readdirSync(PEDIDOS).filter((f) => /^\d+$/.test(f) && !pedidoNaGpu(f)) : [];
   for (const id of pedidos) candidatos.push({ id, pedido: true });
-  // 2) vitórias do grupo dos últimos dias, das mais novas para as mais velhas
-  const desde = Date.now() / 1000 - DIAS * 86400;
+  if (SO_ID) candidatos.push({ id: String(SO_ID), lado: SO_LADO || undefined, pedido: true });
+  // 2) vitórias do grupo dos últimos dias, das mais novas para as mais velhas. Se tem gente esperando na página, o
+  //    robô grava SÓ os pedidos (cada áudio leva ~4 min na CPU e o site só recebe quando a rodada inteira termina);
+  //    as do grupo ficam para a rodada que vem depois do ranking.
+  const desde = pedidos.length || SO_ID ? Infinity : Date.now() / 1000 - DIAS * 86400;
   Object.entries(indice)
     .filter(([, info]) => (info.inicio || 0) >= desde && info.radiant_venceu != null)
     .sort((a, b) => b[1].inicio - a[1].inicio)
@@ -70,13 +89,14 @@ async function main() {
     }
     if (!match || !Array.isArray(match.players) || match.radiant_win == null) { console.error(`${c.id}: partida incompleta`); continue; }
     const lado = c.lado || (match.radiant_win ? 'radiant' : 'dire');
-    if (c.pedido && temAudio(c.id, lado)) { fila.push({ id: c.id, lado, pedido: true, jaTem: true }); continue; }
+    if (c.pedido && !process.argv.includes('--forcar') && temAudio(c.id, lado)) { fila.push({ id: c.id, lado, pedido: true, jaTem: true }); continue; }
     try {
       const r = motor.analisar({ match, heroes, items, itemIds, amigos, rotas, timings: {}, matchups: {}, duracoes: {}, mapa: null }, { lado });
       const f = Roteiro.fatos(r);
       if (!f) { console.error(`${c.id}: sem craque`); continue; }
       const g = Roteiro.gerar(f, `${c.id}-${lado}`);
-      fila.push({ id: c.id, lado, arquivo: `${c.id}-${lado}`, texto: g.texto, partes: g.partes, eu: f.eu, conta: f.conta,
+      fila.push({ id: c.id, lado, arquivo: `${c.id}-${lado}`, texto: g.texto, partes: g.partes,
+        audios: Banco.audios(g.partes).map((a) => ({ ...a, chave: Banco.chave(a.texto) })), eu: f.eu, conta: f.conta,
         heroi: f.heroi, fatia: f.fatia, pedido: !!c.pedido });
       console.log(`${c.id} ${lado} (${f.eu}, ${f.heroi}, ${f.fatia}%): ${g.texto}`);
     } catch (e) {

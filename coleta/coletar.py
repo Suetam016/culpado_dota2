@@ -70,7 +70,8 @@ INTERVALO_LISTA_AMIGO_S = 2 * 3600  # a lista de partidas de cada amigo é consu
 INTERVALO_HISTORICO_S = 24 * 3600   # histórico completo (fase opcional): uma consulta por conta por dia
 PRIMEIRA_ESPERA_S = 30 * 60   # depois do pedido de análise: tenta o GET de novo na rodada seguinte
 MAX_ESPERA_S = 12 * 3600      # espera entre GETs de uma partida pendente: 1 h, 2 h, 4 h, 8 h, 12 h, 12 h...
-ESPERA_ANALISE_S = 3 * 86400  # depois do pedido, desiste em ~3 dias
+ESPERA_ANALISE_S = 3 * 86400
+PAUSAS_PEDIDO = int(os.environ.get("COLETA_PAUSAS_PEDIDO", "15"))  # esperas de 1 min por 429 no pedido de análise  # depois do pedido, desiste em ~3 dias
 REPLAY_SOME_S = 15 * 86400    # partida com mais de ~15 dias: a Valve já apagou o replay
 ESPERA_FALHA_S = 30 * 60      # erro numa partida: espera isso antes de tentar de novo (dobra a cada erro do OpenDota)
 MAX_ESPERA_FALHA_S = 12 * 3600
@@ -509,7 +510,8 @@ class Rodada:
         # OpenDota caiu
         self.sequencia: list[tuple[str, dict | None, dict | None, dict]] = []
         self.descartadas: set[str] = set()  # nesta rodada
-        self.sem_pedidos = False  # o POST /request recebeu 429: não pede mais análise nesta rodada
+        self.sem_pedidos = False  # o POST /request recebeu 429 (mesmo depois das esperas): não pede mais nesta rodada
+        self.pausas_pedido = 0
         self.novas_por_grupo: Counter = Counter()
         self.bytes_novos = 0
         self.desde_gravacao = 0
@@ -581,7 +583,7 @@ class Rodada:
             if prox is not None and prox > agora:
                 return False
         p = self.pendentes.get(k)
-        if isinstance(p, dict):
+        if isinstance(p, dict) and p.get("pedido_em"):  # nunca pedida: entra já (pede a análise)
             prox = de_iso(p.get("proxima"))
             if prox is not None and prox > agora:
                 return False
@@ -709,7 +711,7 @@ class Rodada:
         p = self.pendentes.get(k)
         if not isinstance(p, dict):
             p = {"inicio": int(inicio), "primeira_vez": iso(agora), "pedido_em": None, "tentativas": 0}
-        else:
+        elif p.get("pedido_em"):  # só conta tentativa (e espera mais) depois que a análise foi pedida
             p["tentativas"] = int(p.get("tentativas") or 0) + 1
         self.pendentes[k] = p
         if agora - inicio > REPLAY_SOME_S:
@@ -725,17 +727,27 @@ class Rodada:
             self.log(f"  {k}: ainda sem análise (tentativa {n}); próxima depois de {p['proxima']}")
             return
         if self.sem_pedidos:
+            # nunca pedida: volta já na próxima rodada (sem a espera crescente de quem já foi pedida)
+            p["proxima"] = iso(agora)
             self.log(f"  {k}: sem análise; o pedido fica para a próxima rodada")
             return
         try:
             # 429 só no pedido de análise (pode ser um limite à parte): para de pedir, mas segue baixando as que já
             # estão analisadas; se for o limite geral, a próxima chamada recebe 429 e aí a rodada acaba
             st2, _ = self.api.chamar("POST", f"/request/{k}", "pedido", parar_no_429=False)
+            # o OpenDota limita os pedidos de análise por minuto: espera 1 min e tenta de novo, poucas vezes por
+            # rodada (grupo novo chega com dezenas de partidas sem análise de uma vez)
+            while st2 == 429 and self.pausas_pedido < PAUSAS_PEDIDO:
+                self.pausas_pedido += 1
+                self.log(f"  {k}: 429 no pedido de análise; espero 1 min ({self.pausas_pedido}/{PAUSAS_PEDIDO})")
+                self.api.dormir(61)
+                st2, _ = self.api.chamar("POST", f"/request/{k}", "pedido", parar_no_429=False)
         except ErroRede as e:
             self.log(f"  {k}: pedido de análise falhou ({e}); tento de novo depois")
             return
         if st2 == 429:
             self.sem_pedidos = True
+            p["proxima"] = iso(agora)
             self.log(f"  {k}: 429 no pedido de análise; sem novos pedidos nesta rodada")
         elif 200 <= st2 < 300:
             p["pedido_em"] = iso(self.relogio())

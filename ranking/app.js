@@ -1,8 +1,12 @@
 /* Ranking do grupo Marocas: culpados/craques (amigos/ranking.json), duplas e composições (amigos/parceiros.json)
  * e meta do Reddit (reddit/insights.json). */
 
-const RANKING_URL = '../amigos/ranking.json';
-const PARCEIROS_URL = '../amigos/parceiros.json';
+// ?grupo=<id> abre outro grupo da Liga (grupos/<id>/); sem ele é o Marocas (amigos/)
+const GRUPO = (() => { try { const g = new URLSearchParams(location.search).get('grupo'); return g && /^[a-z0-9-]+$/.test(g) && g !== 'marocas' ? g : null; } catch (e) { return null; } })();
+const PASTA_GRUPO = GRUPO ? `../grupos/${GRUPO}` : '../amigos';
+const RANKING_URL = `${PASTA_GRUPO}/ranking.json`;
+const PARCEIROS_URL = `${PASTA_GRUPO}/parceiros.json`;
+const GRUPOS_URL = '../grupos/grupos.json';
 const INSIGHTS_URL = '../reddit/insights.json';
 const META_URL = '../meta/meta.json';
 const ITEM_IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/';
@@ -29,6 +33,9 @@ const CHAVE_PERIODO = 'ranking-periodo';
 
 let ranking = null;
 let parceiros = null;
+let nomeGrupo = 'Marocas';
+let papelGrupo = 'MRC3';   // o código da ação do grupo na Bolsa
+let GRUPOS = [{ id: 'marocas', nome: 'Marocas', fundador: true, href: './#elo' }];
 let parceirosBase = null;
 let periodo = 'tudo';
 let insights = null;
@@ -39,19 +46,14 @@ let ordem = 'culpados';
 const $ = id => document.getElementById(id);
 
 document.addEventListener('DOMContentLoaded', async () => {
-  modoLiga(!location.hash || location.hash === '#liga');
+  const pedirGrupo = location.hash === '#pedir'; // vindo do "Quero o meu grupo" da home
+  modoLiga(!location.hash || location.hash === '#liga' || pedirGrupo);
   mostrarPatchNotes();
   $('liga-grupos').addEventListener('click', e => {
     const tr = e.target.closest('tr[data-href]');
-    if (tr && !e.target.closest('a')) location.hash = tr.dataset.href;
+    if (tr && !e.target.closest('a')) location.href = tr.dataset.href;
   });
-  $('liga-pedir-grupo').addEventListener('click', () => {
-    const caixa = $('fb-caixa');
-    if (caixa.hidden) $('fb-botao').click();
-    const campo = $('fb-texto');
-    if (!campo.value.trim()) campo.value = 'Quero o meu grupo na Liga dos grupos!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
-    campo.focus();
-  });
+  montarPedidoGrupo(pedirGrupo);
   document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => mudarAba(b.dataset.aba)));
   document.querySelectorAll('[data-ordem]').forEach(b => b.addEventListener('click', () => {
     ordem = b.dataset.ordem;
@@ -70,13 +72,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   $('bolsa').addEventListener('click', e => {
     const d = e.target.closest('[data-dia]');
-    if (d) { bolsaDia = d.dataset.dia; renderizarBolsa(); }
+    const per = e.target.closest('[data-periodo]');
+    if (per) { bolsaPeriodo = per.dataset.periodo; try { localStorage.setItem('bolsa-periodo-v1', bolsaPeriodo); } catch (_) {} renderizarBolsa(); return; }
+    if (d) { bolsaDia = d.dataset.dia; bolsaAfastar = !!d.closest('.pregao'); renderizarBolsa(); }
+  });
+  let esperaBolsa = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(esperaBolsa);
+    esperaBolsa = setTimeout(() => { const w = $('bolsa').clientWidth; if (parceirosBase && w && w !== larguraBolsaAtual) renderizarBolsa(); }, 200);
   });
 
   const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
-  [ranking, parceiros, insights, meta, estadoAtt] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking()]);
+  let lista;
+  [ranking, parceiros, insights, meta, estadoAtt, lista] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking(), pegar(GRUPOS_URL)]);
+  GRUPOS = GRUPOS.concat((Array.isArray(lista) ? lista : []).filter(g => g && /^[a-z0-9-]+$/.test(g.id || ''))
+    .map(g => ({ id: g.id, nome: String(g.nome || g.id), papel: /^[A-Z0-9]{2,5}$/.test(g.papel || '') ? g.papel : null, href: `./?grupo=${g.id}#elo` })));
+  if (GRUPO) {
+    const g = GRUPOS.find(x => x.id === GRUPO);
+    nomeGrupo = g ? g.nome : GRUPO;
+    // código da ação: o do grupos.json ou as 3 primeiras consoantes do nome (Os Kushitas -> KSH3)
+    const cons = nomeGrupo.replace(/^(os|as|o|a)\s+/i, '').normalize('NFD').replace(/[^a-z]/gi, '').replace(/[aeiou]/gi, '').toUpperCase();
+    papelGrupo = (g && g.papel) || `${(cons || 'GRP').slice(0, 3).padEnd(3, 'X')}3`;
+  }
   // o GitHub Pages pode levar minutos para publicar o ranking novo: se o repositório já tem um mais novo, usa ele
-  if (estadoAtt && estadoAtt.atualizadoEm && (!ranking || Date.parse(estadoAtt.atualizadoEm) > Date.parse(ranking.atualizadoEm))) {
+  // (o Worker só guarda o do Marocas)
+  if (!GRUPO && estadoAtt && estadoAtt.atualizadoEm && (!ranking || Date.parse(estadoAtt.atualizadoEm) > Date.parse(ranking.atualizadoEm))) {
     const url = await urlDoCoach();
     const [r2, p2] = await Promise.all([pegar(`${url}/ranking/arquivo/ranking`), pegar(`${url}/ranking/arquivo/parceiros`)]);
     if (r2 && r2.historicos) ranking = r2;
@@ -84,7 +104,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!ranking || !ranking.historicos) {
-    $('carregando').textContent = 'Não deu pra carregar o ranking. Tente recarregar.';
+    $('carregando').textContent = GRUPO
+      ? `O ranking de ${nomeGrupo} ainda está sendo montado: o robô está baixando as partidas do grupo. Normalmente leva até 1 dia.`
+      : 'Não deu pra carregar o ranking. Tente recarregar.';
+    if (GRUPO) { modoLiga(true); renderizarLiga(); }
     return;
   }
   $('carregando').hidden = true;
@@ -98,6 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pelaUrl = () => {
     const aba = location.hash.slice(1);
     if (!aba || aba === 'liga') { modoLiga(true); return; } // sem # abre a Liga dos grupos
+    if (aba === 'pedir') { modoLiga(true); if ($('liga-form').hidden) $('liga-pedir-grupo').click(); return; }
     modoLiga(false);
     mudarAba(document.querySelector(`.aba[data-aba="${aba}"]`) ? aba : 'elo'); // dentro do grupo, a Bolsa abre por padrão
   };
@@ -106,14 +130,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /* ---------- Liga dos grupos ---------- */
-// Os grupos da liga. Hoje só o Marocas, que usa os dados desta página; grupo novo entra aqui com os arquivos dele.
-const GRUPOS = [{ id: 'marocas', nome: 'Marocas', fundador: true, href: 'elo' }];
+// Os grupos da liga: o Marocas (fundador, amigos/) e os de grupos/grupos.json (cada um com grupos/<id>/).
 
 function modoLiga(liga) {
   document.body.classList.toggle('modo-liga', liga);
   $('marca-tag').textContent = liga ? 'A comunidade do culpado' : 'Liga dos grupos';
-  $('marca-nome').textContent = liga ? 'Liga dos grupos' : 'Marocas';
-  document.title = liga ? 'Liga dos grupos' : 'Ranking — Marocas';
+  $('marca-nome').textContent = liga ? 'Liga dos grupos' : nomeGrupo;
+  document.title = liga ? 'Liga dos grupos' : `Ranking — ${nomeGrupo}`;
   if (liga && location.hash !== '#liga') history.replaceState(null, '', '#liga');
 }
 
@@ -143,10 +166,26 @@ function semanaDoGrupo(r, p) {
   };
 }
 
-function renderizarLiga() {
+// os dados de cada grupo da liga (o grupo aberto já veio carregado)
+const dadosDaLiga = {};
+async function dadosDoGrupo(g) {
+  if ((g.id === 'marocas' && !GRUPO) || g.id === GRUPO) return { r: ranking, p: parceirosBase };
+  if (!dadosDaLiga[g.id]) {
+    const pasta = g.id === 'marocas' ? '../amigos' : `../grupos/${g.id}`;
+    const pegar = url => fetch(url, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    dadosDaLiga[g.id] = Promise.all([pegar(`${pasta}/ranking.json`), pegar(`${pasta}/parceiros.json`)]).then(([r, p]) => ({ r, p }));
+  }
+  return dadosDaLiga[g.id];
+}
+
+async function renderizarLiga() {
   const corpo = $('liga-grupos');
-  if (!corpo || !ranking) return;
-  const linhas = GRUPOS.map(g => ({ ...g, s: semanaDoGrupo(ranking, parceirosBase) })).sort((a, b) => b.s.mmr - a.s.mmr);
+  if (!corpo) return;
+  const vazio = { pessoas: 0, partidas: 0, vit: 0, mmr: 0, craque: null, culpado: null, inicio: desdePeriodo('semana') };
+  const linhas = (await Promise.all(GRUPOS.map(async g => {
+    const { r, p } = await dadosDoGrupo(g);
+    return r && r.historicos ? { ...g, s: semanaDoGrupo(r, p) } : { ...g, chegando: true, s: vazio };
+  }))).sort((a, b) => (a.chegando - b.chegando) || b.s.mmr - a.s.mmr);
   const ini = new Date(linhas[0].s.inicio * 1000);
   const fim = new Date(ini); fim.setDate(fim.getDate() + 6);
   const dm = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
@@ -156,9 +195,9 @@ function renderizarLiga() {
   const pessoa = (x, k, papel, cls) => x
     ? `<span class="liga-pessoa ${cls}">${rosto(x)}<span><b>${esc(x.nome)}</b><small>${papel} ${x[k]}x em ${x.partidas}</small></span></span>`
     : '<span class="liga-vazio">ninguém ainda</span>';
-  corpo.innerHTML = linhas.map((g, i) => `<tr data-href="${g.href}" data-grupo="${g.id}">
+  corpo.innerHTML = linhas.map((g, i) => `<tr data-href="${esc(g.href)}" data-grupo="${g.id}">
     <td class="liga-pos">${i + 1}</td>
-    <td><a class="liga-nome" href="#${g.href}">${esc(g.nome)}</a>${g.fundador ? '<span class="liga-fund">Fundador</span>' : ''}<span class="liga-sub">${g.s.partidas} partidas · ${g.s.vit}V ${g.s.partidas - g.s.vit}D</span></td>
+    <td><a class="liga-nome" href="${esc(g.href)}">${esc(g.nome)}</a>${g.fundador ? '<span class="liga-fund">Fundador</span>' : ''}${g.chegando ? '<span class="liga-fund">Chegando</span>' : ''}<span class="liga-sub">${g.chegando ? 'o robô está baixando as partidas' : `${g.s.partidas} partidas · ${g.s.vit}V ${g.s.partidas - g.s.vit}D`}</span></td>
     <td class="liga-num liga-pessoas">${g.s.pessoas}</td>
     <td class="liga-mmr">${mmr(g.s.mmr)}</td>
     <td class="liga-c-craque">${pessoa(g.s.craque, 'craques', 'craque', 'liga-craque')}</td>
@@ -1252,6 +1291,18 @@ function renderizarElo() {
 const BOLSA_DIAS = 90;
 const BOLSA_LW = 18;
 let bolsaDia = null;
+let larguraBolsaAtual = 0;
+let bolsaAfastar = false;
+/* Períodos do gráfico, como numa corretora: até 3M um candle por dia; 6M e Tudo afastam com um candle por semana
+ * (domingo a sábado, igual ao resto do site). Só aparecem os períodos menores que o histórico do grupo. */
+const BOLSA_PERIODOS = [
+  { id: '1s', nome: '1S', titulo: '1 semana', dias: 7 },
+  { id: '1m', nome: '1M', titulo: '1 mês', dias: 30 },
+  { id: '3m', nome: '3M', titulo: '3 meses', dias: 90 },
+  { id: '6m', nome: '6M', titulo: '6 meses', dias: 182, semanal: true },
+  { id: 'tudo', nome: 'Tudo', titulo: 'desde a primeira ranqueada', semanal: true },
+];
+let bolsaPeriodo = (() => { try { return localStorage.getItem('bolsa-periodo-v1') || '3m'; } catch (_) { return '3m'; } })();
 
 const diaLocal = t => { const d = new Date(t * 1000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const dataDoDia = s => { const [a, m, d] = s.split('-').map(Number); return new Date(a, m - 1, d); };
@@ -1280,9 +1331,9 @@ function dadosDaBolsa() {
   const hoje = diaLocal(Date.now() / 1000);
   const velas = [];
   let atual = preco;
-  // preço antes da janela: aplica os dias anteriores
-  const inicio = somaDia(hoje, -(BOLSA_DIAS - 1));
-  jogos.forEach(g => { if (diaLocal(g.t) < inicio) atual = depois.get(g); });
+  // história inteira, do dia da primeira ranqueada (ou dos últimos 90 dias, o que for maior) até hoje
+  const noventa = somaDia(hoje, -(BOLSA_DIAS - 1));
+  const inicio = jogos.length && diaLocal(jogos[0].t) < noventa ? diaLocal(jogos[0].t) : noventa;
   for (let s = inicio; s <= hoje; s = somaDia(s, 1)) {
     const gs = porDia.get(s) || [];
     const o = atual; let hi = o, lo = o;
@@ -1296,7 +1347,26 @@ function dadosDaBolsa() {
     ps.sort(saldo >= 0 ? (a, b) => b.d - a.d || (b.v + b.l) - (a.v + a.l) : (a, b) => a.d - b.d || (b.v + b.l) - (a.v + a.l));
     velas.push({ s, o, c: atual, hi, lo, jogos: gs.length, vit: gs.filter(g => g.v).length, ps, resp: saldo ? ps[0] : null });
   }
-  return { velas, nomes, cores, perfis, hoje };
+  // velas = últimos 90 dias (letreiro e fofocas); todas = desde o começo (períodos longos e calendário)
+  return { velas: velas.slice(-BOLSA_DIAS), todas: velas, nomes, cores, perfis, hoje };
+}
+
+/* Junta os candles diários em semanas (domingo a sábado). */
+function velasPorSemana(dias) {
+  const semanas = [];
+  dias.forEach(v => {
+    const d = dataDoDia(v.s), ini = somaDia(v.s, -d.getDay());
+    let w = semanas[semanas.length - 1];
+    if (!w || w.s !== ini) semanas.push(w = { s: ini, fim: somaDia(ini, 6), o: v.o, c: v.c, hi: v.hi, lo: v.lo, jogos: 0, vit: 0, por: {}, ultimoJogo: null });
+    w.c = v.c; w.hi = Math.max(w.hi, v.hi); w.lo = Math.min(w.lo, v.lo); w.jogos += v.jogos; w.vit += v.vit;
+    if (v.jogos) w.ultimoJogo = v.s;
+    v.ps.forEach(p => { const q = w.por[p.c] = w.por[p.c] || { c: p.c, d: 0, v: 0, l: 0 }; q.d += p.d; q.v += p.v; q.l += p.l; });
+  });
+  return semanas.map(w => {
+    const ps = Object.values(w.por), saldo = w.c - w.o;
+    ps.sort(saldo >= 0 ? (a, b) => b.d - a.d || (b.v + b.l) - (a.v + a.l) : (a, b) => a.d - b.d || (b.v + b.l) - (a.v + a.l));
+    return { s: w.s, fim: w.fim, o: w.o, c: w.c, hi: w.hi, lo: w.lo, jogos: w.jogos, vit: w.vit, ps, resp: saldo ? ps[0] : null, semana: true, dia: w.ultimoJogo || w.fim };
+  });
 }
 
 /* Fofocas do pregão: cada regra olha os últimos 7 dias e só entra no letreiro se aconteceu de verdade. */
@@ -1411,18 +1481,35 @@ function renderizarBolsa() {
   const alvo = $('bolsa');
   if (!alvo || !parceirosBase) return;
   const b = dadosDaBolsa();
-  const { velas } = b;
-  const comJogo = velas.filter(v => v.jogos);
-  if (!comJogo.length) { alvo.innerHTML = '<p class="carregando">Sem ranqueada nos últimos meses.</p>'; return; }
-  if (!bolsaDia || !velas.some(v => v.s === bolsaDia)) bolsaDia = comJogo[comJogo.length - 1].s;
-  const i = velas.findIndex(v => v.s === bolsaDia), V = velas[i];
+  const { todas } = b;
+  if (!todas.some(v => v.jogos)) { alvo.innerHTML = '<p class="carregando">Sem ranqueada nos últimos meses.</p>'; return; }
+  // períodos: só os menores que o histórico, mais o Tudo
+  const periodos = BOLSA_PERIODOS.filter(p => !p.dias || p.dias < todas.length);
+  let P = periodos.find(p => p.id === bolsaPeriodo) || periodos.find(p => p.id === '3m') || periodos[periodos.length - 1];
+  // dia escolhido no calendário fora do período: afasta até o primeiro período que mostra esse dia
+  const desde = p => (p.dias ? todas[Math.max(0, todas.length - p.dias)].s : todas[0].s);
+  if (bolsaAfastar && bolsaDia && bolsaDia >= todas[0].s && bolsaDia < desde(P)) { P = periodos.find(p => p.dias >= P.dias && bolsaDia >= desde(p)) || periodos[periodos.length - 1]; bolsaPeriodo = P.id; }
+  bolsaAfastar = false;
+  const dias = P.dias ? todas.slice(-P.dias) : todas;
+  const velas = P.semanal ? velasPorSemana(dias) : dias;
+  const contem = (v, s) => (v.semana ? v.s <= s && s <= v.fim : v.s === s);
+  if (!bolsaDia || !velas.some(v => contem(v, bolsaDia))) {
+    const comJogo = velas.filter(v => v.jogos), u = comJogo[comJogo.length - 1] || velas[velas.length - 1];
+    bolsaDia = u.semana ? u.dia : u.s;
+  }
+  const i = velas.findIndex(v => contem(v, bolsaDia)), V = velas[i];
   const N = c => esc(b.nomes[c] || c);
   const foto = c => (b.perfis[c] || {}).avatar;
   const inicial = c => esc(((b.nomes[c] || '?').match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase());
   const avatar = (c, t) => `<span class="bolsa-av" style="--cor:${b.cores[c] || '#888'};--t:${t}px"><span>${inicial(c)}</span>${foto(c) ? `<img src="${esc(foto(c))}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>`;
 
   // velas
-  const H = 280, TOPO = 30, BASE = 32, LW = BOLSA_LW;
+  const H = 280, TOPO = 30, BASE = 32;
+  // largura do candle: períodos curtos esticam para ocupar o gráfico; os longos rolam de lado como antes
+  const larg = alvo.clientWidth || Math.min(window.innerWidth, 1100);
+  const util = (window.matchMedia('(max-width: 760px)').matches ? larg : larg - 290) - 32 - 64;
+  const LW = Math.max(P.semanal ? 12 : BOLSA_LW, Math.min(40, Math.floor(util / velas.length)));
+  const rAv = Math.min(7.5, Math.max(5, (LW - 3) / 2));
   const max = Math.max(...velas.map(v => v.hi)) + 80, min = Math.min(...velas.map(v => v.lo)) - 80;
   const y = n => TOPO + ((max - n) * (H - TOPO - BASE)) / (max - min);
   const W = velas.length * LW + 64;
@@ -1431,17 +1518,23 @@ function renderizarBolsa() {
   for (let n = Math.ceil(min / passo) * passo; n <= max; n += passo) g += `<line x1="0" x2="${W - 60}" y1="${y(n)}" y2="${y(n)}" class="grade"/><text x="${W - 56}" y="${y(n) + 3}">${pts(n)}</text>`;
   velas.forEach((v, j) => {
     const x = j * LW + 4, cx = x + (LW - 5) / 2;
-    const d = dataDoDia(v.s);
-    if (d.getDay() === 0) g += `<line x1="${x - 2}" x2="${x - 2}" y1="${TOPO - 14}" y2="${H - BASE + 4}" class="domingo"/><text x="${x}" y="${H - 12}">${d.getDate()}/${d.getMonth() + 1}</text>`;
+    const d = dataDoDia(v.s), ant = j ? dataDoDia(velas[j - 1].s) : null;
+    const linha = rot => `<line x1="${x - 2}" x2="${x - 2}" y1="${TOPO - 14}" y2="${H - BASE + 4}" class="domingo"/><text x="${x}" y="${H - 12}">${rot}</text>`;
+    if (v.semana) {
+      // uma linha por mês novo
+      if (!ant || ant.getMonth() !== d.getMonth()) g += linha(MESES_BOLSA[d.getMonth()].slice(0, 3) + (d.getMonth() === 0 || !ant ? `/${String(d.getFullYear()).slice(2)}` : ''));
+    } else if (velas.length <= 14 ? true : d.getDay() === 0) g += linha(`${d.getDate()}/${d.getMonth() + 1}`);
     const classe = v.c > v.o ? 'alta' : v.c < v.o ? 'baixa' : 'lado';
-    g += `<g class="vela ${classe}${v.s === bolsaDia ? ' vela-sel' : ''}" data-dia="${v.s}"><title>${DIAS_SEM[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}${v.jogos ? ` · ${sinal(v.c - v.o)}` : ' · sem ranqueada'}</title>
+    const fimD = v.semana ? dataDoDia(v.fim) : null;
+    const quando = v.semana ? `semana de ${d.getDate()}/${d.getMonth() + 1} a ${fimD.getDate()}/${fimD.getMonth() + 1}` : `${DIAS_SEM[d.getDay()]}, ${d.getDate()}/${d.getMonth() + 1}`;
+    g += `<g class="vela ${classe}${j === i ? ' vela-sel' : ''}" data-dia="${v.semana ? v.dia : v.s}"><title>${quando}${v.jogos ? ` · ${sinal(v.c - v.o)}` : ' · sem ranqueada'}</title>
       <rect class="fundo" x="${x - 2}" y="${TOPO - 18}" width="${LW}" height="${H - TOPO - BASE + 22}"/>
       <line x1="${cx}" x2="${cx}" y1="${y(v.hi)}" y2="${y(v.lo)}" class="pavio"/>
       <rect class="corpo" x="${x}" y="${y(Math.max(v.o, v.c))}" width="${LW - 5}" height="${Math.max(1.5, Math.abs(y(v.o) - y(v.c)))}"/>`;
-    if (v.resp) {
-      const r = 7.5, ay = v.c >= v.o ? y(v.hi) - r - 3 : y(v.lo) + r + 3, c = v.resp.c;
+    if (v.resp && LW >= 10) {
+      const r = rAv, ay = v.c >= v.o ? y(v.hi) - r - 3 : y(v.lo) + r + 3, c = v.resp.c;
       g += `<circle cx="${cx}" cy="${ay}" r="${r + 1.5}" style="fill:${b.cores[c] || '#888'}"/><circle cx="${cx}" cy="${ay}" r="${r}" class="av-fundo"/>
-        <text x="${cx}" y="${ay + 3}" text-anchor="middle" class="av-ini">${inicial(c)}</text>
+        <text x="${cx}" y="${ay + 3}" text-anchor="middle" class="av-ini"${r < 7 ? ' style="font-size:6px"' : ''}>${inicial(c)}</text>
         ${foto(c) ? `<image href="${esc(foto(c))}" x="${cx - r}" y="${ay - r}" width="${2 * r}" height="${2 * r}" clip-path="url(#bolsa-redondo)" preserveAspectRatio="xMidYMid slice" onerror="this.remove()"/>` : ''}`;
     }
     g += '</g>';
@@ -1451,7 +1544,7 @@ function renderizarBolsa() {
   const sete = {};
   velas.slice(-7).forEach(v => v.ps.forEach(p => { const s = sete[p.c] = sete[p.c] || { c: p.c, d: 0, v: 0, l: 0 }; s.d += p.d; s.v += p.v; s.l += p.l; }));
   const ult = velas[velas.length - 1], prim7 = velas[Math.max(0, velas.length - 7)];
-  const cot = [`<span><b class="tk-papel">MRC3</b> ${pts(ult.c)} <span class="${ult.c >= prim7.o ? 'up' : 'dn'}">${ult.c >= prim7.o ? '▲' : '▼'} ${sinal(ult.c - prim7.o)} em 7 dias</span></span>`,
+  const cot = [`<span><b class="tk-papel">${papelGrupo}</b> ${pts(ult.c)} <span class="${ult.c >= prim7.o ? 'up' : 'dn'}">${ult.c >= prim7.o ? '▲' : '▼'} ${sinal(ult.c - prim7.o)} em 7 dias</span></span>`,
     ...Object.values(sete).sort((a, c) => c.d - a.d).map(p => `<span><b class="tk-papel">${N(p.c).toUpperCase()}</b> <span class="${p.d > 0 ? 'up' : p.d < 0 ? 'dn' : ''}">${p.d > 0 ? '▲' : p.d < 0 ? '▼' : '■'} ${sinal(p.d)}</span> <span class="tk-vol">${p.v}V ${p.l}D</span></span>`)];
   const fof = fofocasDaBolsa(b).map(f => `<span class="tk-fofoca">${f}</span>`);
   const itens = [];
@@ -1464,22 +1557,24 @@ function renderizarBolsa() {
   const lado = (lista, titulo) => `<div><h4>${titulo}</h4>${lista.length ? lista.map(p => `<div class="livro-linha">${avatar(p.c, 20)}<span class="livro-nome">${N(p.c)}</span><span class="livro-vol">${p.v}V ${p.l}D</span><span class="${p.d > 0 ? 'up' : p.d < 0 ? 'dn' : ''}">${sinal(p.d)}</span></div>`).join('') : '<div class="livro-vol">ninguém</div>'}</div>`;
   const prim = new Date(dV.getFullYear(), dV.getMonth(), 1);
   let cal = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(x => `<b>${x}</b>`).join('') + '<span class="vazio"></span>'.repeat(prim.getDay());
-  const porS = new Map(velas.map(v => [v.s, v]));
+  const porS = new Map(todas.map(v => [v.s, v]));
   for (let d = new Date(prim); d.getMonth() === dV.getMonth(); d.setDate(d.getDate() + 1)) {
     const s = diaLocal(d / 1000), v = porS.get(s);
     const k = v ? Math.min(1, Math.abs(v.c - v.o) / 300).toFixed(2) : 0;
     cal += v && v.jogos ? `<button class="${v.c > v.o ? 'up' : v.c < v.o ? 'dn' : ''}${s === bolsaDia ? ' sel' : ''}" style="--k:${k}" data-dia="${s}" title="${sinal(v.c - v.o)}">${d.getDate()}</button>`
       : `<span>${d.getDate()}</span>`;
   }
-  const varDia = V.c - V.o;
+  const varDia = V.c - V.o, varPer = velas[velas.length - 1].c - velas[0].o;
   alvo.innerHTML = `
     <div class="tk" role="marquee" aria-label="Letreiro da bolsa do grupo"><div class="tk-trilha" style="--dur:${segundos}s"><div>${faixa}</div><div aria-hidden="true">${faixa}</div></div></div>
     <div class="bolsa-corpo">
       <div class="bolsa-graf">
-        <div class="cotacao"><span class="tick">MRC3 · ${DIAS_CURTO[dV.getDay()]} ${dV.getDate()}/${dV.getMonth() + 1}</span><span class="preco">${pts(V.c)}</span>
+        <div class="cotacao"><span class="tick">${papelGrupo} · ${V.semana ? `SEM ${dV.getDate()}/${dV.getMonth() + 1} a ${dataDoDia(V.fim).getDate()}/${dataDoDia(V.fim).getMonth() + 1}` : `${DIAS_CURTO[dV.getDay()]} ${dV.getDate()}/${dV.getMonth() + 1}`}</span><span class="preco">${pts(V.c)}</span>
           <span class="${varDia > 0 ? 'up' : varDia < 0 ? 'dn' : ''}">${varDia > 0 ? '▲' : varDia < 0 ? '▼' : '■'} ${sinal(varDia)} (${((100 * varDia) / V.o).toFixed(2).replace('.', ',')}%)</span>
           <small>Abertura ${pts(V.o)} · máxima ${pts(V.hi)} · mínima ${pts(V.lo)} · ${V.jogos ? `${V.jogos} ranqueada${V.jogos > 1 ? 's' : ''} · ${V.vit}V ${V.jogos - V.vit}D` : 'sem ranqueada'}</small></div>
-        <div class="velas" id="bolsa-velas"><svg width="${W}" height="${H}" role="img" aria-label="Um candle por dia do MMR somado do grupo">${g}</svg></div>
+        <div class="bolsa-periodos" role="group" aria-label="Período do gráfico">${periodos.map(p => `<button type="button" data-periodo="${p.id}" class="${p === P ? 'ativo' : ''}" aria-pressed="${p === P}" title="${p.titulo}${p.semanal ? ', um candle por semana' : ''}">${p.nome}</button>`).join('')}
+          <span class="bolsa-var ${varPer > 0 ? 'up' : varPer < 0 ? 'dn' : ''}">${varPer > 0 ? '▲' : varPer < 0 ? '▼' : '■'} ${sinal(varPer)} em ${P.titulo === 'desde a primeira ranqueada' ? 'tudo' : P.titulo}</span></div>
+        <div class="velas" id="bolsa-velas"><svg width="${W}" height="${H}" role="img" aria-label="Um candle por ${P.semanal ? 'semana' : 'dia'} do MMR somado do grupo">${g}</svg></div>
       </div>
       <aside class="livro">
         ${V.resp ? `<div class="livro-resp">${avatar(V.resp.c, 44)}<div><h4>${varDia > 0 ? 'Puxou a alta' : 'Derrubou o papel'}</h4><span>${N(V.resp.c)} <span class="${V.resp.d > 0 ? 'up' : 'dn'}">${sinal(V.resp.d)}</span></span></div></div>` : `<h4>${V.jogos ? 'Dia de lado' : 'Sem pregão'}</h4>`}
@@ -1488,9 +1583,10 @@ function renderizarBolsa() {
         <div><h4>Pregões de ${MESES_BOLSA[dV.getMonth()]}</h4><div class="pregao">${cal}</div></div>
       </aside>
     </div>
-    <p class="bolsa-nota">O preço da MRC3 é a soma do MMR estimado de quem tem medalha no grupo (±${MMR_POR_PARTIDA} por ranqueada, igual à Corrida de elo). Cada candle é um dia: verde se o grupo subiu, vermelho se caiu, e a cara é de quem mais puxou pra cima ou pra baixo. Clique num candle para ver o dia. O letreiro conta o que rolou nos últimos 7 dias.</p>`;
+    <p class="bolsa-nota">O preço da ${papelGrupo} é a soma do MMR estimado de quem tem medalha no grupo (±${MMR_POR_PARTIDA} por ranqueada, igual à Corrida de elo). Cada candle é ${P.semanal ? 'uma semana' : 'um dia'}: verde se o grupo subiu, vermelho se caiu, e a cara é de quem mais puxou pra cima ou pra baixo. Clique num candle para ver ${P.semanal ? 'a semana' : 'o dia'}. Os botões 1S a Tudo aproximam ou afastam o gráfico (6M e Tudo juntam os dias em semanas). O letreiro conta o que rolou nos últimos 7 dias.</p>`;
   const vel = $('bolsa-velas');
   vel.scrollLeft = Math.max(0, i * LW - vel.clientWidth + 120);
+  larguraBolsaAtual = alvo.clientWidth;
 }
 
 /* ---------- Worker do coach (feedback e botão de atualizar) ---------- */
@@ -2056,6 +2152,146 @@ function montarAtualizacao() {
   });
 }
 
+/* ---------- Pedir para entrar na liga: ID da partida + time + quem é completer; o resto sai do OpenDota ---------- */
+
+function montarPedidoGrupo(abrirJa) {
+  const form = $('liga-form'), botao = $('liga-pedir-grupo'), status = $('lf-status');
+  const campo = $('lf-partida'), buscar = $('lf-buscar');
+  let partida = null, lado = null, pessoas = [];
+
+  const abrir = () => {
+    form.hidden = false;
+    botao.setAttribute('aria-expanded', 'true');
+    campo.focus();
+  };
+  botao.addEventListener('click', () => {
+    if (form.hidden) abrir();
+    else { form.hidden = true; botao.setAttribute('aria-expanded', 'false'); }
+  });
+  if (abrirJa) { abrir(); form.scrollIntoView({ block: 'center' }); }
+
+  const idDaPartida = txt => (String(txt).match(/\d{8,12}/) || [])[0] || null;
+  const nomeDe = p => (p.personaname || '').trim() || (p.account_id ? `Conta ${p.account_id}` : 'Perfil anônimo');
+  const iconeHeroi = id => (parceiros && parceiros.herois && parceiros.herois[id] ? heroi(id) : '');
+  const heroiTxt = id => (parceiros && parceiros.herois && parceiros.herois[id] ? nomeHeroi(id) : '');
+
+  async function carregarPartida() {
+    const id = idDaPartida(campo.value);
+    if (!id) { status.textContent = 'Cole o número da partida (ex.: 8012345678) ou o link dela.'; return; }
+    buscar.disabled = true;
+    status.textContent = 'Buscando a partida…';
+    $('lf-times').hidden = true; $('lf-pessoas').hidden = true;
+    try {
+      const r = await fetch(`https://api.opendota.com/api/matches/${id}`);
+      if (r.status === 404) throw new Error('nao-achou');
+      if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      if (!j || !Array.isArray(j.players) || !j.players.length) throw new Error('nao-achou');
+      partida = { id, quando: j.start_time, radiantVenceu: j.radiant_win, jogadores: j.players };
+      lado = null;
+      mostrarTimes();
+      status.textContent = '';
+    } catch (e) {
+      status.textContent = e.message === 'nao-achou'
+        ? 'Não achei essa partida. Confere o número (ele aparece no fim do jogo e no histórico do Dota).'
+        : 'O OpenDota não respondeu agora. Tenta de novo em um minuto.';
+    }
+    buscar.disabled = false;
+  }
+
+  function doLado(l) {
+    return partida.jogadores.filter(p => (p.isRadiant ?? p.player_slot < 128) === (l === 'radiant'));
+  }
+
+  function mostrarTimes() {
+    const quando = partida.quando ? new Date(partida.quando * 1000).toLocaleDateString('pt-BR') : '';
+    $('lf-times-grade').innerHTML = ['radiant', 'dire'].map(l => {
+      const venceu = partida.radiantVenceu == null ? '' : ((l === 'radiant') === partida.radiantVenceu ? 'venceu' : 'perdeu');
+      return `<button type="button" class="lf-time" data-lado="${l}" aria-pressed="false">
+        <span class="lf-time-nome">${l === 'radiant' ? 'Radiant' : 'Dire'}<small>${[venceu, quando].filter(Boolean).join(' · ')}</small></span>
+        <ul>${doLado(l).map(p => `<li>${iconeHeroi(p.hero_id)}<span>${esc(nomeDe(p))}</span></li>`).join('')}</ul>
+      </button>`;
+    }).join('');
+    $('lf-times').hidden = false;
+  }
+
+  $('lf-times-grade').addEventListener('click', e => {
+    const b = e.target.closest('[data-lado]');
+    if (!b) return;
+    lado = b.dataset.lado;
+    $('lf-times-grade').querySelectorAll('[data-lado]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    pessoas = doLado(lado).map(p => ({ conta: p.account_id || null, nome: nomeDe(p), heroi: p.hero_id, grupo: true }));
+    mostrarPessoas();
+    $('lf-pessoas').hidden = false;
+    status.textContent = '';
+  });
+
+  function mostrarPessoas() {
+    $('lf-lista').innerHTML = pessoas.map((p, i) => `<li><button type="button" class="lf-pessoa" data-i="${i}" aria-pressed="${p.grupo}">
+      ${iconeHeroi(p.heroi)}<span class="lf-pessoa-nome">${esc(p.nome)}<small>${[heroiTxt(p.heroi), p.conta ? '' : 'perfil fechado: o robô não consegue acompanhar'].filter(Boolean).join(' · ')}</small></span>
+      <span class="lf-selo">${p.grupo ? 'Do grupo' : 'Completer'}</span>
+    </button></li>`).join('');
+  }
+
+  $('lf-lista').addEventListener('click', e => {
+    const b = e.target.closest('[data-i]');
+    if (!b) return;
+    const p = pessoas[+b.dataset.i];
+    p.grupo = !p.grupo;
+    mostrarPessoas();
+    $('lf-lista').querySelector(`[data-i="${b.dataset.i}"]`).focus();
+  });
+
+  buscar.addEventListener('click', carregarPartida);
+  campo.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); carregarPartida(); } });
+
+  form.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    if (!partida || !lado) { status.textContent = 'Busque a partida e escolha o seu time primeiro.'; return; }
+    const grupo = pessoas.filter(p => p.grupo);
+    if (grupo.length < 2) { status.textContent = 'Marque pelo menos 2 pessoas do grupo (o resto pode ser completer).'; return; }
+    const url = await urlDoCoach();
+    if (!url) { status.textContent = 'O envio está desligado agora.'; return; }
+    const nomeGrupo = $('lf-nome-grupo').value.trim(), apelido = $('lf-apelido').value.trim();
+    const email = $('lf-email').value.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { status.textContent = 'Esse e-mail parece errado. Confere ou deixa em branco.'; return; }
+    // o pedido vai para um repositório público: o e-mail sai daqui cifrado e só a gente consegue abrir
+    let emailCifrado = '';
+    if (email) {
+      try { emailCifrado = await cifrarEmail(email); } catch (e) { status.textContent = 'Não deu pra guardar o e-mail neste navegador. Tenta sem ele.'; return; }
+    }
+    const linha = p => `- ${p.nome}${p.conta ? ` (conta ${p.conta})` : ' (perfil fechado)'}`;
+    const texto = [
+      'Quero o meu grupo na Liga dos grupos!',
+      `Partida: ${partida.id} · time ${lado === 'radiant' ? 'Radiant' : 'Dire'}`,
+      nomeGrupo ? `Nome do grupo: ${nomeGrupo}` : '',
+      `Do grupo (${grupo.length}):`, ...grupo.map(linha),
+      ...(grupo.length < pessoas.length ? ['Completers:', ...pessoas.filter(p => !p.grupo).map(linha)] : []),
+      emailCifrado ? `E-mail para avisar (cifrado): ${emailCifrado}` : '',
+    ].filter(Boolean).join('\n');
+    $('lf-enviar').disabled = true;
+    status.textContent = 'Enviando…';
+    try {
+      const r = await fetch(`${url}/feedback`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ texto, nome: apelido, partida: `grupo-${partida.id}` }),
+      });
+      if (!r.ok) throw new Error(r.status);
+      try { (window.dataLayer = window.dataLayer || []).push({ event: 'group_request_submit', group_size: grupo.length, completers: pessoas.length - grupo.length, email_informado: Boolean(emailCifrado) }); } catch (e) { /* sem GTM */ }
+      status.textContent = emailCifrado
+        ? 'Pedido recebido! A gente confere e te avisa por e-mail quando a página do grupo subir. Normalmente demora 1 dia.'
+        : 'Pedido recebido! A gente confere e o grupo aparece aqui na liga. Normalmente demora 1 dia.';
+      $('lf-email').value = '';
+      $('lf-times').hidden = true; $('lf-pessoas').hidden = true;
+      campo.value = ''; partida = null; lado = null;
+    } catch (e) {
+      status.textContent = r429(e) ? 'Muitos envios seguidos. Tenta daqui a pouco.' : 'Não deu pra enviar. Tenta de novo daqui a pouco.';
+    }
+    $('lf-enviar').disabled = false;
+  });
+}
+
 /* ---------- Feedback (mesmo worker do painel: POST <coach>/feedback grava em feedback/) ---------- */
 
 function montarFeedback() {
@@ -2095,6 +2331,15 @@ function montarFeedback() {
     }
     enviar.disabled = false;
   });
+}
+
+// chave pública RSA-OAEP (SHA-256) dos pedidos de grupo; a privada fica fora do repositório
+const CHAVE_EMAILS = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA06DndkdNfFTFD8iZF/IeCNUG620ShqbsoLWpmQesfmdF617jdK4LBR2yEhQRSON7J/Tx5qUkej9UGDDtWQfZUwV2Zd4fMy+qA4Wb3Rdl6l6oPdsFQaOmBZ7dXOgD4LMHMxT47SzcxtCqzbC+CQmWxeJyjCjZWVZRrEUE0CZk9/CjknSG/SeYX9SrHBADVnbMo7K8JFFuHaWIiWL4Foa4IaHa8jA4MaiH6T9uYwgWoEjB7dz9EBxDlECBll5usKbTGMOFHAK/Lc2TDKHV9cQkGud25KyP8kc1/r+GTbhPohHrUAf8MjVNtaZrdFB/VIm9YSTMOXHprDpKpH69hSVNlwIDAQAB';
+async function cifrarEmail(email) {
+  const der = Uint8Array.from(atob(CHAVE_EMAILS), c => c.charCodeAt(0));
+  const chave = await crypto.subtle.importKey('spki', der, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+  const cifra = new Uint8Array(await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, chave, new TextEncoder().encode(email)));
+  return btoa(String.fromCharCode(...cifra));
 }
 
 function r429(e) {

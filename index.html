@@ -210,10 +210,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="som" id="som" type="button" aria-pressed="true" title="Som da revelação"><svg class="som-icone" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="som-ondas" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="som-x" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="som-txt">Som</span></button>
   </div>
 </header>
+<div class="letreiro" id="home-letreiro" role="region" aria-label="Novidades" hidden>
+  <div class="letreiro-inner">
+    <span class="letreiro-tag">Novo</span>
+    <div class="letreiro-janela" id="letreiro-janela" aria-live="off"></div>
+    <span class="letreiro-pontos" id="letreiro-pontos" aria-hidden="true"></span>
+    <button type="button" class="letreiro-x" id="letreiro-fechar" aria-label="Fechar aviso">×</button>
+  </div>
+</div>
 <section class="home" id="home" aria-labelledby="home-titulo">
   <div class="home-hero">
     <p class="home-eyebrow">O tribunal das suas partidas de Dota 2</p>
-    <h2 id="home-titulo">Quem perdeu o jogo <em>pra vocês?</em></h2>
+    <h2 id="home-titulo">Quem perdeu o jogo <em>pra vocês?<a class="home-splash" id="home-splash" href="ranking/#liga" hidden><span></span></a></em></h2>
     <p class="home-sub">Cole o ID da partida e o tribunal decide: o culpado, os craques e o replay dos lances no mapinha. De graça.</p>
     <form class="home-busca" id="home-busca" role="search" autocomplete="off">
       <label><span class="sr-only">ID da partida</span><input id="home-id" inputmode="numeric" placeholder="ID da partida, ex.: 9041118764"></label>
@@ -238,7 +246,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </a>
   </div>
   <div class="home-grupo">
-    <div><strong>Quer o seu grupo na liga?</strong><span>É de graça enquanto estamos em teste. Mande o nome do grupo e o perfil da Steam dos amigos.</span></div>
+    <div><strong>Quer o seu grupo na liga?</strong><span>É de graça enquanto estamos em teste. Basta o ID de uma partida que vocês jogaram juntos.</span></div>
     <button type="button" class="botao secundario" id="home-pedir-grupo">Quero o meu grupo</button>
   </div>
 </section>
@@ -297,7 +305,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @media (prefers-reduced-motion:no-preference){.doc-tpi6 .tp6-moldura{animation:tp6-pulso 2.4s ease-in-out infinite}}
 @keyframes tp6-pulso{50%{box-shadow:0 0 2.4cqw rgba(229,38,45,.7)}}
 /* Áudio do craque no grupo (estilo zap) */
-.cartao.zap{padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;margin-top:14px;font-family:system-ui,"Segoe UI",Roboto,sans-serif}
 .zap-topo{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#202c33;color:#e9edef}
 .zap-grupo-ic{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#00a884;font-size:20px;flex:none}
 .zap-grupo{margin:0;font-weight:600;font-size:15px}
@@ -337,7 +344,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .zap-pedir{margin-top:8px;background:#00a884;color:#0b141a;border:0;border-radius:18px;padding:8px 14px;font:600 14px system-ui,sans-serif;display:inline-flex;gap:6px;align-items:center;cursor:pointer}.zap-pedir:hover{background:#06cf9c}.zap-pedir:disabled{opacity:.6;cursor:default}
 @media (prefers-reduced-motion:no-preference){.zap-ondas i{animation:zap-onda 1s ease-in-out infinite}.zap-rec{animation:zap-pisca 1.2s steps(2) infinite}}
 @keyframes zap-onda{50%{height:100%}}
-@keyframes zap-pisca{50%{opacity:.3}}
+@keyframes zap-pisca{50%{opacity:.3}}.visao-vitoria{display:grid;gap:8px;width:100%;justify-items:start}.visao-vitoria>.cartao{width:100%}.visao-vitoria>.doc-zap{justify-self:center}
+.trocar-visao{border:0;background:none;color:var(--muted);font-size:var(--t-sm);cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}.trocar-visao:hover{color:var(--ink)}
+.cartao.veredito.vitoria.doc-zap{display:block;padding:0;overflow:hidden;background:#0b141a;border:1px solid #233138;color:#e9edef;font-family:system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 14px 34px -16px rgba(0,0,0,.7);max-width:560px}
+.doc-zap .zap-corpo{padding:14px 12px 18px;min-height:0}
+.doc-zap .zap-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(380px,62vw)}
+.zap-slot,.zap-conversa{display:flex;flex-direction:column;gap:8px}
+.zap-fw{display:block;font-size:12px;font-style:italic;color:#8696a0;margin-bottom:4px}
+.zap-com-cartao{padding:4px 4px 20px}
+.zap-com-cartao .zap-autor{padding:2px 4px 0}
+.zap-com-cartao .zap-fw{padding:0 4px}
+.zap-veredito{width:min(330px,72vw);border-radius:6px;overflow:hidden;background:#11163a;color:#fff}
+.zap-vd-fotos{position:relative;display:flex;height:112px;background:#1b2250}
+.zap-vd-foto{flex:1;min-width:0;overflow:hidden}
+.zap-vd-foto>*{width:100%!important;height:100%!important;border-radius:0!important;border:0!important;box-shadow:none!important}
+.zap-vd-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+.zap-vd-fotos::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#11163a 4%,transparent 65%)}
+.zap-vd-selo{position:absolute;top:8px;left:8px;z-index:1;background:#ffd23f;color:#11163a;font:900 11px/1 system-ui,sans-serif;padding:5px 7px;border-radius:4px;transform:rotate(-4deg);text-transform:uppercase;letter-spacing:.03em}
+.zap-vd-tx{position:relative;z-index:1;margin-top:-26px;padding:0 10px 10px;display:grid;gap:2px}
+.zap-vd-tx b{font:800 clamp(1.15rem,4.6vw,1.45rem)/1.05 var(--font-display,system-ui);text-transform:uppercase;letter-spacing:.01em}
+.zap-vd-tx span{font-size:12.5px;opacity:.88}
+.zap-vd-tx em{font-style:normal;font-size:11.5px;color:#9fb0ff}
+.zap-zoa{margin-top:4px!important;color:#d1d7db}
+.zap-figurinha{position:relative;align-self:flex-end;width:118px;margin:2px 6px 0 0;transform:rotate(6deg);filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 3px #fff) drop-shadow(0 6px 8px rgba(0,0,0,.4))}
+.zap-fig-foto{display:block}
+.zap-fig-foto>*{width:118px!important;height:118px!important;border-radius:50% 46% 52% 44%!important;border:0!important;box-shadow:none!important;overflow:hidden}
+.zap-fig-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.zap-figurinha b{position:absolute;left:-10px;right:-10px;bottom:-6px;text-align:center;font:900 22px/1 Impact,"Anton","Arial Black",sans-serif;color:#ffd23f;-webkit-text-stroke:3px #111;paint-order:stroke;transform:rotate(-3deg)}
+.zap-digitar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#202c33}
+.zap-digitar span{flex:1;background:#2a3942;border-radius:20px;padding:9px 14px;color:#8696a0;font-size:14px}
+.zap-digitar i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#00a884;color:#0b141a}
+.doc-zap>.cartaz-acoes{padding:12px 14px 14px;background:#111b21;border-top:1px solid #233138}
+@media (prefers-reduced-motion:no-preference){.zap-entra{animation:zap-entra .35s ease-out both}.zap-corpo>.zap-entra:nth-child(3){animation-delay:.5s}.zap-corpo>.zap-entra:nth-child(4){animation-delay:1.1s}.zap-corpo>.zap-entra:nth-child(5){animation-delay:1.8s}.zap-corpo>.zap-entra:nth-child(6){animation-delay:2.3s}}
+@keyframes zap-entra{from{opacity:0;transform:translateY(8px) scale(.98)}}
 </style>
 
 <style>
@@ -585,6 +624,39 @@ background:radial-gradient(90% 60% at 50% 0%,rgba(255,255,255,.06),transparent 7
 @media (prefers-reduced-motion:reduce){.visitas-site i{animation:none}}
 </style>
 <style>
+/* ---------- home: boas-vindas a grupo novo (splash amarelo ao lado do título + letreiro que gira embaixo do topo) ---------- */
+:root{--splash:#ffff3f;--splash-sombra:#3f3f00}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--splash:#b07800;--splash-sombra:#f3e2b0}}
+:root[data-theme="light"]{--splash:#b07800;--splash-sombra:#f3e2b0}
+.letreiro{display:none}
+html.em-home .letreiro:not([hidden]){display:block;border-bottom:1px solid var(--line);background:linear-gradient(90deg,var(--gold-wash),transparent 85%)}
+.letreiro-inner{max-width:1160px;margin:0 auto;padding-inline:20px;height:36px;display:flex;align-items:center;gap:12px}
+.letreiro-tag{flex:none;font:700 11px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;background:var(--gold);color:var(--on-gold);padding:3px 7px;border-radius:3px}
+.letreiro-janela{position:relative;flex:1;min-width:0;height:36px;overflow:hidden}
+.letreiro-frase{position:absolute;inset:0;display:flex;align-items:center;gap:6px;font-weight:500;font-size:14px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translateY(100%);opacity:0;transition:transform .5s ease,opacity .5s ease}
+.letreiro-frase b{color:var(--gold-2);font-weight:700}
+.letreiro-frase.on{transform:translateY(0);opacity:1}
+.letreiro-frase.sai{transform:translateY(-100%);opacity:0}
+.letreiro-link{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--gold-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.letreiro-pontos{flex:none;display:flex;gap:5px}
+.letreiro-pontos i{width:6px;height:6px;border-radius:50%;background:var(--line-strong)}
+.letreiro-pontos i.on{background:var(--gold)}
+.letreiro-x{flex:none;background:none;border:0;color:var(--muted);font-size:20px;line-height:1;padding:4px 6px;cursor:pointer}
+.letreiro-x:hover{color:var(--ink)}
+.home-hero h2 em{position:relative}
+/* com o letreiro aberto, o topo da home encolhe para os cartões continuarem na primeira tela */
+html.em-home .letreiro:not([hidden]) + .home{padding-top:clamp(16px,3vw,28px)}
+.home-splash{position:absolute;right:-8.4em;top:-3.3em;transform:rotate(-17deg);font:800 clamp(14px,1.6vw,18px)/1 var(--font-body);text-transform:none;letter-spacing:0;color:var(--splash);text-shadow:2px 2px 0 var(--splash-sombra);white-space:nowrap;text-decoration:none}
+.home-splash span{display:inline-block;animation:splash-pulsa .9s ease-in-out infinite alternate}
+@keyframes splash-pulsa{from{transform:scale(1)}to{transform:scale(1.09)}}
+@media (max-width:720px){
+  .home-splash{position:relative;right:auto;top:auto;display:block;width:max-content;margin:6px auto -4px;transform:rotate(-6deg)}
+  .letreiro-pontos{display:none}
+  .letreiro-frase{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){.home-splash span{animation:none}.letreiro-frase{transition:none}}
+</style>
+<style>
 /* ---------- home: uma ação (colar a partida) e três destaques ---------- */
 .home{display:none}
 html.em-home .home{display:grid;gap:40px;max-width:1160px;margin:0 auto;padding:clamp(28px,7vw,72px) 20px 96px}
@@ -629,6 +701,7 @@ html.em-home #pagina,html.em-home #status,html.em-home #busca{display:none}
 </script>
 <script type="application/json" id="amigos">{"81918076":"Suéter","241782761":"[Pau]DeCamelo","1254464470":"Conhecido do Baia","111257540":"Kuscomem","1000265186":"gustavoDotinhaPro","83300280":"ptn","96286191":"charlinho","77621319":"Jalim","26668150":"3rvinha"}</script>
 <script type="application/json" id="dados-embutidos">{"constantes":{"t":"1593393829403","h":{"1":["antimage","Anti-Mage","agi","Melee"],"2":["axe","Axe","str","Melee"],"3":["bane","Bane","all","Ranged"],"4":["bloodseeker","Bloodseeker","agi","Melee"],"5":["crystal_maiden","Crystal Maiden","int","Ranged"],"6":["drow_ranger","Drow Ranger","agi","Ranged"],"7":["earthshaker","Earthshaker","str","Melee"],"8":["juggernaut","Juggernaut","agi","Melee"],"9":["mirana","Mirana","agi","Ranged"],"10":["morphling","Morphling","agi","Ranged"],"11":["nevermore","Shadow Fiend","agi","Ranged"],"12":["phantom_lancer","Phantom Lancer","agi","Melee"],"13":["puck","Puck","int","Ranged"],"14":["pudge","Pudge","str","Melee"],"15":["razor","Razor","agi","Ranged"],"16":["sand_king","Sand King","all","Melee"],"17":["storm_spirit","Storm Spirit","int","Ranged"],"18":["sven","Sven","str","Melee"],"19":["tiny","Tiny","str","Melee"],"20":["vengefulspirit","Vengeful Spirit","agi","Ranged"],"21":["windrunner","Windranger","all","Ranged"],"22":["zuus","Zeus","int","Ranged"],"23":["kunkka","Kunkka","str","Melee"],"25":["lina","Lina","int","Ranged"],"26":["lion","Lion","int","Ranged"],"27":["shadow_shaman","Shadow Shaman","int","Ranged"],"28":["slardar","Slardar","str","Melee"],"29":["tidehunter","Tidehunter","str","Melee"],"30":["witch_doctor","Witch Doctor","int","Ranged"],"31":["lich","Lich","int","Ranged"],"32":["riki","Riki","agi","Melee"],"33":["enigma","Enigma","all","Ranged"],"34":["tinker","Tinker","int","Ranged"],"35":["sniper","Sniper","agi","Ranged"],"36":["necrolyte","Necrophos","int","Ranged"],"37":["warlock","Warlock","int","Ranged"],"38":["beastmaster","Beastmaster","all","Melee"],"39":["queenofpain","Queen of Pain","int","Ranged"],"40":["venomancer","Venomancer","all","Ranged"],"41":["faceless_void","Faceless Void","agi","Melee"],"42":["skeleton_king","Wraith King","str","Melee"],"43":["death_prophet","Death Prophet","all","Ranged"],"44":["phantom_assassin","Phantom Assassin","agi","Melee"],"45":["pugna","Pugna","int","Ranged"],"46":["templar_assassin","Templar Assassin","agi","Ranged"],"47":["viper","Viper","agi","Ranged"],"48":["luna","Luna","agi","Ranged"],"49":["dragon_knight","Dragon Knight","str","Melee"],"50":["dazzle","Dazzle","all","Ranged"],"51":["rattletrap","Clockwerk","str","Melee"],"52":["leshrac","Leshrac","int","Ranged"],"53":["furion","Nature's Prophet","all","Ranged"],"54":["life_stealer","Lifestealer","str","Melee"],"55":["dark_seer","Dark Seer","int","Melee"],"56":["clinkz","Clinkz","agi","Ranged"],"57":["omniknight","Omniknight","str","Melee"],"58":["enchantress","Enchantress","int","Ranged"],"59":["huskar","Huskar","str","Ranged"],"60":["night_stalker","Night Stalker","str","Melee"],"61":["broodmother","Broodmother","agi","Melee"],"62":["bounty_hunter","Bounty Hunter","agi","Melee"],"63":["weaver","Weaver","agi","Ranged"],"64":["jakiro","Jakiro","int","Ranged"],"65":["batrider","Batrider","all","Ranged"],"66":["chen","Chen","int","Ranged"],"67":["spectre","Spectre","agi","Melee"],"68":["ancient_apparition","Ancient Apparition","int","Ranged"],"69":["doom_bringer","Doom","str","Melee"],"70":["ursa","Ursa","agi","Melee"],"71":["spirit_breaker","Spirit Breaker","str","Melee"],"72":["gyrocopter","Gyrocopter","agi","Ranged"],"73":["alchemist","Alchemist","str","Melee"],"74":["invoker","Invoker","int","Ranged"],"75":["silencer","Silencer","int","Ranged"],"76":["obsidian_destroyer","Outworld Devourer","int","Ranged"],"77":["lycan","Lycan","str","Melee"],"78":["brewmaster","Brewmaster","all","Melee"],"79":["shadow_demon","Shadow Demon","int","Ranged"],"80":["lone_druid","Lone Druid","agi","Ranged"],"81":["chaos_knight","Chaos Knight","str","Melee"],"82":["meepo","Meepo","agi","Melee"],"83":["treant","Treant Protector","str","Melee"],"84":["ogre_magi","Ogre Magi","str","Melee"],"85":["undying","Undying","str","Melee"],"86":["rubick","Rubick","int","Ranged"],"87":["disruptor","Disruptor","int","Ranged"],"88":["nyx_assassin","Nyx Assassin","all","Melee"],"89":["naga_siren","Naga Siren","agi","Melee"],"90":["keeper_of_the_light","Keeper of the Light","int","Ranged"],"91":["wisp","Io","all","Ranged"],"92":["visage","Visage","all","Ranged"],"93":["slark","Slark","agi","Melee"],"94":["medusa","Medusa","agi","Ranged"],"95":["troll_warlord","Troll Warlord","agi","Ranged"],"96":["centaur","Centaur Warrunner","str","Melee"],"97":["magnataur","Magnus","all","Melee"],"98":["shredder","Timbersaw","str","Melee"],"99":["bristleback","Bristleback","str","Melee"],"100":["tusk","Tusk","str","Melee"],"101":["skywrath_mage","Skywrath Mage","int","Ranged"],"102":["abaddon","Abaddon","all","Melee"],"103":["elder_titan","Elder Titan","str","Melee"],"104":["legion_commander","Legion Commander","str","Melee"],"105":["techies","Techies","all","Ranged"],"106":["ember_spirit","Ember Spirit","agi","Melee"],"107":["earth_spirit","Earth Spirit","str","Melee"],"108":["abyssal_underlord","Underlord","str","Melee"],"109":["terrorblade","Terrorblade","agi","Melee"],"110":["phoenix","Phoenix","str","Ranged"],"111":["oracle","Oracle","int","Ranged"],"112":["winter_wyvern","Winter Wyvern","int","Ranged"],"113":["arc_warden","Arc Warden","all","Ranged"],"114":["monkey_king","Monkey King","agi","Melee"],"119":["dark_willow","Dark Willow","int","Ranged"],"120":["pangolier","Pangolier","all","Melee"],"121":["grimstroke","Grimstroke","int","Ranged"],"123":["hoodwink","Hoodwink","agi","Ranged"],"126":["void_spirit","Void Spirit","all","Melee"],"128":["snapfire","Snapfire","all","Ranged"],"129":["mars","Mars","str","Melee"],"131":["ringmaster","Ring Master","int","Ranged"],"135":["dawnbreaker","Dawnbreaker","str","Melee"],"136":["marci","Marci","all","Melee"],"137":["primal_beast","Primal Beast","str","Melee"],"138":["muerta","Muerta","int","Ranged"],"145":["kez","Kez","agi","Melee"],"155":["largo","Largo","str","Melee"]},"i":{"blink":[1,"Blink Dagger",2250,0],"overwhelming_blink":[600,"Overwhelming Blink",6800,["blink","reaver"]],"swift_blink":[603,"Swift Blink",6800,["blink","eagle"]],"arcane_blink":[604,"Arcane Blink",6800,["blink","mystic_staff"]],"recipe_arcane_blink":[606,"Arcane Blink Recipe",1750,0],"recipe_swift_blink":[607,"Swift Blink Recipe",1750,0],"recipe_overwhelming_blink":[608,"Overwhelming Blink Recipe",1750,0],"blades_of_attack":[2,"Blades of Attack",450,0],"broadsword":[3,"Broadsword",1000,0],"chainmail":[4,"Chainmail",500,0],"splintmail":[1847,"Splintmail",950,0],"claymore":[5,"Claymore",1350,0],"helm_of_iron_will":[6,"Helm of Iron Will",975,0],"javelin":[7,"Javelin",900,0],"mithril_hammer":[8,"Mithril Hammer",1600,0],"platemail":[9,"Platemail",1400,0],"quarterstaff":[10,"Quarterstaff",875,0],"quelling_blade":[11,"Quelling Blade",100,0],"faerie_fire":[237,"Faerie Fire",65,0],"infused_raindrop":[265,"Infused Raindrops",225,0],"wind_lace":[244,"Wind Lace",225,0],"ring_of_protection":[12,"Ring of Protection",175,0],"stout_shield":[182,"Stout Shield",100,0],"moon_shard":[247,"Moon Shard",4000,["hyperstone","hyperstone"]],"gauntlets":[13,"Gauntlets of Strength",140,0],"slippers":[14,"Slippers of Agility",140,0],"mantle":[15,"Mantle of Intelligence",140,0],"branches":[16,"Iron Branch",55,0],"belt_of_strength":[17,"Belt of Strength",450,0],"boots_of_elves":[18,"Band of Elvenskin",450,0],"robe":[19,"Robe of the Magi",450,0],"circlet":[20,"Circlet",155,0],"crown":[261,"Crown",450,0],"diadem":[1122,"Diadem",1000,0],"ogre_axe":[21,"Ogre Axe",1000,0],"blade_of_alacrity":[22,"Blade of Alacrity",1000,0],"staff_of_wizardry":[23,"Staff of Wizardry",1000,0],"ultimate_orb":[24,"Ultimate Orb",2800,0],"gloves":[25,"Gloves of Haste",450,0],"blitz_knuckles":[485,"Blitz Knuckles",1000,0],"lifesteal":[26,"Morbid Mask",900,0],"voodoo_mask":[473,"Voodoo Mask",650,0],"ring_of_regen":[27,"Ring of Regen",175,0],"sobi_mask":[28,"Sage's Mask",175,0],"boots":[29,"Boots of Speed",500,0],"gem":[30,"Gem of True Sight",900,0],"shawl":[1848,"Shawl",450,0],"cloak":[31,"Cloak",900,0],"talisman_of_evasion":[32,"Talisman of Evasion",1300,0],"cheese":[33,"Cheese",1000,0],"magic_stick":[34,"Magic Stick",200,0],"recipe_magic_wand":[35,"Magic Wand Recipe",150,0],"magic_wand":[36,"Magic Wand",460,["magic_stick","branches","branches"]],"ghost":[37,"Ghost Scepter",1500,0],"clarity":[38,"Clarity",60,0],"enchanted_mango":[216,"Enchanted Mango",65,0],"famango":[4204,"Healing Lotus",0,0],"great_famango":[4205,"Great Healing Lotus",0,["famango","famango","famango"]],"greater_famango":[4206,"Greater Healing Lotus",0,["great_famango","great_famango"]],"blood_grenade":[1123,"Blood Grenade",50,0],"royale_with_cheese":[1154,"Block of Cheese",2,0],"flask":[39,"Healing Salve",100,0],"dust":[40,"Dust of Appearance",80,0],"bottle":[41,"Bottle",675,0],"ward_observer":[42,"Observer Ward",0,0],"ward_sentry":[43,"Sentry Ward",50,0],"ward_dispenser":[218,"Observer and Sentry Wards",50,["ward_sentry","ward_observer"]],"tango":[44,"Tango",90,0],"tango_single":[241,"Tango (Shared)",30,0],"courier":[45,"Animal Courier",50,0],"flying_courier":[286,"Flying Courier",100,0],"tpscroll":[46,"Town Portal Scroll",100,0],"recipe_travel_boots":[47,"Boots of Travel Recipe",2000,0],"travel_boots":[48,"Boots of Travel",2500,["boots"]],"travel_boots_2":[220,"Boots of Travel 2",4500,["travel_boots","recipe_travel_boots"]],"phase_boots":[50,"Phase Boots",1450,["boots","chainmail","blades_of_attack"]],"demon_edge":[51,"Demon Edge",2200,0],"eagle":[52,"Eaglesong",2800,0],"reaver":[53,"Reaver",2800,0],"relic":[54,"Sacred Relic",3400,0],"hyperstone":[55,"Hyperstone",2000,0],"ring_of_health":[56,"Ring of Health",700,0],"ring_of_tarrasque":[279,"Ring of Tarrasque",1700,0],"void_stone":[57,"Void Stone",700,0],"tiara_of_selemene":[1802,"Tiara of Selemene",1700,0],"mystic_staff":[58,"Mystic Staff",2800,0],"energy_booster":[59,"Energy Booster",800,0],"point_booster":[60,"Point Booster",1200,0],"vitality_booster":[61,"Vitality Booster",1000,0],"fluffy_hat":[593,"Fluffy Hat",250,0],"wizard_hat":[1849,"Wizard Hat",250,0],"power_treads":[63,"Power Treads",1400,["boots","gloves","belt_of_strength"]],"recipe_phylactery":[1106,"Phylactery Recipe",200,0],"phylactery":[1107,"Phylactery",2600,["pers","diadem"]],"angels_demise":[1808,"Khanda",5600,["phylactery","soul_booster"]],"recipe_hand_of_midas":[64,"Hand of Midas Recipe",1750,0],"hand_of_midas":[65,"Hand of Midas",2200,["gloves"]],"oblivion_staff":[67,"Oblivion Staff",1625,["blitz_knuckles","robe","sobi_mask"]],"recipe_witch_blade":[533,"Witch Blade Recipe",300,0],"witch_blade":[534,"Witch Blade",2775,["oblivion_staff","chainmail","orb_of_venom"]],"pers":[69,"Perseverance",1400,["ring_of_health","void_stone"]],"cornucopia":[1125,"Cornucopia",1200,0],"poor_mans_shield":[71,"Poor Man's Shield",0,0],"recipe_bracer":[72,"Bracer Recipe",210,0],"bracer":[73,"Bracer",505,["circlet","gauntlets"]],"recipe_wraith_band":[74,"Wraith Band Recipe",210,0],"wraith_band":[75,"Wraith Band",505,["circlet","slippers"]],"recipe_null_talisman":[76,"Null Talisman Recipe",210,0],"null_talisman":[77,"Null Talisman",505,["circlet","mantle"]],"recipe_mekansm":[78,"Mekansm Recipe",850,0],"mekansm":[79,"Mekansm",1775,["headdress","chainmail"]],"vladmir":[81,"Vladmir's Offering",2200,["buckler","ring_of_basilius","lifesteal","blades_of_attack"]],"recipe_wraith_pact":[907,null,400,0],"wraith_pact":[908,"Wraith Pact",3800,["vladmir","point_booster"]],"recipe_buckler":[85,"Buckler Recipe",250,0],"buckler":[86,"Buckler",425,["ring_of_protection"]],"recipe_ring_of_basilius":[87,"Ring of Basilius Recipe",250,0],"ring_of_basilius":[88,"Ring of Basilius",425,["sobi_mask"]],"recipe_holy_locket":[268,"Holy Locket Recipe",1340,0],"holy_locket":[269,"Holy Locket",2250,["magic_wand","crown"]],"recipe_pipe":[89,"Pipe of Insight Recipe",675,0],"pipe":[90,"Pipe of Insight",3725,["ring_of_tarrasque","cloak","shawl",""]],"recipe_urn_of_shadows":[91,"Urn of Shadows Recipe",320,0],"urn_of_shadows":[92,"Urn of Shadows",825,["sobi_mask","ring_of_protection","circlet",""]],"recipe_headdress":[93,"Headdress Recipe",250,0],"headdress":[94,"Headdress",425,["ring_of_regen"]],"recipe_sheepstick":[95,"Scythe of Vyse Recipe",700,0],"sheepstick":[96,"Scythe of Vyse",5200,["mystic_staff","tiara_of_selemene"]],"caster_rapier":[1801,null,5600,0],"recipe_orchid":[97,"Orchid Malevolence Recipe",300,0],"orchid":[98,"Orchid Malevolence",3275,["oblivion_staff","claymore"]],"recipe_bloodthorn":[245,"Bloodthorn Recipe",600,0],"bloodthorn":[250,"Bloodthorn",6400,["orchid","oblivion_staff","javelin"]],"echo_sabre":[252,"Echo Sabre",2700,["ogre_axe","broadsword","void_stone"]],"recipe_cyclone":[99,"Eul's Scepter Recipe",675,0],"cyclone":[100,"Eul's Scepter of Divinity",2600,["staff_of_wizardry","void_stone","wind_lace"]],"recipe_wind_waker":[612,"Wind Waker Recipe",1400,0],"wind_waker":[610,"Wind Waker",6800,["cyclone","mystic_staff"]],"recipe_aether_lens":[233,"Aether Lens Recipe",775,0],"aether_lens":[232,"Aether Lens",2275,["energy_booster","void_stone"]],"recipe_force_staff":[101,"Force Staff Recipe",950,0],"force_staff":[102,"Force Staff",2200,["staff_of_wizardry","fluffy_hat"]],"recipe_hurricane_pike":[262,"Hurricane Pike Recipe",350,0],"hurricane_pike":[263,"Hurricane Pike",4450,["force_staff","dragon_lance"]],"recipe_dagon":[103,"Dagon Recipe",1150,0],"dagon":[104,"Dagon",3050,["point_booster","crown","wizard_hat"]],"dagon_2":[201,"Dagon",4200,0],"dagon_3":[202,"Dagon",5350,0],"dagon_4":[203,"Dagon",6500,0],"dagon_5":[204,"Dagon",7650,0],"recipe_necronomicon":[105,"Necronomicon Recipe",1250,0],"necronomicon":[106,"Necronomicon",2050,["sobi_mask","sobi_mask","belt_of_strength"]],"necronomicon_2":[193,"Necronomicon",3300,["necronomicon","recipe_necronomicon"]],"necronomicon_3":[194,"Necronomicon",4550,["necronomicon_2","recipe_necronomicon"]],"ultimate_scepter":[108,"Aghanim's Scepter",4200,["point_booster","staff_of_wizardry","ogre_axe","blade_of_alacrity"]],"recipe_ultimate_scepter_2":[270,"Aghanim's Blessing Recipe",1600,0],"ultimate_scepter_2":[271,"Aghanim's Blessing",5800,["ultimate_scepter"]],"ultimate_scepter_roshan":[727,"Aghanim's Blessing - Roshan",5800,0],"aghanims_shard":[609,"Aghanim's Shard",1400,0],"aghanims_shard_roshan":[725,"Aghanim's Shard - Consumable",1400,0],"eldwurms_edda":[1850,"Eldwurm's Edda",0,0],"recipe_refresher":[109,"Refresher Orb Recipe",1600,0],"refresher":[110,"Refresher Orb",5000,["ring_of_tarrasque","tiara_of_selemene"]],"recipe_assault":[111,"Assault Cuirass Recipe",1300,0],"assault":[112,"Assault Cuirass",5125,["buckler","hyperstone","platemail"]],"recipe_heart":[113,"Heart of Tarrasque Recipe",600,0],"heart":[114,"Heart of Tarrasque",5100,["reaver","ring_of_tarrasque"]],"recipe_black_king_bar":[115,"Black King Bar Recipe",1450,0],"black_king_bar":[116,"Black King Bar",4050,["mithril_hammer","ogre_axe"]],"aegis":[117,"Aegis of the Immortal",0,0],"recipe_shivas_guard":[118,"Shiva's Guard Recipe",1350,0],"shivas_guard":[119,"Shiva's Guard",4500,["platemail","splintmail","chasm_stone"]],"bloodstone":[121,"Bloodstone",4700,["veil_of_discord","soul_booster"]],"recipe_sphere":[122,"Linken's Sphere Recipe",600,0],"sphere":[123,"Linken's Sphere",4800,["pers","ultimate_orb",""]],"recipe_lotus_orb":[221,"Lotus Orb Recipe",250,0],"lotus_orb":[226,"Lotus Orb",3850,["pers","platemail","energy_booster"]],"recipe_meteor_hammer":[222,"Meteor Hammer Recipe",300,0],"meteor_hammer":[223,"Meteor Hammer",2850,["kaya","crown"]],"nullifier":[225,"Nullifier",4350,["relic","splintmail"]],"recipe_aeon_disk":[255,"Aeon Disk Recipe",1200,0],"aeon_disk":[256,"Aeon Disk",3000,["vitality_booster","energy_booster"]],"recipe_kaya":[258,"Kaya Recipe",650,0],"kaya":[259,"Kaya",2100,["staff_of_wizardry","robe"]],"trident":[369,"Trident",6301,["kaya","sange","yasha",""]],"refresher_shard":[260,"Refresher Shard",1000,0],"recipe_spirit_vessel":[266,"Spirit Vessel Recipe",900,0],"spirit_vessel":[267,"Spirit Vessel",2725,["urn_of_shadows","diadem"]],"recipe_essence_distiller":[1851,"Essence Distiller Recipe",200,0],"essence_distiller":[1852,"Essence Distiller",1775,["urn_of_shadows","chainmail","wizard_hat"]],"vanguard":[125,"Vanguard",1700,["vitality_booster","ring_of_health"]],"recipe_crimson_guard":[243,"Crimson Guard Recipe",1050,0],"crimson_guard":[242,"Crimson Guard",3725,["vanguard","helm_of_iron_will"]],"recipe_blade_mail":[126,"Blade Mail Recipe",450,0],"blade_mail":[127,"Blade Mail",2400,["broadsword","splintmail"]],"soul_booster":[129,"Soul Booster",3000,["point_booster","vitality_booster","energy_booster"]],"hood_of_defiance":[131,"Hood of Defiance",0,0],"recipe_eternal_shroud":[691,"Eternal Shroud Recipe",900,0],"eternal_shroud":[692,"Eternal Shroud",3900,["cloak","ogre_axe","vitality_booster"]],"recipe_consecrated_wraps":[1853,"Consecrated Wraps Recipe",700,0],"consecrated_wraps":[1854,"Consecrated Wraps",2600,["vitality_booster","shawl","crown"]],"recipe_crellas_crozier":[1855,"Crella's Crozier Recipe",300,0],"crellas_crozier":[1856,"Crella's Crozier",4800,["ghost","soul_booster"]],"rapier":[133,"Divine Rapier",5600,["relic","demon_edge"]],"recipe_monkey_king_bar":[134,"Monkey King Bar Recipe",900,0],"monkey_king_bar":[135,"Monkey King Bar",5000,["demon_edge","blitz_knuckles","javelin"]],"radiance":[137,"Radiance",4700,["relic","talisman_of_evasion"]],"butterfly":[139,"Butterfly",5450,["eagle","claymore","talisman_of_evasion"]],"recipe_greater_crit":[140,"Daedalus Recipe",900,0],"greater_crit":[141,"Daedalus",5100,["lesser_crit","demon_edge"]],"recipe_basher":[142,"Skull Basher Recipe",825,0],"basher":[143,"Skull Basher",2875,["mithril_hammer","belt_of_strength"]],"recipe_bfury":[144,"Battle Fury Recipe",400,0],"bfury":[145,"Battle Fury",3900,["pers","broadsword","broadsword","quelling_blade"]],"recipe_manta":[146,"Manta Style Recipe",1550,0],"manta":[147,"Manta Style",4650,["yasha","diadem"]],"recipe_lesser_crit":[148,"Crystalys Recipe",200,0],"lesser_crit":[149,"Crystalys",2000,["claymore","blades_of_attack"]],"recipe_dragon_lance":[234,"Dragon Lance Recipe",450,0],"dragon_lance":[236,"Dragon Lance",1900,["blade_of_alacrity","belt_of_strength"]],"recipe_armlet":[150,"Armlet of Mordiggian Recipe",625,0],"armlet":[151,"Armlet of Mordiggian",2500,["helm_of_iron_will","gloves","blades_of_attack"]],"invis_sword":[152,"Shadow Blade",3250,["claymore","blitz_knuckles","shadow_amulet"]],"recipe_silver_edge":[248,"Silver Edge Recipe",250,0],"silver_edge":[249,"Silver Edge",5700,["invis_sword","demon_edge"]],"sange_and_yasha":[154,"Sange and Yasha",4200,["sange","yasha"]],"kaya_and_sange":[273,"Kaya and Sange",4200,["kaya","sange"]],"yasha_and_kaya":[277,"Yasha and Kaya",4200,["yasha","kaya"]],"satanic":[156,"Satanic",5050,["reaver","claymore","lifesteal"]],"recipe_mjollnir":[157,"Mjollnir Recipe",550,0],"mjollnir":[158,"Mjollnir",5500,["maelstrom","hyperstone"]],"skadi":[160,"Eye of Skadi",5900,["ultimate_orb","ultimate_orb","orb_of_frost"]],"recipe_sange":[161,"Sange Recipe",650,0],"sange":[162,"Sange",2100,["ogre_axe","belt_of_strength"]],"recipe_helm_of_the_dominator":[163,"Helm of the Dominator Recipe",1125,0],"helm_of_the_dominator":[164,"Helm of the Dominator",2550,["helm_of_iron_will","crown"]],"recipe_helm_of_the_overlord":[633,"Helm of the Overlord Recipe",300,0],"helm_of_the_overlord":[635,"Helm of the Overlord",5650,["helm_of_the_dominator","ultimate_orb"]],"maelstrom":[166,"Maelstrom",2950,["mithril_hammer","javelin","gloves"]],"recipe_gungir":[1565,"Gleipnir Recipe",400,0],"gungir":[1466,"Gleipnir",4650,["rod_of_atos","point_booster","chasm_stone"]],"desolator":[168,"Desolator",3500,["mithril_hammer","mithril_hammer","blight_stone"]],"recipe_yasha":[169,"Yasha Recipe",650,0],"yasha":[170,"Yasha",2100,["blade_of_alacrity","boots_of_elves"]],"mask_of_madness":[172,"Mask of Madness",1900,["broadsword","lifesteal"]],"recipe_diffusal_blade":[173,"Diffusal Blade Recipe",1050,0],"diffusal_blade":[174,"Diffusal Blade",2500,["blade_of_alacrity","robe"]],"recipe_disperser":[1096,"Disperser Recipe",800,0],"disperser":[1097,"Disperser",6100,["diffusal_blade","eagle"]],"recipe_ethereal_blade":[175,"Ethereal Blade Recipe",900,0],"ethereal_blade":[176,"Ethereal Blade",5200,["ultimate_orb","ghost"]],"recipe_soul_ring":[177,"Soul Ring Recipe",350,0],"soul_ring":[178,"Soul Ring",805,["ring_of_protection","gauntlets","gauntlets"]],"recipe_arcane_boots":[179,"Arcane Boots Recipe",325,0],"arcane_boots":[180,"Arcane Boots",1500,["boots","ring_of_basilius","wizard_hat"]],"recipe_octarine_core":[228,"Octarine Core Recipe",200,0],"octarine_core":[235,"Octarine Core",4900,["soul_booster","tiara_of_selemene",""]],"orb_of_venom":[181,"Orb of Venom",350,0],"blight_stone":[240,"Orb of Blight",300,0],"orb_of_corrosion":[569,"Orb of Corrosion",1050,["boots_of_elves","orb_of_frost","blight_stone"]],"orb_of_frost":[1575,"Orb of Frost",300,0],"recipe_falcon_blade":[599,"Falcon Blade Recipe",250,0],"falcon_blade":[596,"Falcon Blade",1125,["blades_of_attack","fluffy_hat","sobi_mask"]],"mage_slayer":[598,"Mage Slayer",3100,["pers","cloak","blades_of_attack","orb_of_venom"]],"recipe_ancient_janggo":[184,"Drum of Endurance Recipe",525,0],"ancient_janggo":[185,"Drum of Endurance",1625,["headdress","belt_of_strength","wind_lace"]],"boots_of_bearing":[931,"Boots of Bearing",4225,["tranquil_boots","ancient_janggo","ring_of_tarrasque"]],"medallion_of_courage":[187,"Medallion of Courage",0,["chainmail","sobi_mask","blight_stone"]],"recipe_solar_crest":[227,"Solar Crest Recipe",500,0],"solar_crest":[229,"Solar Crest",2575,["pavise","chainmail","wind_lace"]],"recipe_pavise":[1127,"Pavise Recipe",675,0],"pavise":[1128,"Pavise",1350,["wizard_hat","fluffy_hat","ring_of_protection"]],"smoke_of_deceit":[188,"Smoke of Deceit",50,0],"tome_of_knowledge":[257,"Tome of Knowledge",75,0],"recipe_veil_of_discord":[189,"Veil of Discord Recipe",350,0],"veil_of_discord":[190,"Veil of Discord",1700,["voodoo_mask","robe","fluffy_hat"]],"recipe_revenants_brooch":[910,"Revenant's Brooch Recipe",650,0],"revenants_brooch":[911,"Revenant's Brooch",3300,["lesser_crit","voodoo_mask"]],"recipe_devastator":[1805,"Parasma Recipe",400,0],"devastator":[1806,"Parasma",5975,["witch_blade","mystic_staff"]],"recipe_guardian_greaves":[230,"Guardian Greaves Recipe",1175,0],"guardian_greaves":[231,"Guardian Greaves",4450,["arcane_boots","mekansm"]],"recipe_rod_of_atos":[205,"Rod of Atos Recipe",250,0],"rod_of_atos":[206,"Rod of Atos",2250,["staff_of_wizardry","vitality_booster"]],"recipe_iron_talon":[238,"Iron Talon Recipe",125,0,"/apps/dota2/images/dota_react/items/recipe.png?3"],"iron_talon":[239,"Iron Talon",0,["quelling_blade","ring_of_protection"]],"recipe_abyssal_blade":[207,"Abyssal Blade Recipe",1275,0],"abyssal_blade":[208,"Abyssal Blade",6250,["basher","sange"]],"recipe_heavens_halberd":[209,"Heaven's Halberd Recipe",450,0],"heavens_halberd":[210,"Heaven's Halberd",3400,["talisman_of_evasion","splintmail","ring_of_health"]],"ring_of_aquila":[212,"Ring of Aquila",null,0],"tranquil_boots":[214,"Tranquil Boots",900,["boots","wind_lace","ring_of_regen"]],"shadow_amulet":[215,"Shadow Amulet",900,0],"recipe_glimmer_cape":[253,"Glimmer Cape Recipe",800,0],"glimmer_cape":[254,"Glimmer Cape",2150,["shadow_amulet","shawl"]],"river_painter":[1021,"River Vial: Chrome",0,0],"river_painter2":[1022,"River Vial: Dry",0,0],"river_painter3":[1023,"River Vial: Slime",0,0],"river_painter4":[1024,"River Vial: Oil",0,0],"river_painter5":[1025,"River Vial: Electrified",0,0],"river_painter6":[1026,"River Vial: Potion",0,0],"river_painter7":[1027,"River Vial: Blood",0,0],"mutation_tombstone":[1028,"Tombstone",0,0],"super_blink":[1029,null,null,0],"pocket_tower":[1030,"Pocket Tower",null,0],"pocket_roshan":[1032,"Pocket Roshan",1000,0],"keen_optic":[287,"Keen Optic",0,0],"grove_bow":[288,"Grove Bow",0,0],"quickening_charm":[289,"Quickening Charm",0,0],"philosophers_stone":[290,"Philosopher's Stone",0,0],"force_boots":[291,"Force Boots",0,0],"desolator_2":[292,"Stygian Desolator",0,0],"phoenix_ash":[293,"Phoenix Ash",0,0],"seer_stone":[294,"Seer Stone",0,0],"greater_mango":[295,null,0,0],"elixer":[302,"Elixir",0,0],"vampire_fangs":[297,"Vampire Fangs",0,0],"force_field":[829,"Arcanist's Armor",0,0],"black_powder_bag":[834,"Blast Rig",0,0],"mechanical_arm":[849,null,0,0],"craggy_coat":[298,"Craggy Coat",0,0],"greater_faerie_fire":[299,"Greater Faerie Fire",0,0],"timeless_relic":[300,"Timeless Relic",0,0],"mirror_shield":[301,"Mirror Shield",0,0],"ironwood_tree":[304,"Ironwood Tree",0,0],"mango_tree":[328,"Mango Tree",null,0],"royal_jelly":[305,"Royal Jelly",0,0],"pupils_gift":[306,"Pupil's Gift",0,0],"tome_of_aghanim":[307,"Tome of Aghanim",0,0],"repair_kit":[308,"Repair Kit",0,0],"mind_breaker":[309,"Mind Breaker",0,0],"third_eye":[310,"Third Eye",0,0],"spell_prism":[311,"Spell Prism",0,0],"princes_knife":[325,"Prince's Knife",0,0],"witless_shako":[330,"Witless Shako",0,0],"imp_claw":[334,"Imp Claw",0,0],"flicker":[335,"Flicker",0,0],"spy_gadget":[336,"Telescope",0,0],"spider_legs":[326,"Spider Legs",0,0],"helm_of_the_undying":[327,"Helm of the Undying",0,0],"vambrace":[331,"Vambrace",0,0],"horizon":[312,null,0,0],"fusion_rune":[313,"Fusion Rune",0,0],"ocean_heart":[354,"Ocean Heart",0,0],"spark_of_courage":[1124,"Spark of Courage",0,0],"broom_handle":[355,"Broom Handle",0,0],"trusty_shovel":[356,"Trusty Shovel",0,0],"nether_shawl":[357,"Nether Shawl",0,0],"dragon_scale":[358,"Dragon Scale",0,0],"essence_ring":[359,"Essence Ring",0,0],"clumsy_net":[360,"Clumsy Net",0,0],"enchanted_quiver":[361,"Enchanted Quiver",0,0],"ninja_gear":[362,"Ninja Gear",0,0],"illusionsts_cape":[363,"Illusionist's Cape",0,0],"havoc_hammer":[364,"Havoc Hammer",0,0],"panic_button":[365,"Magic Lamp",0,0],"apex":[366,"Apex",0,0],"ballista":[367,"Ballista",0,0],"woodland_striders":[368,"Woodland Striders",0,0],"recipe_trident":[275,"Trident Recipe",1,0],"demonicon":[370,"Book of the Dead",0,0],"fallen_sky":[371,"Fallen Sky",0,0],"pirate_hat":[372,"Pirate Hat",0,0],"ex_machina":[374,"Ex Machina",0,0],"faded_broach":[375,"Faded Broach",0,0],"paladin_sword":[376,"Paladin Sword",0,0],"minotaur_horn":[377,"Minotaur Horn",0,0],"orb_of_destruction":[378,"Orb of Destruction",0,0],"the_leveller":[379,"The Leveller",0,0],"arcane_ring":[349,"Arcane Ring",0,0],"titan_sliver":[381,"Titan Sliver",0,0],"chipped_vest":[565,"Chipped Vest",0,0],"elven_tunic":[573,"Elven Tunic",0,0],"cloak_of_flames":[574,"Cloak of Flames",0,0],"trickster_cloak":[571,"Trickster Cloak",0,0],"possessed_mask":[577,"Possessed Mask",0,0],"penta_edged_sword":[638,"Penta-Edged Sword",0,0],"bullwhip":[680,"Bullwhip",0,0],"psychic_headband":[675,"Psychic Headband",0,0],"ceremonial_robe":[676,"Ceremonial Robe",0,0],"quicksilver_amulet":[686,"Quicksilver Amulet",0,0],"book_of_shadows":[677,"Book of Shadows",0,0],"giants_ring":[678,"Giant's Ring",0,0],"stormcrafter":[585,"Stormcrafter",0,0],"mysterious_hat":[589,"Fairy's Trinket",0,0],"ascetic_cap":[825,"Ascetic's Cap",0,0],"misericorde":[828,"Brigand's Blade",0,0],"heavy_blade":[837,"Witchbane",0,0],"unstable_wand":[838,"Pig Pole",0,0],"pogo_stick":[840,"Tumbler's Toy",0,0],"paintball":[835,"Fae Grenade",0,0],"seeds_of_serenity":[945,"Seeds of Serenity",0,0],"lance_of_pursuit":[946,"Lance of Pursuit",0,0],"occult_bracelet":[947,"Occult Bracelet",0,0],"ogre_seal_totem":[949,"Ogre Seal Totem",0,0],"recipe_harpoon":[1101,"Harpoon Recipe",1000,0],"harpoon":[939,"Harpoon",4700,["echo_sabre","diadem"]],"defiant_shell":[950,"Defiant Shell",0,0],"eye_of_the_vizier":[990,"Eye of the Vizier",0,0],"bottomless_chalice":[1000,null,0,0],"dagger_of_ristul":[1077,"Dagger of Ristul",0,0],"ofrenda":[4300,"Beloved Memory",0,0],"ofrenda_shovel":[4301,"Scrying Shovel",0,0],"ofrenda_pledge":[4302,"Forebearer's Fortune",0,0],"muertas_gun":[1090,"Mercy & Grace",0,0],"tier1_token":[2091,"Tier 1 Token",null,0],"tier2_token":[2092,"Tier 2 Token",null,0],"tier3_token":[2093,"Tier 3 Token",null,0],"tier4_token":[2094,"Tier 4 Token",null,0],"tier5_token":[2095,"Tier 5 Token",null,0],"vindicators_axe":[2096,"Vindicator's Axe",0,0],"duelist_gloves":[2097,"Duelist Gloves",0,0],"ancient_guardian":[1156,"Ancient Guardian",0,0],"safety_bubble":[1157,"Safety Bubble",0,0],"whisper_of_the_dread":[1158,"Whisper of the Dread",0,0],"nemesis_curse":[1159,"Nemesis Curse",0,0],"avianas_feather":[1160,"Aviana's Feather",0,0],"unwavering_condition":[1161,"Unwavering Condition",0,0],"dandelion_amulet":[2190,"Dandelion Amulet",0,0],"martyrs_plate":[2192,"Martyr's Plate",0,0],"gossamer_cape":[2193,"Gossamer Cape",0,0],"light_collector":[1167,"Light Collector",0,0],"rattlecage":[1168,"Rattlecage",0,0],"doubloon":[1803,"Doubloon",0,0],"roshans_banner":[1804,"Roshan's Banner",0,0],"black_grimoire":[1440,"Black Grimoire\\n(Warlock)",0,0],"grisgris":[1441,"Gris-Gris",0,0],"enhancement_vast":[1576,"Vast",0,0],"enhancement_quickened":[1577,"Quickened",0,0],"enhancement_audacious":[1581,"Audacious",0,0],"enhancement_mystical":[1583,"Mystical",0,0],"enhancement_alert":[1584,"Alert",0,0],"enhancement_brawny":[1585,"Brawny",0,0],"enhancement_tough":[1586,"Tough",0,0],"enhancement_feverish":[1587,"Feverish",0,0],"enhancement_fleetfooted":[1588,"Fleetfooted",0,0],"enhancement_crude":[1589,"Crude",0,0],"enhancement_boundless":[1590,"Boundless",0,0],"enhancement_wise":[1591,"Wise",0,0],"enhancement_timeless":[1592,"Timeless",0,0],"enhancement_greedy":[1593,"Greedy",0,0],"enhancement_vampiric":[1594,"Vampiric",0,0],"enhancement_keen_eyed":[1595,"Keen-eyed",0,0],"enhancement_evolved":[1596,"Evolved",0,0],"enhancement_titanic":[1597,"Titanic",0,0],"unrelenting_eye":[1598,"Unrelenting Eye",0,0],"mana_draught":[1599,"Mana Draught",0,0],"rippers_lash":[1600,"Ripper's Lash",0,0],"crippling_crossbow":[1601,"Crippling Crossbow",0,0],"gale_guard":[1602,"Gale Guard",0,0],"gunpowder_gauntlets":[1603,"Gunpowder Gauntlet",0,0],"searing_signet":[1604,"Searing Signet",0,0],"serrated_shiv":[1605,"Serrated Shiv",0,0],"polliwog_charm":[1606,"Pollywog Charm",0,0],"magnifying_monocle":[1607,"Magnifying Monocle",0,0],"pyrrhic_cloak":[1608,"Pyrrhic Cloak",0,0],"madstone_bundle":[1609,"Madstone Bundle",0,0],"miniboss_minion_summoner":[1610,null,null,0],"kobold_cup":[1637,"Kobold Cup",0,0],"dormant_curio":[1638,"Dormant Curio",0,0],"sisters_shroud":[1639,"Sister's Shroud",0,0],"jidi_pollen_bag":[1640,"Jidi Pollen Bag",0,0],"outworld_staff":[1641,"Outworld Staff",0,0],"dezun_bloodrite":[1642,"Dezun Bloodrite",0,0],"giant_maul":[1643,"Giant's Maul",0,0],"divine_regalia":[1644,"Divine Regalia",0,0],"divine_regalia_broken":[1645,"Disgraced Regalia",0,0],"enhancement_fierce":[1647,"Fierce",0,0],"enhancement_dominant":[1648,"Dominant",0,0],"enhancement_restorative":[1649,"Restorative",0,0],"enhancement_thick":[1650,"Thick",0,0],"enhancement_curious":[1651,"Unleashed",0,0],"furion_gold_bag":[1652,"Bag of Gold",0,0],"recipe_specialists_array":[1715,null,550,0],"specialists_array":[1076,"Specialist's Array",2550,["blade_of_alacrity","broadsword"]],"recipe_hydras_breath":[1857,null,1100,0],"hydras_breath":[1858,"Hydra's Breath",5900,["specialists_array","dragon_lance","orb_of_venom",""]],"weighted_dice":[1716,"Weighted Dice",0,0],"ash_legion_shield":[1717,"Ash Legion Shield",0,0],"riftshadow_prism":[1718,"Riftshadow Prism",0,0],"metamorphic_mandible":[1719,"Metamorphic Mandible",0,0],"idol_of_screeauk":[1720,"Idol of Scree'auk",0,0],"flayers_bota":[1721,"Flayer's Bota",0,0],"spellslinger":[1859,"Spellslinger",0,0],"prophets_pendulum":[1860,"Prophet's Pendulum",0,0],"stonefeather_satchel":[1861,"Stonefeather Satchel",0,0],"enchanters_bauble":[1862,"Enchanter's Bauble",0,0],"harmonizer":[1863,"Harmonizer",0,0],"conjurers_catalyst":[1864,"Conjurer's Catalyst",0,0],"enhancement_vital":[1865,"Vital",0,0],"enhancement_hulking":[1866,"Hulking",0,0],"enhancement_manic":[1867,"Manic",0,0],"foragers_kit":[1868,"Forager's Kit",0,0],"foragers_health":[1869,"Vital Toadstool",0,0],"foragers_stats":[1870,"Ironwood Nut",0,0],"foragers_mana":[1871,"Tomo'kan Ringcap",0,0],"chasm_stone":[1872,"Chasm Stone",800,0],"partisans_brand":[1873,"Partisan's Brand",0,0],"enhancement_nimble":[1874,"Nimble",0,0],"tidehunter_fish":[1875,"Leviathan's Fish",0,0],"diffusal_blade_2":[196,"Diffusal Blade",3850,["diffusal_blade","recipe_diffusal_blade"],"/apps/dota2/images/dota_react/items/diffusal_blade_2.png?3"]},"ids":{"0":"ability_base","49":"recipe_phase_boots","62":"recipe_power_treads","66":"recipe_oblivion_staff","68":"recipe_pers","70":"recipe_poor_mans_shield","80":"recipe_vladmir","107":"recipe_ultimate_scepter","120":"recipe_bloodstone","124":"recipe_vanguard","128":"recipe_soul_booster","130":"recipe_hood_of_defiance","132":"recipe_rapier","136":"recipe_radiance","138":"recipe_butterfly","153":"recipe_sange_and_yasha","155":"recipe_satanic","159":"recipe_skadi","165":"recipe_maelstrom","167":"recipe_desolator","171":"recipe_mask_of_madness","183":"recipe_invis_sword","186":"recipe_medallion_of_courage","191":"recipe_necronomicon_2","192":"recipe_necronomicon_3","197":"recipe_dagon_2","198":"recipe_dagon_3","199":"recipe_dagon_4","200":"recipe_dagon_5","211":"recipe_ring_of_aquila","213":"recipe_tranquil_boots","217":"recipe_ward_dispenser","219":"recipe_travel_boots_2","224":"recipe_nullifier","246":"recipe_moon_shard","251":"recipe_echo_sabre","272":"recipe_kaya_and_sange","274":"recipe_yasha_and_kaya","276":"combo_breaker","303":"recipe_ironwood_tree","317":"recipe_fallen_sky","373":"dimensional_doorway","566":"wizard_glass","570":"gloves_of_travel","575":"venom_gland","576":"gladiator_helm","578":"ancient_perseverance","582":"oakheart","588":"overflowing_elixir","597":"recipe_mage_slayer","637":"star_mace","640":"recipe_orb_of_corrosion","653":"recipe_grandmasters_glaive","655":"grandmasters_glaive","674":"warhammer","679":"vengeances_shadow","731":"satchel","824":"assassins_dagger","826":"sample_picker","827":"icarus_wings","836":"light_robes","839":"fortitude_ring","930":"recipe_boots_of_bearing","938":"slime_vial","940":"wand_of_the_brine","948":"tome_of_omniscience","968":"arcane_scout","969":"barricade","998":"manacles_of_power","1017":"wand_of_sanctitude","1091":"samurai_tabi","1092":"recipe_hermes_sandals","1093":"hermes_sandals","1094":"recipe_lunar_crest","1095":"lunar_crest","1098":"recipe_samurai_tabi","1099":"recipe_witches_switch","1100":"witches_switch","1162":"halo","1163":"recipe_aetherial_halo","1164":"aetherial_halo","1487":"claddish_spyglass","1578":"cursed_circlet","1579":"ogre_heart","1580":"neutral_tabi","1582":"hellbear_totem","1636":"crystal_raindrop","1646":"circlet_of_the_flayed_twins","1800":"recipe_caster_rapier","1807":"recipe_angels_demise","2098":"horizons_equilibrium","2099":"blighted_spirit","2191":"turtle_shell","4207":"recipe_great_famango","4208":"recipe_greater_famango"}},"rotas":{"v":2,"minuto":10,"min_n":20,"prior":30,"limiar_ganha":1000,"medida":"gold_t + xp_t aos 10 min","gerado":1792021036,"fonte":"amostra","partidas":216,"partidas_rodada":198,"p":{"3|1":[409,-264,-137],"1|3":[409,264,137],"5|4":[380,-53,41],"4|5":[380,53,-41],"2|2":[428,0,0]},"h":{"8.1":{"3":[38,239,24]},"135.3":{"1":[22,-243,-113]},"26.5":{"4":[27,-127,-34]},"30.5":{"4":[21,31,75]},"74.2":{"2":[36,-79,-39]},"93.1":{"3":[21,270,142]}},"m":{}},"exemplo":"9041118764","somenteEmbutido":false,"modeloVitoria":null,"mapas":{},"chatProxy":"","exemplos":["9041118764","9042378073","9042245404","9042493356"]}</script>
+<script src="frases/vocabulario.js"></script>
 <script>
 /* Quem é o Culpado? — motor de análise de partidas de Dota 2.
 *
@@ -4416,6 +4489,18 @@ visao: (p) => `${p.stats.obs} obs e ${p.stats.sen} sentries em ${Math.round(p.st
 const BASE_RADIANT = [82, 84];
 const BASE_DIRE = [166, 162];
 const POCOS_ROSHAN = [[106, 142], [156, 110]];
+// O texto das frases mora em frases/vocabulario.js (window.VOCABULARIO no navegador, require no Node): mudar frase
+// não muda a versão do motor. Sem o arquivo, o momento sai com um título neutro.
+const TITULO_MOMENTO = { virada: 'Virou o jogo', solo: 'Solo kill', rico: 'Matou o mais rico deles', pickoff: 'Caçou os cores deles', split: 'Split push',
+defesa: 'Segurou a base', abriu: 'Abriu a base deles', fechou: 'Fechou o jogo', buyback: 'Buyback na hora certa', 'buyback-deles': 'Puniu o buyback deles',
+item: 'Item que não estreou', anulou: 'Anulou o rival na rota', rota: 'Ganhou a rota', mid: 'Rodou o mapa', stack: 'Stackou pro carry', enquanto: 'Resolveu enquanto o parceiro morria' };
+function frasesDoMomento(tipo, dados) {
+let voc = typeof VOCABULARIO !== 'undefined' ? VOCABULARIO : null;
+if (!voc && typeof require === 'function') { try { voc = require('../frases/vocabulario.js'); } catch (e) { try { voc = require('./frases/vocabulario.js'); } catch (e2) { voc = null; } } }
+const f = voc && voc.frases && voc.frases[tipo];
+const xs = f ? f(dados || {}) : [];
+return xs.length ? xs : [TITULO_MOMENTO[tipo] || tipo];
+}
 // família: na tela entra no máximo um momento de cada (duas lutas parecidas cansam)
 const FAMILIA_MOMENTO = { abriu: 'luta', fechou: 'luta', defesa: 'luta', buyback: 'luta', solo: 'abate', rico: 'abate', pickoff: 'abate',
 'buyback-deles': 'castigo', item: 'castigo', anulou: 'rota', rota: 'rota', mid: 'rota' };
@@ -4518,7 +4603,7 @@ return cands[0] && cands[0].n >= 8 ? cands[0].q : null;
 
 for (const p of nos) {
 const ms = [];
-const add = (tipo, peso, frases, prova, t = null) => ms.push({ tipo, familia: FAMILIA_MOMENTO[tipo] || tipo, peso, frases, prova, t });
+const add = (tipo, peso, dados, prova, t = null) => ms.push({ tipo, familia: FAMILIA_MOMENTO[tipo] || tipo, peso, dados, frases: frasesDoMomento(tipo, dados), prova, t });
 const meus = abatesDe(p);
 const abatesTime = (t0, t1 = Infinity) => soma(eles, (e) => mortesDe(e.idx).filter((d) => d.t >= t0 && d.t <= t1).length);
 const minhasEstr = estruturas.filter((e) => e.deles && e.autor === p);
@@ -4538,17 +4623,7 @@ const nota = (q) => abatesDe(q).filter((d) => d.t >= t0).length + 1.5 * estrutur
 const melhor = Math.max(...nos.map(nota));
 if (kt >= 4 && (k / kt >= 0.3 || nota(p) >= melhor) && nota(p) >= 3) {
 const estTxt = est.filter((e) => e.grande).length ? `, e ele mesmo derrubou ${estrLista(est.filter((e) => e.grande))}` : '';
-add('virada', 14 + 25 * (0.35 - cMin) + Math.min(6, atras / 1500) + 6 * (k / kt), cMin <= 0.15 ? [
-'Pegou um jogo com cheiro de GG e virou no braço',
-'Ressuscitou um jogo que já tinha atestado de óbito',
-'Quando o time já ensaiava o "gg wp", ele discordou',
-'O time já tinha escolhido o caixão; ele cancelou o velório',
-] : [
-'Desatolou o jogo quando o time estava afundando',
-'Tirou o time do buraco com as próprias mãos',
-'Transformou o "dá pra ganhar?" em "ganhamos"',
-'Pegou o jogo torto e endireitou na marra',
-], `aos ${minTxt(t0)} o time estava ${fmtK(atras)} de ouro atrás (chance de vitória de ${pct(cMin)}); dali até o fim ele fez ${k} dos ${kt} abates do time${estTxt}`, t0);
+add('virada', 14 + 25 * (0.35 - cMin) + Math.min(6, atras / 1500) + 6 * (k / kt), { forte: cMin <= 0.15 }, `aos ${minTxt(t0)} o time estava ${fmtK(atras)} de ouro atrás (chance de vitória de ${pct(cMin)}); dali até o fim ele fez ${k} dos ${kt} abates do time${estTxt}`, t0);
 }
 }
 }
@@ -4567,15 +4642,7 @@ const ricos = solos.filter((d) => d.rico);
 const melhor = ricos[0] || [...solos].sort((a, b) => (b.vitima.posicao <= 3) - (a.vitima.posicao <= 3) || nw(b.vitima, b.t) - nw(a.vitima, a.t))[0];
 const v = melhor.vitima;
 const outros = solos.length - 1;
-add('solo', 9 + 2 * Math.min(4, solos.length) + (melhor.rico ? 4 : melhor.vitima.posicao <= 3 ? 2 : 0), melhor.rico ? [
-`Pegou ${v.heroi.nome}, o mais rico deles, no x1 e sem ajuda`,
-`Foi no mano a mano com ${v.heroi.nome}, o dono do dinheiro deles, e saiu com a carteira`,
-`Chamou ${v.heroi.nome} pro x1 e ${v.heroi.nome} topou. Erro dele`,
-] : [
-`Pegou ${v.heroi.nome} sozinho, sem ninguém do time encostar`,
-`Mano a mano com ${v.heroi.nome}: ganhou e ainda cobrou o ingresso`,
-`Resolveu ${v.heroi.nome} no x1, à moda antiga`,
-], `aos ${mmss(melhor.t)} matou ${v.nome} (${v.heroi.nome}${melhor.rico ? `, ${fmtK(nw(v, melhor.t))} de patrimônio, o maior do time deles` : ''}) sem nenhum aliado dar dano nos 12 s antes${outros ? `; no jogo foram ${solos.length} solo kills dele` : ''}`, melhor.t);
+add('solo', 9 + 2 * Math.min(4, solos.length) + (melhor.rico ? 4 : melhor.vitima.posicao <= 3 ? 2 : 0), { vitima: v.heroi.nome, rico: melhor.rico, vezes: solos.filter((d) => d.vitima === v).length }, `aos ${mmss(melhor.t)} matou ${v.nome} (${v.heroi.nome}${melhor.rico ? `, ${fmtK(nw(v, melhor.t))} de patrimônio, o maior do time deles` : ''}) sem nenhum aliado dar dano nos 12 s antes${solos.filter((d) => d.vitima === v).length >= 2 ? `; solou ${v.heroi.nome} ${solos.filter((d) => d.vitima === v).length} vezes no jogo (${solos.filter((d) => d.vitima === v).map((d) => mmss(d.t)).join(', ')})` : ''}${solos.length > solos.filter((d) => d.vitima === v).length && outros ? `; no jogo foram ${solos.length} solo kills dele` : ''}`, melhor.t);
 }
 const ricosMortos = meus.filter((d) => d.rico && !d.solo);
 if (ricosMortos.length) {
@@ -4586,25 +4653,12 @@ const v = jog[vi];
 const fora = ds.filter((d) => d.isolado).length;
 const maxNw = Math.max(...ds.map((d) => nw(v, d.t)));
 if (ds.length >= 2 || (fora >= 1 && ds[0].t >= 25 * 60)) {
-add('rico', 8 + 1.5 * Math.min(5, ds.length) + 2 * fora, ds.length === 1 ? [
-`Pegou ${v.heroi.nome}, o milionário deles, andando sozinho no mapa`,
-`Achou ${v.heroi.nome}, o dono do dinheiro deles, dando bobeira e cobrou`,
-`Fez ${v.heroi.nome} descobrir que dinheiro não compra respawn`,
-] : [
-`Desligou ${v.heroi.nome}, o milionário deles, ${ds.length} vezes`,
-`Cobrou IPTU da mansão de ${v.heroi.nome}`,
-`Tratou ${v.heroi.nome} de ${fmtK(maxNw)} como se fosse creep da rota`,
-`Fez ${v.heroi.nome} descobrir que dinheiro não compra respawn`,
-], `${v.nome} (${v.heroi.nome}) era o mais rico do time deles e morreu pra ele ${ds.length === 1 ? `aos ${mmss(ds[0].t)}` : `${ds.length} vezes depois dos 15 min`} (até ${fmtK(maxNw)} de patrimônio)${fora ? `, ${fora === ds.length ? (fora === 1 ? 'fora de qualquer luta' : 'todas fora de luta') : `${fora} delas fora de luta`}` : ''}`, ds[0].t);
+add('rico', 8 + 1.5 * Math.min(5, ds.length) + 2 * fora, { vitima: v.heroi.nome, vezes: ds.length }, `${v.nome} (${v.heroi.nome}) era o mais rico do time deles e morreu pra ele ${ds.length === 1 ? `aos ${mmss(ds[0].t)}` : `${ds.length} vezes depois dos 15 min`} (até ${fmtK(maxNw)} de patrimônio)${fora ? `, ${fora === ds.length ? (fora === 1 ? 'fora de qualquer luta' : 'todas fora de luta') : `${fora} delas fora de luta`}` : ''}`, ds[0].t);
 }
 }
 const picks = meus.filter((d) => d.isolado && !d.solo && !d.rico && d.t >= 12 * 60 && d.vitima.posicao <= 3);
 if (picks.length >= 3) {
-add('pickoff', 6 + Math.min(6, picks.length), [
-'Caçou os cores deles pelo mapa como quem procura Pokémon',
-'Abriu um delivery de morte fora das lutas',
-'Pegou core deles andando sozinho e não perdoou',
-], `${plural(picks.length, 'abate', 'abates')} em cores deles (${juntarNomes([...new Set(picks.map((d) => d.vitima.heroi.nome))])}) depois dos 12 min, fora das lutas de time`, picks[0].t);
+add('pickoff', 6 + Math.min(6, picks.length), {}, `${plural(picks.length, 'abate', 'abates')} em cores deles (${juntarNomes([...new Set(picks.map((d) => d.vitima.heroi.nome))])}) depois dos 12 min, fora das lutas de time`, picks[0].t);
 }
 
 // 3) Split push: estrutura dele enquanto o time segurava a briga em outro lugar (ou com o time morto)
@@ -4612,27 +4666,20 @@ for (const e of minhasEstr) {
 const l = ctx.lutas.find((x) => e.t >= x.inicio - 15 && e.t <= (x.fim ?? x.inicio) + 20);
 const longe = l && !presenteNaLuta(l.jogadores[p.idx] || {});
 const mortos = nos.filter((q) => q !== p && mortoEm(q, e.t)).length;
-if (!(longe || mortos >= 3) || !(e.grande || e.est.tipo === 'torre')) continue;
+const aqui = posEm(p, e.t);
+// quantos deles (vivos) estavam em cima dele quando a estrutura caiu: o split puxou gente de volta pra defender
+const puxou = aqui ? eles.filter((x) => !mortoEm(x, e.t) && (() => { const ps = posEm(x, e.t); return ps && distM(ps, aqui) <= 22; })()).length : 0;
+const vivo = !mortesDe(p.idx).some((d) => d.t > e.t - 5 && d.t <= e.t + 40);
+const sozinhoAli = aqui ? nos.filter((q) => q !== p && !mortoEm(q, e.t) && (() => { const ps = posEm(q, e.t); return ps && distM(ps, aqui) <= 30; })()).length === 0 : false;
+if (!(longe || mortos >= 3 || (puxou >= 2 && vivo && sozinhoAli)) || !(e.grande || e.est.tipo === 'torre')) continue;
 const ancient = e.est.tipo === 'ancestral';
-const peso = (e.grande ? 13 : 6) + (ancient ? 6 : 0) + (longe && l.ganha ? 1 : 0);
-const contexto = longe
+const peso = (e.grande ? 13 : 6) + (ancient ? 6 : 0) + (longe && l.ganha ? 1 : 0) + (puxou >= 2 && vivo ? 2 : 0);
+const contexto = [longe
 ? `enquanto o time ${l.mortesEles > l.mortesNos ? 'ganhava' : l.mortesEles < l.mortesNos ? 'perdia' : 'segurava'} a luta das ${mmss(l.inicio)} (${l.mortesEles} x ${l.mortesNos}) em outro canto`
-: `com ${mortos} aliados mortos`;
-add('split', peso, ancient ? [
-'Fez o clássico "segura aí que eu vou no Ancestral"',
-'Enquanto todo mundo brigava, ele foi lá e desligou o jogo',
-'Entrou pela porta dos fundos e terminou o jogo',
-] : longe ? [
-'Fez o clássico "segura aí que eu vou na torre"',
-'Enquanto o time brigava, ele foi fazer obra na base deles',
-'Split push raiz: sumiu do mapa e voltou com uma estrutura no bolso',
-] : e.grande ? [
-'Time no cemitério e ele na base deles, demolindo',
-'Com o time todo morto, ele seguiu batendo em prédio',
-] : [
-'Time no cemitério e ele batendo em torre',
-'Com o time todo morto, ele seguiu trabalhando na obra',
-], `aos ${mmss(e.t)} derrubou ${estrTxt(e)} ${contexto}`, e.t);
+: mortos >= 3 ? `com ${mortos} aliados mortos` : 'sem ninguém do time por perto',
+puxou >= 2 ? `${puxou} deles foram defender` : '',
+vivo && !ancient ? 'e ele saiu vivo' : ''].filter(Boolean).join('; ');
+add('split', peso, { ancient, longe: Boolean(longe), grande: e.grande, puxou, vivo }, `aos ${mmss(e.t)} derrubou ${estrTxt(e)} ${contexto}`, e.t);
 break;
 }
 
@@ -4646,30 +4693,14 @@ const fimL = l.fim ?? l.inicio;
 const pres = presentes(l);
 if (l.lugar === 'nossa-base' && l.mortesEles >= 3) {
 const sozinho = pres.length <= 2;
-add('defesa', 11 + (sozinho ? 5 : 0) + 15 * Math.max(0, l.delta), sozinho ? [
-'Segurou a base praticamente sozinho',
-'Trancou a porta de casa e jogou a chave fora, sozinho',
-'Fez a defesa da base no modo solo',
-] : [
-'Eles subiram a high ground e voltaram de rabo entre as pernas',
-'Defendeu a base como se fosse o último pedaço de pizza',
-'Trancou a porta de casa na cara deles',
-], `aos ${mmss(l.inicio)} eles invadiram a base de vocês e a luta terminou ${l.mortesEles} x ${l.mortesNos}${sozinho ? `, só com ${pres.length === 1 ? 'ele' : `ele e ${pres.find((q) => q !== p).nome}`} na defesa` : ''}; ${parteDele(l, p)} na conta dele`, l.inicio);
+add('defesa', 11 + (sozinho ? 5 : 0) + 15 * Math.max(0, l.delta), { sozinho }, `aos ${mmss(l.inicio)} eles invadiram a base de vocês e a luta terminou ${l.mortesEles} x ${l.mortesNos}${sozinho ? `, só com ${pres.length === 1 ? 'ele' : `ele e ${pres.find((q) => q !== p).nome}`} na defesa` : ''}; ${parteDele(l, p)} na conta dele`, l.inicio);
 }
 const abriu = estruturas.filter((e) => e.deles && e.grande && e.t >= l.inicio && e.t <= fimL + 150);
 if (abriu.length && l.mortesEles >= 3) {
 const fim = abriu.find((e) => e.est.tipo === 'ancestral');
 const minhas = abriu.filter((e) => e.autor === p);
 const lista = estrLista(abriu);
-add(fim ? 'fechou' : 'abriu', 4 + (fim ? 15 : 30) * Math.max(0, Math.min(fim ? 0.3 : 0.5, l.delta)) + Math.min(4, 1.5 * k) + (minhas.length ? 1.5 : 0) + (fim && fim.autor === p ? 1 : 0), fim ? [
-'Ganhou a última luta e foi pessoalmente desligar o jogo',
-'Apagou o time deles e foi buscar o Ancestral de brinde',
-'Fechou a partida do jeito certo: wipe e Ancestral',
-] : [
-'Abriu a porta da base deles na porrada',
-'Ganhou a luta e foi cobrar o aluguel na base deles',
-abriu.some((e) => e.est.tipo === 'quartel') ? 'Luta ganha com entrega em domicílio: direto pros quartéis' : 'Ganhou a briga e já foi subindo a high ground',
-], `aos ${mmss(l.inicio)} a luta foi ${l.mortesEles} x ${l.mortesNos} pra vocês, com ${parteDele(l, p)} na conta dele; ${abriu[0].t - fimL <= 5 ? 'na sequência' : `${segTxt(abriu[0].t - fimL)} depois`} ${abriu.length === 1 ? 'caiu' : 'caíram'} ${lista}${minhas.length ? ` (${minhas.length === abriu.length ? (abriu.length === 1 ? 'no golpe dele' : 'tudo no golpe dele') : `${minhas.length} no golpe dele`})` : ''}`, l.inicio);
+add(fim ? 'fechou' : 'abriu', 4 + (fim ? 15 : 30) * Math.max(0, Math.min(fim ? 0.3 : 0.5, l.delta)) + Math.min(4, 1.5 * k) + (minhas.length ? 1.5 : 0) + (fim && fim.autor === p ? 1 : 0), { quarteis: abriu.some((e) => e.est.tipo === 'quartel') }, `aos ${mmss(l.inicio)} a luta foi ${l.mortesEles} x ${l.mortesNos} pra vocês, com ${parteDele(l, p)} na conta dele; ${abriu[0].t - fimL <= 5 ? 'na sequência' : `${segTxt(abriu[0].t - fimL)} depois`} ${abriu.length === 1 ? 'caiu' : 'caíram'} ${lista}${minhas.length ? ` (${minhas.length === abriu.length ? (abriu.length === 1 ? 'no golpe dele' : 'tudo no golpe dele') : `${minhas.length} no golpe dele`})` : ''}`, l.inicio);
 }
 }
 for (const b of p.raw.buyback_log || []) {
@@ -4677,14 +4708,7 @@ const t = Number(b.time) || 0;
 const l = lutas.find((x) => x.ganha && x.inicio >= t - 10 && x.inicio <= t + 90 && (killsNaLuta(x, p) >= 1 || fatiaDano(x, p) >= 0.25));
 if (!l) continue;
 const emCasa = l.lugar === 'nossa-base';
-add('buyback', (emCasa ? 13 : 8) + 10 * Math.max(0, l.delta), emCasa ? [
-'Pagou o buyback e salvou a casa',
-'Gastou o ouro do buyback e o investimento rendeu uma base inteira',
-'Voltou da fonte de táxi pra salvar o Ancestral',
-] : [
-'Pagou o boleto do buyback e voltou pra resolver',
-'Morreu, comprou a volta e ganhou a luta',
-], `comprou buyback aos ${mmss(t)} e ${emCasa ? 'a defesa da base' : 'a luta seguinte'} terminou ${l.mortesEles} x ${l.mortesNos}, com ${parteDele(l, p)} na conta dele`, t);
+add('buyback', (emCasa ? 13 : 8) + 10 * Math.max(0, l.delta), { emCasa }, `comprou buyback aos ${mmss(t)} e ${emCasa ? 'a defesa da base' : 'a luta seguinte'} terminou ${l.mortesEles} x ${l.mortesNos}, com ${parteDele(l, p)} na conta dele`, t);
 break;
 }
 
@@ -4695,11 +4719,7 @@ const t = Number(b.time) || 0;
 const d = meus.find((x) => x.vitima === e && x.t > t && x.t <= t + 120);
 if (!d) continue;
 const custo = Math.round(200 + nw(e, t) / 13);
-add('buyback-deles', 8, [
-`Fez o buyback de ${e.heroi.nome} virar doação`,
-`${e.heroi.nome} pagou buyback só pra morrer pra ele de novo`,
-`Mandou ${e.heroi.nome} de volta pra fonte com o boleto do buyback ainda quente`,
-], `${e.nome} (${e.heroi.nome}) pagou ~${fmtK(custo)} de buyback aos ${mmss(t)} e morreu pra ele ${segTxt(d.t - t)} depois`, d.t);
+add('buyback-deles', 8, { vitima: e.heroi.nome }, `${e.nome} (${e.heroi.nome}) pagou ~${fmtK(custo)} de buyback aos ${mmss(t)} e morreu pra ele ${segTxt(d.t - t)} depois`, d.t);
 break;
 }
 }
@@ -4708,11 +4728,7 @@ const itensCaros = eles.flatMap((e) => (e.raw.purchase_log || []).map((x) => ({ 
 for (const x of itensCaros) {
 const d = meus.find((m) => m.vitima === x.e && m.t > x.t && m.t <= x.t + 45);
 if (!d) continue;
-add('item', 6 + Math.min(3, (x.it.cost - 3500) / 1500), [
-`${x.e.heroi.nome} comprou ${x.it.dname} e não deu nem tempo de estrear`,
-`Fez ${x.e.heroi.nome} perder a garantia do ${x.it.dname} em ${Math.round(d.t - x.t)} s`,
-`${x.it.dname} novinho, ainda com plástico, e ${x.e.heroi.nome} já estava na fonte`,
-], `${x.e.nome} (${x.e.heroi.nome}) comprou ${x.it.dname} (${fmtK(x.it.cost)}) aos ${mmss(x.t)} e morreu pra ele ${Math.round(d.t - x.t)} s depois`, d.t);
+add('item', 6 + Math.min(3, (x.it.cost - 3500) / 1500), { vitima: x.e.heroi.nome, item: x.it.dname, segundos: Math.round(d.t - x.t) }, `${x.e.nome} (${x.e.heroi.nome}) comprou ${x.it.dname} (${fmtK(x.it.cost)}) aos ${mmss(x.t)} e morreu pra ele ${Math.round(d.t - x.t)} s depois`, d.t);
 break;
 }
 
@@ -4725,14 +4741,7 @@ const bench = (rv.stats && rv.stats.bench) || {};
 const gpmPct = bench.gold_per_min;
 const anulou = gpmPct != null && gpmPct <= 0.3 && rv.posicao <= 3;
 const k = meus.filter((d) => d.vitima === rv && d.t < 600).length;
-add(anulou ? 'anulou' : 'rota', (anulou ? 9 : 5) + Math.min(4, duelo.ouroDiff / 1000) + Math.min(2, k), anulou ? [
-`Acabou com o jogo de ${rv.heroi.nome} na rota, e ${rv.heroi.nome} nunca mais se recuperou`,
-`Mandou ${rv.heroi.nome} pra terapia já nos primeiros 10 min`,
-`Anulou ${rv.heroi.nome}: o resto do jogo foi só o eco`,
-] : [
-`Atropelou ${rv.heroi.nome} na rota`,
-`Fez da rota contra ${rv.heroi.nome} um passeio no parque`,
-], `aos 10 min estava ${fmtK(duelo.ouroDiff)} de ouro na frente de ${rv.nome} (${rv.heroi.nome})${k ? `, com ${plural(k, 'abate', 'abates')} em cima dele` : ''}${anulou ? `; ${rv.heroi.nome} terminou com ${rv.raw.gold_per_min} de GPM, abaixo de ${pct(1 - gpmPct)} de quem joga com ele` : ''}`, 600);
+add(anulou ? 'anulou' : 'rota', (anulou ? 9 : 5) + Math.min(4, duelo.ouroDiff / 1000) + Math.min(2, k), { rival: rv.heroi.nome, rota: av.tipo }, `aos 10 min estava ${fmtK(duelo.ouroDiff)} de ouro na frente de ${rv.nome} (${rv.heroi.nome})${k ? `, com ${plural(k, 'abate', 'abates')} em cima dele` : ''}${anulou ? `; ${rv.heroi.nome} terminou com ${rv.raw.gold_per_min} de GPM, abaixo de ${pct(1 - gpmPct)} de quem joga com ele` : ''}`, 600);
 }
 
 // 7) Mid: runas e ganks cedo
@@ -4740,11 +4749,7 @@ if (p.posicao === 2) {
 const runas = (p.raw.runes_log || []).filter((x) => String(x.key) in NOMES_RUNA && x.time <= 15 * 60);
 const ganks = meus.filter((d) => d.t >= 120 && d.t < 720 && d.vitima.rota && p.rota && d.vitima.rota.lane != null && d.vitima.rota.lane !== p.rota.lane);
 if (ganks.length >= 2) {
-add('mid', 6 + ganks.length + Math.min(2, runas.length / 2), [
-'Fez da mid uma agência de viagens: saía pra gankar e voltava com abate',
-'Mid que não fica na mid: rodou o mapa e cobrou pedágio',
-'Pegou runa, saiu da rota e foi visitar os vizinhos',
-], `${plural(ganks.length, 'abate', 'abates')} fora da mid antes dos 12 min (${juntarNomes([...new Set(ganks.map((d) => d.vitima.heroi.nome))])})${runas.length ? ` e ${plural(runas.length, 'runa de poder', 'runas de poder')} até os 15 min` : ''}`, ganks[0] ? ganks[0].t : null);
+add('mid', 6 + ganks.length + Math.min(2, runas.length / 2), {}, `${plural(ganks.length, 'abate', 'abates')} fora da mid antes dos 12 min (${juntarNomes([...new Set(ganks.map((d) => d.vitima.heroi.nome))])})${runas.length ? ` e ${plural(runas.length, 'runa de poder', 'runas de poder')} até os 15 min` : ''}`, ganks[0] ? ganks[0].t : null);
 }
 }
 
@@ -4753,11 +4758,7 @@ if (p.posicao >= 4 && (p.raw.camps_stacked || 0) >= 5) {
 const carry = nos.find((q) => q.posicao === 1);
 if (carry && carry !== p && (carry.raw.last_hits || 0) >= 200) {
 const neutros = soma(Object.entries(carry.raw.killed || {}).filter(([k]) => k.includes('neutral')), ([, n]) => n);
-add('stack', 5 + Math.min(4, (p.raw.camps_stacked - 5) / 2), [
-`Montou o self-service da selva pro ${carry.nome}`,
-`Stackou a selva e entregou ${carry.nome} pronto pra servir`,
-'Fez a feira do carry e ainda carregou as sacolas',
-], `${p.raw.camps_stacked} camps stackados; ${carry.nome} (${carry.heroi.nome}) terminou com ${carry.raw.last_hits} last hits${neutros ? `, ${neutros} deles na selva` : ''}`);
+add('stack', 5 + Math.min(4, (p.raw.camps_stacked - 5) / 2), { carry: carry.nome }, `${p.raw.camps_stacked} camps stackados; ${carry.nome} (${carry.heroi.nome}) terminou com ${carry.raw.last_hits} last hits${neutros ? `, ${neutros} deles na selva` : ''}`);
 }
 }
 
@@ -4779,12 +4780,7 @@ if (k >= 5 && nota >= n && (!best || nota + n > best.nota + best.n)) best = { t0
 }
 }
 if (best) {
-add('enquanto', 9 + Math.min(5, best.n / 2) + Math.min(4, best.nota / 3), [
-`Enquanto ${w.nome} distribuía ouro pro inimigo, ele cobrava de volta com juros`,
-`${w.nome} abriu a torneira de ouro pro inimigo e ele foi fechando`,
-`Enquanto ${w.nome} fazia turismo na fonte, ele pagava as contas da casa`,
-`${w.nome} patrocinou o time deles; ele mandou a fatura de volta`,
-], `entre os ${minTxt(best.t0)} e os ${minTxt(best.t1)}, ${w.nome} (${w.heroi.nome}) morreu ${best.n} vezes; no mesmo período ele fez ${plural(best.k, 'abate', 'abates')}${best.est ? ` e derrubou ${plural(best.est, 'estrutura', 'estruturas')}` : ''}`, best.t0);
+add('enquanto', 9 + Math.min(5, best.n / 2) + Math.min(4, best.nota / 3), { parceiro: w.nome }, `entre os ${minTxt(best.t0)} e os ${minTxt(best.t1)}, ${w.nome} (${w.heroi.nome}) morreu ${best.n} vezes; no mesmo período ele fez ${plural(best.k, 'abate', 'abates')}${best.est ? ` e derrubou ${plural(best.est, 'estrutura', 'estruturas')}` : ''}`, best.t0);
 }
 }
 
@@ -6529,7 +6525,8 @@ const somaNos = (r, f) => r.nos.reduce((a, q) => a + (Number(f(q)) || 0), 0);
 function fatosDoCraque(v, r, n = 3) {
 const p = v.jogador;
 const st = p.stats || {};
-const rnd = sorteador(`fatos-${r.partida.id}-${p.idx}`);
+const rnd = sorteador(`fatos-${r.partida.id}-${p.idx}`, r.partida.id); // foge das frases vistas nas últimas partidas
+const V = window.VOCABULARIO || { matar: () => [], cap: capital };
 const min = Math.max(1, Math.round(r.partida.duracao / 60));
 const outros = r.nos.filter((q) => q.idx !== p.idx);
 const abatesTime = somaNos(r, (q) => q.raw.kills) || 1;
@@ -6538,57 +6535,57 @@ const add = (peso, frases, prova, key = null) => fatos.push({ peso, frase: rnd.u
 // os momentos decisivos que o motor achou (virada, solo kill, split push, defesa...): no máximo um de cada família
 const familias = new Set();
 const momentos = ((r.momentos || {})[p.idx] || []).filter((m) => !familias.has(m.familia) && familias.add(m.familia));
-for (const m of momentos) fatos.push({ peso: m.peso, frase: rnd.um(m.frases), prova: m.prova, key: m.tipo });
+for (const m of momentos) fatos.push({ peso: m.peso, frase: capital(rnd.um(m.frases)), prova: m.prova, key: m.tipo });
 const tem = (...ks) => momentos.some((m) => ks.includes(m.tipo) || ks.includes(m.familia));
 
 // quem ficou para trás: o último do mérito
 const lanterna = [...(r.craques || [])].reverse().find((c) => c.jogador.idx !== p.idx);
 if (lanterna && v.fatia >= 2 * lanterna.fatia && !tem('enquanto')) {
 const w = lanterna.jogador;
-add(9, [`Colocou ${w.nome} na mochila`, `Carregou ${w.nome} de cavalinho até o Ancient deles`, `Levou ${w.nome} no colo a partida inteira`, `Adotou ${w.nome} como mascote`],
+add(9, [`Colocou ${w.nome} na mochila`, `Carregou ${w.nome} de cavalinho até o Ancient deles`, `Levou ${w.nome} no colo a partida inteira`, `Adotou ${w.nome} como mascote`, `Jogou com ${w.nome} pendurado no pescoço`, `${w.nome} pegou carona e nem ajudou na gasolina`, `Levou ${w.nome} de bagagem de mão`, `${w.nome} jogou de passageiro; ele, de motorista`],
 `${w.nome} (${w.heroi.nome}) terminou ${kdaDe(w)} com ${pct(lanterna.fatia)} do mérito; ele, ${pct(v.fatia)}`);
 }
 // o inimigo que ele mais matou
 if (r.mortes && r.eles) {
 const vitimas = r.eles.map((e) => ({ e, n: (r.mortes[e.idx] || []).filter((d) => d.assassino === p.idx).length })).sort((a, b) => b.n - a.n);
 const [top] = vitimas;
-if (top && top.n >= 3 && !tem('abate')) add(6 + top.n / 2, [`Fez do ${top.e.heroi.nome} freguês`, `Botou o ${top.e.heroi.nome} no modo tutorial`, `Já pode cobrar aluguel do ${top.e.heroi.nome}`, `Virou o pesadelo particular do ${top.e.heroi.nome}`],
+if (top && top.n >= 3 && !tem('abate')) add(6 + top.n / 2, [`Fez de ${top.e.heroi.nome} freguês`, `Já pode cobrar aluguel de ${top.e.heroi.nome}`, `Virou o pesadelo particular de ${top.e.heroi.nome}`, `${top.e.heroi.nome} passou o jogo fugindo dele`, ...V.matar(top.e.heroi.nome).slice(0, 8).map((x) => `${V.cap(x)} ${top.n} vezes`)],
 `matou ${top.e.nome} (${top.e.heroi.nome}) ${pluralMr(top.n, 'vez', 'vezes')}`);
 }
 // mais abates que os dois melhores colegas somados
 const porAbate = [...outros].sort((a, b) => b.raw.kills - a.raw.kills);
 if (porAbate.length >= 2 && p.raw.kills >= 8 && p.raw.kills > porAbate[0].raw.kills + porAbate[1].raw.kills) {
-add(8, ['Matou por dois (na verdade, por três)', 'Fez o trabalho de uma dupla sozinho'],
+add(8, ['Matou por dois (na verdade, por três)', 'Fez o trabalho de uma dupla sozinho', 'Matou mais que o resto do time junto', 'Fez hora extra enquanto os colegas batiam ponto'],
 `${p.raw.kills} abates, mais que ${porAbate[0].nome} (${porAbate[0].raw.kills}) e ${porAbate[1].nome} (${porAbate[1].raw.kills}) juntos`);
 }
 const danoTime = somaNos(r, (q) => q.raw.hero_damage);
 const dano = p.raw.hero_damage || 0;
-if (danoTime && dano / danoTime >= 0.3) add(7 + 10 * (dano / danoTime - 0.3), ['Bateu como se tivesse raiva pessoal', 'Os outros quatro dividiram as sobras do dano'],
+if (danoTime && dano / danoTime >= 0.3) add(7 + 10 * (dano / danoTime - 0.3), ['Bateu como se tivesse raiva pessoal', 'Os outros quatro dividiram as sobras do dano', 'Deu dano como se o teclado devesse dinheiro pra ele', 'O dano do time era ele e mais quatro figurantes', 'Cada hit dele vinha com nota fiscal'],
 `${pct(dano / danoTime)} do dano em herói do time (${fmtK(dano)})`, 'dano');
 const mortes = p.raw.deaths;
-if (mortes <= 2 && min >= 25) add(mortes === 0 ? 9 : 6, mortes === 0 ? ['Esqueceu como se morre', 'O respawn nem sabe quem é ele'] : ['O inimigo nem decorou a cara dele cinza', 'Morrer não estava nos planos'],
+if (mortes <= 2 && min >= 25) add(mortes === 0 ? 9 : 6, mortes === 0 ? ['Esqueceu como se morre', 'O respawn nem sabe quem é ele', 'Não conhece a cor cinza', 'Jogou o jogo inteiro sem ver a fonte por dentro', 'O inimigo procurou e não achou'] : ['O inimigo nem decorou a cara dele cinza', 'Morrer não estava nos planos', 'Quase não viu a tela cinza', 'Vendeu a vida caro, quase não vendeu'],
 mortes === 0 ? `zero mortes em ${min} min` : `${pluralMr(mortes, 'morte', 'mortes')} em ${min} min`);
 const mortesOutros = outros.reduce((a, q) => a + q.raw.deaths, 0);
-if (mortes <= 3 && mortesOutros >= 20) add(5, ['Enquanto o time morria, ele não', 'Assistiu o time morrer de camarote'],
+if (mortes <= 3 && mortesOutros >= 20) add(5, ['Enquanto o time morria, ele não', 'Assistiu o time morrer de camarote', 'O time no cinza e ele de pé', 'Foi o único que não fez turismo na fonte'],
 `os outros quatro morreram ${mortesOutros} vezes; ele, ${mortes}`);
 const gpms = [...(r.nos || []), ...(r.eles || [])].map((q) => q.raw.gold_per_min || 0);
-if (p.raw.gold_per_min && p.raw.gold_per_min >= Math.max(...gpms) && p.raw.gold_per_min >= 500) add(6, ['O mapa pagou pensão pra ele', 'Farmou como se o mapa fosse herança'],
+if (p.raw.gold_per_min && p.raw.gold_per_min >= Math.max(...gpms) && p.raw.gold_per_min >= 500) add(6, ['O mapa pagou pensão pra ele', 'Farmou como se o mapa fosse herança', 'Ficou rico e não dividiu com ninguém', 'Saiu do jogo com o maior patrimônio do servidor', 'Raspou a selva e as rotas'],
 `${p.raw.gold_per_min} de ouro por minuto, o maior da partida`, 'farm');
 const estrTime = somaNos(r, (q) => q.raw.tower_damage);
 const estr = p.raw.tower_damage || 0;
-if (estrTime && estr >= 3000 && estr / estrTime >= 0.4) add(6, ['Demoliu a base deles e não pediu alvará', 'A prefeitura de lá pediu indenização'],
+if (estrTime && estr >= 3000 && estr / estrTime >= 0.4) add(6, ['Demoliu a base deles e não pediu alvará', 'A prefeitura de lá pediu indenização', 'Derrubou prédio como se fosse empreiteira', 'Não sobrou torre pra contar história'],
 `${pct(estr / estrTime)} do dano em estrutura do time (${fmtK(estr)})`, 'objetivos');
 const kp = (p.raw.kills + p.raw.assists) / abatesTime;
-if (kp >= 0.7) add(5 + 10 * (kp - 0.7), ['Onde tinha briga, tinha ele', 'Esteve em todas, igual Wi-Fi de shopping'],
+if (kp >= 0.7) add(5 + 10 * (kp - 0.7), ['Onde tinha briga, tinha ele', 'Não perdeu uma briga sequer', 'Apareceu em toda luta, até nas que não foi chamado', 'Se teve abate, teve a mão dele'],
 `participou de ${pct(Math.min(1, kp))} dos ${abatesTime} abates do time`, 'assist');
 const cura = p.raw.hero_healing || 0;
-if (cura >= 4000) add(5, ['Virou o SUS do time', 'Plano de saúde com cobertura total'], `${fmtK(cura)} de vida curada nos aliados`, 'cura');
+if (cura >= 4000) add(5, ['Virou o SUS do time', 'Plano de saúde com cobertura total', 'Curou tanto que o time esqueceu de comprar regen', 'Segurou a vida do time na unha'], `${fmtK(cura)} de vida curada nos aliados`, 'cura');
 const stun = st.stuns || p.raw.stuns || 0;
-if (stun >= 40) add(5, ['Deixou o inimigo parado mais que fila de banco', 'O inimigo passou o jogo de castigo'], `${Math.round(stun)} s de stun no inimigo`, 'controle');
+if (stun >= 40) add(5, ['Deixou o inimigo parado mais que fila de banco', 'O inimigo passou o jogo de castigo', 'O inimigo jogou mais tempo parado que andando', 'Travou o time deles igual PC de lan house'], `${Math.round(stun)} s de stun no inimigo`, 'controle');
 const wards = (p.raw.obs_placed || 0) + (p.raw.sen_placed || 0);
-if (p.posicao >= 4 && wards >= Math.max(12, min * 0.6)) add(4, ['Transformou o mapa em Street View', 'Iluminou o mapa mais que poste de LED'], `${wards} wards plantadas em ${min} min`, 'visao');
+if (p.posicao >= 4 && wards >= Math.max(12, min * 0.6)) add(4, ['Transformou o mapa em Street View', 'Iluminou o mapa mais que poste de LED', 'Não tinha canto escuro no mapa', 'O inimigo não andava um passo sem ser visto'], `${wards} wards plantadas em ${min} min`, 'visao');
 const lh = p.raw.last_hits || 0;
-if (lh / min >= 8) add(4, ['Fez da selva deles um self-service', 'Não sobrou creep pra contar história'], `${lh} last hits (${(lh / min).toFixed(1).replace('.', ',')} por minuto)`);
+if (lh / min >= 8) add(4, ['Fez da selva deles um self-service', 'Não sobrou creep pra contar história', 'Farmou tudo que se mexia', 'Passou a foice em tudo que era creep'], `${lh} last hits (${(lh / min).toFixed(1).replace('.', ',')} por minuto)`);
 const multi = p.raw.multi_kills || {};
 if (multi[5]) add(5, ['Rampage! O chat ainda está gritando', 'Apagou o time inimigo inteiro de uma vez'], `${pluralMr(multi[5], 'rampage', 'rampages')} na partida`);
 const aegis = (v.componentes || []).find((c) => c.key === 'roshan');
@@ -6810,7 +6807,89 @@ document.head.append(sc);
 }));
 const mmssAudio = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
-function bolhaDeAudio(p, info, urlMp3) {
+// ---------- Banco de falas (protótipo, só com ?banco=1): o áudio é montado na hora com frases já gravadas ----------
+// Cada frase do roteiro foi gravada uma vez na voz do Mat (audios/banco/<chave>.mp3, workflow banco-falas.yml). Aqui o
+// navegador escreve o roteiro da partida, acha cada frase no banco e emenda: pausas de zap, um ambiente baixinho
+// contínuo por baixo e o volume igualado. Sem espera nenhuma; se faltar frase, cai no fluxo normal.
+const bancoLigado = () => { try { return new URLSearchParams(location.search).get('banco') === '1'; } catch (e) { return false; } };
+let bancoJs = null;
+const carregarBanco = () => (bancoJs = bancoJs || new Promise((ok) => {
+if (window.Banco) return ok(window.Banco);
+const sc = document.createElement('script');
+sc.src = 'audio/banco.js';
+sc.onload = () => ok(window.Banco || null);
+sc.onerror = () => ok(null);
+document.head.append(sc);
+}));
+function wavDe(buf) {
+const d = buf.getChannelData(0), n = d.length, sr = buf.sampleRate;
+const v = new DataView(new ArrayBuffer(44 + n * 2));
+const txt = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+txt(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); txt(8, 'WAVE'); txt(12, 'fmt ');
+v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true);
+v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); txt(36, 'data'); v.setUint32(40, n * 2, true);
+for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, d[i])) * 0x7fff, true);
+return new Blob([v], { type: 'audio/wav' });
+}
+// Devolve {info, url, frases} pronto para a bolha, ou {faltam, total} quando o banco não tem todas as frases.
+async function audioDoBanco(r, chave) {
+const [R, B] = await Promise.all([carregarRoteiro(), carregarBanco()]);
+const f = R && B && R.fatos(r);
+const g = f && R.gerar(f, chave);
+if (!g) return null;
+const frases = B.frases(g.texto);
+const indice = await (await fetch('audios/banco/indice.json', { cache: 'no-cache' })).json().catch(() => ({}));
+const chaves = frases.map((t) => B.chave(t));
+const faltam = frases.filter((t, i) => !indice[chaves[i]]);
+if (faltam.length) return { faltam, total: frases.length };
+const SR = 24000;
+const ctx = new OfflineAudioContext(1, SR, SR); // só para decodificar
+const bufs = await Promise.all(chaves.map(async (c) => ctx.decodeAudioData(await (await fetch(`audios/banco/${c}.mp3`)).arrayBuffer())));
+const rnd = sorteador(`banco-${chave}`);
+const pausas = frases.map((t) => (/[?!]$/.test(t) ? 0.42 : 0.34) + rnd.um([-0.04, -0.02, 0, 0.02, 0.04, 0.06, 0.08]));
+const total = bufs.reduce((a, b, i) => a + b.duration + (i < bufs.length - 1 ? pausas[i] : 0), 0) + 0.15;
+const mix = new OfflineAudioContext(1, Math.ceil(total * SR), SR);
+// ambiente: ruído marrom bem baixo e contínuo, para o silêncio entre as frases não "cair"
+const ruido = mix.createBuffer(1, Math.ceil(total * SR), SR);
+const rd = ruido.getChannelData(0);
+let ult = 0, semente = 7;
+let soma = 0;
+for (let i = 0; i < rd.length; i++) { semente = (semente * 16807) % 2147483647; ult = (ult + 0.02 * ((semente / 2147483647) * 2 - 1)) / 1.02; rd[i] = ult; soma += ult * ult; }
+const kRuido = 0.003 / (Math.sqrt(soma / rd.length) || 1);
+for (let i = 0; i < rd.length; i++) rd[i] *= kRuido;
+const fonteRuido = mix.createBufferSource();
+fonteRuido.buffer = ruido;
+const comp = mix.createDynamicsCompressor();
+comp.threshold.value = -20; comp.ratio.value = 2.5; comp.attack.value = 0.005; comp.release.value = 0.12;
+const ganho = mix.createGain();
+ganho.gain.value = 2.5;
+const limite = mix.createDynamicsCompressor(); // segura os picos sem baixar o áudio todo
+limite.threshold.value = -4; limite.knee.value = 2; limite.ratio.value = 20; limite.attack.value = 0.001; limite.release.value = 0.08;
+comp.connect(ganho).connect(limite).connect(mix.destination);
+fonteRuido.connect(comp);
+fonteRuido.start(0);
+let t = 0.08;
+bufs.forEach((b, i) => {
+const src = mix.createBufferSource();
+src.buffer = b;
+const fade = mix.createGain();
+fade.gain.setValueAtTime(0, t);
+fade.gain.linearRampToValueAtTime(1, t + 0.02);
+fade.gain.setValueAtTime(1, t + b.duration - 0.03);
+fade.gain.linearRampToValueAtTime(0, t + b.duration);
+src.connect(fade).connect(comp);
+src.start(t);
+t += b.duration + (pausas[i] || 0);
+});
+const pronto = await mix.startRendering();
+const d = pronto.getChannelData(0);
+let pico = 0;
+for (let i = 0; i < d.length; i++) pico = Math.max(pico, Math.abs(d[i]));
+if (pico > 0.89) for (let i = 0; i < d.length; i++) d[i] *= 0.89 / pico;
+return { info: { id: r.partida.id, segundos: pronto.duration, texto: g.texto }, url: URL.createObjectURL(wavDe(pronto)), frases: frases.length };
+}
+
+function bolhaDeAudio(p, info, urlMp3, hora = horaZap) {
 const audio = new Audio();
 audio.preload = 'metadata';
 audio.src = urlMp3;
@@ -6850,44 +6929,36 @@ h('div', { class: 'zap-player' },
 h('span', { class: 'zap-foto' }, fotoDe(p, false), h('span', { class: 'zap-mic', 'aria-hidden': 'true' }, iconeMic())),
 play, h('div', { class: 'zap-faixa' }, onda, h('span', { class: 'zap-rodape' }, tempo, vel))),
 transcricao,
-h('span', { class: 'zap-hora' }, horaZap(), h('span', { class: 'zap-check', 'aria-hidden': 'true' }, '✓✓')));
+h('span', { class: 'zap-hora' }, hora(), h('span', { class: 'zap-check', 'aria-hidden': 'true' }, '✓✓')));
+bolha.audio = audio; // a conversa (?conversa=1) encadeia um áudio no outro
 return bolha;
 }
 const iconeMic = () => s('svg', { viewBox: '0 0 24 24', width: 14, height: 14 }, s('path', { d: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 6-6.9h-2z', fill: 'currentColor' }));
 const horaZap = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-function cartaoZap(r) {
+// O fluxo do áudio do craque (já gravado, na fila, pedir, versão escrita). Devolve o espaço da conversa onde a
+// bolha aparece; `aoGravar(sim)` avisa o cabeçalho do grupo para mostrar "X está gravando áudio…".
+function audioDoCraque(r, aoGravar = () => {}, hora = horaZap) {
 const v = (r.craques || [])[0];
-if (!v || SO_EMBUTIDO) return null;
 const p = v.jogador;
 const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
 const chave = `${r.partida.id}-${lado}`;
-const status = h('p', { class: 'zap-status' }, 'você e mais 9 pessoas');
-const corpo = h('div', { class: 'zap-corpo', 'aria-live': 'polite' });
-const card = h('section', { class: 'cartao zap', 'aria-label': `Áudio de ${p.nome} no grupo` },
-h('div', { class: 'zap-topo' },
-h('span', { class: 'zap-grupo-ic', 'aria-hidden': 'true' }, '🏆'),
-h('div', {}, h('p', { class: 'zap-grupo' }, 'Grupo do Culpado'), status)),
-corpo);
+const corpo = h('div', { class: 'zap-slot', 'aria-live': 'polite' });
 const msgSistema = (txt) => h('p', { class: 'zap-sistema' }, txt);
-const mostrar = (...nos) => corpo.replaceChildren(msgSistema('O site encaminhou o veredito pro grupo.'), ...nos);
+const mostrar = (...nos) => corpo.replaceChildren(...nos);
 let coach = null;
 
-const tocar = (info, urlMp3) => {
-status.textContent = 'você e mais 9 pessoas';
-mostrar(bolhaDeAudio(p, info, urlMp3));
-};
+const tocar = (info, urlMp3) => { aoGravar(false); mostrar(bolhaDeAudio(p, info, urlMp3, hora)); };
 const textoReserva = async (motivo) => {
 const R = await carregarRoteiro();
 const f = R && R.fatos(r);
 const g = f && R.gerar(f, chave);
 mostrar(h('div', { class: 'zap-msg' }, h('p', { class: 'zap-autor' }, p.nome),
 h('p', {}, g ? g.texto : 'Carreguei essa, tá no replay.'),
-h('span', { class: 'zap-hora' }, horaZap())), msgSistema(motivo));
+h('span', { class: 'zap-hora' }, hora())), msgSistema(motivo));
 };
 const gravando = (desde) => {
-status.textContent = `${p.nome} está gravando áudio…`;
-status.classList.add('gravando');
+aoGravar(true);
 const cron = h('span', { class: 'zap-cron' }, '0:00');
 mostrar(h('div', { class: 'zap-msg zap-gravando' },
 h('span', { class: 'zap-rec', 'aria-hidden': 'true' }, iconeMic()),
@@ -6896,10 +6967,10 @@ cron),
 msgSistema('A voz sai do nosso robô e leva de 5 a 10 minutos. Pode deixar a aba aberta que o áudio chega aqui.'));
 const t0 = desde || Date.now();
 const tic = setInterval(() => {
-if (!card.isConnected) return clearInterval(tic);
+if (!corpo.isConnected) return clearInterval(tic);
 cron.textContent = mmssAudio((Date.now() - t0) / 1000);
 }, 1000);
-return () => { clearInterval(tic); status.classList.remove('gravando'); };
+return () => { clearInterval(tic); aoGravar(false); };
 };
 const doCoach = async (caminho, opcoes) => {
 const res = await fetch(`${coach}${caminho}`, opcoes);
@@ -6908,9 +6979,10 @@ return { ok: res.ok, status: res.status, j: await res.json().catch(() => ({})) }
 const esperar = async (desde) => {
 const parar = gravando(desde);
 const t0 = Date.now();
-while (card.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
+await new Promise((ok) => setTimeout(ok, 50));
+while (corpo.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
 await new Promise((ok) => setTimeout(ok, 15_000));
-if (!card.isConnected) break;
+if (!corpo.isConnected) break;
 try {
 const { ok, j } = await doCoach(`/audio/${chave}`);
 if (ok && j.pronto) {
@@ -6922,7 +6994,7 @@ if (ok && j.falha && !j.naFila) { parar(); return textoReserva('O robô não con
 } catch (e) { /* rede: tenta de novo na próxima volta */ }
 }
 parar();
-if (card.isConnected) textoReserva('O áudio está demorando mais que o normal. Recarregue a página daqui a pouco.');
+if (corpo.isConnected) textoReserva('O áudio está demorando mais que o normal. Recarregue a página daqui a pouco.');
 };
 const pedir = async () => {
 try {
@@ -6935,10 +7007,19 @@ textoReserva(j.msg || 'Não deu pra pedir o áudio agora.');
 const convite = () => {
 const botao = h('button', { class: 'zap-pedir', type: 'button', 'data-gtm': 'audio-vitoria-pedir' }, h('span', { 'aria-hidden': 'true' }, iconeMic()), ` Pedir o áudio de ${p.nome}`);
 botao.addEventListener('click', () => { botao.disabled = true; pedir(); });
-mostrar(h('div', { class: 'zap-msg zap-convite' }, h('p', {}, `${p.nome} carregou ${pct(v.fatia)} do mérito e tá doido pra mandar um áudio no grupo.`), botao));
+mostrar(h('div', { class: 'zap-msg zap-convite' }, h('p', { class: 'zap-autor' }, p.nome), h('p', {}, `Carreguei ${pct(v.fatia)} do mérito e tô doido pra mandar um áudio aqui.`), botao,
+h('span', { class: 'zap-hora' }, hora())));
 };
 const iniciar = async () => {
-corpo.replaceChildren(msgSistema('Carregando a conversa…'));
+mostrar(msgSistema('Carregando a conversa…'));
+// 0) protótipo do banco de falas (?banco=1): monta na hora com as frases já gravadas
+if (bancoLigado()) {
+try {
+const b = await audioDoBanco(r, chave);
+if (b && b.url) return mostrar(bolhaDeAudio(p, b.info, b.url, hora), msgSistema(`Montado na hora com ${b.frases} frases do banco de falas.`));
+if (b && b.faltam) return textoReserva(`Banco de falas: faltam ${b.faltam.length} de ${b.total} frases desta partida (${b.faltam.map((t) => `"${t}"`).join(', ')}).`);
+} catch (e) { console.warn('banco de falas', e); }
+}
 // 1) já publicado no site (vitórias do grupo saem gravadas pelo robô)
 try {
 const res = await fetch(`audios/${chave}.json`, { cache: 'no-cache' });
@@ -6955,6 +7036,260 @@ if (ok && j.naFila) return esperar(Date.parse(j.pedidoEm) || Date.now());
 convite();
 };
 iniciar();
+return corpo;
+}
+
+// ---------- Visões da vitória: a tela de vitória sorteia uma "cara" a cada visita ----------
+// Para pôr uma visão nova (Plantão da Selva, Stories, Post...): escreva visaoX(r) devolvendo o <article> e some uma
+// linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força
+// (inclusive uma visão desligada). `ligada: false` tira a visão do sorteio sem apagar o código.
+// Zap (conversa com vários áudios curtos do banco de falas) desligado de novo em 06/11/2026: o Mat achou cru.
+// ?visao=zap ainda força para testar; para religar, troque ligada para true.
+const VISOES_VITORIA = [
+{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
+{ id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
+];
+const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega
+
+function visaoForcada() {
+try { return new URLSearchParams(location.search).get('visao'); } catch (e) { return null; /* sem URL */ }
+}
+// visões que entram no sorteio desta partida (a desligada só aparece se a URL pedir por ela)
+const visoesPossiveis = (r) => VISOES_VITORIA.filter((x) => x.pode(r) && (x.ligada !== false || x.id === visaoForcada()));
+
+function escolherVisao(r, evitar = null) {
+const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
+const chave = `${r.partida.id}-${lado}`;
+const possiveis = visoesPossiveis(r);
+const forcada = visaoForcada();
+if (!evitar) {
+const fixa = possiveis.find((x) => x.id === forcada) || possiveis.find((x) => x.id === visaoSorteada.get(chave));
+if (fixa) { visaoSorteada.set(chave, fixa.id); return fixa; }
+}
+const pool = possiveis.filter((x) => x.id !== evitar);
+const lista = pool.length ? pool : possiveis;
+const total = lista.reduce((a, x) => a + x.peso, 0);
+let sorte = Math.random() * total;
+const escolhida = lista.find((x) => (sorte -= x.peso) < 0) || lista[0];
+visaoSorteada.set(chave, escolhida.id);
+return escolhida;
+}
+
+function telaDaVitoria(r) {
+const caixa = h('div', { class: 'visao-vitoria' });
+const montar = (visao) => {
+const doc = visao.montar(r);
+doc.dataset.visao = visao.id;
+doc.append(barraCompartilhar(r));
+const outras = visoesPossiveis(r).filter((x) => x.id !== visao.id);
+const trocar = outras.length ? h('button', { class: 'trocar-visao', type: 'button', 'data-gtm': 'vitoria-trocar-visao' }, '🎲 Ver em outra tela') : null;
+if (trocar) trocar.addEventListener('click', () => {
+const nova = escolherVisao(r, visao.id);
+montar(nova);
+avisarVisao(nova, true);
+});
+caixa.dataset.visao = visao.id;
+caixa.replaceChildren(doc, trocar || '');
+};
+const visao = escolherVisao(r);
+montar(visao);
+avisarVisao(visao, false);
+return caixa;
+}
+function avisarVisao(visao, trocou) {
+try { (window.dataLayer = window.dataLayer || []).push({ event: 'victory_view', victory_view: visao.id, victory_view_switch: trocou }); } catch (e) { /* sem GTM */ }
+}
+
+// A visão do zap: o veredito encaminhado no grupo, o elo fraco chorando com um número de verdade, o craque mandando
+// o áudio (com a voz do Mat), alguém dando +rep com a prova e a figurinha.
+const GRUPOS_ZAP = ['Dota dos crias 🎮', 'Grupo do Culpado 🏆', 'Rankeada é amanhã', '5 stack sem tilt', 'Os de sempre 🎮', 'Fonte da amizade'];
+const CORES_ZAP = ['#e26a6a', '#a78bfa', '#53bdeb', '#06cf9c', '#f5a524', '#ff7ab6'];
+// ---------- Conversa do zap: em vez de um áudio comprido, o craque manda vários áudios curtos e os amigos respondem
+// entre eles (provocam, o zoado se defende, alguém dá +rep). Cada áudio é gravado inteiro de uma vez no banco
+// (audios/banco/<chave>.mp3, Banco.audios; o robô do audio.yml grava as vitórias do grupo e os pedidos do site).
+// A conversa vai aparecendo: quando um áudio acaba, o próximo amigo "digita" e o áudio seguinte já toca sozinho.
+// Sem os áudios no banco, as falas do craque aparecem escritas e dá para pedir a gravação. ?conversa=0 volta ao
+// áudio único antigo (audioDoCraque).
+const conversaLigada = () => { try { return new URLSearchParams(location.search).get('conversa') !== '0'; } catch (e) { return true; } };
+const lerIndiceBanco = (fresco) => fetch(`audios/banco/indice.json${fresco ? `?t=${Date.now()}` : ''}`, { cache: 'no-cache' }).then((x) => (x.ok ? x.json() : {})).catch(() => ({}));
+function conversaDoZap(r, o) {
+const caixa = h('div', { class: 'zap-conversa' }, h('p', { class: 'zap-sistema' }, 'Carregando a conversa…'));
+const msgSistema = (txt) => h('p', { class: 'zap-sistema' }, txt);
+const dormir = (ms) => new Promise((ok) => setTimeout(ok, ms));
+const avisar = (txt) => { o.status.textContent = txt || o.statusBase; o.status.classList.toggle('gravando', Boolean(txt)); };
+const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
+const chave = `${r.partida.id}-${lado}`;
+const { craque } = o;
+let rodada = 0;
+const montar = async (indice) => {
+const minha = ++rodada;
+const [R, B] = await Promise.all([carregarRoteiro(), carregarBanco()]);
+const f = R && B && R.fatos(r);
+const g = f && R.gerar(f, chave);
+if (!g) return caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.'));
+const auds = B.audios(g.partes);
+// quem se defende é quem o craque zoa no áudio do mochila (pelo nome ou pelo herói); senão o elo fraco
+const textoMochila = (auds.find((a) => a.tipo === 'mochila') || {}).texto || '';
+const defensor = o.nos.find((q) => q !== craque && (textoMochila.includes(q.nome) || textoMochila.includes(q.heroi.nome))) || (o.fraco !== craque ? o.fraco : null);
+const provocador = [o.encaminhou, ...o.nos].find((q) => q && q !== craque && q !== defensor) || null;
+const provoca = o.rnd.um([`${o.merito}? tá se achando hein 🙄`, 'manda a prova então', 'lá vem ele 🙄', `${o.merito} e já quer palco kkkk`, 'foi sorte isso aí']);
+const choro = defensor ? o.choroDe(defensor) : '';
+const quemDaRep = [o.deuRep, ...o.nos].find((q) => q && q !== craque && q !== defensor && q !== provocador) || o.deuRep;
+const passos = [];
+let faltam = 0;
+auds.forEach((a) => {
+if (a.tipo === 'prova' && provocador) passos.push({ q: provocador, conteudo: h('p', {}, provoca) });
+if (a.tipo === 'mochila' && defensor) passos.push({ q: defensor, conteudo: h('p', {}, choro) });
+if (a.tipo === 'fecho' && quemDaRep && quemDaRep !== craque) passos.push({ q: quemDaRep, conteudo: [h('p', {}, o.rep), o.zoa ? h('p', { class: 'zap-zoa' }, `enquanto isso ${o.zoa}`) : null] });
+const c = B.chave(a.texto);
+if (indice[c]) passos.push({ audio: { id: r.partida.id, segundos: indice[c].s, texto: a.texto }, url: `audios/banco/${c}.mp3` });
+else { faltam++; passos.push({ q: craque, conteudo: h('p', {}, a.texto) }); }
+});
+caixa.replaceChildren();
+if (faltam) caixa.append(convitePedir());
+let i = 0, minuto = 1;
+const seguir = async (animar) => {
+while (i < passos.length && caixa.isConnected && minha === rodada) {
+const p = passos[i++];
+minuto++;
+if (animar) {
+avisar(p.audio ? `${craque.nome} está gravando áudio…` : `${p.q.nome} está digitando…`);
+await dormir(p.audio ? 900 : 1300);
+avisar(null);
+}
+if (p.audio) {
+const m = minuto;
+const b = bolhaDeAudio(craque, p.audio, p.url, () => o.hora(m));
+b.classList.add('zap-entra');
+caixa.append(b);
+b.audio.addEventListener('ended', () => seguir(true), { once: true });
+if (animar) b.audio.play().catch(() => {});
+return;
+}
+caixa.append(o.bolha(p.q, p.conteudo, minuto));
+}
+if (i >= passos.length && minha === rodada && o.fim && !o.fim.isConnected) {
+if (animar) await dormir(700);
+caixa.append(o.fim);
+}
+};
+seguir(false);
+};
+// sem os áudios no banco: pede ao robô (Worker -> audio/pedidos/<id> -> audio.yml) e espera eles aparecerem no site
+const convitePedir = () => {
+const botao = h('button', { class: 'zap-pedir', type: 'button', 'data-gtm': 'audio-vitoria-pedir' }, h('span', { 'aria-hidden': 'true' }, iconeMic()), ` Pedir os áudios de ${craque.nome}`);
+const nota = h('p', { class: 'zap-sistema' }, `Os áudios de ${craque.nome} desta partida ainda não foram gravados.`, h('br'), botao);
+botao.addEventListener('click', async () => {
+botao.disabled = true;
+try {
+const coach = await urlDoCoach();
+if (!coach) throw new Error('sem coach');
+const res = await fetch(`${coach}/audio`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: String(r.partida.id), lado }) });
+const j = await res.json().catch(() => ({}));
+if (!res.ok) throw new Error(j.msg || 'recusado');
+} catch (e) {
+nota.replaceChildren('Não deu pra pedir os áudios agora. Tente de novo daqui a pouco.');
+return;
+}
+const t0 = Date.now();
+const cron = h('span', { class: 'zap-cron' }, '0:00');
+nota.replaceChildren(`${craque.nome} está gravando os áudios… `, cron, h('br'), 'A voz sai do nosso robô e leva uns 5 minutos. Pode deixar a aba aberta que os áudios chegam aqui.');
+avisar(`${craque.nome} está gravando áudio…`);
+const tic = setInterval(() => { if (!caixa.isConnected) return clearInterval(tic); cron.textContent = mmssAudio((Date.now() - t0) / 1000); }, 1000);
+const B = await carregarBanco();
+const R = await carregarRoteiro();
+const f = R && R.fatos(r);
+const g = f && R.gerar(f, chave);
+const chaves = g ? B.audios(g.partes).map((a) => B.chave(a.texto)) : [];
+while (caixa.isConnected && Date.now() - t0 < AUDIO_ESPERA_MAX) {
+await dormir(20_000);
+const indice = await lerIndiceBanco(true);
+if (chaves.length && chaves.every((c) => indice[c])) { clearInterval(tic); avisar(null); return montar(indice); }
+}
+clearInterval(tic);
+avisar(null);
+if (caixa.isConnected) nota.replaceChildren('Os áudios estão demorando mais que o normal. Recarregue a página daqui a pouco.');
+});
+return nota;
+};
+lerIndiceBanco(false).then(montar).catch((e) => { console.warn('conversa do zap', e); caixa.replaceChildren(msgSistema('Não deu para montar a conversa desta partida.')); });
+return caixa;
+}
+
+function visaoZap(r) {
+const rnd = sorteador(`zap-${r.partida.id}`, r.partida.id);
+const cs = craquesDe(r);
+const craque = cs[0].jogador;
+const dupla = cs.length > 1;
+const nos = r.nos || [];
+const idsCraques = new Set(cs.map((v) => v.jogador.idx));
+const outros = nos.filter((q) => !idsCraques.has(q.idx));
+const elo = (culpados(r)[0] || {}).jogador;
+const fraco = elo && !idsCraques.has(elo.idx) ? elo : outros[outros.length - 1];
+const resto = outros.filter((q) => q !== fraco);
+const encaminhou = resto[0] || fraco || craque;
+const deuRep = resto[1] || resto[0] || fraco || craque;
+const cor = new Map(nos.map((q, i) => [q.idx, CORES_ZAP[i % CORES_ZAP.length]]));
+const fimMin = r.partida.inicio ? (r.partida.inicio + r.partida.duracao) * 1000 : Date.now();
+const hora = (mais) => new Date(fimMin + mais * 60_000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+const autor = (q) => h('p', { class: 'zap-autor', style: `color:${cor.get(q.idx) || '#53bdeb'}` }, q.nome);
+const bolha = (q, conteudo, minuto, extra = '') => h('div', { class: `zap-msg zap-entra ${extra}`.trim() }, autor(q), conteudo, h('span', { class: 'zap-hora' }, hora(minuto)));
+
+// 1) alguém encaminha o veredito
+const nomes = cs.map((v) => v.jogador.nome).join(' e ');
+const merito = pct(cs.reduce((a, v) => a + v.fatia, 0));
+const cartao = h('div', { class: 'zap-veredito' },
+h('div', { class: 'zap-vd-fotos' }, cs.map((v) => h('span', { class: 'zap-vd-foto' }, fotoDe(v.jogador, true))), h('span', { class: 'zap-vd-selo' }, 'Veredito oficial')),
+h('div', { class: 'zap-vd-tx' },
+h('b', {}, `${nomes} ${dupla ? 'carregaram' : 'carregou'}`),
+h('span', {}, dupla ? `${merito} do mérito somados · ${cs.map((v) => kdaDe(v.jogador)).join(' e ')}` : `${craque.heroi.nome} · ${merito} do mérito · ${kdaDe(craque)}`),
+h('em', {}, `oculpado.com.br · vitória ${r.partida.placarNos} × ${r.partida.placarEles} em ${mmss(r.partida.duracao)}`)));
+const msgVeredito = bolha(encaminhou, [h('span', { class: 'zap-fw' }, '↪ Encaminhada com frequência'), cartao], 0, 'zap-com-cartao');
+
+// 2) o elo fraco reclama com o próprio número
+let msgFraco = null;
+const choroDe = (fraco) => {
+const fr = fraco.raw || {};
+const wards = (fr.obs_placed || 0) + (fr.sen_placed || 0);
+return (fr.deaths || 0) >= 7 ? rnd.um([`kkkkkkk ${merito} e eu morri ${fr.deaths} vezes 😭`, `${fr.deaths} mortes e ainda ganhei, obrigado ${craque.nome} 🙏`, `quem morreu ${fr.deaths} vezes foi o meu irmão tá`])
+: fraco.posicao >= 4 ? rnd.um([`kkkkkkk ${merito} e eu de suporte com ${wards} ${wards === 1 ? 'ward' : 'wards'} 😭`, `ninguém fala das minhas ${wards} wards né`, `${wards} wards plantadas e nem uma menção honrosa`])
+: rnd.um([`e os meus ${fr.gold_per_min || 0} de GPM, ninguém comenta? 😭`, `${kdaDe(fraco)} e não ganhei nem uma estrelinha`, `eu tava lá também tá (${kdaDe(fraco)})`]);
+};
+if (fraco && fraco !== craque) msgFraco = bolha(fraco, h('p', {}, choroDe(fraco)), 1);
+
+// 3) o craque manda o áudio (o fluxo de gravar/pedir mora em audioDoCraque)
+const status = h('p', { class: 'zap-status' }, [...nos.filter((q) => q !== craque).map((q) => q.nome), craque.nome].slice(0, 4).join(', ') + ', você');
+const statusBase = status.textContent;
+const conversa = conversaLigada();
+const slot = conversa ? null : audioDoCraque(r, (sim) => {
+status.textContent = sim ? `${craque.nome} está gravando áudio…` : statusBase;
+status.classList.toggle('gravando', sim);
+}, () => hora(2));
+if (slot) slot.classList.add('zap-entra');
+
+// 4) alguém dá +rep com a prova e zoa o elo fraco
+const [fato] = fatosDoCraque(cs[0], r, 1);
+const voc = window.VOCABULARIO;
+const fr = (fraco && fraco.raw) || {};
+const zoa = fraco && fraco !== craque && (fr.deaths || 0) >= 5
+? (voc && voc.morrer ? rnd.um(voc.morrer(fraco.nome)) : rnd.um([`${fraco.nome} fazia turismo na fonte`, `${fraco.nome} batia ponto na fonte`, `${fraco.nome} patrocinava o time deles`])) + ` (${fr.deaths} mortes) 💀`
+: null;
+const rep = fato ? `${capital(fato.prova)}. ${rnd.um(['Tá no replay 🫡', '+rep pro monstro', 'Respeita 🐐', 'Pode printar'])}` : rnd.um(['+rep pro monstro', 'Respeita 🐐']);
+const msgRep = deuRep && deuRep !== craque ? bolha(deuRep, [h('p', {}, rep), zoa ? h('p', { class: 'zap-zoa' }, `enquanto isso ${zoa}`) : null], 3) : null;
+
+// 5) a figurinha
+const figurinhaRep = h('div', { class: 'zap-figurinha zap-entra', 'aria-label': `Figurinha de ${craque.nome} com +REP` },
+h('span', { class: 'zap-fig-foto' }, fotoDe(craque, true)), h('b', {}, rnd.um(['+REP', 'PAI TÁ ON', 'CARREGOU', 'MONSTRO'])));
+
+const card = h('article', { class: 'cartao veredito vitoria doc-zap', 'aria-label': `Conversa do grupo sobre o mérito de ${nomes}` },
+h('div', { class: 'zap-topo' },
+h('span', { class: 'zap-grupo-ic', 'aria-hidden': 'true' }, '🏆'),
+h('div', {}, h('p', { class: 'zap-grupo' }, rnd.um(GRUPOS_ZAP)), status)),
+h('div', { class: 'zap-corpo' },
+h('p', { class: 'zap-sistema' }, `Hoje · Partida ${r.partida.id}`),
+conversa ? [msgVeredito, conversaDoZap(r, { craque, fraco, encaminhou, deuRep, nos, bolha, hora, merito, choroDe, rep, zoa, rnd, status, statusBase, fim: figurinhaRep })]
+: [msgVeredito, msgFraco, slot, msgRep, figurinhaRep]),
+h('div', { class: 'zap-digitar', 'aria-hidden': 'true' }, h('span', {}, 'Mensagem'), h('i', {}, iconeMic())));
 return card;
 }
 
@@ -6974,9 +7309,7 @@ elo.hidden = !elo.hidden;
 botao.setAttribute('aria-expanded', String(!elo.hidden));
 rotulo.textContent = elo.hidden ? 'Ver o elo fraco' : 'Esconder o elo fraco';
 });
-const cartaz = documentoDoMerito(r);
-cartaz.append(barraCompartilhar(r));
-principal = h('div', { class: 'topo-vitoria' }, cartaz, parcial ? null : cartaoZap(r), botao, elo);
+principal = h('div', { class: 'topo-vitoria' }, telaDaVitoria(r), botao, elo);
 }
 return h('section', { class: 'bloco topo-veredito', 'aria-label': 'Veredito' },
 r.partida.provisorio ? h('p', { class: 'selo-provisorio' }, 'Veredito provisório · só com o placar') : null,
@@ -14368,6 +14701,59 @@ botao.addEventListener('click', () => { caixa.hidden = !caixa.hidden; if (!caixa
 document.body.append(caixa, botao);
 }
 
+// ---------- Boas-vindas a grupo novo na home: splash amarelo ao lado do título e letreiro com frases que giram.
+// Grupo novo: troque GRUPO_NOVO (o id muda a chave do "fechar", então o letreiro volta para quem fechou o anterior).
+// GTM: os cliques mandam dataLayer.push({ event: 'home_banner_click', banner: 'splash'|'letreiro', banner_item }).
+const GRUPO_NOVO = { id: 'kushitas', nome: 'Os Kushitas', splash: 'Bem-vindos, Kushitas!', membros: ['Madruga', 'Danylera', 'Rannis'], grupos: 2 };
+function montarBoasVindas() {
+if (SO_EMBUTIDO) return;
+const medir = (banner, item) => { try { (window.dataLayer = window.dataLayer || []).push({ event: 'home_banner_click', banner, banner_item: item }); } catch (e) { /* sem GTM */ } };
+const splash = document.getElementById('home-splash');
+if (splash && GRUPO_NOVO.splash) {
+splash.firstChild.textContent = GRUPO_NOVO.splash;
+splash.hidden = false;
+splash.addEventListener('click', () => medir('splash', 'grupo'));
+}
+const faixa = document.getElementById('home-letreiro');
+if (!faixa) return;
+const chave = 'culpado:letreiro-fechado';
+if (ler(chave) === GRUPO_NOVO.id) return;
+const abrirFeedback = (inicio) => {
+const botao = document.querySelector('.fb-botao'); const caixa = document.querySelector('.fb-caixa');
+if (!botao || !caixa) return;
+if (caixa.hidden) botao.click();
+const campo = caixa.querySelector('.fb-texto');
+if (campo && inicio && !campo.value.trim()) { campo.value = inicio; campo.setSelectionRange(campo.value.length, campo.value.length); }
+};
+const link = (txt, item, acao) => h('button', { type: 'button', class: 'letreiro-link', 'data-gtm': 'letreiro-' + item, onclick: () => { medir('letreiro', item); acao(); } }, txt);
+const m = GRUPO_NOVO.membros.map((n) => h('b', {}, n));
+const frases = [
+['Grupo adicionado: ', h('b', {}, GRUPO_NOVO.nome)],
+['Bem-vindos, ', ...m.flatMap((b, i) => i === 0 ? [b] : [i === m.length - 1 ? ' e ' : ', ', b]), '!'],
+['Já são ', h('b', {}, GRUPO_NOVO.grupos + ' grupos'), ' no tribunal'],
+['Seu grupo também pode entrar. ', link('Pedir o meu grupo', 'pedir_grupo', () => { location.href = 'ranking/#pedir'; })],
+['Achou algum julgamento injusto? ', link('Deixe seu feedback', 'feedback_injusto', () => abrirFeedback('Julgamento injusto (cole o ID da partida): '))],
+['Quer uma novidade no site? ', link('Peça no feedback', 'feedback_novidade', () => abrirFeedback('Ideia para o site: '))],
+].map((partes) => h('span', { class: 'letreiro-frase' }, ...partes));
+const janela = document.getElementById('letreiro-janela'); const pontos = document.getElementById('letreiro-pontos');
+janela.append(...frases);
+const bolinhas = frases.map(() => h('i')); pontos.append(...bolinhas);
+let atual = -1; let timer = 0; let parado = false;
+const mostrar = (n) => {
+frases.forEach((f, k) => { f.classList.toggle('sai', k === atual && k !== n); f.classList.toggle('on', k === n); f.inert = k !== n; });
+bolinhas.forEach((b, k) => b.classList.toggle('on', k === n));
+atual = n;
+};
+mostrar(0);
+timer = setInterval(() => { if (!parado && !document.hidden) mostrar((atual + 1) % frases.length); }, 3500);
+faixa.addEventListener('mouseenter', () => { parado = true; });
+faixa.addEventListener('mouseleave', () => { parado = false; });
+faixa.addEventListener('focusin', () => { parado = true; });
+faixa.addEventListener('focusout', () => { parado = false; });
+document.getElementById('letreiro-fechar').addEventListener('click', () => { clearInterval(timer); faixa.hidden = true; guardar(chave, GRUPO_NOVO.id); medir('letreiro', 'fechar'); });
+faixa.hidden = false;
+}
+
 // Aviso do ranking: aparece toda vez que a página abre e a cada partida julgada; o × fecha só até a próxima.
 let avisoRanking = null;
 let avisoTimer = 0;
@@ -14561,14 +14947,8 @@ b.addEventListener('click', () => abrirDaHome(String(ultimo)));
 document.getElementById('home-ultima').hidden = false;
 }
 document.getElementById('home-pedir-grupo').addEventListener('click', () => {
-const botao = document.querySelector('.fb-botao');
-const caixa = document.querySelector('.fb-caixa');
-const texto = document.querySelector('.fb-texto');
-if (!botao || !caixa || !texto) return;
-if (caixa.hidden) botao.click();
-texto.value = 'Quero o meu grupo na Liga dos grupos!\nNome do grupo: \nPerfis da Steam (ou IDs) dos amigos: ';
-texto.focus();
-texto.setSelectionRange(texto.value.indexOf('\n') + 16, texto.value.indexOf('\n') + 16);
+// o pedido agora é pelo ID de uma partida, no formulário da liga
+location.href = 'ranking/#pedir';
 });
 return true;
 }
@@ -14586,6 +14966,7 @@ if (montarHome(ler('culpado:ultimo'))) voltarParaHome();
 
 function iniciar() {
 montarFeedback();
+montarBoasVindas();
 urlDoCoach().then(contarVisita); // lê o config.json do coach em paralelo com a partida
 rotasDoSite(); // e a base de rotas
 const [, doHash, ladoHash] = location.hash.match(/^#(\d{6,})(?:-(radiant|dire))?$/) || [];

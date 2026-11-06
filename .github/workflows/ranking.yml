@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["ranking/pedido", "ranking/gerar.js", "ranking/parceiros.py", "amigos.json", ".github/workflows/ranking.yml"]
+    paths: ["ranking/pedido", "ranking/gerar.js", "ranking/parceiros.py", "amigos.json", "grupos/**", ".github/workflows/ranking.yml"]
 
 permissions:
   contents: write
@@ -53,9 +53,24 @@ jobs:
         id: parceiros
         continue-on-error: true
         run: python ranking/parceiros.py --dados .dados
+      # os outros grupos da Liga (grupos/grupos.json): um grupo que falha não derruba os outros nem o Marocas
+      - name: Grupos da Liga
+        id: grupos
+        continue-on-error: true
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: |
+          falhou=0
+          for g in $(python -c "import json; print(' '.join(x['id'] for x in json.load(open('grupos/grupos.json'))))"); do
+            echo "::group::$g"
+            GRUPO="$g" node ranking/gerar.js || falhou=1
+            python ranking/parceiros.py --dados .dados --grupo "$g" || falhou=1
+            echo "::endgroup::"
+          done
+          exit $falhou
       # as análises do motor (analises/<id>.json) voltam para a base: na próxima rodada não são refeitas
       - name: Guardar análises na base
-        if: steps.ranking.outcome == 'success'
+        if: steps.ranking.outcome == 'success' || steps.grupos.outcome == 'success'
         run: |
           cd .dados
           git config user.name "github-actions[bot]"
@@ -69,11 +84,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add amigos/ranking.json amigos/parceiros.json
+          for f in grupos/*/ranking.json grupos/*/parceiros.json; do if [ -f "$f" ]; then git add "$f"; fi; done
           git diff --cached --quiet && exit 0
           git commit -m "Ranking: culpados, MMR e parceiros"
           for i in 1 2 3; do git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0; git rebase --abort 2>/dev/null; sleep 5; done; exit 1
       - name: Falhou?
-        if: steps.ranking.outcome == 'failure' || steps.parceiros.outcome == 'failure'
+        if: steps.ranking.outcome == 'failure' || steps.parceiros.outcome == 'failure' || steps.grupos.outcome == 'failure'
         run: |
-          echo "ranking: ${{ steps.ranking.outcome }} · parceiros: ${{ steps.parceiros.outcome }}"
+          echo "ranking: ${{ steps.ranking.outcome }} · parceiros: ${{ steps.parceiros.outcome }} · grupos: ${{ steps.grupos.outcome }}"
           exit 1

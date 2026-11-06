@@ -47,11 +47,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="liga-entrar">
         <h3>Seu grupo também joga junto? Entre na liga</h3>
         <ol class="liga-passos">
-          <li><b>Mande o nome do grupo</b> e o perfil da Steam (ou ID) de cada amigo, mínimo 3.</li>
-          <li><b>A gente confere</b> se vocês jogam juntos e aprova. É de graça enquanto estamos em teste.</li>
-          <li><b>O robô baixa as partidas</b> e o grupo aparece aqui na liga, com a própria Bolsa.</li>
+          <li><b>Mande o ID de uma partida</b> em que vocês jogaram juntos.</li>
+          <li><b>Diga qual era o seu time</b> e quem ali era completer (random que não é do grupo).</li>
+          <li><b>A gente se vira com o resto:</b> confere, aprova e o grupo aparece aqui com a própria Bolsa. Normalmente demora 1 dia. É de graça enquanto estamos em teste.</li>
         </ol>
-        <button type="button" class="liga-pedir" id="liga-pedir-grupo">Adicionar meu grupo</button>
+        <button type="button" class="liga-pedir" id="liga-pedir-grupo" aria-expanded="false" aria-controls="liga-form">Adicionar meu grupo</button>
+        <form class="liga-form" id="liga-form" hidden novalidate>
+          <div class="lf-passo">
+            <label for="lf-partida"><b>1.</b> ID da partida (ou o link do Dotabuff/OpenDota/Stratz)</label>
+            <div class="lf-linha">
+              <input id="lf-partida" inputmode="numeric" autocomplete="off" placeholder="Ex.: 8012345678" maxlength="120">
+              <button type="button" class="lf-buscar" id="lf-buscar">Buscar partida</button>
+            </div>
+          </div>
+          <div class="lf-passo" id="lf-times" hidden>
+            <p><b>2.</b> Qual era o seu time?</p>
+            <div class="lf-times-grade" id="lf-times-grade"></div>
+          </div>
+          <div class="lf-passo" id="lf-pessoas" hidden>
+            <p><b>3.</b> Quem é do grupo e quem era completer? Toque na pessoa para trocar.</p>
+            <ul class="lf-lista" id="lf-lista"></ul>
+            <div class="lf-linha lf-extras">
+              <input id="lf-nome-grupo" maxlength="40" placeholder="Nome do grupo (opcional)">
+              <input id="lf-apelido" maxlength="40" placeholder="Seu apelido (opcional)">
+            </div>
+            <div class="lf-linha lf-extras">
+              <input id="lf-email" type="email" maxlength="120" autocomplete="email" placeholder="Seu e-mail (opcional)">
+            </div>
+            <p class="lf-dica">Se quiser, deixe seu e-mail que a gente avisa quando subir a página do seu grupo. É opcional, só a gente vê. Normalmente demora 1 dia.</p>
+            <button type="submit" class="liga-pedir" id="lf-enviar">Pedir para entrar na liga</button>
+          </div>
+          <p class="lf-status" id="lf-status" role="status"></p>
+        </form>
       </div>
     </section>
     <div class="ranking-topo-esq">

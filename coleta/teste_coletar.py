@@ -479,7 +479,7 @@ class Cota(Base):
         self.s.status_forcado["/api/request/301"] = 429
         rc, log = self.rodar()
         self.assertEqual(rc, 0, log)
-        self.assertEqual(self.s.posts(), [301], "depois do 429 não pede mais nesta rodada")
+        self.assertEqual(self.s.posts(), [301] * (1 + C.PAUSAS_PEDIDO), "espera 1 min e tenta de novo, poucas vezes; depois não pede mais nesta rodada")
         self.assertEqual(self.s.gets_de_partida(), [301, 303, 302])
         self.assertIn("302", self.ler("indice.json"))
         pend = self.ler("estado.json")["pendentes"]
@@ -490,15 +490,28 @@ class Cota(Base):
         del self.s.status_forcado["/api/request/301"]
         self.rel.t += 3600
         self.rodar()
-        self.assertEqual(self.s.posts(), [301, 301, 303])
+        self.assertEqual(self.s.posts(), [301] * (2 + C.PAUSAS_PEDIDO) + [303])
+        self.assertIsNotNone(self.ler("estado.json")["pendentes"]["303"]["pedido_em"])
+
+    def test_pendente_nunca_pedida_nao_espera_mais(self):
+        # 429 no pedido: a partida que nem foi pedida volta na rodada seguinte, sem a espera crescente
+        self.s.partidas[301] = partida(301, int(T0) - 5 * 3600, [LO], [], analisada=False)
+        self.s.lista(LO, 301)
+        self.s.status_forcado["/api/request/301"] = 429
+        self.rodar()
+        self.rel.t += 60
+        self.rodar()
+        pend = self.ler("estado.json")["pendentes"]["301"]
+        self.assertEqual(pend["tentativas"], 0)
+        self.assertLessEqual(C.de_iso(pend["proxima"]), self.rel.t)
 
     def test_429_geral_no_pedido_de_analise_encerra_na_chamada_seguinte(self):
         self.s.partidas[301] = partida(301, int(T0) - 5 * 3600, [LO], [], analisada=False)
         self.s.partidas[302] = partida(302, int(T0) - 3 * 3600, [LO], [])
         self.s.lista(LO, 302, 301)
-        self.s.erro_429_a_partir = 3  # lista, GET 301, POST 301 (429), GET 302 (429)
+        self.s.erro_429_a_partir = 3  # lista, GET 301, POST 301 (429, + as esperas de 1 min), GET 302 (429)
         self.rodar()
-        self.assertEqual(len(self.s.chamadas), 4)
+        self.assertEqual(len(self.s.chamadas), 4 + C.PAUSAS_PEDIDO)
         self.assertIn("429", self.ler("estado.json")["rodadas"][-1]["fim"])
         self.assertNotIn("302", self.ler("indice.json"))
 

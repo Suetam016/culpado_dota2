@@ -991,7 +991,42 @@ async function lerPedidoAudio(env, id) {
   const j = await r.json().catch(() => ({}));
   let quando = null;
   try { quando = (deBase64(j.content).match(/\d{4}-\d\d-\d\dT[\d:.]+Z/) || [])[0] || null; } catch { /* conteúdo estranho */ }
-  return { sha: j.sha || null, quando };
+  let gpu = false;
+  try { gpu = /\(gpu\)/.test(deBase64(j.content)); } catch { /* idem */ }
+  return { sha: j.sha || null, quando, gpu };
+}
+
+// Voz na GPU (audio/gpu.py no Modal, publicado pelo voz-gpu.yml): o endereço fica em audio/gpu.json e a chave é o
+// segredo AUDIO_CHAVE do Worker (o worker.yml calcula a mesma do voz-gpu.yml). Sem os dois, segue tudo pelo Actions.
+const AUDIO_GPU_PARADO_MS = 6 * 60_000; // na GPU o áudio sai em ~1 min: depois disso o pedido travou
+let cacheGpuAudio = { ate: 0, url: null };
+
+async function urlGpuAudio(env) {
+  if (cacheGpuAudio.ate > Date.now()) return cacheGpuAudio.url;
+  let url = null;
+  try {
+    const r = await github(env, 'GET', 'audio/gpu.json', null, 'application/vnd.github.raw+json');
+    if (r.status === 200) { const j = JSON.parse(await r.text()); if (/^https:\/\/[\w.-]+\.modal\.run\b/.test(j.url || '')) url = j.url; } else descartar(r);
+  } catch (e) { if (e && e.codigo === 'orcamento') throw e; }
+  cacheGpuAudio = { ate: Date.now() + 10 * 60_000, url };
+  return url;
+}
+
+// dispara a gravação na GPU; true se o Modal aceitou (a resposta vem na hora, a voz sai depois no repositório)
+async function chamarGpuAudio(env, id, lado) {
+  if (!env.AUDIO_CHAVE) return false;
+  const url = await urlGpuAudio(env);
+  if (!url) return false;
+  try {
+    const r = await comTempo(fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id, lado, chave: env.AUDIO_CHAVE }) }), 15000, 'gpu');
+    if (!r.ok) console.log('gpu audio recusou', id, r.status, (await r.text().catch(() => '')).slice(0, 200));
+    else descartar(r);
+    return r.ok;
+  } catch (e) {
+    console.log('gpu audio falhou', id, String(e && e.message).slice(0, 200));
+    return false;
+  }
 }
 
 async function falhasAudio(env) {
@@ -1031,7 +1066,7 @@ async function pedirAudio(req, env, origem) {
     if (await audioExiste(env, id, lado)) return resp(200, { estado: 'pronto' });
     const pedido = await lerPedidoAudio(env, id);
     const desde = pedido && pedido.quando ? Date.parse(pedido.quando) : NaN;
-    const parado = Boolean(pedido) && Number.isFinite(desde) && Date.now() - desde > AUDIO_PARADO_MS;
+    const parado = Boolean(pedido) && Number.isFinite(desde) && Date.now() - desde > (pedido.gpu ? AUDIO_GPU_PARADO_MS : AUDIO_PARADO_MS);
     if (pedido && !parado) return resp(200, { estado: 'na-fila', pedidoEm: pedido.quando });
     const conta = contarMapa(req, env, `a${id}`);
     devolver = conta.devolver;
@@ -1046,7 +1081,8 @@ async function pedirAudio(req, env, origem) {
       if (!(await partidaExiste(env, id))) return erro(404, 'partida');
     }
     const quando = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-    const novo = { message: `Pedido de áudio: ${id}`, content: conteudoPedido(quando) };
+    const naGpu = await chamarGpuAudio(env, id, lado);
+    const novo = { message: `Pedido de áudio: ${id}${naGpu ? ' (GPU)' : ''}`, content: conteudoPedido(naGpu ? `${quando} (gpu)` : quando) };
     let r = await github(env, 'PUT', caminhoAudio.pedido(id), pedido && pedido.sha ? { ...novo, sha: pedido.sha } : novo);
     cacheAudio.delete(`${id}-${lado}`);
     if (r.status === 200 || r.status === 201) return resp(200, { estado: 'pedido', pedidoEm: quando });
