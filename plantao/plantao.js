@@ -126,11 +126,27 @@
   }
 
   // Lances que o locutor comenta (tipos do banco) e o ritmo do replay (rápido no chato, lento no que decide)
+  // como foi a morte, para o locutor ler o lance: debaixo da torre, briga, solado (ninguém do time bateu), pick-off
+  // (vítima sem ninguém do time dela por perto) ou em equipe
+  function contexto(D, k) {
+    var t = k[0], v = k[2], sec = clamp(Math.round(t), 0, D.N - 1), pv = D.pos[v] && D.pos[v][sec];
+    if (!pv) return '';
+    var perto = function (de, ate) { var n = 0; for (var i = de; i < ate; i++) { if (i === v || !D.pos[i] || !D.vivo[i][sec]) continue; var q = D.pos[i][sec]; if (Math.hypot(q[0] - pv[0], q[1] - pv[1]) < 12) n++; } return n; };
+    var ladoV = D.radiant ? 'badguys' : 'goodguys';
+    var torre = D.est.some(function (e) { return e[3] !== 'fort' && e[0].indexOf(ladoV) === 0 && (e[4] === null || e[4] > t) && Math.hypot(e[1] - pv[0], e[2] - pv[1]) < 8; });
+    if (torre) return 'torre';
+    var deles = perto(5, 10), nossos = perto(0, 5);
+    if (deles >= 2 && nossos >= 2) return 'luta';
+    var ajudou = D.dano.some(function (d) { return d[2] === v && d[1] !== k[1] && d[1] < 5 && d[0] >= t - 6 && d[0] <= t + .5; });
+    if (!ajudou) return 'solo';
+    if (deles === 0) return 'pickoff';
+    return 'equipe';
+  }
   function roteiro(D, ctx) {
     var NAK = D.NAK, FIM = D.N - 1, L = [];
     var meus = D.abates.filter(function (k) { return k[1] === NAK; });
     L.push({ t: 0.6, tipo: 'abertura', p: 1 });
-    meus.forEach(function (k) { var v = D.ordem[k[2]]; L.push({ t: k[0], tipo: 'abate', vitima: D.herois[k[2]], dono: ctx.amigos.indexOf(v.nome) >= 0 ? v.nome : '', p: 9 }); });
+    meus.forEach(function (k) { var v = D.ordem[k[2]]; L.push({ t: k[0], tipo: 'abate', vitima: D.herois[k[2]], dono: ctx.amigos.indexOf(v.nome) >= 0 ? v.nome : '', ctx: contexto(D, k), p: 9 }); });
     D.est.forEach(function (e) {
       if (e[4] === null || e[4] < 0) return;
       var nosso = (e[0].indexOf('goodguys') === 0) === D.radiant;
@@ -177,7 +193,7 @@
     var fica = [];
     L.forEach(function (x) { if (x.tipo === 'fim' || !fica.some(function (y) { return Math.abs(y.t - x.t) < 3; })) fica.push(x); });
     fica.sort(function (a, b) { return a.t - b.t; });
-    return { eventos: fica.map(function (x) { var o = { t: x.t, tipo: x.tipo }; ['vitima', 'dono', 'n', 'num'].forEach(function (k) { if (x[k] != null) o[k] = x[k]; }); return o; }), vel: vel, lentos: lentos };
+    return { eventos: fica.map(function (x) { var o = { t: x.t, tipo: x.tipo }; ['vitima', 'dono', 'n', 'num', 'ctx'].forEach(function (k) { if (x[k] != null) o[k] = x[k]; }); return o; }), vel: vel, lentos: lentos };
   }
 
   function carregarBanco() {
@@ -242,7 +258,7 @@
     // ----- banco de falas: baixa só as sorteadas
     var TEXTOS = {}, FALAS = [], tomada = 0, baixados = {}, bytes = 0;
     function sortear(semente) {
-      return window.BancoPlantao.montar(R.eventos, { heroi: D.herois[NAK], quem: ctx.amigos.indexOf(nick) >= 0 ? nick : '', amigos: new Set(ctx.amigos), semente: semente })
+      return window.BancoPlantao.montar(R.eventos, { heroi: D.herois[NAK], quem: ctx.amigos.indexOf(nick) >= 0 ? nick : '', amigos: new Set(ctx.amigos), semente: semente, tem: function (id) { return Boolean(TEXTOS[id]); } })
         .map(function (x) { var ids = x.ids.filter(function (id) { return TEXTOS[id]; }); return [x.t, ids.length ? TEXTOS[ids[0]] : '', ids]; })
         .filter(function (f) { return f[2].length; });
     }
