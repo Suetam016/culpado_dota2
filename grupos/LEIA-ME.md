@@ -12,8 +12,15 @@ na lista manual, então as partidas deles entram na base sozinhas; o ranking apa
 
 ## Entrada de um grupo (onboarding)
 
-1. Crie `<id>/amigos.json` e ponha a linha em `grupos.json` (opcional: `"papel": "KSH3"`, o código da ação na Bolsa;
-   sem ele sai das consoantes do nome). Merge na main.
+1. Rode o script com o arquivo do pedido (primeiro sem `--aplicar`, para conferir):
+
+       python3 grupos/incluir.py feedback/<pedido>.json --chave <emails-grupos.pem>            # confere
+       python3 grupos/incluir.py feedback/<pedido>.json --aplicar                             # grava
+
+   Ele cria `<id>/amigos.json` (sem os completers), a linha em `grupos.json` (com o código da ação na Bolsa, ex.
+   KSH3), troca o letreiro de boas-vindas da home (`GRUPO_NOVO` no index.html) e mexe em `coleta/disparar`.
+   Ajustes: `--nome`, `--id`, `--conta 123=Nome`, `--sem 123`, `--papel`, `--sem-letreiro`. O e-mail só aparece na
+   tela. Depois: commit, PR e merge na main. Avise o amigo do GTM se quiser (o letreiro muda de texto, não de ids).
 2. O merge dispara a coleta: ela baixa as partidas dos últimos 14 dias de cada integrante (a última semana inteira
    entra aqui) e, com a sobra da cota, o histórico mais antigo. Partida recente que o OpenDota ainda não analisou fica
    em `provisorias/` e a coleta pede a análise do replay.
