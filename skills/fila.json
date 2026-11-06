@@ -1,0 +1,5771 @@
+{
+"partidas": 375,
+"skills_vistas": 582,
+"com_desenho": 58,
+"cobertura_partidas": 0.284,
+"tam_lote": 12,
+"skills": [
+{
+"chave": "earth_spirit_geomagnetic_grip",
+"heroi": "earth_spirit",
+"nome": "Geomagnetic Grip",
+"ult": false,
+"partidas": 107,
+"usos": 5370,
+"estado": "replay"
+},
+{
+"chave": "earth_spirit_rolling_boulder",
+"heroi": "earth_spirit",
+"nome": "Rolling Boulder",
+"ult": false,
+"partidas": 107,
+"usos": 6533,
+"estado": "replay"
+},
+{
+"chave": "earth_spirit_stone_caller",
+"heroi": "earth_spirit",
+"nome": "Stone Remnant",
+"ult": false,
+"partidas": 107,
+"usos": 11952,
+"estado": "replay"
+},
+{
+"chave": "earth_spirit_magnetize",
+"heroi": "earth_spirit",
+"nome": "Magnetize",
+"ult": true,
+"partidas": 107,
+"usos": 1025,
+"estado": "replay"
+},
+{
+"chave": "earth_spirit_boulder_smash",
+"heroi": "earth_spirit",
+"nome": "Boulder Smash",
+"ult": false,
+"partidas": 107,
+"usos": 7809,
+"estado": "replay"
+},
+{
+"chave": "witch_doctor_paralyzing_cask",
+"heroi": "witch_doctor",
+"nome": "Paralyzing Cask",
+"ult": false,
+"partidas": 106,
+"usos": 3679,
+"estado": "replay"
+},
+{
+"chave": "witch_doctor_maledict",
+"heroi": "witch_doctor",
+"nome": "Maledict",
+"ult": false,
+"partidas": 106,
+"usos": 2528,
+"estado": "replay"
+},
+{
+"chave": "witch_doctor_death_ward",
+"heroi": "witch_doctor",
+"nome": "Death Ward",
+"ult": true,
+"partidas": 106,
+"usos": 864,
+"estado": "replay"
+},
+{
+"chave": "witch_doctor_voodoo_restoration",
+"heroi": "witch_doctor",
+"nome": "Voodoo Restoration",
+"ult": false,
+"partidas": 105,
+"usos": 4701,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "disruptor_static_storm",
+"heroi": "disruptor",
+"nome": "Static Storm",
+"ult": true,
+"partidas": 94,
+"usos": 961,
+"estado": "replay"
+},
+{
+"chave": "disruptor_glimpse",
+"heroi": "disruptor",
+"nome": "Glimpse",
+"ult": false,
+"partidas": 94,
+"usos": 2044,
+"estado": "replay"
+},
+{
+"chave": "disruptor_kinetic_field",
+"heroi": "disruptor",
+"nome": "Kinetic Field",
+"ult": false,
+"partidas": 94,
+"usos": 2505,
+"estado": "replay"
+},
+{
+"chave": "disruptor_thunder_strike",
+"heroi": "disruptor",
+"nome": "Thunder Strike",
+"ult": false,
+"partidas": 94,
+"usos": 4430,
+"estado": "replay"
+},
+{
+"chave": "lion_finger_of_death",
+"heroi": "lion",
+"nome": "Finger of Death",
+"ult": true,
+"partidas": 92,
+"usos": 952,
+"estado": "lote 1"
+},
+{
+"chave": "lion_impale",
+"heroi": "lion",
+"nome": "Earth Spike",
+"ult": false,
+"partidas": 92,
+"usos": 4800,
+"estado": "lote 1"
+},
+{
+"chave": "lion_mana_drain",
+"heroi": "lion",
+"nome": "Mana Drain",
+"ult": false,
+"partidas": 92,
+"usos": 3106,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "lion_voodoo",
+"heroi": "lion",
+"nome": "Hex",
+"ult": false,
+"partidas": 91,
+"usos": 2195,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "pudge_meat_hook",
+"heroi": "pudge",
+"nome": "Meat Hook",
+"ult": false,
+"partidas": 89,
+"usos": 3761,
+"estado": "replay"
+},
+{
+"chave": "pudge_dismember",
+"heroi": "pudge",
+"nome": "Dismember",
+"ult": true,
+"partidas": 89,
+"usos": 1521,
+"estado": "replay"
+},
+{
+"chave": "pudge_rot",
+"heroi": "pudge",
+"nome": "Rot",
+"ult": false,
+"partidas": 89,
+"usos": 13875,
+"estado": "replay"
+},
+{
+"chave": "rubick_spell_steal",
+"heroi": "rubick",
+"nome": "Spell Steal",
+"ult": false,
+"partidas": 88,
+"usos": 1869,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "rubick_telekinesis",
+"heroi": "rubick",
+"nome": "Telekinesis",
+"ult": false,
+"partidas": 88,
+"usos": 2399,
+"estado": "lote 1"
+},
+{
+"chave": "rubick_fade_bolt",
+"heroi": "rubick",
+"nome": "Fade Bolt",
+"ult": false,
+"partidas": 88,
+"usos": 5706,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "crystal_maiden_freezing_field",
+"heroi": "crystal_maiden",
+"nome": "Freezing Field",
+"ult": false,
+"partidas": 84,
+"usos": 678,
+"estado": "replay"
+},
+{
+"chave": "crystal_maiden_crystal_nova",
+"heroi": "crystal_maiden",
+"nome": "Crystal Nova",
+"ult": false,
+"partidas": 84,
+"usos": 3934,
+"estado": "replay"
+},
+{
+"chave": "crystal_maiden_frostbite",
+"heroi": "crystal_maiden",
+"nome": "Frostbite",
+"ult": false,
+"partidas": 84,
+"usos": 3918,
+"estado": "replay"
+},
+{
+"chave": "invoker_deafening_blast",
+"heroi": "invoker",
+"nome": "Deafening Blast",
+"ult": true,
+"partidas": 81,
+"usos": 1071,
+"estado": "replay"
+},
+{
+"chave": "invoker_chaos_meteor",
+"heroi": "invoker",
+"nome": "Chaos Meteor",
+"ult": false,
+"partidas": 81,
+"usos": 1232,
+"estado": "replay"
+},
+{
+"chave": "invoker_forge_spirit",
+"heroi": "invoker",
+"nome": "Forge Spirit",
+"ult": false,
+"partidas": 81,
+"usos": 2709,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "invoker_tornado",
+"heroi": "invoker",
+"nome": "Tornado",
+"ult": false,
+"partidas": 81,
+"usos": 1799,
+"estado": "replay"
+},
+{
+"chave": "invoker_ghost_walk",
+"heroi": "invoker",
+"nome": "Ghost Walk",
+"ult": false,
+"partidas": 81,
+"usos": 1310,
+"estado": "replay"
+},
+{
+"chave": "invoker_sun_strike",
+"heroi": "invoker",
+"nome": "Sun Strike",
+"ult": false,
+"partidas": 81,
+"usos": 1398,
+"estado": "replay"
+},
+{
+"chave": "invoker_cold_snap",
+"heroi": "invoker",
+"nome": "Cold Snap",
+"ult": false,
+"partidas": 81,
+"usos": 2051,
+"estado": "replay"
+},
+{
+"chave": "invoker_ice_wall",
+"heroi": "invoker",
+"nome": "Ice Wall",
+"ult": false,
+"partidas": 80,
+"usos": 1579,
+"estado": "replay"
+},
+{
+"chave": "invoker_alacrity",
+"heroi": "invoker",
+"nome": "Alacrity",
+"ult": false,
+"partidas": 79,
+"usos": 2298,
+"estado": "replay"
+},
+{
+"chave": "axe_berserkers_call",
+"heroi": "axe",
+"nome": "Berserker's Call",
+"ult": false,
+"partidas": 79,
+"usos": 2500,
+"estado": "replay"
+},
+{
+"chave": "axe_culling_blade",
+"heroi": "axe",
+"nome": "Culling Blade",
+"ult": false,
+"partidas": 79,
+"usos": 679,
+"estado": "replay"
+},
+{
+"chave": "axe_battle_hunger",
+"heroi": "axe",
+"nome": "Battle Hunger",
+"ult": false,
+"partidas": 79,
+"usos": 2699,
+"estado": "replay"
+},
+{
+"chave": "invoker_emp",
+"heroi": "invoker",
+"nome": "E.M.P.",
+"ult": false,
+"partidas": 78,
+"usos": 833,
+"estado": "replay"
+},
+{
+"chave": "shadow_shaman_shackles",
+"heroi": "shadow_shaman",
+"nome": "Shackles",
+"ult": false,
+"partidas": 71,
+"usos": 2018,
+"estado": "lote 1"
+},
+{
+"chave": "shadow_shaman_mass_serpent_ward",
+"heroi": "shadow_shaman",
+"nome": "Mass Serpent Ward",
+"ult": true,
+"partidas": 71,
+"usos": 721,
+"estado": "lote 1"
+},
+{
+"chave": "shadow_shaman_voodoo",
+"heroi": "shadow_shaman",
+"nome": "Hex",
+"ult": false,
+"partidas": 71,
+"usos": 1790,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "shadow_shaman_ether_shock",
+"heroi": "shadow_shaman",
+"nome": "Ether Shock",
+"ult": false,
+"partidas": 71,
+"usos": 2159,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "life_stealer_open_wounds",
+"heroi": "life_stealer",
+"nome": "Open Wounds",
+"ult": false,
+"partidas": 69,
+"usos": 1612,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "life_stealer_rage",
+"heroi": "life_stealer",
+"nome": "Rage",
+"ult": false,
+"partidas": 69,
+"usos": 1633,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "life_stealer_infest",
+"heroi": "life_stealer",
+"nome": "Infest",
+"ult": false,
+"partidas": 69,
+"usos": 652,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "spirit_breaker_nether_strike",
+"heroi": "spirit_breaker",
+"nome": "Nether Strike",
+"ult": true,
+"partidas": 68,
+"usos": 824,
+"estado": "generico",
+"proximo_lote": 2
+},
+{
+"chave": "juggernaut_blade_fury",
+"heroi": "juggernaut",
+"nome": "Blade Fury",
+"ult": false,
+"partidas": 68,
+"usos": 1573,
+"estado": "lote 1"
+},
+{
+"chave": "juggernaut_healing_ward",
+"heroi": "juggernaut",
+"nome": "Healing Ward",
+"ult": false,
+"partidas": 68,
+"usos": 900,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "juggernaut_omni_slash",
+"heroi": "juggernaut",
+"nome": "Omnislash",
+"ult": true,
+"partidas": 68,
+"usos": 557,
+"estado": "lote 1"
+},
+{
+"chave": "spirit_breaker_charge_of_darkness",
+"heroi": "spirit_breaker",
+"nome": "Charge of Darkness",
+"ult": false,
+"partidas": 67,
+"usos": 3622,
+"estado": "lote 1"
+},
+{
+"chave": "life_stealer_consume",
+"heroi": "life_stealer",
+"nome": "Consume",
+"ult": true,
+"partidas": 66,
+"usos": 342,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "spirit_breaker_bulldoze",
+"heroi": "spirit_breaker",
+"nome": "Bulldoze",
+"ult": false,
+"partidas": 66,
+"usos": 2161,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "sniper_take_aim",
+"heroi": "sniper",
+"nome": "Take Aim",
+"ult": false,
+"partidas": 64,
+"usos": 1483,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "sniper_assassinate",
+"heroi": "sniper",
+"nome": "Assassinate",
+"ult": true,
+"partidas": 64,
+"usos": 702,
+"estado": "lote 1"
+},
+{
+"chave": "sniper_shrapnel",
+"heroi": "sniper",
+"nome": "Shrapnel",
+"ult": false,
+"partidas": 64,
+"usos": 3514,
+"estado": "lote 1"
+},
+{
+"chave": "hoodwink_sharpshooter",
+"heroi": "hoodwink",
+"nome": "Sharpshooter",
+"ult": false,
+"partidas": 62,
+"usos": 880,
+"estado": "replay"
+},
+{
+"chave": "hoodwink_acorn_shot",
+"heroi": "hoodwink",
+"nome": "Acorn Shot",
+"ult": false,
+"partidas": 62,
+"usos": 3624,
+"estado": "replay"
+},
+{
+"chave": "hoodwink_bushwhack",
+"heroi": "hoodwink",
+"nome": "Bushwhack",
+"ult": false,
+"partidas": 62,
+"usos": 3400,
+"estado": "replay"
+},
+{
+"chave": "hoodwink_scurry",
+"heroi": "hoodwink",
+"nome": "Scurry",
+"ult": false,
+"partidas": 61,
+"usos": 2400,
+"estado": "replay"
+},
+{
+"chave": "phantom_assassin_phantom_strike",
+"heroi": "phantom_assassin",
+"nome": "Phantom Strike",
+"ult": false,
+"partidas": 59,
+"usos": 5452,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "phantom_assassin_stifling_dagger",
+"heroi": "phantom_assassin",
+"nome": "Stifling Dagger",
+"ult": false,
+"partidas": 59,
+"usos": 5037,
+"estado": "lote 1"
+},
+{
+"chave": "phantom_assassin_blur",
+"heroi": "phantom_assassin",
+"nome": "Blur",
+"ult": false,
+"partidas": 59,
+"usos": 1371,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "crystal_maiden_crystal_clone",
+"heroi": "crystal_maiden",
+"nome": "Crystal Clone",
+"ult": false,
+"partidas": 59,
+"usos": 1144,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "undying_soul_rip",
+"heroi": "undying",
+"nome": "Soul Rip",
+"ult": false,
+"partidas": 58,
+"usos": 2293,
+"estado": "replay"
+},
+{
+"chave": "undying_flesh_golem",
+"heroi": "undying",
+"nome": "Flesh Golem",
+"ult": true,
+"partidas": 58,
+"usos": 532,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "undying_decay",
+"heroi": "undying",
+"nome": "Decay",
+"ult": false,
+"partidas": 58,
+"usos": 6641,
+"estado": "replay"
+},
+{
+"chave": "undying_tombstone",
+"heroi": "undying",
+"nome": "Tombstone",
+"ult": false,
+"partidas": 58,
+"usos": 987,
+"estado": "replay"
+},
+{
+"chave": "obsidian_destroyer_objurgation",
+"heroi": "obsidian_destroyer",
+"nome": "Objurgation",
+"ult": false,
+"partidas": 58,
+"usos": 1213,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "legion_commander_duel",
+"heroi": "legion_commander",
+"nome": "Duel",
+"ult": true,
+"partidas": 58,
+"usos": 740,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "obsidian_destroyer_astral_imprisonment",
+"heroi": "obsidian_destroyer",
+"nome": "Astral Imprisonment",
+"ult": false,
+"partidas": 58,
+"usos": 2521,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "obsidian_destroyer_sanity_eclipse",
+"heroi": "obsidian_destroyer",
+"nome": "Sanity's Eclipse",
+"ult": true,
+"partidas": 58,
+"usos": 467,
+"estado": "generico",
+"proximo_lote": 3
+},
+{
+"chave": "legion_commander_overwhelming_odds",
+"heroi": "legion_commander",
+"nome": "Overwhelming Odds",
+"ult": false,
+"partidas": 58,
+"usos": 2552,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "legion_commander_press_the_attack",
+"heroi": "legion_commander",
+"nome": "Press The Attack",
+"ult": false,
+"partidas": 58,
+"usos": 1342,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "spectre_shadow_step",
+"heroi": "spectre",
+"nome": "Shadow Step",
+"ult": false,
+"partidas": 56,
+"usos": 1172,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "spectre_reality",
+"heroi": "spectre",
+"nome": "Reality",
+"ult": false,
+"partidas": 56,
+"usos": 743,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "spectre_haunt",
+"heroi": "spectre",
+"nome": "Haunt",
+"ult": true,
+"partidas": 56,
+"usos": 532,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "spectre_spectral_dagger",
+"heroi": "spectre",
+"nome": "Spectral Dagger",
+"ult": false,
+"partidas": 56,
+"usos": 2855,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "dawnbreaker_fire_wreath",
+"heroi": "dawnbreaker",
+"nome": "Starbreaker",
+"ult": false,
+"partidas": 54,
+"usos": 2790,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "dawnbreaker_celestial_hammer",
+"heroi": "dawnbreaker",
+"nome": "Celestial Hammer",
+"ult": false,
+"partidas": 54,
+"usos": 3312,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "dawnbreaker_solar_guardian",
+"heroi": "dawnbreaker",
+"nome": "Solar Guardian",
+"ult": false,
+"partidas": 54,
+"usos": 604,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "dawnbreaker_converge",
+"heroi": "dawnbreaker",
+"nome": "Converge",
+"ult": false,
+"partidas": 54,
+"usos": 2547,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "lina_laguna_blade",
+"heroi": "lina",
+"nome": "Laguna Blade",
+"ult": true,
+"partidas": 53,
+"usos": 725,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "lina_dragon_slave",
+"heroi": "lina",
+"nome": "Dragon Slave",
+"ult": false,
+"partidas": 53,
+"usos": 5562,
+"estado": "generico",
+"proximo_lote": 4
+},
+{
+"chave": "lina_light_strike_array",
+"heroi": "lina",
+"nome": "Light Strike Array",
+"ult": false,
+"partidas": 53,
+"usos": 2981,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "lich_chain_frost",
+"heroi": "lich",
+"nome": "Chain Frost",
+"ult": true,
+"partidas": 53,
+"usos": 587,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "lich_sinister_gaze",
+"heroi": "lich",
+"nome": "Sinister Gaze",
+"ult": false,
+"partidas": 53,
+"usos": 1132,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "lich_frost_shield",
+"heroi": "lich",
+"nome": "Frost Shield",
+"ult": false,
+"partidas": 53,
+"usos": 1821,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "lich_frost_nova",
+"heroi": "lich",
+"nome": "Frost Blast",
+"ult": false,
+"partidas": 53,
+"usos": 2988,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "lich_death_charge",
+"heroi": "lich",
+"nome": "Sacrifice",
+"ult": false,
+"partidas": 52,
+"usos": 550,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "tidehunter_kraken_shell",
+"heroi": "tidehunter",
+"nome": "Kraken Shell",
+"ult": false,
+"partidas": 51,
+"usos": 482,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "tidehunter_anchor_smash",
+"heroi": "tidehunter",
+"nome": "Anchor Smash",
+"ult": false,
+"partidas": 51,
+"usos": 5879,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "tidehunter_gush",
+"heroi": "tidehunter",
+"nome": "Gush",
+"ult": false,
+"partidas": 50,
+"usos": 2261,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "tidehunter_ravage",
+"heroi": "tidehunter",
+"nome": "Ravage",
+"ult": false,
+"partidas": 50,
+"usos": 437,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "windrunner_powershot",
+"heroi": "windrunner",
+"nome": "Powershot",
+"ult": false,
+"partidas": 49,
+"usos": 3517,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "windrunner_windrun",
+"heroi": "windrunner",
+"nome": "Windrun",
+"ult": false,
+"partidas": 49,
+"usos": 2257,
+"estado": "generico",
+"proximo_lote": 5
+},
+{
+"chave": "windrunner_shackleshot",
+"heroi": "windrunner",
+"nome": "Shackleshot",
+"ult": false,
+"partidas": 49,
+"usos": 1427,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "shadow_shaman_urnaconda",
+"heroi": "shadow_shaman",
+"nome": "Urnaconda",
+"ult": false,
+"partidas": 48,
+"usos": 358,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "ogre_magi_fireblast",
+"heroi": "ogre_magi",
+"nome": "Fireblast",
+"ult": false,
+"partidas": 48,
+"usos": 1515,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "ogre_magi_bloodlust",
+"heroi": "ogre_magi",
+"nome": "Bloodlust",
+"ult": false,
+"partidas": 48,
+"usos": 2191,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "windrunner_focusfire",
+"heroi": "windrunner",
+"nome": "Focus Fire",
+"ult": false,
+"partidas": 48,
+"usos": 704,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "dragon_knight_breathe_fire",
+"heroi": "dragon_knight",
+"nome": "Breathe Fire",
+"ult": false,
+"partidas": 47,
+"usos": 3689,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "dragon_knight_elder_dragon_form",
+"heroi": "dragon_knight",
+"nome": "Elder Dragon Form",
+"ult": true,
+"partidas": 47,
+"usos": 737,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "dragon_knight_dragon_tail",
+"heroi": "dragon_knight",
+"nome": "Dragon Tail",
+"ult": false,
+"partidas": 47,
+"usos": 1491,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "ogre_magi_ignite",
+"heroi": "ogre_magi",
+"nome": "Ignite",
+"ult": false,
+"partidas": 47,
+"usos": 2213,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "abyssal_underlord_pit_of_malice",
+"heroi": "abyssal_underlord",
+"nome": "Pit of Malice",
+"ult": false,
+"partidas": 46,
+"usos": 1573,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "abyssal_underlord_firestorm",
+"heroi": "abyssal_underlord",
+"nome": "Firestorm",
+"ult": false,
+"partidas": 46,
+"usos": 3372,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "abyssal_underlord_dark_portal",
+"heroi": "abyssal_underlord",
+"nome": "Fiend's Gate",
+"ult": true,
+"partidas": 46,
+"usos": 409,
+"estado": "generico",
+"proximo_lote": 6
+},
+{
+"chave": "antimage_mana_void",
+"heroi": "antimage",
+"nome": "Mana Void",
+"ult": true,
+"partidas": 45,
+"usos": 333,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "antimage_blink",
+"heroi": "antimage",
+"nome": "Blink",
+"ult": false,
+"partidas": 45,
+"usos": 4698,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "antimage_counterspell",
+"heroi": "antimage",
+"nome": "Counterspell",
+"ult": false,
+"partidas": 45,
+"usos": 1273,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "necrolyte_death_pulse",
+"heroi": "necrolyte",
+"nome": "Death Pulse",
+"ult": false,
+"partidas": 45,
+"usos": 6370,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "necrolyte_reapers_scythe",
+"heroi": "necrolyte",
+"nome": "Reaper's Scythe",
+"ult": true,
+"partidas": 45,
+"usos": 398,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "necrolyte_ghost_shroud",
+"heroi": "necrolyte",
+"nome": "Ghost Shroud",
+"ult": false,
+"partidas": 45,
+"usos": 761,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "necrolyte_death_seeker",
+"heroi": "necrolyte",
+"nome": "Death Seeker",
+"ult": false,
+"partidas": 43,
+"usos": 807,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "lich_ice_spire",
+"heroi": "lich",
+"nome": "Ice Spire",
+"ult": false,
+"partidas": 43,
+"usos": 425,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "techies_sticky_bomb",
+"heroi": "techies",
+"nome": "Sticky Bomb",
+"ult": false,
+"partidas": 41,
+"usos": 1895,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "techies_suicide",
+"heroi": "techies",
+"nome": "Blast Off!",
+"ult": false,
+"partidas": 41,
+"usos": 1050,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "techies_land_mines",
+"heroi": "techies",
+"nome": "Proximity Mines",
+"ult": false,
+"partidas": 41,
+"usos": 4516,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "techies_reactive_tazer",
+"heroi": "techies",
+"nome": "Reactive Tazer",
+"ult": false,
+"partidas": 41,
+"usos": 1196,
+"estado": "generico",
+"proximo_lote": 7
+},
+{
+"chave": "earth_spirit_petrify",
+"heroi": "earth_spirit",
+"nome": "Enchant Remnant",
+"ult": false,
+"partidas": 40,
+"usos": 113,
+"estado": "replay"
+},
+{
+"chave": "ursa_overpower",
+"heroi": "ursa",
+"nome": "Overpower",
+"ult": false,
+"partidas": 38,
+"usos": 4414,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "ursa_enrage",
+"heroi": "ursa",
+"nome": "Enrage",
+"ult": true,
+"partidas": 38,
+"usos": 471,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "ursa_earthshock",
+"heroi": "ursa",
+"nome": "Earthshock",
+"ult": false,
+"partidas": 38,
+"usos": 1718,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "ancient_apparition_ice_vortex",
+"heroi": "ancient_apparition",
+"nome": "Ice Vortex",
+"ult": false,
+"partidas": 38,
+"usos": 3191,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "ancient_apparition_cold_feet",
+"heroi": "ancient_apparition",
+"nome": "Cold Feet",
+"ult": false,
+"partidas": 38,
+"usos": 1081,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "ancient_apparition_ice_blast",
+"heroi": "ancient_apparition",
+"nome": "Ice Blast",
+"ult": false,
+"partidas": 38,
+"usos": 708,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "mirana_invis",
+"heroi": "mirana",
+"nome": "Moonlight Shadow",
+"ult": true,
+"partidas": 37,
+"usos": 415,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "mirana_leap",
+"heroi": "mirana",
+"nome": "Leap",
+"ult": false,
+"partidas": 37,
+"usos": 1572,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "mirana_arrow",
+"heroi": "mirana",
+"nome": "Sacred Arrow",
+"ult": false,
+"partidas": 37,
+"usos": 1950,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "mirana_starfall",
+"heroi": "mirana",
+"nome": "Starstorm",
+"ult": false,
+"partidas": 37,
+"usos": 1616,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "slark_pounce",
+"heroi": "slark",
+"nome": "Pounce",
+"ult": false,
+"partidas": 37,
+"usos": 1635,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "slark_shadow_dance",
+"heroi": "slark",
+"nome": "Shadow Dance",
+"ult": true,
+"partidas": 37,
+"usos": 491,
+"estado": "generico",
+"proximo_lote": 8
+},
+{
+"chave": "slark_dark_pact",
+"heroi": "slark",
+"nome": "Dark Pact",
+"ult": false,
+"partidas": 37,
+"usos": 3499,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "drow_ranger_multishot",
+"heroi": "drow_ranger",
+"nome": "Multishot",
+"ult": false,
+"partidas": 37,
+"usos": 2192,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "drow_ranger_wave_of_silence",
+"heroi": "drow_ranger",
+"nome": "Gust",
+"ult": false,
+"partidas": 37,
+"usos": 627,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "earthshaker_echo_slam",
+"heroi": "earthshaker",
+"nome": "Echo Slam",
+"ult": false,
+"partidas": 37,
+"usos": 293,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "earthshaker_enchant_totem",
+"heroi": "earthshaker",
+"nome": "Enchant Totem",
+"ult": false,
+"partidas": 37,
+"usos": 4138,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "earthshaker_fissure",
+"heroi": "earthshaker",
+"nome": "Fissure",
+"ult": false,
+"partidas": 37,
+"usos": 1825,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "skeleton_king_hellfire_blast",
+"heroi": "skeleton_king",
+"nome": "Wraithfire Blast",
+"ult": false,
+"partidas": 36,
+"usos": 1265,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "skeleton_king_bone_guard",
+"heroi": "skeleton_king",
+"nome": "Bone Guard",
+"ult": false,
+"partidas": 36,
+"usos": 993,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "dark_willow_shadow_realm",
+"heroi": "dark_willow",
+"nome": "Shadow Realm",
+"ult": false,
+"partidas": 36,
+"usos": 1114,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "dark_willow_terrorize",
+"heroi": "dark_willow",
+"nome": "Terrorize",
+"ult": true,
+"partidas": 36,
+"usos": 271,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "dark_willow_bramble_maze",
+"heroi": "dark_willow",
+"nome": "Bramble Maze",
+"ult": false,
+"partidas": 36,
+"usos": 1326,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "dark_willow_bedlam",
+"heroi": "dark_willow",
+"nome": "Bedlam",
+"ult": false,
+"partidas": 36,
+"usos": 586,
+"estado": "generico",
+"proximo_lote": 9
+},
+{
+"chave": "dark_willow_cursed_crown",
+"heroi": "dark_willow",
+"nome": "Cursed Crown",
+"ult": false,
+"partidas": 36,
+"usos": 741,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "silencer_global_silence",
+"heroi": "silencer",
+"nome": "Global Silence",
+"ult": false,
+"partidas": 36,
+"usos": 401,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "silencer_curse_of_the_silent",
+"heroi": "silencer",
+"nome": "Arcane Curse",
+"ult": false,
+"partidas": 36,
+"usos": 1568,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "silencer_last_word",
+"heroi": "silencer",
+"nome": "Last Word",
+"ult": false,
+"partidas": 36,
+"usos": 967,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "bristleback_viscous_nasal_goo",
+"heroi": "bristleback",
+"nome": "Viscous Nasal Goo",
+"ult": false,
+"partidas": 36,
+"usos": 2764,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "bristleback_quill_spray",
+"heroi": "bristleback",
+"nome": "Quill Spray",
+"ult": false,
+"partidas": 36,
+"usos": 12076,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "phantom_lancer_doppelwalk",
+"heroi": "phantom_lancer",
+"nome": "Doppelganger",
+"ult": false,
+"partidas": 36,
+"usos": 1348,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "phantom_lancer_spirit_lance",
+"heroi": "phantom_lancer",
+"nome": "Spirit Lance",
+"ult": false,
+"partidas": 36,
+"usos": 2032,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "jakiro_dual_breath",
+"heroi": "jakiro",
+"nome": "Dual Breath",
+"ult": false,
+"partidas": 35,
+"usos": 1897,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "jakiro_macropyre",
+"heroi": "jakiro",
+"nome": "Macropyre",
+"ult": true,
+"partidas": 35,
+"usos": 336,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "jakiro_ice_path",
+"heroi": "jakiro",
+"nome": "Ice Path",
+"ult": false,
+"partidas": 35,
+"usos": 1161,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "juggernaut_swift_slash",
+"heroi": "juggernaut",
+"nome": "Swiftslash",
+"ult": false,
+"partidas": 35,
+"usos": 215,
+"estado": "generico",
+"proximo_lote": 10
+},
+{
+"chave": "luna_eclipse",
+"heroi": "luna",
+"nome": "Eclipse",
+"ult": true,
+"partidas": 35,
+"usos": 289,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "luna_lunar_orbit",
+"heroi": "luna",
+"nome": "Lunar Orbit",
+"ult": false,
+"partidas": 35,
+"usos": 507,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "luna_lucent_beam",
+"heroi": "luna",
+"nome": "Lucent Beam",
+"ult": false,
+"partidas": 35,
+"usos": 1258,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "magnataur_reverse_polarity",
+"heroi": "magnataur",
+"nome": "Reverse Polarity",
+"ult": true,
+"partidas": 34,
+"usos": 326,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "magnataur_skewer",
+"heroi": "magnataur",
+"nome": "Skewer",
+"ult": false,
+"partidas": 34,
+"usos": 1049,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "magnataur_empower",
+"heroi": "magnataur",
+"nome": "Empower",
+"ult": false,
+"partidas": 34,
+"usos": 758,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "magnataur_shockwave",
+"heroi": "magnataur",
+"nome": "Shockwave",
+"ult": false,
+"partidas": 34,
+"usos": 2525,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "viper_viper_strike",
+"heroi": "viper",
+"nome": "Viper Strike",
+"ult": true,
+"partidas": 34,
+"usos": 573,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "viper_nethertoxin",
+"heroi": "viper",
+"nome": "Nethertoxin",
+"ult": false,
+"partidas": 34,
+"usos": 1793,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "furion_teleportation",
+"heroi": "furion",
+"nome": "Teleportation",
+"ult": false,
+"partidas": 33,
+"usos": 974,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "furion_wrath_of_nature",
+"heroi": "furion",
+"nome": "Wrath of Nature",
+"ult": true,
+"partidas": 33,
+"usos": 624,
+"estado": "replay"
+},
+{
+"chave": "furion_force_of_nature",
+"heroi": "furion",
+"nome": "Nature's Call",
+"ult": false,
+"partidas": 33,
+"usos": 1099,
+"estado": "replay"
+},
+{
+"chave": "furion_sprout",
+"heroi": "furion",
+"nome": "Sprout",
+"ult": false,
+"partidas": 33,
+"usos": 1514,
+"estado": "replay"
+},
+{
+"chave": "warlock_upheaval",
+"heroi": "warlock",
+"nome": "Upheaval",
+"ult": false,
+"partidas": 32,
+"usos": 654,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "warlock_fatal_bonds",
+"heroi": "warlock",
+"nome": "Fatal Bonds",
+"ult": false,
+"partidas": 32,
+"usos": 968,
+"estado": "generico",
+"proximo_lote": 11
+},
+{
+"chave": "warlock_shadow_word",
+"heroi": "warlock",
+"nome": "Shadow Word",
+"ult": false,
+"partidas": 32,
+"usos": 1460,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "warlock_rain_of_chaos",
+"heroi": "warlock",
+"nome": "Chaotic Offering",
+"ult": true,
+"partidas": 32,
+"usos": 271,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "faceless_void_time_walk",
+"heroi": "faceless_void",
+"nome": "Time Walk",
+"ult": false,
+"partidas": 32,
+"usos": 2771,
+"estado": "lote 1"
+},
+{
+"chave": "faceless_void_chronosphere",
+"heroi": "faceless_void",
+"nome": "Chronosphere",
+"ult": true,
+"partidas": 32,
+"usos": 252,
+"estado": "lote 1"
+},
+{
+"chave": "faceless_void_time_dilation",
+"heroi": "faceless_void",
+"nome": "Time Dilation",
+"ult": false,
+"partidas": 31,
+"usos": 669,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "dragon_knight_fireball",
+"heroi": "dragon_knight",
+"nome": "Fireball",
+"ult": false,
+"partidas": 31,
+"usos": 787,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "razor_eye_of_the_storm",
+"heroi": "razor",
+"nome": "Eye of the Storm",
+"ult": true,
+"partidas": 30,
+"usos": 419,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "death_prophet_spirit_siphon",
+"heroi": "death_prophet",
+"nome": "Spirit Siphon",
+"ult": false,
+"partidas": 30,
+"usos": 1174,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "death_prophet_carrion_swarm",
+"heroi": "death_prophet",
+"nome": "Crypt Swarm",
+"ult": false,
+"partidas": 30,
+"usos": 4182,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "razor_plasma_field",
+"heroi": "razor",
+"nome": "Plasma Field",
+"ult": false,
+"partidas": 30,
+"usos": 2314,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "razor_static_link",
+"heroi": "razor",
+"nome": "Static Link",
+"ult": false,
+"partidas": 30,
+"usos": 655,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "death_prophet_silence",
+"heroi": "death_prophet",
+"nome": "Silence",
+"ult": false,
+"partidas": 30,
+"usos": 821,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "death_prophet_exorcism",
+"heroi": "death_prophet",
+"nome": "Exorcism",
+"ult": true,
+"partidas": 30,
+"usos": 329,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "zuus_thundergods_wrath",
+"heroi": "zuus",
+"nome": "Thundergod's Wrath",
+"ult": false,
+"partidas": 30,
+"usos": 369,
+"estado": "generico",
+"proximo_lote": 12
+},
+{
+"chave": "zuus_lightning_bolt",
+"heroi": "zuus",
+"nome": "Lightning Bolt",
+"ult": false,
+"partidas": 30,
+"usos": 2236,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "zuus_arc_lightning",
+"heroi": "zuus",
+"nome": "Arc Lightning",
+"ult": false,
+"partidas": 30,
+"usos": 4136,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "zuus_heavenly_jump",
+"heroi": "zuus",
+"nome": "Heavenly Jump",
+"ult": false,
+"partidas": 30,
+"usos": 789,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "tidehunter_dead_in_the_water",
+"heroi": "tidehunter",
+"nome": "Dead in the Water",
+"ult": false,
+"partidas": 30,
+"usos": 201,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "sven_storm_bolt",
+"heroi": "sven",
+"nome": "Storm Hammer",
+"ult": false,
+"partidas": 30,
+"usos": 985,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "sven_gods_strength",
+"heroi": "sven",
+"nome": "God's Strength",
+"ult": false,
+"partidas": 30,
+"usos": 318,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "sven_warcry",
+"heroi": "sven",
+"nome": "Warcry",
+"ult": false,
+"partidas": 30,
+"usos": 977,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "skywrath_mage_concussive_shot",
+"heroi": "skywrath_mage",
+"nome": "Concussive Shot",
+"ult": false,
+"partidas": 29,
+"usos": 2187,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "skywrath_mage_mystic_flare",
+"heroi": "skywrath_mage",
+"nome": "Mystic Flare",
+"ult": true,
+"partidas": 29,
+"usos": 502,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "lina_flame_cloak",
+"heroi": "lina",
+"nome": "Flame Cloak",
+"ult": false,
+"partidas": 29,
+"usos": 414,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "sniper_concussive_grenade",
+"heroi": "sniper",
+"nome": "Concussive Grenade",
+"ult": false,
+"partidas": 29,
+"usos": 219,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "skywrath_mage_ancient_seal",
+"heroi": "skywrath_mage",
+"nome": "Ancient Seal",
+"ult": false,
+"partidas": 28,
+"usos": 728,
+"estado": "generico",
+"proximo_lote": 13
+},
+{
+"chave": "skywrath_mage_arcane_bolt",
+"heroi": "skywrath_mage",
+"nome": "Arcane Bolt",
+"ult": false,
+"partidas": 28,
+"usos": 3029,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "grimstroke_soul_chain",
+"heroi": "grimstroke",
+"nome": "Soulbind",
+"ult": false,
+"partidas": 28,
+"usos": 268,
+"estado": "replay"
+},
+{
+"chave": "grimstroke_spirit_walk",
+"heroi": "grimstroke",
+"nome": "Ink Swell",
+"ult": false,
+"partidas": 28,
+"usos": 788,
+"estado": "replay"
+},
+{
+"chave": "grimstroke_dark_artistry",
+"heroi": "grimstroke",
+"nome": "Stroke of Fate",
+"ult": false,
+"partidas": 28,
+"usos": 1562,
+"estado": "replay"
+},
+{
+"chave": "rubick_telekinesis_land_self",
+"heroi": "rubick",
+"nome": "Telekinesis Land",
+"ult": true,
+"partidas": 28,
+"usos": 110,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "grimstroke_ink_creature",
+"heroi": "grimstroke",
+"nome": "Phantom's Embrace",
+"ult": false,
+"partidas": 28,
+"usos": 1062,
+"estado": "replay"
+},
+{
+"chave": "zuus_cloud",
+"heroi": "zuus",
+"nome": "Nimbus",
+"ult": false,
+"partidas": 27,
+"usos": 410,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "vengefulspirit_wave_of_terror",
+"heroi": "vengefulspirit",
+"nome": "Wave of Terror",
+"ult": false,
+"partidas": 26,
+"usos": 1718,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "vengefulspirit_magic_missile",
+"heroi": "vengefulspirit",
+"nome": "Magic Missile",
+"ult": false,
+"partidas": 26,
+"usos": 982,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "vengefulspirit_nether_swap",
+"heroi": "vengefulspirit",
+"nome": "Nether Swap",
+"ult": true,
+"partidas": 26,
+"usos": 294,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_funhouse_mirror",
+"heroi": "ringmaster",
+"nome": "Funhouse Mirror",
+"ult": false,
+"partidas": 26,
+"usos": 95,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_the_box",
+"heroi": "ringmaster",
+"nome": "Escape Act",
+"ult": false,
+"partidas": 26,
+"usos": 281,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_wheel",
+"heroi": "ringmaster",
+"nome": "Wheel of Wonder",
+"ult": false,
+"partidas": 26,
+"usos": 254,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_tame_the_beasts",
+"heroi": "ringmaster",
+"nome": "Tame the Beasts",
+"ult": false,
+"partidas": 26,
+"usos": 1126,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_summon_unicycle",
+"heroi": "ringmaster",
+"nome": "Unicycle",
+"ult": false,
+"partidas": 26,
+"usos": 99,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_whoopee_cushion",
+"heroi": "ringmaster",
+"nome": "Whoopee Cushion",
+"ult": false,
+"partidas": 26,
+"usos": 99,
+"estado": "generico",
+"proximo_lote": 14
+},
+{
+"chave": "ringmaster_impalement",
+"heroi": "ringmaster",
+"nome": "Impalement Arts",
+"ult": false,
+"partidas": 26,
+"usos": 2050,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "ringmaster_strongman_tonic",
+"heroi": "ringmaster",
+"nome": "Strongman Tonic",
+"ult": false,
+"partidas": 26,
+"usos": 101,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "winter_wyvern_arctic_burn",
+"heroi": "winter_wyvern",
+"nome": "Arctic Burn",
+"ult": false,
+"partidas": 24,
+"usos": 803,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "winter_wyvern_winters_curse",
+"heroi": "winter_wyvern",
+"nome": "Winter's Curse",
+"ult": true,
+"partidas": 24,
+"usos": 167,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "ogre_magi_unrefined_fireblast",
+"heroi": "ogre_magi",
+"nome": "Unrefined Fireblast",
+"ult": false,
+"partidas": 24,
+"usos": 204,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "slark_depth_shroud",
+"heroi": "slark",
+"nome": "Depth Shroud",
+"ult": false,
+"partidas": 24,
+"usos": 113,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "winter_wyvern_splinter_blast",
+"heroi": "winter_wyvern",
+"nome": "Splinter Blast",
+"ult": false,
+"partidas": 23,
+"usos": 1333,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "winter_wyvern_cold_embrace",
+"heroi": "winter_wyvern",
+"nome": "Cold Embrace",
+"ult": false,
+"partidas": 23,
+"usos": 638,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "pugna_nether_ward",
+"heroi": "pugna",
+"nome": "Nether Ward",
+"ult": false,
+"partidas": 23,
+"usos": 547,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "pugna_life_drain",
+"heroi": "pugna",
+"nome": "Life Drain",
+"ult": true,
+"partidas": 23,
+"usos": 954,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "pugna_decrepify",
+"heroi": "pugna",
+"nome": "Decrepify",
+"ult": false,
+"partidas": 23,
+"usos": 617,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "pugna_nether_blast",
+"heroi": "pugna",
+"nome": "Nether Blast",
+"ult": false,
+"partidas": 23,
+"usos": 2374,
+"estado": "generico",
+"proximo_lote": 15
+},
+{
+"chave": "centaur_stampede",
+"heroi": "centaur",
+"nome": "Stampede",
+"ult": false,
+"partidas": 23,
+"usos": 294,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "centaur_double_edge",
+"heroi": "centaur",
+"nome": "Double Edge",
+"ult": false,
+"partidas": 23,
+"usos": 1859,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "centaur_hoof_stomp",
+"heroi": "centaur",
+"nome": "Hoof Stomp",
+"ult": false,
+"partidas": 23,
+"usos": 926,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "night_stalker_darkness",
+"heroi": "night_stalker",
+"nome": "Dark Ascension",
+"ult": true,
+"partidas": 22,
+"usos": 203,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "night_stalker_void",
+"heroi": "night_stalker",
+"nome": "Void",
+"ult": false,
+"partidas": 22,
+"usos": 1343,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "night_stalker_crippling_fear",
+"heroi": "night_stalker",
+"nome": "Crippling Fear",
+"ult": false,
+"partidas": 22,
+"usos": 606,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "night_stalker_midnight_feast",
+"heroi": "night_stalker",
+"nome": "Midnight Feast",
+"ult": false,
+"partidas": 21,
+"usos": 414,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "disruptor_kinetic_fence",
+"heroi": "disruptor",
+"nome": "Kinetic Fence",
+"ult": false,
+"partidas": 21,
+"usos": 133,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "weaver_shukuchi",
+"heroi": "weaver",
+"nome": "Shukuchi",
+"ult": false,
+"partidas": 21,
+"usos": 2792,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "weaver_time_lapse",
+"heroi": "weaver",
+"nome": "Time Lapse",
+"ult": false,
+"partidas": 21,
+"usos": 138,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "weaver_the_swarm",
+"heroi": "weaver",
+"nome": "The Swarm",
+"ult": false,
+"partidas": 21,
+"usos": 649,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "venomancer_snakebite",
+"heroi": "venomancer",
+"nome": "Snakebite",
+"ult": false,
+"partidas": 21,
+"usos": 351,
+"estado": "generico",
+"proximo_lote": 16
+},
+{
+"chave": "venomancer_plague_ward",
+"heroi": "venomancer",
+"nome": "Plague Ward",
+"ult": false,
+"partidas": 21,
+"usos": 2726,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "venomancer_noxious_plague",
+"heroi": "venomancer",
+"nome": "Noxious Plague",
+"ult": true,
+"partidas": 21,
+"usos": 215,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "venomancer_venomous_gale",
+"heroi": "venomancer",
+"nome": "Venomous Gale",
+"ult": false,
+"partidas": 21,
+"usos": 740,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "tinker_deploy_turrets",
+"heroi": "tinker",
+"nome": "Deploy Turrets",
+"ult": false,
+"partidas": 21,
+"usos": 1185,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "tinker_keen_teleport",
+"heroi": "tinker",
+"nome": "Keen Conveyance",
+"ult": false,
+"partidas": 21,
+"usos": 2416,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "tinker_laser",
+"heroi": "tinker",
+"nome": "Laser",
+"ult": false,
+"partidas": 21,
+"usos": 1418,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "tinker_march_of_the_machines",
+"heroi": "tinker",
+"nome": "March of the Machines",
+"ult": false,
+"partidas": 21,
+"usos": 3562,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "tinker_rearm",
+"heroi": "tinker",
+"nome": "Rearm",
+"ult": false,
+"partidas": 21,
+"usos": 4252,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "tinker_warp_grenade",
+"heroi": "tinker",
+"nome": "Warp Flare",
+"ult": false,
+"partidas": 21,
+"usos": 366,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "slardar_sprint",
+"heroi": "slardar",
+"nome": "Guardian Sprint",
+"ult": false,
+"partidas": 21,
+"usos": 785,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "slardar_amplify_damage",
+"heroi": "slardar",
+"nome": "Corrosive Haze",
+"ult": true,
+"partidas": 21,
+"usos": 860,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "slardar_slithereen_crush",
+"heroi": "slardar",
+"nome": "Slithereen Crush",
+"ult": false,
+"partidas": 21,
+"usos": 1510,
+"estado": "generico",
+"proximo_lote": 17
+},
+{
+"chave": "nyx_assassin_impale",
+"heroi": "nyx_assassin",
+"nome": "Impale",
+"ult": false,
+"partidas": 21,
+"usos": 1112,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "nyx_assassin_jolt",
+"heroi": "nyx_assassin",
+"nome": "Mind Flare",
+"ult": false,
+"partidas": 21,
+"usos": 799,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "nyx_assassin_spiked_carapace",
+"heroi": "nyx_assassin",
+"nome": "Spiked Carapace",
+"ult": false,
+"partidas": 21,
+"usos": 607,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "nyx_assassin_vendetta",
+"heroi": "nyx_assassin",
+"nome": "Vendetta",
+"ult": false,
+"partidas": 21,
+"usos": 398,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "kunkka_ghostship",
+"heroi": "kunkka",
+"nome": "Ghostship",
+"ult": false,
+"partidas": 20,
+"usos": 240,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "kunkka_x_marks_the_spot",
+"heroi": "kunkka",
+"nome": "X Marks the Spot",
+"ult": false,
+"partidas": 20,
+"usos": 539,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "kunkka_torrent",
+"heroi": "kunkka",
+"nome": "Torrent",
+"ult": false,
+"partidas": 20,
+"usos": 989,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "riki_blink_strike",
+"heroi": "riki",
+"nome": "Blink Strike",
+"ult": false,
+"partidas": 20,
+"usos": 1204,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "riki_smoke_screen",
+"heroi": "riki",
+"nome": "Smoke Screen",
+"ult": false,
+"partidas": 20,
+"usos": 553,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "riki_tricks_of_the_trade",
+"heroi": "riki",
+"nome": "Tricks of the Trade",
+"ult": false,
+"partidas": 20,
+"usos": 1081,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "hoodwink_hunters_boomerang",
+"heroi": "hoodwink",
+"nome": "Hunter's Boomerang",
+"ult": false,
+"partidas": 19,
+"usos": 130,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "ringmaster_tame_the_beasts_crack",
+"heroi": "ringmaster",
+"nome": "Crack",
+"ult": true,
+"partidas": 19,
+"usos": 192,
+"estado": "generico",
+"proximo_lote": 18
+},
+{
+"chave": "dazzle_poison_touch",
+"heroi": "dazzle",
+"nome": "Poison Touch",
+"ult": false,
+"partidas": 19,
+"usos": 668,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "dazzle_shallow_grave",
+"heroi": "dazzle",
+"nome": "Shallow Grave",
+"ult": false,
+"partidas": 19,
+"usos": 250,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "phantom_lancer_juxtapose",
+"heroi": "phantom_lancer",
+"nome": "Juxtapose",
+"ult": true,
+"partidas": 19,
+"usos": 144,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "tusk_tag_team",
+"heroi": "tusk",
+"nome": "Tag Team",
+"ult": false,
+"partidas": 18,
+"usos": 530,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "tusk_snowball",
+"heroi": "tusk",
+"nome": "Snowball",
+"ult": false,
+"partidas": 18,
+"usos": 533,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "tusk_walrus_punch",
+"heroi": "tusk",
+"nome": "Walrus PUNCH!",
+"ult": false,
+"partidas": 18,
+"usos": 386,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "tusk_ice_shards",
+"heroi": "tusk",
+"nome": "Ice Shards",
+"ult": false,
+"partidas": 18,
+"usos": 624,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "tusk_launch_snowball",
+"heroi": "tusk",
+"nome": "Launch Snowball",
+"ult": false,
+"partidas": 18,
+"usos": 479,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "dazzle_nothl_projection",
+"heroi": "dazzle",
+"nome": "Nothl Projection",
+"ult": false,
+"partidas": 18,
+"usos": 171,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "dazzle_shadow_wave",
+"heroi": "dazzle",
+"nome": "Shadow Wave",
+"ult": false,
+"partidas": 18,
+"usos": 1128,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "wisp_tether_break",
+"heroi": "wisp",
+"nome": "Break Tether",
+"ult": false,
+"partidas": 18,
+"usos": 125,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "wisp_overcharge",
+"heroi": "wisp",
+"nome": "Overcharge",
+"ult": false,
+"partidas": 18,
+"usos": 524,
+"estado": "generico",
+"proximo_lote": 19
+},
+{
+"chave": "wisp_relocate",
+"heroi": "wisp",
+"nome": "Relocate",
+"ult": false,
+"partidas": 18,
+"usos": 117,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "wisp_tether",
+"heroi": "wisp",
+"nome": "Tether",
+"ult": false,
+"partidas": 18,
+"usos": 863,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "snapfire_lil_shredder",
+"heroi": "snapfire",
+"nome": "Lil' Shredder",
+"ult": false,
+"partidas": 18,
+"usos": 520,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "snapfire_firesnap_cookie",
+"heroi": "snapfire",
+"nome": "Firesnap Cookie",
+"ult": false,
+"partidas": 18,
+"usos": 838,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "snapfire_scatterblast",
+"heroi": "snapfire",
+"nome": "Scatterblast",
+"ult": false,
+"partidas": 18,
+"usos": 1180,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "snapfire_mortimer_kisses",
+"heroi": "snapfire",
+"nome": "Mortimer Kisses",
+"ult": false,
+"partidas": 18,
+"usos": 159,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "kunkka_return",
+"heroi": "kunkka",
+"nome": "Return",
+"ult": true,
+"partidas": 18,
+"usos": 277,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "queenofpain_scream_of_pain",
+"heroi": "queenofpain",
+"nome": "Scream Of Pain",
+"ult": false,
+"partidas": 18,
+"usos": 1695,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "queenofpain_shadow_strike",
+"heroi": "queenofpain",
+"nome": "Shadow Strike",
+"ult": false,
+"partidas": 18,
+"usos": 939,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "queenofpain_sonic_wave",
+"heroi": "queenofpain",
+"nome": "Sonic Wave",
+"ult": true,
+"partidas": 18,
+"usos": 199,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "queenofpain_blink",
+"heroi": "queenofpain",
+"nome": "Blink",
+"ult": false,
+"partidas": 18,
+"usos": 1612,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "templar_assassin_trap",
+"heroi": "templar_assassin",
+"nome": "Trap",
+"ult": false,
+"partidas": 17,
+"usos": 252,
+"estado": "generico",
+"proximo_lote": 20
+},
+{
+"chave": "templar_assassin_refraction",
+"heroi": "templar_assassin",
+"nome": "Refraction",
+"ult": false,
+"partidas": 17,
+"usos": 1094,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "templar_assassin_meld",
+"heroi": "templar_assassin",
+"nome": "Meld",
+"ult": false,
+"partidas": 17,
+"usos": 1361,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "templar_assassin_psionic_trap",
+"heroi": "templar_assassin",
+"nome": "Psionic Trap",
+"ult": false,
+"partidas": 17,
+"usos": 555,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "nevermore_shadowraze1",
+"heroi": "nevermore",
+"nome": "Shadowraze",
+"ult": false,
+"partidas": 17,
+"usos": 393,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "nevermore_shadowraze3",
+"heroi": "nevermore",
+"nome": "Shadowraze",
+"ult": false,
+"partidas": 17,
+"usos": 616,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "nevermore_shadowraze2",
+"heroi": "nevermore",
+"nome": "Shadowraze",
+"ult": false,
+"partidas": 17,
+"usos": 596,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "wisp_spirits_in",
+"heroi": "wisp",
+"nome": "Spirits In",
+"ult": false,
+"partidas": 17,
+"usos": 1283,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "wisp_spirits_out",
+"heroi": "wisp",
+"nome": "Spirits Out",
+"ult": false,
+"partidas": 17,
+"usos": 1468,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "wisp_spirits",
+"heroi": "wisp",
+"nome": "Spirits",
+"ult": false,
+"partidas": 17,
+"usos": 810,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "windrunner_gale_force",
+"heroi": "windrunner",
+"nome": "Gale Force",
+"ult": false,
+"partidas": 17,
+"usos": 196,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "chaos_knight_chaos_bolt",
+"heroi": "chaos_knight",
+"nome": "Chaos Bolt",
+"ult": false,
+"partidas": 17,
+"usos": 554,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "chaos_knight_phantasm",
+"heroi": "chaos_knight",
+"nome": "Phantasm",
+"ult": true,
+"partidas": 17,
+"usos": 216,
+"estado": "generico",
+"proximo_lote": 21
+},
+{
+"chave": "chaos_knight_reality_rift",
+"heroi": "chaos_knight",
+"nome": "Reality Rift",
+"ult": false,
+"partidas": 17,
+"usos": 558,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "bristleback_hairball",
+"heroi": "bristleback",
+"nome": "Hairball",
+"ult": false,
+"partidas": 17,
+"usos": 516,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "phoenix_supernova",
+"heroi": "phoenix",
+"nome": "Supernova",
+"ult": false,
+"partidas": 17,
+"usos": 150,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "phoenix_fire_spirits",
+"heroi": "phoenix",
+"nome": "Fire Spirits",
+"ult": false,
+"partidas": 17,
+"usos": 979,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "phoenix_icarus_dive",
+"heroi": "phoenix",
+"nome": "Icarus Dive",
+"ult": false,
+"partidas": 17,
+"usos": 622,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "phoenix_launch_fire_spirit",
+"heroi": "phoenix",
+"nome": "Launch Fire Spirit",
+"ult": false,
+"partidas": 17,
+"usos": 3311,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "dazzle_nothl_projection_end",
+"heroi": "dazzle",
+"nome": "End Projection",
+"ult": true,
+"partidas": 16,
+"usos": 61,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "nevermore_requiem",
+"heroi": "nevermore",
+"nome": "Requiem of Souls",
+"ult": false,
+"partidas": 16,
+"usos": 94,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "nevermore_frenzy",
+"heroi": "nevermore",
+"nome": "Feast of Souls",
+"ult": false,
+"partidas": 16,
+"usos": 294,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "clinkz_death_pact",
+"heroi": "clinkz",
+"nome": "Death Pact",
+"ult": false,
+"partidas": 16,
+"usos": 672,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "enigma_malefice",
+"heroi": "enigma",
+"nome": "Malefice",
+"ult": false,
+"partidas": 16,
+"usos": 421,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "enigma_black_hole",
+"heroi": "enigma",
+"nome": "Black Hole",
+"ult": true,
+"partidas": 16,
+"usos": 104,
+"estado": "generico",
+"proximo_lote": 22
+},
+{
+"chave": "enigma_demonic_conversion",
+"heroi": "enigma",
+"nome": "Demonic Summoning",
+"ult": false,
+"partidas": 16,
+"usos": 638,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "clinkz_strafe",
+"heroi": "clinkz",
+"nome": "Strafe",
+"ult": false,
+"partidas": 16,
+"usos": 550,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "clinkz_wind_walk",
+"heroi": "clinkz",
+"nome": "Skeleton Walk",
+"ult": false,
+"partidas": 16,
+"usos": 838,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "shredder_timber_chain",
+"heroi": "shredder",
+"nome": "Timber Chain",
+"ult": false,
+"partidas": 16,
+"usos": 1190,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "techies_minefield_sign",
+"heroi": "techies",
+"nome": "Minefield Sign",
+"ult": false,
+"partidas": 16,
+"usos": 72,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "mars_arena_of_blood",
+"heroi": "mars",
+"nome": "Arena Of Blood",
+"ult": true,
+"partidas": 16,
+"usos": 158,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "mars_gods_rebuke",
+"heroi": "mars",
+"nome": "God's Rebuke",
+"ult": false,
+"partidas": 16,
+"usos": 952,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "mars_spear",
+"heroi": "mars",
+"nome": "Spear of Mars",
+"ult": false,
+"partidas": 16,
+"usos": 799,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "bane_fiends_grip",
+"heroi": "bane",
+"nome": "Fiend's Grip",
+"ult": false,
+"partidas": 15,
+"usos": 133,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "bane_enfeeble",
+"heroi": "bane",
+"nome": "Enfeeble",
+"ult": false,
+"partidas": 15,
+"usos": 384,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "bane_brain_sap",
+"heroi": "bane",
+"nome": "Brain Sap",
+"ult": false,
+"partidas": 15,
+"usos": 698,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "bane_nightmare",
+"heroi": "bane",
+"nome": "Nightmare",
+"ult": false,
+"partidas": 15,
+"usos": 255,
+"estado": "generico",
+"proximo_lote": 23
+},
+{
+"chave": "enigma_midnight_pulse",
+"heroi": "enigma",
+"nome": "Midnight Pulse",
+"ult": false,
+"partidas": 15,
+"usos": 304,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "bloodseeker_rupture",
+"heroi": "bloodseeker",
+"nome": "Rupture",
+"ult": true,
+"partidas": 15,
+"usos": 195,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "bloodseeker_blood_bath",
+"heroi": "bloodseeker",
+"nome": "Blood Rite",
+"ult": false,
+"partidas": 15,
+"usos": 876,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "bloodseeker_bloodrage",
+"heroi": "bloodseeker",
+"nome": "Bloodrage",
+"ult": false,
+"partidas": 15,
+"usos": 1473,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "phoenix_sun_ray",
+"heroi": "phoenix",
+"nome": "Sun Ray",
+"ult": false,
+"partidas": 15,
+"usos": 273,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "phantom_lancer_phantom_edge",
+"heroi": "phantom_lancer",
+"nome": "Phantom Rush",
+"ult": false,
+"partidas": 15,
+"usos": 116,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "shredder_chakram",
+"heroi": "shredder",
+"nome": "Chakram",
+"ult": false,
+"partidas": 15,
+"usos": 1194,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "shredder_whirling_death",
+"heroi": "shredder",
+"nome": "Whirling Death",
+"ult": false,
+"partidas": 15,
+"usos": 1523,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "shredder_return_chakram",
+"heroi": "shredder",
+"nome": "Return Chakram",
+"ult": false,
+"partidas": 15,
+"usos": 1432,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "marci_companion_run",
+"heroi": "marci",
+"nome": "Rebound",
+"ult": false,
+"partidas": 14,
+"usos": 483,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "marci_grapple",
+"heroi": "marci",
+"nome": "Dispose",
+"ult": false,
+"partidas": 14,
+"usos": 377,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "marci_unleash",
+"heroi": "marci",
+"nome": "Unleash",
+"ult": true,
+"partidas": 14,
+"usos": 158,
+"estado": "generico",
+"proximo_lote": 24
+},
+{
+"chave": "drow_ranger_glacier",
+"heroi": "drow_ranger",
+"nome": "Glacier",
+"ult": false,
+"partidas": 14,
+"usos": 113,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "abaddon_death_coil",
+"heroi": "abaddon",
+"nome": "Mist Coil",
+"ult": false,
+"partidas": 14,
+"usos": 561,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "abaddon_aphotic_shield",
+"heroi": "abaddon",
+"nome": "Aphotic Shield",
+"ult": false,
+"partidas": 14,
+"usos": 990,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "ember_spirit_searing_chains",
+"heroi": "ember_spirit",
+"nome": "Searing Chains",
+"ult": false,
+"partidas": 13,
+"usos": 573,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "ember_spirit_activate_fire_remnant",
+"heroi": "ember_spirit",
+"nome": "Activate Fire Remnant",
+"ult": false,
+"partidas": 13,
+"usos": 514,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "ember_spirit_sleight_of_fist",
+"heroi": "ember_spirit",
+"nome": "Sleight of Fist",
+"ult": false,
+"partidas": 13,
+"usos": 991,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "troll_warlord_battle_trance",
+"heroi": "troll_warlord",
+"nome": "Battle Trance",
+"ult": true,
+"partidas": 13,
+"usos": 120,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "troll_warlord_whirling_axes_melee",
+"heroi": "troll_warlord",
+"nome": "Whirling Axes (Melee)",
+"ult": false,
+"partidas": 13,
+"usos": 771,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "troll_warlord_switch_stance",
+"heroi": "troll_warlord",
+"nome": "Battle Stance",
+"ult": false,
+"partidas": 13,
+"usos": 1811,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "troll_warlord_whirling_axes_ranged",
+"heroi": "troll_warlord",
+"nome": "Whirling Axes (Ranged)",
+"ult": false,
+"partidas": 13,
+"usos": 489,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "ember_spirit_flame_guard",
+"heroi": "ember_spirit",
+"nome": "Flame Guard",
+"ult": false,
+"partidas": 13,
+"usos": 558,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "ember_spirit_fire_remnant",
+"heroi": "ember_spirit",
+"nome": "Fire Remnant",
+"ult": true,
+"partidas": 13,
+"usos": 642,
+"estado": "generico",
+"proximo_lote": 25
+},
+{
+"chave": "dark_seer_wall_of_replica",
+"heroi": "dark_seer",
+"nome": "Wall of Replica",
+"ult": true,
+"partidas": 13,
+"usos": 134,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "dark_seer_ion_shell",
+"heroi": "dark_seer",
+"nome": "Ion Shell",
+"ult": false,
+"partidas": 13,
+"usos": 1533,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "dark_seer_surge",
+"heroi": "dark_seer",
+"nome": "Surge",
+"ult": false,
+"partidas": 13,
+"usos": 895,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "dark_seer_vacuum",
+"heroi": "dark_seer",
+"nome": "Vacuum",
+"ult": false,
+"partidas": 13,
+"usos": 256,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "marci_special_delivery",
+"heroi": "marci",
+"nome": "Special Delivery",
+"ult": false,
+"partidas": 13,
+"usos": 52,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "marci_bodyguard",
+"heroi": "marci",
+"nome": "Bodyguard",
+"ult": false,
+"partidas": 13,
+"usos": 111,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "pangolier_shield_crash",
+"heroi": "pangolier",
+"nome": "Shield Crash",
+"ult": false,
+"partidas": 13,
+"usos": 1092,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "pangolier_gyroshell",
+"heroi": "pangolier",
+"nome": "Rolling Thunder",
+"ult": false,
+"partidas": 13,
+"usos": 147,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "pangolier_swashbuckle",
+"heroi": "pangolier",
+"nome": "Swashbuckle",
+"ult": false,
+"partidas": 13,
+"usos": 1084,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "medusa_gorgon_grasp",
+"heroi": "medusa",
+"nome": "Gorgon's Grasp",
+"ult": false,
+"partidas": 13,
+"usos": 324,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "medusa_split_shot",
+"heroi": "medusa",
+"nome": "Split Shot",
+"ult": false,
+"partidas": 13,
+"usos": 570,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "rattletrap_power_cogs",
+"heroi": "rattletrap",
+"nome": "Power Cogs",
+"ult": false,
+"partidas": 13,
+"usos": 316,
+"estado": "generico",
+"proximo_lote": 26
+},
+{
+"chave": "rattletrap_battery_assault",
+"heroi": "rattletrap",
+"nome": "Battery Assault",
+"ult": false,
+"partidas": 13,
+"usos": 327,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "bane_nightmare_end",
+"heroi": "bane",
+"nome": "Nightmare End",
+"ult": false,
+"partidas": 12,
+"usos": 28,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "oracle_false_promise",
+"heroi": "oracle",
+"nome": "False Promise",
+"ult": false,
+"partidas": 12,
+"usos": 83,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "oracle_purifying_flames",
+"heroi": "oracle",
+"nome": "Purifying Flames",
+"ult": false,
+"partidas": 12,
+"usos": 1074,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "oracle_fates_edict",
+"heroi": "oracle",
+"nome": "Fate's Edict",
+"ult": false,
+"partidas": 12,
+"usos": 233,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "oracle_fortunes_end",
+"heroi": "oracle",
+"nome": "Fortune's End",
+"ult": false,
+"partidas": 12,
+"usos": 666,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "sandking_sand_storm",
+"heroi": "sandking",
+"nome": "Sand Storm",
+"ult": false,
+"partidas": 12,
+"usos": 565,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "sandking_burrowstrike",
+"heroi": "sandking",
+"nome": "Burrowstrike",
+"ult": false,
+"partidas": 12,
+"usos": 657,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "sandking_scorpion_strike",
+"heroi": "sandking",
+"nome": "Stinger",
+"ult": false,
+"partidas": 12,
+"usos": 821,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "sandking_epicenter",
+"heroi": "sandking",
+"nome": "Epicenter",
+"ult": true,
+"partidas": 12,
+"usos": 120,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "alchemist_acid_spray",
+"heroi": "alchemist",
+"nome": "Acid Spray",
+"ult": false,
+"partidas": 12,
+"usos": 674,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "alchemist_unstable_concoction",
+"heroi": "alchemist",
+"nome": "Unstable Concoction",
+"ult": false,
+"partidas": 12,
+"usos": 341,
+"estado": "generico",
+"proximo_lote": 27
+},
+{
+"chave": "grimstroke_dark_portrait",
+"heroi": "grimstroke",
+"nome": "Dark Portrait",
+"ult": false,
+"partidas": 12,
+"usos": 49,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "medusa_stone_gaze",
+"heroi": "medusa",
+"nome": "Stone Gaze",
+"ult": true,
+"partidas": 12,
+"usos": 103,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "medusa_mystic_snake",
+"heroi": "medusa",
+"nome": "Mystic Snake",
+"ult": false,
+"partidas": 12,
+"usos": 960,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "rattletrap_hookshot",
+"heroi": "rattletrap",
+"nome": "Hookshot",
+"ult": false,
+"partidas": 12,
+"usos": 169,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "tiny_toss_tree",
+"heroi": "tiny",
+"nome": "Tree Throw",
+"ult": true,
+"partidas": 11,
+"usos": 118,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "tiny_avalanche",
+"heroi": "tiny",
+"nome": "Avalanche",
+"ult": false,
+"partidas": 11,
+"usos": 524,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "tiny_toss",
+"heroi": "tiny",
+"nome": "Toss",
+"ult": false,
+"partidas": 11,
+"usos": 411,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "gyrocopter_rocket_barrage",
+"heroi": "gyrocopter",
+"nome": "Rocket Barrage",
+"ult": false,
+"partidas": 11,
+"usos": 684,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "gyrocopter_homing_missile",
+"heroi": "gyrocopter",
+"nome": "Homing Missile",
+"ult": false,
+"partidas": 11,
+"usos": 520,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "gyrocopter_call_down",
+"heroi": "gyrocopter",
+"nome": "Call Down",
+"ult": true,
+"partidas": 11,
+"usos": 158,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "gyrocopter_flak_cannon",
+"heroi": "gyrocopter",
+"nome": "Flak Cannon",
+"ult": false,
+"partidas": 11,
+"usos": 363,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "tiny_tree_grab",
+"heroi": "tiny",
+"nome": "Tree Grab",
+"ult": false,
+"partidas": 11,
+"usos": 298,
+"estado": "generico",
+"proximo_lote": 28
+},
+{
+"chave": "kez_raptor_dance",
+"heroi": "kez",
+"nome": "Raptor Dance",
+"ult": false,
+"partidas": 11,
+"usos": 110,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "kez_falcon_rush",
+"heroi": "kez",
+"nome": "Falcon Rush",
+"ult": false,
+"partidas": 11,
+"usos": 99,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "kez_switch_weapons",
+"heroi": "kez",
+"nome": "Switch Discipline",
+"ult": false,
+"partidas": 11,
+"usos": 668,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "kez_echo_slash",
+"heroi": "kez",
+"nome": "Echo Slash",
+"ult": false,
+"partidas": 11,
+"usos": 734,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "kez_grappling_claw",
+"heroi": "kez",
+"nome": "Grappling Claw",
+"ult": false,
+"partidas": 11,
+"usos": 404,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "alchemist_chemical_rage",
+"heroi": "alchemist",
+"nome": "Chemical Rage",
+"ult": false,
+"partidas": 11,
+"usos": 203,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "alchemist_unstable_concoction_throw",
+"heroi": "alchemist",
+"nome": "Unstable Concoction Throw",
+"ult": true,
+"partidas": 11,
+"usos": 232,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "treant_natures_grasp",
+"heroi": "treant",
+"nome": "Nature's Grasp",
+"ult": false,
+"partidas": 11,
+"usos": 493,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "treant_living_armor",
+"heroi": "treant",
+"nome": "Living Armor",
+"ult": false,
+"partidas": 11,
+"usos": 422,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "treant_overgrowth",
+"heroi": "treant",
+"nome": "Overgrowth",
+"ult": true,
+"partidas": 11,
+"usos": 98,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "bristleback_bristleback",
+"heroi": "bristleback",
+"nome": "Bristleback",
+"ult": false,
+"partidas": 11,
+"usos": 248,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "void_spirit_astral_step",
+"heroi": "void_spirit",
+"nome": "Astral Step",
+"ult": true,
+"partidas": 11,
+"usos": 694,
+"estado": "generico",
+"proximo_lote": 29
+},
+{
+"chave": "void_spirit_dissimilate",
+"heroi": "void_spirit",
+"nome": "Dissimilate",
+"ult": false,
+"partidas": 11,
+"usos": 281,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "void_spirit_resonant_pulse",
+"heroi": "void_spirit",
+"nome": "Resonant Pulse",
+"ult": false,
+"partidas": 11,
+"usos": 722,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "void_spirit_aether_remnant",
+"heroi": "void_spirit",
+"nome": "Aether Remnant",
+"ult": false,
+"partidas": 11,
+"usos": 493,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "doom_bringer_devour",
+"heroi": "doom_bringer",
+"nome": "Devour",
+"ult": false,
+"partidas": 11,
+"usos": 233,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "doom_bringer_scorched_earth",
+"heroi": "doom_bringer",
+"nome": "Scorched Earth",
+"ult": false,
+"partidas": 11,
+"usos": 362,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "doom_bringer_doom",
+"heroi": "doom_bringer",
+"nome": "Doom",
+"ult": false,
+"partidas": 11,
+"usos": 102,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "terrorblade_metamorphosis",
+"heroi": "terrorblade",
+"nome": "Metamorphosis",
+"ult": false,
+"partidas": 11,
+"usos": 121,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "terrorblade_conjure_image",
+"heroi": "terrorblade",
+"nome": "Conjure Image",
+"ult": false,
+"partidas": 11,
+"usos": 940,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "terrorblade_reflection",
+"heroi": "terrorblade",
+"nome": "Reflection",
+"ult": false,
+"partidas": 11,
+"usos": 214,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "rattletrap_rocket_flare",
+"heroi": "rattletrap",
+"nome": "Rocket Flare",
+"ult": false,
+"partidas": 11,
+"usos": 540,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "bounty_hunter_shuriken_toss",
+"heroi": "bounty_hunter",
+"nome": "Shuriken Toss",
+"ult": false,
+"partidas": 11,
+"usos": 448,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "bounty_hunter_track",
+"heroi": "bounty_hunter",
+"nome": "Track",
+"ult": true,
+"partidas": 11,
+"usos": 621,
+"estado": "generico",
+"proximo_lote": 30
+},
+{
+"chave": "bounty_hunter_wind_walk",
+"heroi": "bounty_hunter",
+"nome": "Shadow Walk",
+"ult": false,
+"partidas": 11,
+"usos": 887,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "kunkka_tidal_wave",
+"heroi": "kunkka",
+"nome": "Tidal Wave",
+"ult": false,
+"partidas": 10,
+"usos": 115,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "kez_ravens_veil",
+"heroi": "kez",
+"nome": "Raven's Veil",
+"ult": false,
+"partidas": 10,
+"usos": 87,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "kez_shodo_sai",
+"heroi": "kez",
+"nome": "Shodo Sai",
+"ult": false,
+"partidas": 10,
+"usos": 56,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "kez_talon_toss",
+"heroi": "kez",
+"nome": "Talon Toss",
+"ult": false,
+"partidas": 10,
+"usos": 87,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "clinkz_burning_barrage",
+"heroi": "clinkz",
+"nome": "Burning Barrage",
+"ult": false,
+"partidas": 10,
+"usos": 258,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "treant_natures_guise",
+"heroi": "treant",
+"nome": "Nature's Guise",
+"ult": false,
+"partidas": 10,
+"usos": 221,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "terrorblade_sunder",
+"heroi": "terrorblade",
+"nome": "Sunder",
+"ult": false,
+"partidas": 10,
+"usos": 54,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "mars_bulwark",
+"heroi": "mars",
+"nome": "Bulwark",
+"ult": false,
+"partidas": 10,
+"usos": 308,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "puck_illusory_orb",
+"heroi": "puck",
+"nome": "Illusory Orb",
+"ult": false,
+"partidas": 9,
+"usos": 1029,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "puck_ethereal_jaunt",
+"heroi": "puck",
+"nome": "Ethereal Jaunt",
+"ult": false,
+"partidas": 9,
+"usos": 434,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "puck_phase_shift",
+"heroi": "puck",
+"nome": "Phase Shift",
+"ult": false,
+"partidas": 9,
+"usos": 373,
+"estado": "generico",
+"proximo_lote": 31
+},
+{
+"chave": "puck_waning_rift",
+"heroi": "puck",
+"nome": "Waning Rift",
+"ult": false,
+"partidas": 9,
+"usos": 519,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "puck_dream_coil",
+"heroi": "puck",
+"nome": "Dream Coil",
+"ult": true,
+"partidas": 9,
+"usos": 119,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "pangolier_rollup",
+"heroi": "pangolier",
+"nome": "Roll Up",
+"ult": false,
+"partidas": 9,
+"usos": 54,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "morphling_waveform",
+"heroi": "morphling",
+"nome": "Waveform",
+"ult": false,
+"partidas": 9,
+"usos": 509,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "morphling_morph_replicate",
+"heroi": "morphling",
+"nome": "Morph Replicate",
+"ult": true,
+"partidas": 9,
+"usos": 138,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "morphling_adaptive_strike_agi",
+"heroi": "morphling",
+"nome": "Adaptive Strike",
+"ult": false,
+"partidas": 9,
+"usos": 176,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "morphling_replicate",
+"heroi": "morphling",
+"nome": "Morph",
+"ult": false,
+"partidas": 9,
+"usos": 66,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "techies_mutually_assured_destruction",
+"heroi": "techies",
+"nome": "M.A.D.",
+"ult": false,
+"partidas": 9,
+"usos": 67,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "techies_focused_detonate",
+"heroi": "techies",
+"nome": "Detonate M.A.D.",
+"ult": true,
+"partidas": 9,
+"usos": 57,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "ogre_magi_smash",
+"heroi": "ogre_magi",
+"nome": "Fire Shield",
+"ult": false,
+"partidas": 8,
+"usos": 164,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "viper_nose_dive",
+"heroi": "viper",
+"nome": "Nosedive",
+"ult": false,
+"partidas": 8,
+"usos": 81,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "treant_eyes_in_the_forest",
+"heroi": "treant",
+"nome": "Eyes In The Forest",
+"ult": false,
+"partidas": 8,
+"usos": 56,
+"estado": "generico",
+"proximo_lote": 32
+},
+{
+"chave": "terrorblade_demon_zeal",
+"heroi": "terrorblade",
+"nome": "Demon Zeal",
+"ult": false,
+"partidas": 8,
+"usos": 74,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "primal_beast_onslaught",
+"heroi": "primal_beast",
+"nome": "Onslaught",
+"ult": false,
+"partidas": 8,
+"usos": 317,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "primal_beast_uproar",
+"heroi": "primal_beast",
+"nome": "Uproar",
+"ult": false,
+"partidas": 8,
+"usos": 143,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "primal_beast_pulverize",
+"heroi": "primal_beast",
+"nome": "Pulverize",
+"ult": false,
+"partidas": 8,
+"usos": 103,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "primal_beast_trample",
+"heroi": "primal_beast",
+"nome": "Trample",
+"ult": false,
+"partidas": 8,
+"usos": 354,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "storm_spirit_ball_lightning",
+"heroi": "storm_spirit",
+"nome": "Ball Lightning",
+"ult": false,
+"partidas": 8,
+"usos": 717,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "storm_spirit_electric_vortex",
+"heroi": "storm_spirit",
+"nome": "Electric Vortex",
+"ult": false,
+"partidas": 8,
+"usos": 166,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "storm_spirit_static_remnant",
+"heroi": "storm_spirit",
+"nome": "Static Remnant",
+"ult": false,
+"partidas": 8,
+"usos": 986,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "faceless_void_time_walk_reverse",
+"heroi": "faceless_void",
+"nome": "Reverse Time Walk",
+"ult": false,
+"partidas": 8,
+"usos": 67,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "keeper_of_the_light_chakra_magic",
+"heroi": "keeper_of_the_light",
+"nome": "Chakra Magic",
+"ult": false,
+"partidas": 7,
+"usos": 530,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "keeper_of_the_light_blinding_light",
+"heroi": "keeper_of_the_light",
+"nome": "Blinding Light",
+"ult": false,
+"partidas": 7,
+"usos": 212,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "keeper_of_the_light_radiant_bind",
+"heroi": "keeper_of_the_light",
+"nome": "Solar Bind",
+"ult": false,
+"partidas": 7,
+"usos": 163,
+"estado": "generico",
+"proximo_lote": 33
+},
+{
+"chave": "keeper_of_the_light_spirit_form",
+"heroi": "keeper_of_the_light",
+"nome": "Spirit Form",
+"ult": false,
+"partidas": 7,
+"usos": 110,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "keeper_of_the_light_illuminate",
+"heroi": "keeper_of_the_light",
+"nome": "Illuminate",
+"ult": false,
+"partidas": 7,
+"usos": 696,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "leshrac_lightning_storm",
+"heroi": "leshrac",
+"nome": "Lightning Storm",
+"ult": false,
+"partidas": 7,
+"usos": 587,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "leshrac_pulse_nova",
+"heroi": "leshrac",
+"nome": "Pulse Nova",
+"ult": true,
+"partidas": 7,
+"usos": 935,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "leshrac_diabolic_edict",
+"heroi": "leshrac",
+"nome": "Diabolic Edict",
+"ult": false,
+"partidas": 7,
+"usos": 163,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "leshrac_split_earth",
+"heroi": "leshrac",
+"nome": "Split Earth",
+"ult": false,
+"partidas": 7,
+"usos": 201,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "abaddon_borrowed_time",
+"heroi": "abaddon",
+"nome": "Borrowed Time",
+"ult": true,
+"partidas": 7,
+"usos": 16,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "meepo_earthbind",
+"heroi": "meepo",
+"nome": "Earthbind",
+"ult": false,
+"partidas": 7,
+"usos": 357,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "meepo_poof",
+"heroi": "meepo",
+"nome": "Poof",
+"ult": false,
+"partidas": 7,
+"usos": 1040,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "spirit_breaker_planar_pocket",
+"heroi": "spirit_breaker",
+"nome": "Planar Pocket",
+"ult": false,
+"partidas": 7,
+"usos": 32,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "hoodwink_decoy",
+"heroi": "hoodwink",
+"nome": "Decoy",
+"ult": false,
+"partidas": 6,
+"usos": 32,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "beastmaster_wild_axes",
+"heroi": "beastmaster",
+"nome": "Wild Axes",
+"ult": false,
+"partidas": 6,
+"usos": 555,
+"estado": "generico",
+"proximo_lote": 34
+},
+{
+"chave": "beastmaster_summon_razorback",
+"heroi": "beastmaster",
+"nome": "Summon Razorback",
+"ult": false,
+"partidas": 6,
+"usos": 295,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "beastmaster_summon_raptor",
+"heroi": "beastmaster",
+"nome": "Summon Raptors",
+"ult": false,
+"partidas": 6,
+"usos": 147,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "beastmaster_primal_roar",
+"heroi": "beastmaster",
+"nome": "Primal Roar",
+"ult": true,
+"partidas": 6,
+"usos": 67,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "enchantress_enchant",
+"heroi": "enchantress",
+"nome": "Enchant",
+"ult": false,
+"partidas": 6,
+"usos": 177,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "enchantress_natures_attendants",
+"heroi": "enchantress",
+"nome": "Nature's Attendants",
+"ult": false,
+"partidas": 6,
+"usos": 101,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "shadow_demon_demonic_purge",
+"heroi": "shadow_demon",
+"nome": "Demonic Purge",
+"ult": false,
+"partidas": 6,
+"usos": 65,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "shadow_demon_disruption",
+"heroi": "shadow_demon",
+"nome": "Disruption",
+"ult": false,
+"partidas": 6,
+"usos": 135,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "magnataur_horn_toss",
+"heroi": "magnataur",
+"nome": "Horn Toss",
+"ult": false,
+"partidas": 6,
+"usos": 23,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "oracle_rain_of_destiny",
+"heroi": "oracle",
+"nome": "Rain of Destiny",
+"ult": false,
+"partidas": 6,
+"usos": 27,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "phantom_assassin_fan_of_knives",
+"heroi": "phantom_assassin",
+"nome": "Fan of Knives",
+"ult": false,
+"partidas": 6,
+"usos": 33,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "tusk_walrus_kick",
+"heroi": "tusk",
+"nome": "Walrus Kick",
+"ult": false,
+"partidas": 6,
+"usos": 40,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "furion_curse_of_the_forest",
+"heroi": "furion",
+"nome": "Curse of the Oldgrowth",
+"ult": false,
+"partidas": 5,
+"usos": 21,
+"estado": "generico",
+"proximo_lote": 35
+},
+{
+"chave": "keeper_of_the_light_will_o_wisp",
+"heroi": "keeper_of_the_light",
+"nome": "Will-O-Wisp",
+"ult": false,
+"partidas": 5,
+"usos": 42,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "keeper_of_the_light_illuminate_end",
+"heroi": "keeper_of_the_light",
+"nome": "Release Illuminate",
+"ult": false,
+"partidas": 5,
+"usos": 20,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "nyx_assassin_burrow",
+"heroi": "nyx_assassin",
+"nome": "Burrow",
+"ult": false,
+"partidas": 5,
+"usos": 69,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "nyx_assassin_unburrow",
+"heroi": "nyx_assassin",
+"nome": "Unburrow",
+"ult": true,
+"partidas": 5,
+"usos": 58,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "shadow_demon_shadow_poison",
+"heroi": "shadow_demon",
+"nome": "Shadow Poison",
+"ult": false,
+"partidas": 5,
+"usos": 631,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "shadow_demon_disseminate",
+"heroi": "shadow_demon",
+"nome": "Disseminate",
+"ult": false,
+"partidas": 5,
+"usos": 61,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "meepo_petrify",
+"heroi": "meepo",
+"nome": "Dig",
+"ult": false,
+"partidas": 5,
+"usos": 43,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "meepo_megameepo",
+"heroi": "meepo",
+"nome": "MegaMeepo",
+"ult": false,
+"partidas": 5,
+"usos": 13,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "brewmaster_drunken_brawler",
+"heroi": "brewmaster",
+"nome": "Drunken Brawler",
+"ult": false,
+"partidas": 5,
+"usos": 797,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "brewmaster_thunder_clap",
+"heroi": "brewmaster",
+"nome": "Thunder Clap",
+"ult": false,
+"partidas": 5,
+"usos": 280,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "brewmaster_cinder_brew",
+"heroi": "brewmaster",
+"nome": "Cinder Brew",
+"ult": false,
+"partidas": 5,
+"usos": 227,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "brewmaster_primal_split",
+"heroi": "brewmaster",
+"nome": "Primal Split",
+"ult": true,
+"partidas": 5,
+"usos": 41,
+"estado": "generico",
+"proximo_lote": 36
+},
+{
+"chave": "arc_warden_spark_wraith",
+"heroi": "arc_warden",
+"nome": "Spark Wraith",
+"ult": false,
+"partidas": 5,
+"usos": 645,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "arc_warden_flux",
+"heroi": "arc_warden",
+"nome": "Flux",
+"ult": false,
+"partidas": 5,
+"usos": 187,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "arc_warden_magnetic_field",
+"heroi": "arc_warden",
+"nome": "Magnetic Field",
+"ult": false,
+"partidas": 5,
+"usos": 233,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "arc_warden_tempest_double",
+"heroi": "arc_warden",
+"nome": "Tempest Double",
+"ult": true,
+"partidas": 5,
+"usos": 147,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "muerta_dead_shot",
+"heroi": "muerta",
+"nome": "Dead Shot",
+"ult": false,
+"partidas": 5,
+"usos": 305,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "muerta_pierce_the_veil",
+"heroi": "muerta",
+"nome": "Pierce the Veil",
+"ult": false,
+"partidas": 5,
+"usos": 48,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "muerta_the_calling",
+"heroi": "muerta",
+"nome": "The Calling",
+"ult": false,
+"partidas": 5,
+"usos": 69,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "monkey_king_mischief",
+"heroi": "monkey_king",
+"nome": "Mischief",
+"ult": false,
+"partidas": 5,
+"usos": 151,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "monkey_king_tree_dance",
+"heroi": "monkey_king",
+"nome": "Tree Dance",
+"ult": false,
+"partidas": 5,
+"usos": 550,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "monkey_king_primal_spring",
+"heroi": "monkey_king",
+"nome": "Primal Spring",
+"ult": false,
+"partidas": 5,
+"usos": 157,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "monkey_king_transfiguration",
+"heroi": "monkey_king",
+"nome": "Changing of the Guard",
+"ult": true,
+"partidas": 5,
+"usos": 15,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "monkey_king_boundless_strike",
+"heroi": "monkey_king",
+"nome": "Boundless Strike",
+"ult": false,
+"partidas": 5,
+"usos": 272,
+"estado": "generico",
+"proximo_lote": 37
+},
+{
+"chave": "monkey_king_wukongs_command",
+"heroi": "monkey_king",
+"nome": "Wukong's Command",
+"ult": false,
+"partidas": 5,
+"usos": 40,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "monkey_king_untransform",
+"heroi": "monkey_king",
+"nome": "Revert Form",
+"ult": false,
+"partidas": 5,
+"usos": 10,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "shredder_reactive_armor",
+"heroi": "shredder",
+"nome": "Reactive Armor",
+"ult": false,
+"partidas": 5,
+"usos": 19,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "ringmaster_spotlight",
+"heroi": "ringmaster",
+"nome": "Spotlight",
+"ult": false,
+"partidas": 5,
+"usos": 23,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "spectre_dispersion",
+"heroi": "spectre",
+"nome": "Dispersion",
+"ult": false,
+"partidas": 4,
+"usos": 17,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_amphibian_rhapsody",
+"heroi": "largo",
+"nome": "Amphibian Rhapsody",
+"ult": false,
+"partidas": 4,
+"usos": 563,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_croak_of_genius",
+"heroi": "largo",
+"nome": "Croak of Genius",
+"ult": false,
+"partidas": 4,
+"usos": 120,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_song_fight_song",
+"heroi": "largo",
+"nome": "Bullbelly Blitz",
+"ult": false,
+"partidas": 4,
+"usos": 334,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_song_double_time",
+"heroi": "largo",
+"nome": "Hotfeet Hustle",
+"ult": false,
+"partidas": 4,
+"usos": 737,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_catchy_lick",
+"heroi": "largo",
+"nome": "Catchy Lick",
+"ult": false,
+"partidas": 4,
+"usos": 171,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_song_good_vibrations",
+"heroi": "largo",
+"nome": "Island Elixir",
+"ult": true,
+"partidas": 4,
+"usos": 393,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "largo_frogstomp",
+"heroi": "largo",
+"nome": "Frogstomp",
+"ult": false,
+"partidas": 4,
+"usos": 164,
+"estado": "generico",
+"proximo_lote": 38
+},
+{
+"chave": "satyr_soulstealer_mana_burn",
+"heroi": "satyr",
+"nome": "Mana Burn",
+"ult": false,
+"partidas": 4,
+"usos": 25,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "primal_beast_rock_throw",
+"heroi": "primal_beast",
+"nome": "Rock Throw",
+"ult": false,
+"partidas": 4,
+"usos": 9,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "omniknight_martyr",
+"heroi": "omniknight",
+"nome": "Repel",
+"ult": false,
+"partidas": 4,
+"usos": 80,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "omniknight_purification",
+"heroi": "omniknight",
+"nome": "Purification",
+"ult": false,
+"partidas": 4,
+"usos": 212,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "lone_druid_true_form",
+"heroi": "lone_druid",
+"nome": "True Form",
+"ult": true,
+"partidas": 4,
+"usos": 34,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "lone_druid_spirit_bear",
+"heroi": "lone_druid",
+"nome": "Summon Spirit Bear",
+"ult": false,
+"partidas": 4,
+"usos": 47,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "lone_druid_entangle",
+"heroi": "lone_druid",
+"nome": "Entangle",
+"ult": false,
+"partidas": 4,
+"usos": 135,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "shredder_flamethrower",
+"heroi": "shredder",
+"nome": "Flamethrower",
+"ult": false,
+"partidas": 4,
+"usos": 65,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "huskar_inner_fire",
+"heroi": "huskar",
+"nome": "Inner Fire",
+"ult": false,
+"partidas": 4,
+"usos": 110,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "polar_furbolg_ursa_warrior_thunder_clap",
+"heroi": "polar",
+"nome": "Thunder Clap",
+"ult": false,
+"partidas": 3,
+"usos": 16,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "dark_troll_warlord_ensnare",
+"heroi": "dark",
+"nome": "Ensnare",
+"ult": false,
+"partidas": 3,
+"usos": 16,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "storm_spirit_overload",
+"heroi": "storm_spirit",
+"nome": "Overload",
+"ult": false,
+"partidas": 3,
+"usos": 17,
+"estado": "generico",
+"proximo_lote": 39
+},
+{
+"chave": "snapfire_gobble_up",
+"heroi": "snapfire",
+"nome": "Gobble Up",
+"ult": false,
+"partidas": 3,
+"usos": 11,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "snapfire_spit_creep",
+"heroi": "snapfire",
+"nome": "Spit Out",
+"ult": false,
+"partidas": 3,
+"usos": 9,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "lone_druid_savage_roar",
+"heroi": "lone_druid",
+"nome": "Savage Roar",
+"ult": false,
+"partidas": 3,
+"usos": 6,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "tiny_tree_channel",
+"heroi": "tiny",
+"nome": "Tree Volley",
+"ult": false,
+"partidas": 3,
+"usos": 40,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "bounty_hunter_wind_walk_ally",
+"heroi": "bounty_hunter",
+"nome": "Friendly Shadow",
+"ult": false,
+"partidas": 3,
+"usos": 57,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "omniknight_guardian_angel",
+"heroi": "omniknight",
+"nome": "Guardian Angel",
+"ult": true,
+"partidas": 3,
+"usos": 20,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "frogmen_tendrils_of_the_deep",
+"heroi": "frogmen",
+"nome": "Tendrils of the Deep",
+"ult": false,
+"partidas": 3,
+"usos": 6,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "broodmother_spawn_spiderlings",
+"heroi": "broodmother",
+"nome": "Spawn Spiderlings",
+"ult": true,
+"partidas": 3,
+"usos": 161,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "broodmother_spin_web",
+"heroi": "broodmother",
+"nome": "Spin Web",
+"ult": false,
+"partidas": 3,
+"usos": 131,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "broodmother_insatiable_hunger",
+"heroi": "broodmother",
+"nome": "Insatiable Hunger",
+"ult": false,
+"partidas": 3,
+"usos": 51,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "huskar_life_break",
+"heroi": "huskar",
+"nome": "Life Break",
+"ult": true,
+"partidas": 3,
+"usos": 86,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "centaur_khan_war_stomp",
+"heroi": "centaur",
+"nome": "War Stomp",
+"ult": false,
+"partidas": 3,
+"usos": 33,
+"estado": "generico",
+"proximo_lote": 40
+},
+{
+"chave": "rattletrap_jetpack",
+"heroi": "rattletrap",
+"nome": "Jetpack",
+"ult": false,
+"partidas": 3,
+"usos": 21,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "naga_siren_song_of_the_siren",
+"heroi": "naga_siren",
+"nome": "Song of the Siren",
+"ult": false,
+"partidas": 2,
+"usos": 2,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "naga_siren_mirror_image",
+"heroi": "naga_siren",
+"nome": "Mirror Image",
+"ult": false,
+"partidas": 2,
+"usos": 107,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "naga_siren_ensnare",
+"heroi": "naga_siren",
+"nome": "Ensnare",
+"ult": false,
+"partidas": 2,
+"usos": 21,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "leshrac_greater_lightning_storm",
+"heroi": "leshrac",
+"nome": "Nihilism",
+"ult": false,
+"partidas": 2,
+"usos": 11,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "chen_penitence",
+"heroi": "chen",
+"nome": "Penitence",
+"ult": false,
+"partidas": 2,
+"usos": 60,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "chen_holy_persuasion",
+"heroi": "chen",
+"nome": "Holy Persuasion",
+"ult": false,
+"partidas": 2,
+"usos": 61,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "chen_divine_favor",
+"heroi": "chen",
+"nome": "Divine Favor",
+"ult": false,
+"partidas": 2,
+"usos": 54,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "chen_hand_of_god",
+"heroi": "chen",
+"nome": "Hand of God",
+"ult": true,
+"partidas": 2,
+"usos": 12,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "batrider_sticky_napalm",
+"heroi": "batrider",
+"nome": "Sticky Napalm",
+"ult": false,
+"partidas": 2,
+"usos": 386,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "batrider_flaming_lasso",
+"heroi": "batrider",
+"nome": "Flaming Lasso",
+"ult": true,
+"partidas": 2,
+"usos": 30,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "batrider_firefly",
+"heroi": "batrider",
+"nome": "Firefly",
+"ult": false,
+"partidas": 2,
+"usos": 84,
+"estado": "generico",
+"proximo_lote": 41
+},
+{
+"chave": "batrider_flamebreak",
+"heroi": "batrider",
+"nome": "Flamebreak",
+"ult": false,
+"partidas": 2,
+"usos": 87,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "tusk_drinking_buddies",
+"heroi": "tusk",
+"nome": "Drinking Buddies",
+"ult": false,
+"partidas": 2,
+"usos": 9,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "enchantress_little_friends",
+"heroi": "enchantress",
+"nome": "Little Friends",
+"ult": false,
+"partidas": 2,
+"usos": 26,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "spawnlord_master_stomp",
+"heroi": "spawnlord",
+"nome": "Desecrate",
+"ult": false,
+"partidas": 2,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "elder_titan_earth_splitter",
+"heroi": "elder_titan",
+"nome": "Earth Splitter",
+"ult": false,
+"partidas": 2,
+"usos": 18,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "elder_titan_return_spirit",
+"heroi": "elder_titan",
+"nome": "Return Astral Spirit",
+"ult": true,
+"partidas": 2,
+"usos": 56,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "elder_titan_echo_stomp",
+"heroi": "elder_titan",
+"nome": "Echo Stomp",
+"ult": false,
+"partidas": 2,
+"usos": 39,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "elder_titan_ancestral_spirit",
+"heroi": "elder_titan",
+"nome": "Astral Spirit",
+"ult": false,
+"partidas": 2,
+"usos": 114,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "monkey_king_primal_spring_early",
+"heroi": "monkey_king",
+"nome": "Spring Early",
+"ult": false,
+"partidas": 2,
+"usos": 15,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "centaur_work_horse",
+"heroi": "centaur",
+"nome": "Work Horse",
+"ult": false,
+"partidas": 2,
+"usos": 11,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "centaur_mount",
+"heroi": "centaur",
+"nome": "Hitch A Ride",
+"ult": false,
+"partidas": 2,
+"usos": 5,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "skeleton_king_reincarnation",
+"heroi": "skeleton_king",
+"nome": "Reincarnation",
+"ult": true,
+"partidas": 2,
+"usos": 6,
+"estado": "generico",
+"proximo_lote": 42
+},
+{
+"chave": "enchantress_bunny_hop",
+"heroi": "enchantress",
+"nome": "Sproink",
+"ult": false,
+"partidas": 2,
+"usos": 24,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "enraged_wildkin_hurricane",
+"heroi": "enraged",
+"nome": "Hurricane",
+"ult": false,
+"partidas": 2,
+"usos": 2,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "visage_grave_chill",
+"heroi": "visage",
+"nome": "Grave Chill",
+"ult": false,
+"partidas": 2,
+"usos": 73,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "brewmaster_liquid_courage",
+"heroi": "brewmaster",
+"nome": "Liquid Courage",
+"ult": false,
+"partidas": 2,
+"usos": 7,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "frogmen_water_bubble_medium",
+"heroi": "frogmen",
+"nome": "Water Bubble (Medium)",
+"ult": false,
+"partidas": 1,
+"usos": 1,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "chen_zealot",
+"heroi": "chen",
+"nome": "Zealot",
+"ult": false,
+"partidas": 1,
+"usos": 8,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "black_dragon_fireball",
+"heroi": "black",
+"nome": "Fireball",
+"ult": false,
+"partidas": 1,
+"usos": 15,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "forest_troll_high_priest_heal",
+"heroi": "forest",
+"nome": "Heal",
+"ult": false,
+"partidas": 1,
+"usos": 6,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "zuus_lightning_hands",
+"heroi": "zuus",
+"nome": "Lightning Hands",
+"ult": false,
+"partidas": 1,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "alchemist_berserk_potion",
+"heroi": "alchemist",
+"nome": "Berserk Potion",
+"ult": false,
+"partidas": 1,
+"usos": 11,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "giant_wolf_intimidate",
+"heroi": "giant",
+"nome": "Intimidate",
+"ult": false,
+"partidas": 1,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "satyr_hellcaller_shockwave",
+"heroi": "satyr",
+"nome": "Shockwave",
+"ult": false,
+"partidas": 1,
+"usos": 6,
+"estado": "generico",
+"proximo_lote": 43
+},
+{
+"chave": "rattletrap_overclocking",
+"heroi": "rattletrap",
+"nome": "Overclocking",
+"ult": false,
+"partidas": 1,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "shadow_demon_demonic_cleanse",
+"heroi": "shadow_demon",
+"nome": "Demonic Cleanse",
+"ult": false,
+"partidas": 1,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "clinkz_burning_army",
+"heroi": "clinkz",
+"nome": "Burning Army",
+"ult": false,
+"partidas": 1,
+"usos": 1,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "visage_stone_form_self_cast",
+"heroi": "visage",
+"nome": "Stone Form",
+"ult": false,
+"partidas": 1,
+"usos": 9,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "visage_silent_as_the_grave",
+"heroi": "visage",
+"nome": "Silent as the Grave",
+"ult": false,
+"partidas": 1,
+"usos": 4,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "visage_summon_familiars",
+"heroi": "visage",
+"nome": "Summon Familiars",
+"ult": false,
+"partidas": 1,
+"usos": 25,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "visage_soul_assumption",
+"heroi": "visage",
+"nome": "Soul Assumption",
+"ult": false,
+"partidas": 1,
+"usos": 55,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "visage_gravekeepers_cloak",
+"heroi": "visage",
+"nome": "Gravekeeper's Cloak",
+"ult": false,
+"partidas": 1,
+"usos": 5,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "invoker_sun_strike_ad",
+"heroi": "invoker",
+"nome": "Sun Strike (AD)",
+"ult": false,
+"partidas": 1,
+"usos": 42,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "invoker_alacrity_ad",
+"heroi": "invoker",
+"nome": "Alacrity (AD)",
+"ult": false,
+"partidas": 1,
+"usos": 66,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "huskar_berserkers_blood",
+"heroi": "huskar",
+"nome": "Berserker's Blood",
+"ult": false,
+"partidas": 1,
+"usos": 1,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "muerta_gunslinger",
+"heroi": "muerta",
+"nome": "Gunslinger",
+"ult": false,
+"partidas": 1,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 44
+},
+{
+"chave": "lycan_wolf_bite",
+"heroi": "lycan",
+"nome": "Wolf Bite",
+"ult": false,
+"partidas": 1,
+"usos": 2,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "lycan_shapeshift",
+"heroi": "lycan",
+"nome": "Shapeshift",
+"ult": true,
+"partidas": 1,
+"usos": 11,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "lycan_summon_wolves",
+"heroi": "lycan",
+"nome": "Summon Wolves",
+"ult": false,
+"partidas": 1,
+"usos": 43,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "lycan_howl",
+"heroi": "lycan",
+"nome": "Howl",
+"ult": false,
+"partidas": 1,
+"usos": 19,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "frogmen_water_bubble_small",
+"heroi": "frogmen",
+"nome": "Water Bubble (Small)",
+"ult": false,
+"partidas": 1,
+"usos": 2,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "frogmen_arm_of_the_deep",
+"heroi": "frogmen",
+"nome": "Arm of the Deep",
+"ult": false,
+"partidas": 1,
+"usos": 3,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "mud_golem_hurl_boulder",
+"heroi": "mud",
+"nome": "Hurl Boulder",
+"ult": false,
+"partidas": 1,
+"usos": 2,
+"estado": "generico",
+"proximo_lote": 45
+},
+{
+"chave": "templar_assassin_trap_teleport",
+"heroi": "templar_assassin",
+"nome": "Psionic Projection",
+"ult": false,
+"partidas": 1,
+"usos": 10,
+"estado": "generico",
+"proximo_lote": 45
+}
+]
+}
