@@ -53,6 +53,21 @@ A visão também fica em `.visao-vitoria[data-visao]`. Elementos novos ainda sem
 (`data-gtm="vitoria-trocar-visao"`, "Ver em outra tela"). Os botões do áudio (`.zap-play`, `.zap-pedir`) continuam iguais,
 agora dentro da visão do zap. `?visao=zap` (ou `documento`) na URL força uma visão, mesmo desligada, útil para testar.
 
+## Boas-vindas a grupo novo na home (desde 06/11/2026)
+
+A home ganhou dois elementos novos, ainda **sem gatilho no GTM**:
+
+- **Splash** `#home-splash`: texto amarelo pulsando ao lado do título ("Bem-vindos, Kushitas!"). É um link para `ranking/#liga`
+  (de propósito não é `ranking/`, para não contar como `ranking_open`).
+- **Letreiro** `#home-letreiro`: faixa embaixo do topo com frases que giram. Os links das frases são `.letreiro-link`
+  com `data-gtm="letreiro-pedir_grupo"` (vai para `ranking/#pedir`), `letreiro-feedback_injusto` e
+  `letreiro-feedback_novidade` (abrem a caixa de feedback já com o começo do texto). O × é `#letreiro-fechar`
+  (o letreiro some para aquela pessoa até entrar o próximo grupo).
+
+Todo clique nesses dois manda `dataLayer.push({ event: 'home_banner_click', banner: 'splash'|'letreiro', banner_item })`,
+com `banner_item` = `grupo`, `pedir_grupo`, `feedback_injusto`, `feedback_novidade` ou `fechar`.
+Para virar evento no GA4 basta um gatilho de Evento personalizado `home_banner_click` com essas duas variáveis da camada de dados.
+
 ## Conferência automática
 
 O workflow `gtm.yml` roda `node gtm/checar.js` em todo PR que mexe nas páginas. Ele abre a home, a partida de
