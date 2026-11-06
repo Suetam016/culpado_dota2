@@ -71,7 +71,7 @@ INTERVALO_HISTORICO_S = 24 * 3600   # histórico completo (fase opcional): uma c
 PRIMEIRA_ESPERA_S = 30 * 60   # depois do pedido de análise: tenta o GET de novo na rodada seguinte
 MAX_ESPERA_S = 12 * 3600      # espera entre GETs de uma partida pendente: 1 h, 2 h, 4 h, 8 h, 12 h, 12 h...
 ESPERA_ANALISE_S = 3 * 86400
-PAUSAS_PEDIDO = int(os.environ.get("COLETA_PAUSAS_PEDIDO", "8"))  # esperas de 1 min por 429 no pedido de análise  # depois do pedido, desiste em ~3 dias
+PAUSAS_PEDIDO = int(os.environ.get("COLETA_PAUSAS_PEDIDO", "15"))  # esperas de 1 min por 429 no pedido de análise  # depois do pedido, desiste em ~3 dias
 REPLAY_SOME_S = 15 * 86400    # partida com mais de ~15 dias: a Valve já apagou o replay
 ESPERA_FALHA_S = 30 * 60      # erro numa partida: espera isso antes de tentar de novo (dobra a cada erro do OpenDota)
 MAX_ESPERA_FALHA_S = 12 * 3600
@@ -583,7 +583,7 @@ class Rodada:
             if prox is not None and prox > agora:
                 return False
         p = self.pendentes.get(k)
-        if isinstance(p, dict):
+        if isinstance(p, dict) and p.get("pedido_em"):  # nunca pedida: entra já (pede a análise)
             prox = de_iso(p.get("proxima"))
             if prox is not None and prox > agora:
                 return False
