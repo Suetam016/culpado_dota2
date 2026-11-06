@@ -52,3 +52,6 @@
 .pl-play:disabled span{background:#555}
 .pl-play:focus-visible span{outline:.6cqw solid #ffd400;outline-offset:.6cqw}
 @media (prefers-reduced-motion:reduce){.pl-topo .vivo i,.pl-tk div,.pl .pulso,.pl-fala.nova span,.pl-gc .sub.nova{animation:none!important}}
+/* desenhos das skills do replay do site (ASSIN em index.html, montarLances com opts.externo) por cima do canvas */
+.pl svg.pl-fx{position:absolute;top:11cqw;left:0;width:100%;height:94cqw;display:block;pointer-events:none;z-index:1;overflow:hidden}
+.pl svg.pl-fx .m-cam>:not(.m-assin-chao):not(.m-fx),.pl svg.pl-fx .m-dano{display:none}

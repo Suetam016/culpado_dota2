@@ -7160,8 +7160,8 @@ return corpo;
 const VISOES_VITORIA = [
 { id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
-// Plantão da Selva: em teste, só abre com ?visao=plantao
-{ id: 'plantao', nome: 'Plantão da Selva', peso: 3, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoPlantao(r) },
+// Plantão da Selva (no sorteio desde 06/11/2026): helicóptero no fim do replay; sem replay vira o documento
+{ id: 'plantao', nome: 'Plantão da Selva', peso: 3, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoPlantao(r) },
 ];
 const visaoSorteada = new Map(); // a mesma partida mantém a visão enquanto a pessoa não recarrega
 
@@ -7171,6 +7171,7 @@ try { return new URLSearchParams(location.search).get('visao'); } catch (e) { re
 // visões que entram no sorteio desta partida (a desligada só aparece se a URL pedir por ela)
 const visoesPossiveis = (r) => VISOES_VITORIA.filter((x) => x.pode(r) && (x.ligada !== false || x.id === visaoForcada()));
 
+const sorteFixa = (txt) => { let x = 2166136261; for (const c of String(txt)) x = Math.imul(x ^ c.charCodeAt(0), 16777619); return ((x >>> 0) % 100000) / 100000; };
 function escolherVisao(r, evitar = null) {
 const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
 const chave = `${r.partida.id}-${lado}`;
@@ -7183,7 +7184,9 @@ if (fixa) { visaoSorteada.set(chave, fixa.id); return fixa; }
 const pool = possiveis.filter((x) => x.id !== evitar);
 const lista = pool.length ? pool : possiveis;
 const total = lista.reduce((a, x) => a + x.peso, 0);
-let sorte = Math.random() * total;
+// primeira vez: a sorte sai do id da partida, então a mesma vitória abre sempre a mesma tela (até em outra visita);
+// "outra tela" (evitar) continua aleatório
+let sorte = (evitar ? Math.random() : sorteFixa(chave)) * total;
 const escolhida = lista.find((x) => (sorte -= x.peso) < 0) || lista[0];
 visaoSorteada.set(chave, escolhida.id);
 return escolhida;
@@ -7207,21 +7210,31 @@ return plantaoJs;
 function visaoPlantao(r) {
 const v = craquesDe(r)[0];
 const caixa = h('article', { class: 'cartao veredito vitoria plantao-visao' },
-h('div', { class: 'pl-cab' }, h('b', {}, 'Plantão da Selva · em teste'), h('span', {}, `${v.jogador.nome} de ${v.jogador.heroi.nome} · ${pct(v.fatia)} do mérito`)));
+h('div', { class: 'pl-cab' }, h('b', {}, 'Plantão da Selva'), h('span', {}, `${v.jogador.nome} de ${v.jogador.heroi.nome} · ${pct(v.fatia)} do mérito`)));
 const espera = h('p', { class: 'pl-aviso' }, 'Ligando o helicóptero…');
 const palco = h('div', { class: 'pl-palco' }, espera); // o plantão entra aqui, antes da barra de compartilhar
 caixa.append(palco);
+const virarDocumento = () => { // sem o mapa do replay: a vitória fica com o documento do mérito
+const doc = documentoDoMerito(r);
+palco.remove();
+caixa.querySelector('.pl-cab')?.remove();
+caixa.className = doc.className;
+Object.assign(caixa.dataset, doc.dataset, { visao: 'documento' });
+if (caixa.parentNode && caixa.parentNode.dataset) caixa.parentNode.dataset.visao = 'documento';
+caixa.prepend(...doc.childNodes);
+};
 const dados = estado.dados;
 const d = new Date(((dados && dados.match && dados.match.start_time) || 0) * 1000);
 const data = `${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)}`;
 Promise.all([dados && dados.mapa ? dados.mapa : carregarMapa(r.partida.id), carregarPlantao()]).then(([mapa, P]) => {
-if (!mapa || !mapa.x) { espera.textContent = 'Esta partida ainda não tem o mapa com as posições dos heróis, e o plantão precisa dele.'; return; }
+if (!mapa || !mapa.x) { virarDocumento(); return; }
 espera.remove();
 const jog = dados.match.players.map((p, i) => {
 const he = (dados.heroes && (dados.heroes[p.hero_id] || dados.heroes[String(p.hero_id)])) || {};
 return { idx: i, slot: p.player_slot, radiant: p.isRadiant != null ? Boolean(p.isRadiant) : p.player_slot < 128, nome: (p.account_id != null && AMIGOS[p.account_id]) || p.personaname || 'Anônimo', heroi: { nome: he.localized_name || p.hero_localized_name || '?', npc: he.name || p.hero_name || null } };
 });
-P.montar(palco, { match: dados.match, mapa, carry: v.jogador.idx, jog, est: ESTRUTURAS, arv: ARVORES_B64, tri: TRILHAS_B64, ladoNome, data, fatia: v.fatia, amigos: Object.values(AMIGOS) });
+const fxReplay = (ini, fim) => montarLances(r, mapa, h('div'), h('div'), null, h('div'), { externo: true, unico: { t: fim, ini, fim, tipo: 'bom', foco: [v.jogador.idx], titulo: '', legenda: '' } });
+P.montar(palco, { fxReplay, match: dados.match, mapa, carry: v.jogador.idx, jog, est: ESTRUTURAS, arv: ARVORES_B64, tri: TRILHAS_B64, ladoNome, data, fatia: v.fatia, amigos: Object.values(AMIGOS) });
 }).catch((e) => { console.error('plantao', e); palco.replaceChildren(espera); espera.textContent = 'O plantão não carregou agora. Recarregue a página para tentar de novo.'; });
 return caixa;
 }
@@ -10057,7 +10070,7 @@ if (palco.classList.contains('pedindo')) palco.classList.add('chegou'); // o map
 palco.classList.remove('pedindo');
 const W = 100;
 const svg = s('svg', { viewBox: `0 0 ${W} ${W}`, class: 'mapa-svg', role: 'img', 'aria-label': 'Mapa da partida com a posição dos heróis' });
-const cam = s('g', {});
+const cam = s('g', { class: 'm-cam' });
 const L = MAPA.max - MAPA.min;
 const u = (x) => ((x - MAPA.min) / L) * W;
 const v = (y) => W - ((y - MAPA.min) / L) * W;
@@ -10484,7 +10497,7 @@ cam.append(camadaFx);
 const fxVivos = new Map();
 const fx = (chave, criar, camada = camadaFx) => { let e = fxVivos.get(chave); if (!e) { e = criar(); camada.append(e.g); fxVivos.set(chave, e); } e.vivo = true; return e; };
 const desenharFx = (ps, escala, telaTok = {}) => {
-const z = Math.max(0.35, escala);
+const z = Math.max(opts.externo ? 0 : 0.35, escala); // no Plantão o tamanho vem pronto da câmera dele
 for (const e of fxVivos.values()) e.vivo = false;
 for (const b of batidasAtual) {
 if ((b.tipo === 'ult' || b.tipo === 'roubo') && b.lento && t >= b.t && t <= b.t + 2.2) {
@@ -12440,6 +12453,22 @@ ultimo = performance.now();
 desenhar();
 requestAnimationFrame(quadro);
 };
+// Plantão (plantao/plantao.js): só os desenhos das skills (ASSIN, itens, status, TP), por cima do canvas dele.
+// O tempo, a câmera e onde cada herói está na tela vêm de fora, a cada quadro.
+if (opts.externo) {
+carregarLance(0, false);
+svg.classList.add('m-so-fx');
+return {
+svg,
+tem: (k) => Boolean(ASSIN[k]),
+irPara: (tt, tokens, transform, escala) => {
+t = tt;
+cam.style.transition = '';
+cam.setAttribute('transform', transform);
+desenharFx(ajustarPos(pos(t), t), escala, tokens);
+},
+};
+}
 if (mini) {
 preparar(0);
 return;

@@ -369,6 +369,22 @@
 
     // ----- estado
     var FX = efeitos(D), ICONES = {};
+    // desenhos próprios das skills, os mesmos do replay do site (ASSIN no index.html), num SVG por cima do canvas;
+    // a forma genérica (efeitos) fica só para as skills que ainda não têm desenho
+    var RX = null;
+    if (ctx.fxReplay) { try { RX = ctx.fxReplay(D.T0 - 3, D.T0 + D.N); } catch (e) { RX = null; if (window.console) console.error('plantao fx', e); } }
+    if (RX) {
+      RX.svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); RX.svg.setAttribute('preserveAspectRatio', 'none'); RX.svg.classList.add('pl-fx'); RX.svg.setAttribute('aria-hidden', 'true');
+      cv.after(RX.svg);
+      FX = FX.filter(function (o) { return !RX.tem(o.key); });
+    }
+    function fxReplay(t, dx, dy, bal) {
+      if (!RX) return;
+      var L = M1 - M0, a = zoom * L / 100, e = W / 2 + (M0 - cam[0]) * zoom, f = H / 2 - (M1 - cam[1]) * zoom, tk = {};
+      for (var i = 0; i < 10; i++) { if (!D.pos[i] || !vivo(i, t)) continue; var q = pos(i, t); tk[D.ordem[i].idx] = [(q[0] - M0) / L * 100, 100 - (q[1] - M0) / L * 100]; }
+      var tr = 'translate(' + (W / 2 + dx).toFixed(2) + ',' + (H / 2 + dy).toFixed(2) + ') rotate(' + (bal * 57.2958).toFixed(3) + ') translate(' + (-W / 2) + ',' + (-H / 2) + ') translate(' + e.toFixed(2) + ',' + f.toFixed(2) + ') scale(' + a.toFixed(4) + ')';
+      try { RX.irPara(D.T0 + t, tk, tr, W / (100 * a)); } catch (er) { RX.svg.remove(); RX = null; }
+    }
     function icone(k, tipo) { if (!ICONES[k]) { var im = new Image(); im.src = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/' + (tipo === 'i' ? 'items' : 'abilities') + '/' + k + '.png'; ICONES[k] = im; } return ICONES[k]; }
     D.ev.forEach(function (e) { if (e[2] !== 'tpscroll') icone(e[2], e[3]); });
     var imgs = D.herois.map(function (s) { var i = new Image(); i.src = BASE + 'img/herois/' + s + '.png'; return i; });
@@ -417,6 +433,7 @@
       var alvo = pos(NAK, t); if (!cam) cam = alvo.slice(); var seg = md === 'rapido' ? .1 : .06; cam[0] += (alvo[0] - cam[0]) * seg; cam[1] += (alvo[1] - cam[1]) * seg;
       var zAlvo = W / (md === 'lento' ? 20 : md === 'rapido' ? 36 : 27); zoom += (zAlvo - zoom) * .05;
       var bal = Math.sin(ms / 900) * .012, dx = Math.sin(ms / 1300) * 7, dy = Math.cos(ms / 1700) * 6;
+      fxReplay(t, dx, dy, bal);
       g.save(); g.fillStyle = '#1a2414'; g.fillRect(0, 0, W, H);
       g.translate(W / 2 + dx, H / 2 + dy); g.rotate(bal); g.translate(-W / 2, -H / 2);
       var mw = W * .6 / zoom, mh = H * .6 / zoom, x0 = Math.max(M0, cam[0] - mw), x1 = Math.min(M1, cam[0] + mw), y0 = Math.max(M0, cam[1] - mh), y1 = Math.min(M1, cam[1] + mh);
