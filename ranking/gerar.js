@@ -218,6 +218,19 @@ async function main() {
       }
     }
   }
+  // partidas que a coleta já achou mas que ainda esperam a análise do replay no OpenDota (provisorias/): o site avisa
+  // quantas faltam (grupo recém-chegado tem várias de uma vez)
+  const pastaProv = path.join(DADOS, 'provisorias');
+  if (fs.existsSync(pastaProv)) {
+    for (const arq of fs.readdirSync(pastaProv)) {
+      const mid = arq.replace(/\.json\.gz$/, '');
+      if (mid === arq || mid in indice) continue;
+      try {
+        const m = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(pastaProv, arq))));
+        if ((m.start_time || 0) >= desde && (m.players || []).some((p) => idsAmigos.has(p.account_id))) conta.semAnalise++;
+      } catch (e) { /* arquivo ruim: ignora */ }
+    }
+  }
   // partidas que só existem no ranking antigo (de quando este robô baixava direto do OpenDota) não se perdem
   let legado = 0;
   for (const [c, xs] of Object.entries(anterior.historicos || {})) {

@@ -34,6 +34,7 @@ const CHAVE_PERIODO = 'ranking-periodo';
 let ranking = null;
 let parceiros = null;
 let nomeGrupo = 'Marocas';
+let papelGrupo = 'MRC3';   // o código da ação do grupo na Bolsa
 let GRUPOS = [{ id: 'marocas', nome: 'Marocas', fundador: true, href: './#elo' }];
 let parceirosBase = null;
 let periodo = 'tudo';
@@ -78,10 +79,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   let lista;
   [ranking, parceiros, insights, meta, estadoAtt, lista] = await Promise.all([pegar(RANKING_URL), pegar(PARCEIROS_URL), pegar(INSIGHTS_URL), pegar(META_URL), estadoDoRanking(), pegar(GRUPOS_URL)]);
   GRUPOS = GRUPOS.concat((Array.isArray(lista) ? lista : []).filter(g => g && /^[a-z0-9-]+$/.test(g.id || ''))
-    .map(g => ({ id: g.id, nome: String(g.nome || g.id), href: `./?grupo=${g.id}#elo` })));
+    .map(g => ({ id: g.id, nome: String(g.nome || g.id), papel: /^[A-Z0-9]{2,5}$/.test(g.papel || '') ? g.papel : null, href: `./?grupo=${g.id}#elo` })));
   if (GRUPO) {
     const g = GRUPOS.find(x => x.id === GRUPO);
     nomeGrupo = g ? g.nome : GRUPO;
+    // código da ação: o do grupos.json ou as 3 primeiras consoantes do nome (Os Kushitas -> KSH3)
+    const cons = nomeGrupo.replace(/^(os|as|o|a)\s+/i, '').normalize('NFD').replace(/[^a-z]/gi, '').replace(/[aeiou]/gi, '').toUpperCase();
+    papelGrupo = (g && g.papel) || `${(cons || 'GRP').slice(0, 3).padEnd(3, 'X')}3`;
   }
   // o GitHub Pages pode levar minutos para publicar o ranking novo: se o repositório já tem um mais novo, usa ele
   // (o Worker só guarda o do Marocas)
@@ -1479,7 +1483,7 @@ function renderizarBolsa() {
   const sete = {};
   velas.slice(-7).forEach(v => v.ps.forEach(p => { const s = sete[p.c] = sete[p.c] || { c: p.c, d: 0, v: 0, l: 0 }; s.d += p.d; s.v += p.v; s.l += p.l; }));
   const ult = velas[velas.length - 1], prim7 = velas[Math.max(0, velas.length - 7)];
-  const cot = [`<span><b class="tk-papel">MRC3</b> ${pts(ult.c)} <span class="${ult.c >= prim7.o ? 'up' : 'dn'}">${ult.c >= prim7.o ? '▲' : '▼'} ${sinal(ult.c - prim7.o)} em 7 dias</span></span>`,
+  const cot = [`<span><b class="tk-papel">${papelGrupo}</b> ${pts(ult.c)} <span class="${ult.c >= prim7.o ? 'up' : 'dn'}">${ult.c >= prim7.o ? '▲' : '▼'} ${sinal(ult.c - prim7.o)} em 7 dias</span></span>`,
     ...Object.values(sete).sort((a, c) => c.d - a.d).map(p => `<span><b class="tk-papel">${N(p.c).toUpperCase()}</b> <span class="${p.d > 0 ? 'up' : p.d < 0 ? 'dn' : ''}">${p.d > 0 ? '▲' : p.d < 0 ? '▼' : '■'} ${sinal(p.d)}</span> <span class="tk-vol">${p.v}V ${p.l}D</span></span>`)];
   const fof = fofocasDaBolsa(b).map(f => `<span class="tk-fofoca">${f}</span>`);
   const itens = [];
@@ -1504,7 +1508,7 @@ function renderizarBolsa() {
     <div class="tk" role="marquee" aria-label="Letreiro da bolsa do grupo"><div class="tk-trilha" style="--dur:${segundos}s"><div>${faixa}</div><div aria-hidden="true">${faixa}</div></div></div>
     <div class="bolsa-corpo">
       <div class="bolsa-graf">
-        <div class="cotacao"><span class="tick">MRC3 · ${DIAS_CURTO[dV.getDay()]} ${dV.getDate()}/${dV.getMonth() + 1}</span><span class="preco">${pts(V.c)}</span>
+        <div class="cotacao"><span class="tick">${papelGrupo} · ${DIAS_CURTO[dV.getDay()]} ${dV.getDate()}/${dV.getMonth() + 1}</span><span class="preco">${pts(V.c)}</span>
           <span class="${varDia > 0 ? 'up' : varDia < 0 ? 'dn' : ''}">${varDia > 0 ? '▲' : varDia < 0 ? '▼' : '■'} ${sinal(varDia)} (${((100 * varDia) / V.o).toFixed(2).replace('.', ',')}%)</span>
           <small>Abertura ${pts(V.o)} · máxima ${pts(V.hi)} · mínima ${pts(V.lo)} · ${V.jogos ? `${V.jogos} ranqueada${V.jogos > 1 ? 's' : ''} · ${V.vit}V ${V.jogos - V.vit}D` : 'sem ranqueada'}</small></div>
         <div class="velas" id="bolsa-velas"><svg width="${W}" height="${H}" role="img" aria-label="Um candle por dia do MMR somado do grupo">${g}</svg></div>
@@ -1516,7 +1520,7 @@ function renderizarBolsa() {
         <div><h4>Pregões de ${MESES_BOLSA[dV.getMonth()]}</h4><div class="pregao">${cal}</div></div>
       </aside>
     </div>
-    <p class="bolsa-nota">O preço da MRC3 é a soma do MMR estimado de quem tem medalha no grupo (±${MMR_POR_PARTIDA} por ranqueada, igual à Corrida de elo). Cada candle é um dia: verde se o grupo subiu, vermelho se caiu, e a cara é de quem mais puxou pra cima ou pra baixo. Clique num candle para ver o dia. O letreiro conta o que rolou nos últimos 7 dias.</p>`;
+    <p class="bolsa-nota">O preço da ${papelGrupo} é a soma do MMR estimado de quem tem medalha no grupo (±${MMR_POR_PARTIDA} por ranqueada, igual à Corrida de elo). Cada candle é um dia: verde se o grupo subiu, vermelho se caiu, e a cara é de quem mais puxou pra cima ou pra baixo. Clique num candle para ver o dia. O letreiro conta o que rolou nos últimos 7 dias.</p>`;
   const vel = $('bolsa-velas');
   vel.scrollLeft = Math.max(0, i * LW - vel.clientWidth + 120);
 }
