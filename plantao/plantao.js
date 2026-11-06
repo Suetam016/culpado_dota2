@@ -12,6 +12,7 @@
   'use strict';
   var BASE = (function () { var s = document.currentScript && document.currentScript.src; return s ? s.replace(/plantao\/plantao\.js.*$/, '') : ''; })();
   var NPC = 'npc_dota_hero_';
+  var PROJ = /arrow|meat_hook|shuriken|bolt|spear|cask|concussive|assassinate|stifling_dagger|missile|lance|toss|shackle|boulder|wave_of_terror|dragon_slave|laguna|finger|hookshot|grapple|spirit_lance|nether_strike/;
   var INVIS = /invis|wind_walk|shadow_walk|ghost_walk|smoke_of_deceit|silver_edge|invis_sword|shukuchi|moonlight|meld|skeleton_walk|sand_storm|vendetta|spirit_walk|fade_bolt_x/;
 
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -47,7 +48,7 @@
     var hab = mapa.hab || [];
     var dentro = function (t) { return t >= T0 && t <= T1; };
     var ev = (mapa.usos || []).filter(function (u) { return dentro(u[0]) && iDeK[u[1]] != null && hab[u[2]]; })
-      .map(function (u) { return [Math.round((u[0] - T0) * 10) / 10, iDeK[u[1]], hab[u[2]][0], hab[u[2]][2]]; });
+      .map(function (u) { return [Math.round((u[0] - T0) * 10) / 10, iDeK[u[1]], hab[u[2]][0], hab[u[2]][2], u[3] != null && u[3] >= 0 && iDeK[u[3]] != null ? iDeK[u[3]] : -1, hab[u[2]][1] || '']; });
     var dano = (mapa.dano || []).filter(function (d) { return dentro(d[0]) && iDeK[d[1]] != null && iDeK[d[2]] != null; })
       .map(function (d) { return [d[0] - T0, iDeK[d[1]], iDeK[d[2]], d[3], d[4] >= 0 && hab[d[4]] ? hab[d[4]][0] : '']; });
     var abates = [], mortes = ordem.map(function () { return []; }), antes = [0, 0];
@@ -98,6 +99,30 @@
     return { T0: T0, N: N, NAK: NAK, ordem: ordem, herois: ordem.map(slugDe), nomes: ordem.map(function (j) { return j.nome; }), heroiNome: ordem.map(function (j) { return (j.heroi && j.heroi.nome) || '?'; }),
       pos: pos, ev: ev, dano: dano, abates: abates, pred: pred, est: est, vivo: vivo,
       placar0: antes, radiant: carry.radiant, raw: m.players[carry.idx] || {} };
+  }
+
+  // Como desenhar cada skill usada (de todos os heróis), deduzido do que ela fez: quem levou dano dela e quando,
+  // se o herói saltou, se tinha alvo. Formas: proj (projétil até a vítima), area (onda onde estavam as vítimas),
+  // golpe (pancada colada), salto (blink), alvo (traço até o alvo sem dano), aura (anel no próprio herói).
+  function efeitos(D) {
+    var P = function (i, t) { var a = clamp(Math.floor(t), 0, D.N - 1), b = Math.min(D.N - 1, a + 1), f = clamp(t - a, 0, 1); var A = D.pos[i][a], B = D.pos[i][b]; return [A[0] + (B[0] - A[0]) * f, A[1] + (B[1] - A[1]) * f]; };
+    var dist = function (a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1]); };
+    return D.ev.filter(function (e) { return e[2] !== 'tpscroll' && e[2].indexOf('ward') < 0; }).map(function (e) {
+      var t = e[0], i = e[1], vit = {};
+      D.dano.forEach(function (d) { if (d[1] === i && d[4] === e[2] && d[0] >= t - 0.2 && d[0] <= t + 3 && vit[d[2]] == null) vit[d[2]] = d[0]; });
+      var vs = Object.keys(vit).map(function (k) { return { i: +k, t: Math.max(t, vit[k]) }; });
+      var o = { t: t, i: i, key: e[2], tipo: e[3], nome: e[5], vit: vs, alvo: e[4] };
+      var antes = P(i, Math.max(0, t - 0.3)), depois = P(i, Math.min(D.N - 1, t + 1));
+      if (/blink|leap|phase|shukuchi|time_walk|ball_lightning|pounce|charge|surge|dash|rolling/.test(e[2]) || (dist(antes, depois) > 7 && !vs.length)) { o.forma = 'salto'; o.de = antes; o.para = depois; }
+      else if (vs.length && PROJ.test(e[2])) { vs.sort(function (x, y) { return x.t - y.t; }); o.vit = [vs[0]]; o.forma = 'proj'; o.th = Math.max(vs[0].t, t + 0.25); }
+      else if (vs.length >= 2) {
+        var c = [0, 0]; vs.forEach(function (v) { var q = P(v.i, v.t); c[0] += q[0] / vs.length; c[1] += q[1] / vs.length; });
+        o.forma = 'area'; o.c = c; o.r = Math.min(7, 2.5 + Math.max.apply(null, vs.map(function (v) { return dist(P(v.i, v.t), c); }))); o.th = Math.min.apply(null, vs.map(function (v) { return v.t; }));
+      } else if (vs.length === 1) { o.forma = dist(P(i, t), P(vs[0].i, vs[0].t)) > 3.5 ? 'proj' : 'golpe'; o.th = Math.max(vs[0].t, t + (o.forma === 'proj' ? 0.25 : 0.05)); }
+      else if (e[4] >= 0 && e[4] !== i) o.forma = 'alvo';
+      else o.forma = e[3] === 'i' && !/black_king_bar|manta|mjollnir|lotus|blade_mail|satanic|bloodstone|refresher|shivas|crimson|pipe|mekansm|greaves/.test(e[2]) ? null : 'aura';
+      return o;
+    }).filter(function (o) { return o.forma; });
   }
 
   // Lances que o locutor comenta (tipos do banco) e o ritmo do replay (rápido no chato, lento no que decide)
@@ -260,8 +285,8 @@
     }
     function decodificar(ab) { var a = ctxAudio(); return new Promise(function (ok, erro) { a.decodeAudioData(ab, ok, erro); }); }
     // sons das skills de quem carregou (sons/<habilidade>.mp3, os mesmos do replay do site)
-    var habs = {}; D.ev.forEach(function (e) { if (e[1] === NAK && e[3] !== 'i') habs[e[2]] = (habs[e[2]] || 0) + 1; });
-    Object.keys(habs).sort(function (a, b) { return habs[b] - habs[a]; }).slice(0, 8).forEach(function (k) {
+    var habs = {}; D.ev.forEach(function (e) { if (e[3] !== 'i') habs[e[2]] = (habs[e[2]] || 0) + (e[1] === NAK ? 100 : 1); });
+    Object.keys(habs).sort(function (a, b) { return habs[b] - habs[a]; }).slice(0, 16).forEach(function (k) {
       fetch(BASE + 'sons/' + k + '.mp3').then(function (x) { if (!x.ok) throw 0; return x.arrayBuffer(); }).then(decodificar).then(function (b) { buf['hab' + k] = b; }).catch(function () {});
     });
     function env(gn, t, a, p, d) { gn.gain.setValueAtTime(.0001, t); gn.gain.exponentialRampToValueAtTime(p, t + a); gn.gain.exponentialRampToValueAtTime(.0001, t + a + d); }
@@ -282,7 +307,7 @@
     function desmorona(t, forte) { osc('sine', 90, 26, t, .006, forte ? 1 : .75, forte ? 2.2 : 1.2); chiado('lowpass', 900, 120, 1, t, .01, forte ? .7 : .45, forte ? 2.6 : 1.5); for (var k = 0; k < (forte ? 14 : 7); k++) chiado('bandpass', 1500 + Math.random() * 2500, 900, 6, t + .15 + Math.random() * (forte ? 1.6 : .8), .002, .18, .05); }
     function vuum(t, desce) { chiado('bandpass', desce ? 3200 : 300, desce ? 240 : 3200, 3, t, .3, .26, .08); }
     function fitaRapida(t) { chiado('bandpass', 500, 4000, 6, t, .35, .16, .1); osc('sawtooth', 90, 600, t, .4, .04, .05); }
-    function somHab(k, t) { var b = buf['hab' + k]; if (!b) { chiado('bandpass', 1800, 600, 2, t, .01, .2, .25); return; } var s = A.createBufferSource(), gn = A.createGain(); s.buffer = b; gn.gain.setValueAtTime(.75, t); gn.gain.setValueAtTime(.75, t + 2.2); gn.gain.exponentialRampToValueAtTime(.0001, t + 2.5); s.connect(gn); gn.connect(mestre); s.start(t); s.stop(t + 2.6); }
+    function somHab(k, t, vol) { vol = vol || .75; var b = buf['hab' + k]; if (!b) { chiado('bandpass', 1800, 600, 2, t, .01, .2 * vol, .25); return; } var s = A.createBufferSource(), gn = A.createGain(); s.buffer = b; gn.gain.setValueAtTime(vol, t); gn.gain.setValueAtTime(vol, t + 2.2); gn.gain.exponentialRampToValueAtTime(.0001, t + 2.5); s.connect(gn); gn.connect(mestre); s.start(t); s.stop(t + 2.6); }
     function ligarFundo() {
       var t = A.currentTime;
       var s = A.createBufferSource(); s.buffer = ruido; s.loop = true; var f = A.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 320; var am = A.createGain(); am.gain.value = .5; var lfo = A.createOscillator(); lfo.type = 'triangle'; lfo.frequency.value = 10.5; var lg = A.createGain(); lg.gain.value = .5; lfo.connect(lg); lg.connect(am.gain);
@@ -343,6 +368,9 @@
     var primeiraQueda = D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; }).sort(function (a, b) { return a - b; })[0];
 
     // ----- estado
+    var FX = efeitos(D), ICONES = {};
+    function icone(k, tipo) { if (!ICONES[k]) { var im = new Image(); im.src = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/' + (tipo === 'i' ? 'items' : 'abilities') + '/' + k + '.png'; ICONES[k] = im; } return ICONES[k]; }
+    D.ev.forEach(function (e) { if (e[2] !== 'tpscroll') icone(e[2], e[3]); });
     var imgs = D.herois.map(function (s) { var i = new Image(); i.src = BASE + 'img/herois/' + s + '.png'; return i; });
     var parts = [], carimbos = [], cam = null, zoom = W / 27, tela = null, placar = D.placar0.slice(), estrago = { ab: 0, pr: 0 };
     function tl(p) { return [W / 2 + (p[0] - cam[0]) * zoom, H / 2 - (p[1] - cam[1]) * zoom]; }
@@ -358,7 +386,8 @@
         else { if (ultimoModo === 'lento') { abafa.frequency.setTargetAtTime(18000, t, .08); vuum(t, false); } if (rotor) rotor.lfo.frequency.setTargetAtTime(md === 'rapido' ? 15 : 10.5, t, .2); if (md === 'rapido') fitaRapida(t); }
         ultimoModo = md; }
       var cruza = function (x) { return x > a && x <= b; };
-      D.ev.forEach(function (e) { if (e[1] === NAK && cruza(e[0]) && e[2] !== 'tpscroll') somHab(e[2], t); });
+      var nSons = 0;
+      D.ev.forEach(function (e) { if (!cruza(e[0]) || e[2] === 'tpscroll' || nSons > 2) return; var q = pos(e[1], e[0]); if (e[1] !== NAK && (!cam || Math.hypot(q[0] - cam[0], q[1] - cam[1]) > 22)) return; nSons++; somHab(e[2], t + nSons * .04, e[1] === NAK ? .75 : .4); });
       D.abates.forEach(function (k) { if (!cruza(k[0])) return; if (k[1] === NAK) { pancada(t, 1.1); moedas(t, 6); sino(t + .05); } else pancada(t, .55); plim(t + .25); });
       D.est.forEach(function (e) { if (e[4] === null || e[4] < 0 || !cruza(e[4])) return; desmorona(t, e[3] === 'fort'); if (e[3] === 'fort') { if (cama) cama.parar(); fanfarraFinal(t + .5); if (rotor) rotor.vol.gain.setTargetAtTime(.12, t, .5); } });
       FALAS.forEach(function (f) {
@@ -403,22 +432,48 @@
       });
       D.abates.forEach(function (k) { var age = t - k[0]; if (age < 0 || age > 5) return; var s = tl(pos(k[2], k[0])); g.globalAlpha = Math.min(1, (5 - age)); g.fillStyle = '#fff'; g.font = '700 26px Archivo,sans-serif'; g.textAlign = 'center'; g.fillText('✕', s[0], s[1] + 9); g.globalAlpha = 1; });
       D.dano.forEach(function (e) { var age = t - e[0]; if (age < 0 || age > 1.3) return; var nk = e[1] === NAK; if (!nk && e[3] < 150) return; var s = tl(pos(e[2], e[0])); g.globalAlpha = 1 - age / 1.3; g.fillStyle = nk ? '#ffd23f' : 'rgba(255,255,255,.85)'; g.font = '800 ' + (nk ? (e[3] > 900 ? 40 : 28) : 17) + 'px Archivo,sans-serif'; g.textAlign = 'center'; g.fillText('-' + Math.round(e[3]).toLocaleString('pt-BR'), s[0] + ((e[2] * 13 + e[0] * 7) % 34 - 17), s[1] - 30 - age * 34); g.globalAlpha = 1; });
-      // skills de quem carregou: anel saindo dele e, se acertou alguém, o traço até a vítima
-      D.ev.forEach(function (e) {
-        var age = t - e[0]; if (e[1] !== NAK || age < 0 || age > 1.6 || e[2] === 'tpscroll') return; var s = tl(pos(NAK, e[0]));
-        var ult = e[3] === 'u', item = e[3] === 'i';
-        g.strokeStyle = ult ? 'rgba(255,210,63,' + (1 - age / 1.6) + ')' : item ? 'rgba(255,255,255,' + (.5 * (1 - age / 1.6)) + ')' : 'rgba(190,235,255,' + (1 - age / 1.6) + ')';
-        g.lineWidth = ult ? 6 : 3; g.beginPath(); g.arc(s[0], s[1], 14 + age * (ult ? 90 : 50), 0, 7); g.stroke();
-        if (item) return;
-        var ac = D.dano.filter(function (x) { return x[1] === NAK && x[4] === e[2] && x[0] >= e[0] && x[0] <= e[0] + 3; })[0];
-        if (ac) { var d2 = tl(pos(ac[2], ac[0])), k = Math.min(1, age * 1.8); g.strokeStyle = ult ? 'rgba(255,210,63,' + (1 - age / 1.6) + ')' : 'rgba(190,235,255,' + (1 - age / 1.6) + ')'; g.lineWidth = ult ? 7 : 5; g.beginPath(); g.moveTo(s[0], s[1]); g.lineTo(s[0] + (d2[0] - s[0]) * k, s[1] + (d2[1] - s[1]) * k); g.stroke(); g.fillStyle = '#fff'; g.beginPath(); g.arc(s[0] + (d2[0] - s[0]) * k, s[1] + (d2[1] - s[1]) * k, 7, 0, 7); g.fill(); }
+      // skills de todo mundo, com a forma do que a skill fez (ver efeitos)
+      g.save(); g.shadowBlur = 14; // brilho nas skills
+      FX.forEach(function (o) {
+        g.shadowColor = o.tipo === 'u' ? '#ffd23f' : o.i < 5 ? '#7fd3ff' : '#ff7a59';
+        var age = t - o.t, fim = o.forma === 'area' || o.forma === 'proj' ? (o.th - o.t) + 1.1 : 1.3; if (age < 0 || age > fim) return;
+        var ult = o.tipo === 'u', cor = ult ? '255,210,63' : o.i < 5 ? '127,211,255' : '255,122,89', a1 = 1 - age / fim;
+        var s0 = tl(pos(o.i, o.t)), R2 = o.i === NAK ? 28 : 21;
+        if (o.forma === 'salto') { var p0 = tl(o.de), p1 = tl(o.para); g.strokeStyle = 'rgba(' + cor + ',' + (.8 * a1) + ')'; g.lineWidth = 4; g.setLineDash([10, 8]); g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke(); g.setLineDash([]);
+          [p0, p1].forEach(function (q, k) { g.fillStyle = 'rgba(' + cor + ',' + (.45 * a1) + ')'; g.beginPath(); g.arc(q[0], q[1], R2 * (1 + age * (k ? 1.4 : 2.2)), 0, 7); g.fill(); }); return; }
+        if (o.forma === 'aura') { g.strokeStyle = 'rgba(' + cor + ',' + a1 + ')'; g.lineWidth = ult ? 6 : 3; var rr = R2 + 6 + age * (ult ? 70 : 34); g.beginPath(); g.arc(s0[0], s0[1], rr, 0, 7); g.stroke(); if (ult) { g.fillStyle = 'rgba(' + cor + ',' + (.18 * a1) + ')'; g.fill(); } return; }
+        if (o.forma === 'alvo') { var q = tl(pos(o.alvo, o.t + Math.min(age, .8))); g.strokeStyle = 'rgba(' + cor + ',' + (.9 * a1) + ')'; g.lineWidth = ult ? 5 : 3; g.setLineDash([6, 6]); g.beginPath(); g.moveTo(s0[0], s0[1]); g.lineTo(q[0], q[1]); g.stroke(); g.setLineDash([]); g.strokeStyle = 'rgba(' + cor + ',' + a1 + ')'; g.beginPath(); g.arc(q[0], q[1], 26 + 6 * Math.sin(age * 12), 0, 7); g.stroke(); return; }
+        var ida = Math.max(.12, o.th - o.t), k2 = clamp(age / ida, 0, 1), dep = age - ida;
+        if (o.forma === 'proj' || o.forma === 'golpe') {
+          var v = o.vit[0], dv = tl(pos(v.i, o.t + Math.min(age, ida))), sc = tl(pos(o.i, o.t)), hx = sc[0] + (dv[0] - sc[0]) * k2, hy = sc[1] + (dv[1] - sc[1]) * k2;
+          if (o.forma === 'proj' && k2 < 1) { var gr = g.createLinearGradient(sc[0] + (dv[0] - sc[0]) * Math.max(0, k2 - .35), sc[1] + (dv[1] - sc[1]) * Math.max(0, k2 - .35), hx, hy); gr.addColorStop(0, 'rgba(' + cor + ',0)'); gr.addColorStop(1, 'rgba(' + cor + ',.95)'); g.strokeStyle = gr; g.lineWidth = ult ? 10 : 7; g.lineCap = 'round'; g.beginPath(); g.moveTo(sc[0] + (dv[0] - sc[0]) * Math.max(0, k2 - .35), sc[1] + (dv[1] - sc[1]) * Math.max(0, k2 - .35)); g.lineTo(hx, hy); g.stroke(); g.fillStyle = '#fff'; g.beginPath(); g.arc(hx, hy, ult ? 9 : 6, 0, 7); g.fill(); }
+          if (dep >= 0) { var b2 = clamp(1 - dep / 1, 0, 1); g.strokeStyle = 'rgba(' + cor + ',' + b2 + ')'; g.lineWidth = ult ? 6 : 4; g.beginPath(); g.arc(dv[0], dv[1], 24 + dep * (ult ? 70 : 44), 0, 7); g.stroke();
+            for (var r3 = 0; r3 < 6; r3++) { var an = r3 * 1.047 + o.t; g.strokeStyle = 'rgba(255,255,255,' + b2 + ')'; g.lineWidth = 2; g.beginPath(); g.moveTo(dv[0] + Math.cos(an) * (22 + dep * 30), dv[1] + Math.sin(an) * (22 + dep * 30)); g.lineTo(dv[0] + Math.cos(an) * (34 + dep * 60), dv[1] + Math.sin(an) * (34 + dep * 60)); g.stroke(); } }
+          return;
+        }
+        if (o.forma === 'area') {
+          var c = tl(o.c), R = o.r * zoom;
+          if (dep < 0) { g.strokeStyle = 'rgba(' + cor + ',' + (.5 + .5 * k2) + ')'; g.lineWidth = 3; g.setLineDash([8, 6]); g.beginPath(); g.arc(c[0], c[1], R * (1.15 - .15 * k2), 0, 7); g.stroke(); g.setLineDash([]); g.strokeStyle = 'rgba(' + cor + ',.6)'; g.beginPath(); g.moveTo(s0[0], s0[1]); g.lineTo(c[0], c[1]); g.stroke(); return; }
+          var b3 = clamp(1 - dep / 1.1, 0, 1); g.fillStyle = 'rgba(' + cor + ',' + (.32 * b3) + ')'; g.beginPath(); g.arc(c[0], c[1], R * (1 + dep * .25), 0, 7); g.fill(); g.strokeStyle = 'rgba(' + cor + ',' + b3 + ')'; g.lineWidth = ult ? 7 : 4; g.stroke();
+          if (ult) for (var st = 0; st < 10; st++) { var an2 = st * .63 + dep * 3, rr2 = R * (.3 + (st % 3) * .25); g.fillStyle = 'rgba(255,255,255,' + b3 + ')'; g.beginPath(); g.arc(c[0] + Math.cos(an2) * rr2, c[1] + Math.sin(an2) * rr2 - 40 * (1 - Math.min(1, dep * 4)), 4, 0, 7); g.fill(); }
+          o.vit.forEach(function (v) { if (t < v.t) return; var q = tl(pos(v.i, v.t)); g.strokeStyle = 'rgba(255,255,255,' + b3 + ')'; g.lineWidth = 2; g.beginPath(); g.arc(q[0], q[1], 26 + dep * 20, 0, 7); g.stroke(); });
+        }
       });
+      g.restore();
       for (var i = 0; i < 10; i++) {
         if (!D.pos[i] || !vivo(i, t)) continue; var s = tl(pos(i, t)), R2 = i === NAK ? 28 : 21; if (s[0] < -40 || s[0] > W + 40 || s[1] < -40 || s[1] > H + 40) continue;
         var levou = D.dano.some(function (e) { return e[2] === i && t - e[0] >= 0 && t - e[0] < .25; });
         g.fillStyle = 'rgba(0,0,0,.45)'; g.beginPath(); g.ellipse(s[0] + 6, s[1] + 8, R2, R2 * .7, 0, 0, 7); g.fill();
         g.save(); g.beginPath(); g.arc(s[0], s[1], R2, 0, 7); g.clip(); if (imgs[i].complete && imgs[i].naturalWidth) g.drawImage(imgs[i], s[0] - R2 * 1.78, s[1] - R2 * 1.1, R2 * 3.56, R2 * 2); else { g.fillStyle = '#888'; g.fill(); } if (levou) { g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(s[0] - R2, s[1] - R2, R2 * 2, R2 * 2); } g.restore();
         g.lineWidth = 3; g.strokeStyle = i < 5 ? '#5fe36a' : '#ff4d4d'; g.beginPath(); g.arc(s[0], s[1], R2, 0, 7); g.stroke();
+        // ícone da skill no pé do retrato (como no replay do site), por 1,8 s
+        var npop = 0;
+        for (var u = 0; u < D.ev.length; u++) { var e = D.ev[u], idade = t - e[0]; if (e[1] !== i || idade < 0 || idade > 1.8 || e[2] === 'tpscroll') continue;
+          var lado = (e[3] === 'u' ? 34 : 27) * (i === NAK ? 1.15 : 1), px = s[0] + R2 * .62 + npop * (lado + 3), py = s[1] + R2 * .55; npop++;
+          g.globalAlpha = idade > 1.5 ? (1.8 - idade) / .3 : Math.min(1, idade * 8); var sc2 = idade < .12 ? 1.5 - idade * 4 : 1;
+          g.save(); g.translate(px, py); g.scale(sc2, sc2); g.fillStyle = '#0b0d14'; g.fillRect(-lado / 2 - 2, -lado / 2 - 2, lado + 4, lado + 4);
+          var ic = icone(e[2], e[3]); if (ic.complete && ic.naturalWidth) g.drawImage(ic, -lado / 2, -lado / 2, lado, lado); else { g.fillStyle = '#334'; g.fillRect(-lado / 2, -lado / 2, lado, lado); g.fillStyle = '#fff'; g.font = '700 11px Archivo,sans-serif'; g.textAlign = 'center'; g.fillText(e[5].slice(0, 2), 0, 4); }
+          g.strokeStyle = e[3] === 'u' ? '#ffd23f' : e[3] === 'i' ? '#c9c9c9' : '#fff'; g.lineWidth = e[3] === 'u' ? 3 : 2; g.strokeRect(-lado / 2 - 1, -lado / 2 - 1, lado + 2, lado + 2); g.restore(); g.globalAlpha = 1; }
       }
       for (var p = parts.length - 1; p >= 0; p--) { var q2 = parts[p]; q2.vida += dt; if (q2.vida > q2.max) { parts.splice(p, 1); continue; } var ss = tl([q2.x, q2.y]), f = q2.vida / q2.max;
         if (q2.tipo === 'onda') { g.strokeStyle = 'rgba(255,230,180,' + (1 - f) + ')'; g.lineWidth = q2.forte ? 8 : 5; g.beginPath(); g.arc(ss[0], ss[1], f * (q2.forte ? 16 : 8) * zoom, 0, 7); g.stroke(); continue; }
@@ -502,6 +557,7 @@
 
     // quadro parado: o primeiro abate de quem carregou (ou o meio da perseguição), para a página já mostrar a cena
     var k1 = D.abates.filter(function (k) { return k[1] === NAK; })[0], alvoT = k1 ? Math.max(0, k1[0] - .3) : FIM / 2;
+    try { var qq = new URLSearchParams(location.search).get('quadro'); if (qq) { alvoT = clamp(+qq, 0, FIM); window.__plantao = { D: D, FX: FX, R: R }; } } catch (e) { /* sem URL */ } // ?quadro=<s> mostra outro instante parado (teste)
     function parado() { if (tocando) return; reset(); cam = pos(NAK, alvoT).slice(); zoom = W / 22; eventos(-1, alvoT); carimbos = []; parts = []; quadro(alvoT, 0, 0); }
     parado(); imgs.forEach(function (im) { im.addEventListener('load', parado); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(parado);
