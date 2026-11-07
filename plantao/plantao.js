@@ -23,6 +23,29 @@
   // ---------------------------------------------------------------------------------------------------------------
   // Dados: tudo o que a cena precisa, tirado da partida (OpenDota) e do mapa do robô. Índice 0-4 = time de quem
   // carregou, 5-9 = inimigos; NAK = quem carregou.
+  function janelaDeImpacto(m, mapa, carry, kDe, t0, TF) {
+    var k = kDe[carry.idx], lado = carry.radiant, ponto = {}, add = function (t, v) { t = Math.round(t); ponto[t] = (ponto[t] || 0) + v; };
+    var inimigoK = {}; (m.players || []).forEach(function (p, pi) { var r = p.isRadiant != null ? p.isRadiant : p.player_slot < 128; if (r !== lado && kDe[pi] != null) inimigoK[kDe[pi]] = true; });
+    var bateu = {}; // [vitimaK] -> tempos em que o jogador bateu nela
+    (mapa.dano || []).forEach(function (d) { if (d[1] === k && inimigoK[d[2]]) { add(d[0], d[3]); (bateu[d[2]] = bateu[d[2]] || []).push(d[0]); } });
+    var npcK = {}; (m.players || []).forEach(function (p, pi) { if (p.hero_id != null && kDe[pi] != null && inimigoK[kDe[pi]]) npcK[pi] = kDe[pi]; });
+    (m.players || []).forEach(function (p, pi) {
+      var r = p.isRadiant != null ? p.isRadiant : p.player_slot < 128; if (r !== lado) return;
+      (p.kills_log || []).forEach(function (kl) {
+        if (pi === carry.idx) { add(kl.time, 900); return; }
+        // participação: abate do time em quem o jogador bateu nos 8 s antes
+        var vk = null; Object.keys(bateu).forEach(function (x) { if (bateu[x].some(function (t) { return t <= kl.time && t >= kl.time - 8; })) vk = x; });
+        if (vk != null) add(kl.time, 450);
+      });
+    });
+    var soma = function (fim) { var s = 0; for (var t = fim - 124; t <= fim; t++) s += ponto[t] || 0; return s; };
+    var noFim = soma(TF), melhor = TF, maior = noFim;
+    for (var fim = t0 + 130; fim < TF - 60; fim += 5) { var v = soma(fim); if (v > maior) { maior = v; melhor = fim; } }
+    // só troca o fim (trono caindo) por uma luta que valeu bem mais; termina uns segundos depois do último lance dela
+    if (melhor === TF || maior < noFim * 1.6 + 600) return TF;
+    var ult = melhor; for (var t = melhor; t > melhor - 30; t--) if (ponto[t]) { ult = t; break; }
+    return Math.min(TF, ult + 6);
+  }
   function preparar(ctx) {
     var m = ctx.match, mapa = ctx.mapa, jog = ctx.jog;
     var carry = jog.find(function (j) { return j.idx === ctx.carry; });
@@ -40,7 +63,10 @@
     var npcDe = {}; ordem.forEach(function (j, i) { if (j.heroi && j.heroi.npc) npcDe[j.heroi.npc] = i; });
 
     var L = mapa.x[0].length, t0 = mapa.t0;
-    var T1 = Math.min(Math.round(m.duration || (t0 + L - 1)), t0 + L - 1);
+    var TF = Math.min(Math.round(m.duration || (t0 + L - 1)), t0 + L - 1);
+    // janela de 2 min: a do fim, a não ser que o jogador em destaque tenha tido uma luta bem mais forte antes (dano em
+    // herói + abates + participação). Pedido do Mat: suporte com mérito não pode aparecer parado só no fim.
+    var T1 = janelaDeImpacto(m, mapa, carry, kDe, t0, TF), final = T1 === TF;
     var T0 = Math.max(t0 + 1, T1 - 124);
     var N = T1 - T0 + 1;
     var ix = function (t) { return clamp(t - t0, 0, L - 1); };
@@ -63,7 +89,7 @@
     });
     abates.sort(function (a, b) { return a[0] - b[0]; });
     // placar antes da perseguição: o final da partida menos os abates da janela (o kills_log não tem as mortes para creep)
-    if (m.radiant_score != null && m.dire_score != null) {
+    if (final && m.radiant_score != null && m.dire_score != null) {
       var naJanela = [0, 0]; abates.forEach(function (k) { naJanela[(k[1] < 5) === carry.radiant ? 0 : 1]++; });
       antes = [Math.max(0, m.radiant_score - naJanela[0]), Math.max(0, m.dire_score - naJanela[1])];
     }
@@ -84,7 +110,7 @@
     });
     // a fortaleza cai no fim da partida mesmo quando o objetivo não vem: o trono do perdedor cai em T1
     var perdedor = carry.radiant ? 'badguys' : 'goodguys';
-    est.forEach(function (e) { if (e[3] === 'fort' && e[0].indexOf(perdedor) === 0 && e[4] === null && m.radiant_win === carry.radiant) e[4] = N - 1.5; });
+    est.forEach(function (e) { if (e[3] === 'fort' && e[0].indexOf(perdedor) === 0 && e[4] === null && final && m.radiant_win === carry.radiant) e[4] = N - 1.5; });
     // vivo: morto da morte até o pulo para a fonte (renasceu)
     var vivo = ordem.map(function (j, i) {
       var k = kDe[j.idx], row = [];
@@ -96,7 +122,7 @@
       }
       return row;
     });
-    return { T0: T0, N: N, NAK: NAK, ordem: ordem, herois: ordem.map(slugDe), nomes: ordem.map(function (j) { return j.nome; }), heroiNome: ordem.map(function (j) { return (j.heroi && j.heroi.nome) || '?'; }),
+    return { T0: T0, N: N, final: final, NAK: NAK, ordem: ordem, herois: ordem.map(slugDe), nomes: ordem.map(function (j) { return j.nome; }), heroiNome: ordem.map(function (j) { return (j.heroi && j.heroi.nome) || '?'; }),
       pos: pos, ev: ev, dano: dano, abates: abates, pred: pred, est: est, vivo: vivo,
       placar0: antes, radiant: carry.radiant, raw: m.players[carry.idx] || {} };
   }
@@ -380,7 +406,7 @@
     })();
 
     // ----- legendas (GC)
-    var GC = [[0, heroi + ' · na base dos ' + inimigo]];
+    var GC = [[0, heroi + (D.final ? ' · na base dos ' : ' · na caça aos ') + inimigo]];
     var cAbG = 0;
     D.abates.forEach(function (k) { if (k[1] === NAK) { cAbG++; GC.push([k[0], heroi + ' · ' + cAbG + (cAbG > 1 ? ' abates' : ' abate') + ' na perseguição']); } });
     D.est.forEach(function (e) {
