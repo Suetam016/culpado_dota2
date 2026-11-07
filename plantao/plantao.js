@@ -23,6 +23,29 @@
   // ---------------------------------------------------------------------------------------------------------------
   // Dados: tudo o que a cena precisa, tirado da partida (OpenDota) e do mapa do robô. Índice 0-4 = time de quem
   // carregou, 5-9 = inimigos; NAK = quem carregou.
+  function janelaDeImpacto(m, mapa, carry, kDe, t0, TF) {
+    var k = kDe[carry.idx], lado = carry.radiant, ponto = {}, add = function (t, v) { t = Math.round(t); ponto[t] = (ponto[t] || 0) + v; };
+    var inimigoK = {}; (m.players || []).forEach(function (p, pi) { var r = p.isRadiant != null ? p.isRadiant : p.player_slot < 128; if (r !== lado && kDe[pi] != null) inimigoK[kDe[pi]] = true; });
+    var bateu = {}; // [vitimaK] -> tempos em que o jogador bateu nela
+    (mapa.dano || []).forEach(function (d) { if (d[1] === k && inimigoK[d[2]]) { add(d[0], d[3]); (bateu[d[2]] = bateu[d[2]] || []).push(d[0]); } });
+    var npcK = {}; (m.players || []).forEach(function (p, pi) { if (p.hero_id != null && kDe[pi] != null && inimigoK[kDe[pi]]) npcK[pi] = kDe[pi]; });
+    (m.players || []).forEach(function (p, pi) {
+      var r = p.isRadiant != null ? p.isRadiant : p.player_slot < 128; if (r !== lado) return;
+      (p.kills_log || []).forEach(function (kl) {
+        if (pi === carry.idx) { add(kl.time, 900); return; }
+        // participação: abate do time em quem o jogador bateu nos 8 s antes
+        var vk = null; Object.keys(bateu).forEach(function (x) { if (bateu[x].some(function (t) { return t <= kl.time && t >= kl.time - 8; })) vk = x; });
+        if (vk != null) add(kl.time, 450);
+      });
+    });
+    var soma = function (fim) { var s = 0; for (var t = fim - 124; t <= fim; t++) s += ponto[t] || 0; return s; };
+    var noFim = soma(TF), melhor = TF, maior = noFim;
+    for (var fim = t0 + 130; fim < TF - 60; fim += 5) { var v = soma(fim); if (v > maior) { maior = v; melhor = fim; } }
+    // só troca o fim (trono caindo) por uma luta que valeu bem mais; termina uns segundos depois do último lance dela
+    if (melhor === TF || maior < noFim * 1.6 + 600) return TF;
+    var ult = melhor; for (var t = melhor; t > melhor - 30; t--) if (ponto[t]) { ult = t; break; }
+    return Math.min(TF, ult + 6);
+  }
   function preparar(ctx) {
     var m = ctx.match, mapa = ctx.mapa, jog = ctx.jog;
     var carry = jog.find(function (j) { return j.idx === ctx.carry; });
@@ -40,7 +63,10 @@
     var npcDe = {}; ordem.forEach(function (j, i) { if (j.heroi && j.heroi.npc) npcDe[j.heroi.npc] = i; });
 
     var L = mapa.x[0].length, t0 = mapa.t0;
-    var T1 = Math.min(Math.round(m.duration || (t0 + L - 1)), t0 + L - 1);
+    var TF = Math.min(Math.round(m.duration || (t0 + L - 1)), t0 + L - 1);
+    // janela de 2 min: a do fim, a não ser que o jogador em destaque tenha tido uma luta bem mais forte antes (dano em
+    // herói + abates + participação). Pedido do Mat: suporte com mérito não pode aparecer parado só no fim.
+    var T1 = janelaDeImpacto(m, mapa, carry, kDe, t0, TF), final = T1 === TF;
     var T0 = Math.max(t0 + 1, T1 - 124);
     var N = T1 - T0 + 1;
     var ix = function (t) { return clamp(t - t0, 0, L - 1); };
@@ -63,7 +89,7 @@
     });
     abates.sort(function (a, b) { return a[0] - b[0]; });
     // placar antes da perseguição: o final da partida menos os abates da janela (o kills_log não tem as mortes para creep)
-    if (m.radiant_score != null && m.dire_score != null) {
+    if (final && m.radiant_score != null && m.dire_score != null) {
       var naJanela = [0, 0]; abates.forEach(function (k) { naJanela[(k[1] < 5) === carry.radiant ? 0 : 1]++; });
       antes = [Math.max(0, m.radiant_score - naJanela[0]), Math.max(0, m.dire_score - naJanela[1])];
     }
@@ -84,7 +110,7 @@
     });
     // a fortaleza cai no fim da partida mesmo quando o objetivo não vem: o trono do perdedor cai em T1
     var perdedor = carry.radiant ? 'badguys' : 'goodguys';
-    est.forEach(function (e) { if (e[3] === 'fort' && e[0].indexOf(perdedor) === 0 && e[4] === null && m.radiant_win === carry.radiant) e[4] = N - 1.5; });
+    est.forEach(function (e) { if (e[3] === 'fort' && e[0].indexOf(perdedor) === 0 && e[4] === null && final && m.radiant_win === carry.radiant) e[4] = N - 1.5; });
     // vivo: morto da morte até o pulo para a fonte (renasceu)
     var vivo = ordem.map(function (j, i) {
       var k = kDe[j.idx], row = [];
@@ -96,7 +122,7 @@
       }
       return row;
     });
-    return { T0: T0, N: N, NAK: NAK, ordem: ordem, herois: ordem.map(slugDe), nomes: ordem.map(function (j) { return j.nome; }), heroiNome: ordem.map(function (j) { return (j.heroi && j.heroi.nome) || '?'; }),
+    return { T0: T0, N: N, final: final, NAK: NAK, ordem: ordem, herois: ordem.map(slugDe), nomes: ordem.map(function (j) { return j.nome; }), heroiNome: ordem.map(function (j) { return (j.heroi && j.heroi.nome) || '?'; }),
       pos: pos, ev: ev, dano: dano, abates: abates, pred: pred, est: est, vivo: vivo,
       placar0: antes, radiant: carry.radiant, raw: m.players[carry.idx] || {} };
   }
@@ -126,11 +152,27 @@
   }
 
   // Lances que o locutor comenta (tipos do banco) e o ritmo do replay (rápido no chato, lento no que decide)
+  // como foi a morte, para o locutor ler o lance: debaixo da torre, briga, solado (ninguém do time bateu), pick-off
+  // (vítima sem ninguém do time dela por perto) ou em equipe
+  function contexto(D, k) {
+    var t = k[0], v = k[2], sec = clamp(Math.round(t), 0, D.N - 1), pv = D.pos[v] && D.pos[v][sec];
+    if (!pv) return '';
+    var perto = function (de, ate) { var n = 0; for (var i = de; i < ate; i++) { if (i === v || !D.pos[i] || !D.vivo[i][sec]) continue; var q = D.pos[i][sec]; if (Math.hypot(q[0] - pv[0], q[1] - pv[1]) < 12) n++; } return n; };
+    var ladoV = D.radiant ? 'badguys' : 'goodguys';
+    var torre = D.est.some(function (e) { return e[3] !== 'fort' && e[0].indexOf(ladoV) === 0 && (e[4] === null || e[4] > t) && Math.hypot(e[1] - pv[0], e[2] - pv[1]) < 8; });
+    if (torre) return 'torre';
+    var deles = perto(5, 10), nossos = perto(0, 5);
+    if (deles >= 2 && nossos >= 2) return 'luta';
+    var ajudou = D.dano.some(function (d) { return d[2] === v && d[1] !== k[1] && d[1] < 5 && d[0] >= t - 6 && d[0] <= t + .5; });
+    if (!ajudou) return 'solo';
+    if (deles === 0) return 'pickoff';
+    return 'equipe';
+  }
   function roteiro(D, ctx) {
     var NAK = D.NAK, FIM = D.N - 1, L = [];
     var meus = D.abates.filter(function (k) { return k[1] === NAK; });
     L.push({ t: 0.6, tipo: 'abertura', p: 1 });
-    meus.forEach(function (k) { var v = D.ordem[k[2]]; L.push({ t: k[0], tipo: 'abate', vitima: D.herois[k[2]], dono: ctx.amigos.indexOf(v.nome) >= 0 ? v.nome : '', p: 9 }); });
+    meus.forEach(function (k) { var v = D.ordem[k[2]]; L.push({ t: k[0], tipo: 'abate', vitima: D.herois[k[2]], dono: ctx.amigos.indexOf(v.nome) >= 0 ? v.nome : '', ctx: contexto(D, k), p: 9 }); });
     D.est.forEach(function (e) {
       if (e[4] === null || e[4] < 0) return;
       var nosso = (e[0].indexOf('goodguys') === 0) === D.radiant;
@@ -155,10 +197,17 @@
     if (inv) L.push({ t: inv[0], tipo: 'sumiu', p: 4 });
     // ritmo: velocidade por meio segundo de jogo
     var chaves = D.abates.map(function (k) { return k[0]; }).concat(D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; }), L.filter(function (x) { return x.tipo !== 'abertura'; }).map(function (x) { return x.t; }));
+    // ritmo: a ação (abates, troca de dano do carry com herói, ult dele) anda devagar e com folga; prédio caindo só
+    // segura no instante da queda, e o caminho entre um e outro acelera (pedido do Mat: menos perseguição de torre)
+    var acao = D.abates.map(function (k) { return k[0]; })
+      .concat(D.dano.filter(function (d) { return d[3] >= 150 && ((d[1] === NAK && d[2] >= 5) || (d[2] === NAK && d[1] >= 5)); }).map(function (d) { return d[0]; }))
+      .concat(D.ev.filter(function (e) { return e[1] === NAK && e[3] === 'u'; }).map(function (e) { return e[0]; }));
+    var predios = D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; });
+    var perto = function (lista, t) { var d = Infinity; lista.forEach(function (k) { d = Math.min(d, Math.abs(t - k)); }); return d; };
     var vel = [];
     for (var s = 0; s <= FIM * 2 + 1; s++) {
-      var t = s / 2, d = Infinity; chaves.forEach(function (k) { d = Math.min(d, Math.abs(t - k)); });
-      vel.push(t < 4 ? 2 : d < 3 ? 1.6 : d < 8 ? 3 : d < 16 ? 5 : 8);
+      var t = s / 2, dA = perto(acao, t), dP = perto(predios, t);
+      vel.push(t < 4 ? 2 : dA < 2.5 ? 1.2 : dA < 6 ? 1.8 : dP < 2 ? 1.6 : dA < 12 || dP < 5 ? 3.5 : dA < 20 ? 6 : 9);
     }
     // "enquanto isso": no maior trecho acelerado
     var ini, best;
@@ -177,7 +226,7 @@
     var fica = [];
     L.forEach(function (x) { if (x.tipo === 'fim' || !fica.some(function (y) { return Math.abs(y.t - x.t) < 3; })) fica.push(x); });
     fica.sort(function (a, b) { return a.t - b.t; });
-    return { eventos: fica.map(function (x) { var o = { t: x.t, tipo: x.tipo }; ['vitima', 'dono', 'n', 'num'].forEach(function (k) { if (x[k] != null) o[k] = x[k]; }); return o; }), vel: vel, lentos: lentos };
+    return { eventos: fica.map(function (x) { var o = { t: x.t, tipo: x.tipo }; ['vitima', 'dono', 'n', 'num', 'ctx'].forEach(function (k) { if (x[k] != null) o[k] = x[k]; }); return o; }), vel: vel, lentos: lentos };
   }
 
   function carregarBanco() {
@@ -237,12 +286,15 @@
     var info = h('div', 'pl-info'); var mudoLbl = h('label'); var mudo = h('input'); mudo.type = 'checkbox'; mudoLbl.append(mudo, ' sem som');
     var tempo = h('span', '', 'Medindo o tempo…'); var sorteio = h('span');
     info.append(mudoLbl, tempo, sorteio);
+    // tempo de preparo e nº do sorteio só na página de teste (?visao=plantao): no site, só o "sem som" (pedido do Mat)
+    var teste = false; try { teste = new URLSearchParams(location.search).get('visao') === 'plantao'; } catch (e) { /* sem URL */ }
+    if (!teste) { tempo.hidden = true; sorteio.hidden = true; }
     caixa.append(peca, info);
 
     // ----- banco de falas: baixa só as sorteadas
     var TEXTOS = {}, FALAS = [], tomada = 0, baixados = {}, bytes = 0;
     function sortear(semente) {
-      return window.BancoPlantao.montar(R.eventos, { heroi: D.herois[NAK], quem: ctx.amigos.indexOf(nick) >= 0 ? nick : '', amigos: new Set(ctx.amigos), semente: semente })
+      return window.BancoPlantao.montar(R.eventos, { heroi: D.herois[NAK], quem: ctx.amigos.indexOf(nick) >= 0 ? nick : '', amigos: new Set(ctx.amigos), semente: semente, tem: function (id) { return Boolean(TEXTOS[id]); } })
         .map(function (x) { var ids = x.ids.filter(function (id) { return TEXTOS[id]; }); return [x.t, ids.length ? TEXTOS[ids[0]] : '', ids]; })
         .filter(function (f) { return f[2].length; });
     }
@@ -354,7 +406,7 @@
     })();
 
     // ----- legendas (GC)
-    var GC = [[0, heroi + ' · na base dos ' + inimigo]];
+    var GC = [[0, heroi + (D.final ? ' · na base dos ' : ' · na caça aos ') + inimigo]];
     var cAbG = 0;
     D.abates.forEach(function (k) { if (k[1] === NAK) { cAbG++; GC.push([k[0], heroi + ' · ' + cAbG + (cAbG > 1 ? ' abates' : ' abate') + ' na perseguição']); } });
     D.est.forEach(function (e) {
@@ -368,7 +420,23 @@
     var primeiraQueda = D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; }).sort(function (a, b) { return a - b; })[0];
 
     // ----- estado
-    var FX = efeitos(D), ICONES = {};
+    var FX = [], ICONES = {}; // forma genérica (efeitos) desligada em 06/11 a pedido do Mat: só desenho próprio (ASSIN)
+    // desenhos próprios das skills, os mesmos do replay do site (ASSIN no index.html), num SVG por cima do canvas;
+    // a forma genérica (efeitos) fica só para as skills que ainda não têm desenho
+    var RX = null;
+    if (ctx.fxReplay) { try { RX = ctx.fxReplay(D.T0 - 3, D.T0 + D.N); } catch (e) { RX = null; if (window.console) console.error('plantao fx', e); } }
+    if (RX) {
+      RX.svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); RX.svg.setAttribute('preserveAspectRatio', 'none'); RX.svg.classList.add('pl-fx'); RX.svg.setAttribute('aria-hidden', 'true');
+      cv.after(RX.svg);
+      FX = FX.filter(function (o) { return !RX.tem(o.key); });
+    }
+    function fxReplay(t, dx, dy, bal) {
+      if (!RX) return;
+      var L = M1 - M0, a = zoom * L / 100, e = W / 2 + (M0 - cam[0]) * zoom, f = H / 2 - (M1 - cam[1]) * zoom, tk = {};
+      for (var i = 0; i < 10; i++) { if (!D.pos[i] || !vivo(i, t)) continue; var q = pos(i, t); tk[D.ordem[i].idx] = [(q[0] - M0) / L * 100, 100 - (q[1] - M0) / L * 100]; }
+      var tr = 'translate(' + (W / 2 + dx).toFixed(2) + ',' + (H / 2 + dy).toFixed(2) + ') rotate(' + (bal * 57.2958).toFixed(3) + ') translate(' + (-W / 2) + ',' + (-H / 2) + ') translate(' + e.toFixed(2) + ',' + f.toFixed(2) + ') scale(' + a.toFixed(4) + ')';
+      try { RX.irPara(D.T0 + t, tk, tr, W / (100 * a)); } catch (er) { RX.svg.remove(); RX = null; }
+    }
     function icone(k, tipo) { if (!ICONES[k]) { var im = new Image(); im.src = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/' + (tipo === 'i' ? 'items' : 'abilities') + '/' + k + '.png'; ICONES[k] = im; } return ICONES[k]; }
     D.ev.forEach(function (e) { if (e[2] !== 'tpscroll') icone(e[2], e[3]); });
     var imgs = D.herois.map(function (s) { var i = new Image(); i.src = BASE + 'img/herois/' + s + '.png'; return i; });
@@ -417,6 +485,7 @@
       var alvo = pos(NAK, t); if (!cam) cam = alvo.slice(); var seg = md === 'rapido' ? .1 : .06; cam[0] += (alvo[0] - cam[0]) * seg; cam[1] += (alvo[1] - cam[1]) * seg;
       var zAlvo = W / (md === 'lento' ? 20 : md === 'rapido' ? 36 : 27); zoom += (zAlvo - zoom) * .05;
       var bal = Math.sin(ms / 900) * .012, dx = Math.sin(ms / 1300) * 7, dy = Math.cos(ms / 1700) * 6;
+      fxReplay(t, dx, dy, bal);
       g.save(); g.fillStyle = '#1a2414'; g.fillRect(0, 0, W, H);
       g.translate(W / 2 + dx, H / 2 + dy); g.rotate(bal); g.translate(-W / 2, -H / 2);
       var mw = W * .6 / zoom, mh = H * .6 / zoom, x0 = Math.max(M0, cam[0] - mw), x1 = Math.min(M1, cam[0] + mw), y0 = Math.max(M0, cam[1] - mh), y1 = Math.min(M1, cam[1] + mh);
@@ -563,7 +632,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(parado);
 
     carregarBanco().then(function (indice) { TEXTOS = indice || {}; return preparar2(); })
-      .catch(function () { tempo.textContent = 'O locutor não carregou: a perseguição toca sem a voz.'; btn.disabled = false; bLbl.textContent = 'Assistir com som'; });
+      .catch(function () { tempo.hidden = false; tempo.textContent = 'O locutor não carregou: a perseguição toca sem a voz.'; btn.disabled = false; bLbl.textContent = 'Assistir com som'; });
     return { parar: function () { if (tocando) parar(false); } };
   }
 

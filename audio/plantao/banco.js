@@ -56,6 +56,45 @@
       'Acabou a brincadeira!',
       'Virou freguês!',
       'Me dá o replay disso!',
+      'Mais um pro caderninho!',
+      'A lista só aumenta, Brasil!',
+      'Olha o placar subindo!',
+    ]],
+    // morte com contexto (06/11, pedido do Mat: menos zoeira automática, mais leitura do lance)
+    abate_solo: ['c', [
+      'Sozinho! Foi no mano a mano, sem pedir ajuda!',
+      'Um contra um! Encarou e levou!',
+      'Ninguém ajudou! Resolveu sozinho, minha gente!',
+      'Solou! Solou! Sem dó nem piedade!',
+    ]],
+    abate_pickoff: ['c', [
+      'Tava desgarrado! Andando sozinho na selva, olha o que dá!',
+      'Pegou o desgarrado! Quem manda passear sozinho?',
+      'Pegou o coitado longe do time! Ninguém veio salvar!',
+      'Saiu sozinho pra farmar... e não voltou mais!',
+    ]],
+    abate_luta: ['c', [
+      'No meio da pancadaria! Foi no bolo!',
+      'Briga generalizada, Brasil! E ele lá no meio!',
+      'Confusão na selva! Um a menos do lado de lá!',
+    ]],
+    abate_torre: ['c', [
+      'Debaixo da torre! Foi buscar dentro de casa!',
+      'Mergulhou na torre! Isso é falta de respeito!',
+      'Entrou debaixo da torre e saiu vivo! Que coragem!',
+    ]],
+    abate_equipe: ['c', [
+      'Trabalho em equipe! Cercaram e pegaram!',
+      'Foi a quadrilha toda! Não sobrou nada!',
+      'Fecharam o cerco! Não tinha pra onde correr!',
+    ]],
+    // elogio ao jogador: 1 ou 2 por vídeo, no melhor lance (pedido do Mat)
+    elogio: ['b', [
+      'Esse cara é muito bom, minha gente!',
+      'Que jogada absurda, Brasil! Absurda!',
+      'Isso aqui é aula, minha senhora! Aula!',
+      'Joga muito! Joga muito! Eu tô arrepiado!',
+      'Que jogador! Me dá o replay disso, produção!',
     ]],
     torre: ['c', [
       'Caiu a torre! Cadê a segurança dessa base?',
@@ -98,7 +137,7 @@
   const QUANTOS = ['{N} de uma vez! Que isso, minha gente?', 'Pegou {n} de uma vez! Me dá o replay disso!', '{N} de uma vez só! Você que tá em casa viu isso?'];
   const NUMEROS = ['{Num} de dano num tapa só!', 'Olha o número, Brasil: {num} de dano!'];
   const HEROI = { quem: 'É {o_heroi}! {O_heroi} tá na base deles!', vitima: '{O_heroi} no chão!' };
-  const AMIGO = { quem: 'É o {nick}! O {nick} não tem limite!', dono: 'Chama a mamãe, {nick}!' };
+  const AMIGO = { quem: 'É o {nick}! O {nick} não tem limite!', dono: 'Chama a mamãe, {nick}!', elogio: 'O {nick} fez uma jogada absurda! Que jogador!' };
   // nick do jeito que se fala (o TTS não lê número, colchete nem sigla grudada)
   const FALADO = { '3rvinha': 'Ervinha', 'ptn': 'pê tê ene', '[Pau]DeCamelo': 'Pau de Camelo', 'gustavoDotinhaPro': 'Gustavo Dotinha Pró' };
 
@@ -144,23 +183,45 @@
       return `g.${tipo}.${i}`;
     };
     const amigo = (nick) => nick && ctx.amigos && ctx.amigos.has(nick);
-    let abates = 0;
-    return eventos.map((e) => {
+    const tem = (id) => !ctx.tem || ctx.tem(id); // só fala que já foi gravada
+    let abates = 0; let mamae = false; let calado = 0;
+    const saida = eventos.map((e) => {
       const ids = [];
       if (e.tipo === 'abertura') {
         ids.push(tira('abertura'));
         ids.push(amigo(ctx.quem) && rnd() < 0.6 ? `a.${slug(ctx.quem)}.quem` : `h.${ctx.heroi}.quem`);
       } else if (e.tipo === 'abate') {
+        // nem toda morte ganha fala (no máximo 2 seguidas), e o lance é lido pelo contexto: solado, pick-off, briga,
+        // debaixo da torre ou em equipe. A zoeira do amigo ("chama a mamãe") sai uma vez só por sorteio.
         const primeiro = !abates++;
-        if (primeiro || rnd() < 0.5) ids.push(tira(primeiro ? 'abate' : 'abate2'));
-        ids.push(`h.${e.vitima}.vitima`);
-        if (amigo(e.dono)) ids.push(`a.${slug(e.dono)}.dono`);
-        else if (!primeiro && ids.length < 2) ids.push(tira('abate2'));
+        if (!primeiro && calado < 1 && abates > 2 && rnd() < 0.45) { calado++; return { t: e.t, tipo: e.tipo, ids }; }
+        calado = 0;
+        const tipoCtx = e.ctx && GENERICAS[`abate_${e.ctx}`] ? `abate_${e.ctx}` : null;
+        const ctxId = tipoCtx ? tira(tipoCtx) : null;
+        const ctxOk = ctxId && tem(ctxId);
+        if (ctxOk && rnd() < 0.75) ids.push(ctxId);
+        else ids.push(tira(primeiro ? 'abate' : 'abate2'));
+        if (rnd() < 0.6) ids.push(`h.${e.vitima}.vitima`);
+        if (amigo(e.dono) && !mamae && rnd() < 0.5) { mamae = true; ids.push(`a.${slug(e.dono)}.dono`); }
       } else if (e.tipo === 'varios') ids.push(`n.${Math.max(2, Math.min(5, e.n))}.${Math.floor(rnd() * QUANTOS.length)}`);
       else if (e.tipo === 'dano') ids.push(`d.${danoBalde(e.num)}.${Math.floor(rnd() * NUMEROS.length)}`);
       else if (GENERICAS[e.tipo]) ids.push(tira(e.tipo));
       return { t: e.t, tipo: e.tipo, ids };
     });
+    // elogio no melhor lance (vários de uma vez > dano grande > abate a partir do 2º), no máximo 2 e longe um do outro
+    const nota = { varios: 3, dano: 2, abate: 1 };
+    const cand = saida.map((x, i) => ({ x, i, p: (nota[x.tipo] || 0) + (x.tipo === 'abate' && i === saida.findIndex((y) => y.tipo === 'abate') ? -1 : 0) }))
+      .filter((c) => c.p > 0 && c.x.ids.length).sort((a, b) => b.p - a.p || rnd() - 0.5);
+    const escolhidos = [];
+    for (const c of cand) { if (escolhidos.length >= 2) break; if (escolhidos.some((o) => Math.abs(o.i - c.i) < 3)) continue; escolhidos.push(c); }
+    escolhidos.forEach((c, k) => {
+      const meu = amigo(ctx.quem) && k === 0 && `a.${slug(ctx.quem)}.elogio`;
+      const id = meu && tem(meu) ? meu : tira('elogio');
+      if (!tem(id)) return;
+      if (c.x.ids.length >= 3) c.x.ids.pop();
+      c.x.ids.push(id);
+    });
+    return saida;
   }
 
   const API = { GENERICAS, QUANTOS, NUMEROS, HEROI, AMIGO, todas, montar, extenso, slug };

@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-06T19:22:36.945Z",
-  "semAnalise": 1,
+  "atualizadoEm": "2026-11-07T02:23:23.075Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -19,12 +19,12 @@
       "nome": "[Pau]DeCamelo",
       "culpados": 42,
       "craques": 32,
-      "partidas": 313,
-      "vitorias": 148,
+      "partidas": 318,
+      "vitorias": 151,
       "winRate": 47,
       "streak": null,
-      "mmrGanho": 3525,
-      "mmrPerdido": 4025
+      "mmrGanho": 3600,
+      "mmrPerdido": 4075
     },
     {
       "accountId": "81918076",
@@ -51,6 +51,30 @@
       "mmrPerdido": 575
     },
     {
+      "accountId": "83300280",
+      "nome": "ptn",
+      "culpados": 11,
+      "craques": 3,
+      "partidas": 47,
+      "vitorias": 27,
+      "winRate": 57,
+      "streak": "culpado",
+      "mmrGanho": 600,
+      "mmrPerdido": 475
+    },
+    {
+      "accountId": "111257540",
+      "nome": "Kuscomem",
+      "culpados": 11,
+      "craques": 4,
+      "partidas": 116,
+      "vitorias": 50,
+      "winRate": 43,
+      "streak": "culpado",
+      "mmrGanho": 1250,
+      "mmrPerdido": 1625
+    },
+    {
       "accountId": "77621319",
       "nome": "Jalim",
       "culpados": 10,
@@ -61,30 +85,6 @@
       "streak": null,
       "mmrGanho": 1100,
       "mmrPerdido": 1075
-    },
-    {
-      "accountId": "111257540",
-      "nome": "Kuscomem",
-      "culpados": 10,
-      "craques": 4,
-      "partidas": 110,
-      "vitorias": 48,
-      "winRate": 44,
-      "streak": null,
-      "mmrGanho": 1200,
-      "mmrPerdido": 1525
-    },
-    {
-      "accountId": "83300280",
-      "nome": "ptn",
-      "culpados": 9,
-      "craques": 2,
-      "partidas": 44,
-      "vitorias": 26,
-      "winRate": 59,
-      "streak": null,
-      "mmrGanho": 575,
-      "mmrPerdido": 425
     },
     {
       "accountId": "1254464470",
@@ -4628,6 +4628,39 @@
         "heroi": 4,
         "culpa": 0.26,
         "merito": 0.166
+      },
+      {
+        "matchId": 9079222535,
+        "lado": "dire",
+        "tipo": "craque",
+        "inicio": 1794002140,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 12,
+        "culpa": 0.166,
+        "merito": 0.285
+      },
+      {
+        "matchId": 9079272334,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1794005625,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 12,
+        "culpa": 0.313,
+        "merito": 0.162
+      },
+      {
+        "matchId": 9079317395,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1794009630,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 44,
+        "culpa": 0.254,
+        "merito": 0.118
       }
     ],
     "96286191": [
@@ -6667,6 +6700,74 @@
         "heroi": 105,
         "culpa": 0.274,
         "merito": 0.16
+      },
+      {
+        "matchId": 9078907539,
+        "lado": "dire",
+        "tipo": "culpado",
+        "inicio": 1793987671,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 37,
+        "culpa": 0.241,
+        "merito": 0.115
+      },
+      {
+        "matchId": 9079021291,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793992346,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 112,
+        "culpa": 0.147,
+        "merito": 0.166
+      },
+      {
+        "matchId": 9079215624,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794001716,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 86,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9079272334,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794005625,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 86,
+        "culpa": 0.252,
+        "merito": 0.227
+      },
+      {
+        "matchId": 9079317395,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794009630,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 112,
+        "culpa": 0.131,
+        "merito": 0.27
+      },
+      {
+        "matchId": 9079343857,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794012300,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 40,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "241782761": [
@@ -10112,6 +10213,61 @@
         "heroi": 3,
         "culpa": 0.102,
         "merito": 0.158
+      },
+      {
+        "matchId": 9079104396,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793995950,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 54,
+        "culpa": 0.051,
+        "merito": 0.249
+      },
+      {
+        "matchId": 9079174909,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1793999375,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 47,
+        "culpa": 0.15,
+        "merito": 0.187
+      },
+      {
+        "matchId": 9079222535,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1794002140,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 15,
+        "culpa": 0.15,
+        "merito": 0.198
+      },
+      {
+        "matchId": 9079272334,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794005625,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 30,
+        "culpa": 0.138,
+        "merito": 0.22
+      },
+      {
+        "matchId": 9079317395,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794009630,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 47,
+        "culpa": 0.19,
+        "merito": 0.261
       }
     ],
     "1000265186": [
@@ -13943,7 +14099,7 @@
     },
     "83300280": {
       "avatar": "https://avatars.steamstatic.com/5b6eb362809ae38fdd30a4a84cbe55da330576d8_full.jpg",
-      "rankTier": 33,
+      "rankTier": 34,
       "leaderboard": null
     },
     "96286191": {
@@ -13958,7 +14114,7 @@
     },
     "241782761": {
       "avatar": "https://avatars.steamstatic.com/0f60b23488f593182554cbf7deaef8e7eed75965_full.jpg",
-      "rankTier": 45,
+      "rankTier": 51,
       "leaderboard": null
     },
     "1000265186": {
@@ -13972,5 +14128,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-06T15:46:26.479Z"
+  "perfisEm": "2026-11-06T22:04:06.498Z"
 }

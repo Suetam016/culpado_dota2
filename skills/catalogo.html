@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo de skills</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#0e0f13;--card:#171920;--line:#2a2d38;--txt:#eceef3;--sub:#9aa0ad;--ouro:#ffd23f;--verde:#5fe36a;--verm:#ff4d4d;--azul:#7fd3ff;--chao:#1f3b22;--chao2:#2a4a2c;}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f2ec;--card:#fff;--line:#e2ded3;--txt:#1d1f24;--sub:#666b75;}}
+:root[data-theme="light"]{--bg:#f4f2ec;--card:#fff;--line:#e2ded3;--txt:#1d1f24;--sub:#666b75;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1160px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:19px;margin:34px 0 10px}
+p.sub{color:var(--sub);margin:0 0 18px;max-width:760px}
+.numeros{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 6px}
+.num{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:150px}
+.num b{display:block;font-size:22px}
+.num span{color:var(--sub);font-size:13px}
+.barra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0 14px}
+button{font:inherit;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button[aria-pressed="true"]{border-color:var(--ouro);color:var(--ouro)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer}
+.card svg{display:block;width:100%;aspect-ratio:1/1;background:var(--chao)}
+.card .rot{padding:9px 12px 11px;display:flex;align-items:center;gap:8px}
+.card .rot img{width:34px;height:19px;object-fit:cover;border-radius:3px}
+.card .rot div{flex:1;min-width:0}
+.card .rot b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .rot small{color:var(--sub);font-size:12px}
+.tag{font-size:11px;font-weight:700;border-radius:5px;padding:2px 6px;border:1px solid currentColor}
+.tag.ult{color:var(--ouro)}
+.tag.refaz{color:var(--azul)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--sub);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.est{font-size:12px;font-weight:700}
+.est.generico{color:var(--verm)}.est.replay{color:var(--verde)}.est.lote{color:var(--ouro)}
+.tabela{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 8px}
+ol.passos{padding-left:20px;max-width:760px}
+ol.passos li{margin:4px 0}
+code{font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+</style>
+</head>
+<body>
+<main>
+<h1>Catálogo de skills do replay</h1>
+<p class="sub">Todas as skills que o grupo já usou têm animação própria. Cada quadro roda a animação numa cena de exemplo, com o mesmo código do replay do site e do Plantão. Clique num quadro para recomeçar.</p>
+<div class="numeros" id="numeros"></div>
+<h2>Feitas à mão (lote 1)</h2>
+<div class="barra"><span style="color:var(--sub)">Velocidade:</span><button data-vel="1" aria-pressed="true">Normal</button><button data-vel="0.5" aria-pressed="false">Câmera lenta</button></div>
+<div class="grade" id="grade"></div>
+<h2>Por ficha (todas as outras)</h2>
+<p class="sub">Cada skill tem uma ficha com molde, cor e forma próprios. Escolha o herói. As mais vistas pelo grupo aparecem primeiro.</p>
+<div class="barra"><label for="heroi" style="color:var(--sub)">Herói:</label><select id="heroi"></select></div>
+<div class="grade" id="grade2"></div>
+<h2>Como a esteira anda</h2>
+<ol class="passos">
+<li><code>python3 skills/fila.py</code> lista as skills usadas nas partidas do grupo e diz quais ainda não têm desenho.</li>
+<li>Skill nova ganha uma ficha em <code>skills/fichas.js</code> (molde, cor e forma).</li>
+<li>As mais vistas podem ganhar desenho feito à mão em <code>skills/lote-N.js</code>, que passa na frente da ficha.</li>
+</ol>
+</main>
+<script src="fichas.js"></script>
+<script src="moldes.js"></script>
+<script src="lote-1.js"></script>
+<script>
+(function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  function s(tag, attrs) { var n = document.createElementNS(NS, tag); for (var k in attrs || {}) if (attrs[k] != null) n.setAttribute(k, String(attrs[k])); for (var i = 2; i < arguments.length; i++) n.append(arguments[i]); return n; }
+  var at = function (el, o) { for (var k in o) el.setAttribute(k, typeof o[k] === 'number' ? o[k].toFixed(2) : o[k]); };
+  var mix = function (a, b, k) { return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; };
+  var lim = function (k) { return Math.max(0, Math.min(1, k)); };
+  var saiDe = function (k) { return 1 - (1 - k) * (1 - k); };
+  var sorte = function (n) { var x = Math.sin(n * 12.9898) * 43758.5453; return x - Math.floor(x); };
+  var dist = function (a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1]); };
+  var MAPA = { min: 61, max: 195 }, W = 100, L = MAPA.max - MAPA.min;
+  var u = function (x) { return ((x - MAPA.min) / L) * W; }, v = function (y) { return W - ((y - MAPA.min) / L) * W; };
+  var Q = function (q) { return q ? [u(q[0]), v(q[1])] : null; };
+  var UNID = 100 / L / 128, R = 2.2, LADO = 14;
+  var retrato = function (h) { return (window.RETRATOS && window.RETRATOS[h]) || '../img/herois/' + h + '.png'; };
+
+  // Cenas de mentira: posição de cada herói (célula do mapa) no tempo, quem usou a skill e o dano que ela deu.
+  // Índices 0-4 são o time de quem usou, 5-9 os inimigos.
+  var CENAS = {
+    juggernaut_blade_fury: { h: { 0: ['juggernaut', [[0, 122, 128], [1, 123, 128], [6, 128, 128.2]]], 5: ['crystal_maiden', [[0, 127.5, 129.2], [6, 129.5, 129.8]]], 6: ['lion', [[0, 128.6, 127.1], [6, 130, 126.4]]] }, uso: [1, 0, null], dano: [[2, 0, 5], [3, 0, 5], [3, 0, 6], [4, 0, 6], [4, 0, 5], [5, 0, 5], [5, 0, 6]], dur: 7 },
+    juggernaut_omni_slash: { h: { 0: ['juggernaut', [[0, 124, 128], [1, 125, 128], [1.6, 128, 129], [2.6, 130, 127], [3.6, 128, 129.2], [4.6, 126.8, 127.4]]], 5: ['crystal_maiden', [[0, 128.8, 129.5]]], 6: ['witch_doctor', [[0, 130.6, 126.3]]], 7: ['disruptor', [[0, 126.3, 126.8]]] }, uso: [1, 0, 5], dano: [[1.6, 0, 5], [2.6, 0, 6], [3.6, 0, 5], [4.6, 0, 7]], dur: 6.2 },
+    faceless_void_chronosphere: { h: { 0: ['faceless_void', [[0, 124, 128], [1, 126.5, 128]]], 5: ['pudge', [[0, 128.4, 128.9], [1.5, 128.6, 129]]], 6: ['crystal_maiden', [[0, 129.2, 127.2], [1.5, 129.4, 127]]], 7: ['axe', [[0, 127.2, 126.6], [1.5, 127.3, 126.5]]], 1: ['earth_spirit', [[0, 121, 129], [6, 124, 128.6]]] }, uso: [1, 0, null], dano: [], dur: 6 },
+    faceless_void_time_walk: { h: { 0: ['faceless_void', [[0, 121, 128], [1, 121.3, 128], [2, 127.3, 129], [4, 127.6, 129]]], 5: ['crystal_maiden', [[0, 129.6, 129.5]]] }, uso: [1, 0, null], dano: [], dur: 3 },
+    lion_impale: { h: { 0: ['lion', [[0, 122, 128]]], 5: ['pudge', [[0, 126.8, 128.7]]], 6: ['axe', [[0, 128.4, 127.6]]] }, uso: [1, 0, null], dano: [[1.4, 0, 5], [1.5, 0, 6]], dur: 3 },
+    lion_finger_of_death: { h: { 0: ['lion', [[0, 123, 128]]], 5: ['juggernaut', [[0, 128.5, 129], [3, 129, 129.2]]] }, uso: [1, 0, 5], dano: [[1.3, 0, 5]], dur: 3 },
+    shadow_shaman_shackles: { h: { 0: ['shadow_shaman', [[0, 124, 128]]], 5: ['juggernaut', [[0, 127.6, 129.1]]] }, uso: [1, 0, 5], dano: [[1.5, 0, 5], [2.5, 0, 5], [3.5, 0, 5]], dur: 4.6 },
+    shadow_shaman_mass_serpent_ward: { h: { 0: ['shadow_shaman', [[0, 123, 128]]], 5: ['pudge', [[0, 128.5, 128.2], [4, 127.4, 128.3], [8, 129.5, 129.5]]] }, uso: [1, 0, null], dano: [], dur: 8.5 },
+    spirit_breaker_charge_of_darkness: { h: { 0: ['spirit_breaker', [[0, 117, 127.5], [1, 117.4, 127.6], [4.5, 127.2, 128.6], [6, 127.4, 128.7]]], 5: ['crystal_maiden', [[0, 128.4, 128.9], [6, 128.6, 129.1]]] }, uso: [1, 0, 5], dano: [[4.5, 0, 5]], dur: 6 },
+    sniper_shrapnel: { h: { 0: ['sniper', [[0, 120, 128]]], 5: ['axe', [[0, 128, 128.5], [6, 128.6, 128.9]]], 6: ['witch_doctor', [[0, 129.2, 127.2], [6, 129.8, 127]]] }, uso: [1, 0, null], dano: [[1.5, 0, 5], [1.6, 0, 6], [2.5, 0, 5], [2.6, 0, 6], [3.5, 0, 5], [4.5, 0, 6], [5.5, 0, 5]], dur: 7.5 },
+    sniper_assassinate: { h: { 0: ['sniper', [[0, 120, 128]]], 5: ['crystal_maiden', [[0, 129.5, 129.2], [4, 130.3, 129.8]]] }, uso: [1, 0, 5], dano: [[3, 0, 5]], dur: 4.6 },
+    phantom_assassin_stifling_dagger: { h: { 0: ['phantom_assassin', [[0, 123, 128]]], 5: ['lion', [[0, 128.8, 128.9], [3, 129.4, 129.1]]] }, uso: [1, 0, 5], dano: [[1.35, 0, 5]], dur: 2.6 },
+    rubick_telekinesis: { h: { 0: ['rubick', [[0, 124, 128]]], 5: ['pudge', [[0, 127.4, 128.6]]] }, uso: [1, 0, 5], dano: [], dur: 4 },
+  };
+
+  var vel = 1;
+  var FIXO = new URLSearchParams(location.search).get('t');
+  var LOTE1 = window.SKILL_LOTES.find(function (l) { return l.numero === 1; }), MOLDES = window.SKILL_LOTES.find(function (l) { return l.numero === 0; });
+  var cartoes = [];
+
+  // cena automática pelo molde da ficha: quem usou à esquerda, dois inimigos à direita, um aliado atrás
+  function cenaAuto(chave, heroi) {
+    var m = MOLDES.ler(window.SKILL_FICHAS[chave]), d = m.dur || 3;
+    var h = { 0: [heroi, [[0, 123, 128]]], 1: ['crystal_maiden', [[0, 121.5, 126.6]]], 5: ['pudge', [[0, 127.6, 128.8]]], 6: ['axe', [[0, 128.9, 127.2]]] };
+    if (heroi === 'pudge' || heroi === 'axe') { h[5][0] = 'lion'; h[6][0] = 'sniper'; }
+    var c = { h: h, uso: [1, 0, null], dano: [] };
+    var alvo1 = ['proj', 'feixe', 'corrente', 'marca', 'golpe'].indexOf(m.molde) >= 0;
+    if (alvo1) { c.uso[2] = 5; c.dano.push([1.35, 0, 5]); if (m.molde === 'corrente' || m.molde === 'marca') for (var t = 2.4; t < 1 + d; t += 1) c.dano.push([t, 0, 5]); }
+    else if (['onda', 'linha', 'area', 'chuva', 'vortice', 'cupula'].indexOf(m.molde) >= 0) { var a = 1.3 + (m.atraso || 0); c.dano.push([a, 0, 5], [a + 0.05, 0, 6]); }
+    if (m.molde === 'salto') h[0][1] = [[0, 122, 128], [1, 122.3, 128], [2, 126.5, 128.6]];
+    if (m.molde === 'aura' && /\b(escudo)\b/.test(window.SKILL_FICHAS[chave]) === false) {}
+    return c;
+  }
+  function montarCena(chave, ficha, c, lote) {
+    var idxs = Object.keys(c.h).map(Number);
+    var nosSet = new Set(idxs.filter(function (i) { return i < 5; }));
+    var todos = idxs.map(function (i) { return { idx: i }; });
+    var trilha = function (kf, t) {
+      if (t <= kf[0][0]) return [kf[0][1], kf[0][2]];
+      for (var i = 1; i < kf.length; i++) if (t <= kf[i][0]) { var a = kf[i - 1], b = kf[i], f = (t - a[0]) / (b[0] - a[0]); return [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }
+      var z = kf[kf.length - 1]; return [z[1], z[2]];
+    };
+    var pos = function (t) { var o = {}; idxs.forEach(function (i) { o[i] = trilha(c.h[i][1], t); }); return o; };
+    var HAB = [chave, ficha.nome, ficha.ult ? 'u' : 'h'];
+    var DANO = c.dano.map(function (d) { return { t: d[0], quem: d[1], alvo: d[2], v: 120, hab: HAB }; });
+    var USOS = [{ t: c.uso[0], quem: c.uso[1], hab: HAB, alvo: c.uso[2] }];
+    var morto = function () { return false; };
+    // mesmas ferramentas de montarLances (index.html)
+    var acertosDe = function (uso, janela, ch) { ch = ch || uso.hab[0]; var out = [], ja = new Set(); DANO.forEach(function (d) { if (d.quem !== uso.quem || !d.hab || d.hab[0] !== ch || d.t < uso.t || d.t > uso.t + janela || d.alvo === uso.quem || ja.has(d.alvo)) return; ja.add(d.alvo); out.push(d); }); return out; };
+    var ticksDe = function (uso, ch, ate, folga) { folga = folga || 1.6; var fim = null; for (var i = 0; i < DANO.length; i++) { var d = DANO[i]; if (d.quem !== uso.quem || !d.hab || d.hab[0] !== ch || d.t < uso.t) continue; if (d.t > ate || (fim != null && d.t - fim > folga) || (fim == null && d.t - uso.t > folga)) break; fim = d.t; } return fim; };
+    var inimigoPerto = function (quem, tt, alcance) { var ps = pos(tt), q = ps[quem], m = null, dm = alcance / 128; todos.forEach(function (p) { if (nosSet.has(p.idx) === nosSet.has(quem) || !ps[p.idx]) return; var d = dist(ps[p.idx], q); if (d < dm) { dm = d; m = p.idx; } }); return m; };
+    var pontaPara = function (uso, alcance) { var de = pos(uso.t)[uso.quem]; var alvo = inimigoPerto(uso.quem, uso.t, alcance * 1.4); var para = alvo != null ? pos(uso.t)[alvo] : pos(uso.t + 1)[uso.quem]; var dx = para[0] - de[0], dy = para[1] - de[1], n = Math.hypot(dx, dy); if (n < 0.05) return null; var LL = Math.min(alcance / 128, alvo != null ? n : Infinity); return [de[0] + (dx / n) * LL, de[1] + (dy / n) * LL]; };
+    var centroDe = function (hits) { var qs = hits.map(function (d) { return pos(d.t)[d.alvo]; }).filter(Boolean); return qs.length ? [qs.reduce(function (a, q) { return a + q[0]; }, 0) / qs.length, qs.reduce(function (a, q) { return a + q[1]; }, 0) / qs.length] : null; };
+    var area = function (mundo, z) { return Math.max(mundo * UNID * 1.5, (R + 1.6) * z); };
+    var trilhaDe = function (quem, t0, t1) { var pts = []; for (var tt = t0; tt <= t1 + 1e-6; tt += 0.1) pts.push(Q(pos(tt)[quem])); return pts.length > 1 ? 'M' + pts.map(function (p) { return p[0].toFixed(2) + ',' + p[1].toFixed(2); }).join('L') : ''; };
+    var K = { s: s, at: at, Q: Q, pos: pos, mix: mix, lim: lim, saiDe: saiDe, sorte: sorte, dist: dist, R: R, UNID: UNID, area: area, todos: todos, nosSet: nosSet, morto: morto, DANO: DANO, USOS: USOS, acertosDe: acertosDe, ticksDe: ticksDe, pontaPara: pontaPara, inimigoPerto: inimigoPerto, centroDe: centroDe, trilhaDe: trilhaDe };
+    var skills = lote.fazer(K); if (!c.dur) { /* duração sai da animação */ }
+    var assin = skills[chave](USOS[0]);
+
+    // câmera: quadrado de LADO unidades em volta de todo mundo
+    var xs = [], ys = [];
+    idxs.forEach(function (i) { c.h[i][1].forEach(function (p) { var q = Q([p[1], p[2]]); xs.push(q[0]); ys.push(q[1]); }); });
+    var cx = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2, cy = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2;
+    var lado = Math.max(LADO, Math.max.apply(null, xs) - Math.min.apply(null, xs) + 6);
+    var z = Math.max(0.35, lado / W), DUR = c.dur || Math.min(12, (assin ? assin.fim : 3) + 0.9);
+    var svg = s('svg', { viewBox: [cx - lado / 2, cy - lado / 2, lado, lado].map(function (n) { return n.toFixed(2); }).join(' '), role: 'img', 'aria-label': ficha.nome });
+    var id = 'rc-' + chave;
+    svg.append(s('defs', {}, s('clipPath', { id: id }, s('circle', { r: (R - 0.3) * z }))));
+    // chão com uma trilha, só para dar a cara do mapa
+    var chao = s('g', {});
+    chao.append(s('rect', { x: cx - lado, y: cy - lado, width: lado * 2, height: lado * 2, fill: '#1f3b22' }));
+    chao.append(s('path', { d: 'M' + (cx - lado) + ',' + (cy + lado * 0.15) + ' C' + (cx - lado * 0.2) + ',' + (cy + lado * 0.05) + ' ' + (cx + lado * 0.2) + ',' + (cy + lado * 0.3) + ' ' + (cx + lado) + ',' + (cy + lado * 0.1), stroke: '#2e2418', 'stroke-width': lado * 0.16, fill: 'none' }));
+    chao.append(s('path', { d: 'M' + (cx - lado) + ',' + (cy + lado * 0.15) + ' C' + (cx - lado * 0.2) + ',' + (cy + lado * 0.05) + ' ' + (cx + lado * 0.2) + ',' + (cy + lado * 0.3) + ' ' + (cx + lado) + ',' + (cy + lado * 0.1), stroke: '#6b5a3e', 'stroke-width': lado * 0.12, fill: 'none' }));
+    for (var a = 0; a < 14; a++) chao.append(s('circle', { cx: cx - lado / 2 + sorte(a * 3 + chave.length) * lado, cy: cy - lado / 2 + sorte(a * 7 + 1) * lado * 0.4, r: 0.9 + sorte(a) * 0.6, fill: '#173019' }));
+    var camChao = s('g', {}), camHerois = s('g', {}), camFx = s('g', {});
+    svg.append(chao, camChao, camHerois, camFx);
+    var toks = {};
+    idxs.forEach(function (i) {
+      var g = s('g', {});
+      g.append(s('circle', { r: R * z, fill: '#000', opacity: 0.45, cx: 0.25 * z, cy: 0.35 * z }));
+      g.append(s('image', { href: retrato(c.h[i][0]), x: -(R - 0.3) * z * 1.78, y: -(R - 0.3) * z, width: (R - 0.3) * z * 3.56, height: (R - 0.3) * z * 2, 'clip-path': 'url(#' + id + ')', preserveAspectRatio: 'xMidYMid slice' }));
+      g.append(s('circle', { r: (R - 0.3) * z, fill: 'none', stroke: i < 5 ? '#5fe36a' : '#ff4d4d', 'stroke-width': 0.32 * z }));
+      camHerois.append(g); toks[i] = g;
+    });
+    var vivo = null;
+    var F = { z: z, tok: function (i) { return Q(pos(F.t)[i]); } };
+    var t = 0;
+    var quadro = function (dt) {
+      t = FIXO != null ? Number(FIXO) : t + dt * vel;
+      if (t > DUR) { t = 0; if (vivo) { vivo.g.remove(); vivo = null; } }
+      F.t = t;
+      var ps = pos(t);
+      idxs.forEach(function (i) { var q = Q(ps[i]); toks[i].setAttribute('transform', 'translate(' + q[0].toFixed(2) + ',' + q[1].toFixed(2) + ')'); });
+      if (assin && t >= assin.ini && t <= assin.fim) {
+        if (!vivo) { vivo = assin.criar(); (assin.chao ? camChao : camFx).append(vivo.g); }
+        assin.desenhar(vivo, t, F);
+      } else if (vivo) { vivo.g.remove(); vivo = null; }
+    };
+    svg.dataset.vazio = assin ? '' : '1';
+    return { svg: svg, quadro: quadro, reiniciar: function () { t = 0; if (vivo) { vivo.g.remove(); vivo = null; } } };
+  }
+
+  var nomeH = function (h) { return h.replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); }); };
+  var visiveis = new Set();
+  var obs = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) visiveis.add(e.target.cena); else visiveis.delete(e.target.cena); }); }) : null;
+  var cartao = function (grade, chave, f, c, lote) {
+    var cena = montarCena(chave, f, c, lote);
+    var card = document.createElement('div'); card.className = 'card'; card.title = 'Clique para recomeçar';
+    card.append(cena.svg);
+    var rot = document.createElement('div'); rot.className = 'rot';
+    rot.innerHTML = '<img alt="" src="' + retrato(f.heroi) + '"><div><b>' + f.nome + '</b><small>' + nomeH(f.heroi) + (f.molde ? ' · ' + f.molde : '') + '</small></div>' + (f.refaz ? '<span class="tag refaz">refeita</span>' : '') + (f.ult ? '<span class="tag ult">ult</span>' : '');
+    card.append(rot);
+    card.addEventListener('click', cena.reiniciar);
+    card.cena = cena; grade.append(card);
+    cena.quadro(0);
+    if (obs) obs.observe(card); else visiveis.add(cena);
+  };
+  var grade = document.getElementById('grade');
+  Object.keys(LOTE1.fichas).forEach(function (chave) { cartao(grade, chave, LOTE1.fichas[chave], CENAS[chave], LOTE1); });
+  var mostrarFichas = function (d) {
+    var lista = d.skills.filter(function (x) { return window.SKILL_FICHAS[x.chave]; });
+    var sel = document.getElementById('heroi'), herois = [];
+    lista.forEach(function (x) { if (herois.indexOf(x.heroi) < 0) herois.push(x.heroi); });
+    sel.innerHTML = '<option value="">As 24 mais vistas</option>' + herois.slice().sort().map(function (h) { return '<option value="' + h + '">' + nomeH(h) + '</option>'; }).join('');
+    var g2 = document.getElementById('grade2');
+    var pintar = function () {
+      g2.textContent = ''; visiveis.forEach(function (c) { if (!grade.contains(c.svg)) visiveis.delete(c); });
+      (sel.value ? lista.filter(function (x) { return x.heroi === sel.value; }) : lista.slice(0, 24)).forEach(function (x) {
+        var heroi = /^(black_dragon|dark_troll|enraged|forest_troll|frogmen|giant_wolf|mud_golem|polar|satyr|spawnlord)/.test(x.chave) ? 'chen' : x.heroi;
+        cartao(g2, x.chave, { heroi: heroi, nome: x.nome, ult: x.ult, molde: MOLDES.ler(window.SKILL_FICHAS[x.chave]).molde }, cenaAuto(x.chave, heroi), MOLDES);
+      });
+    };
+    sel.addEventListener('change', pintar); pintar();
+  };
+  var ultimo = null;
+  var laco = function (agora) { var dt = ultimo == null ? 0 : Math.min(0.05, (agora - ultimo) / 1000); ultimo = agora; visiveis.forEach(function (c) { c.quadro(dt); }); requestAnimationFrame(laco); };
+  requestAnimationFrame(laco);
+  document.querySelectorAll('[data-vel]').forEach(function (b) { b.addEventListener('click', function () { vel = Number(b.dataset.vel); document.querySelectorAll('[data-vel]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }); });
+
+  // números e fila (skills/fila.json; no catálogo publicado vem embutido)
+  var mostrarFila = function (d) {
+    var lote1 = d.skills.filter(function (x) { return x.estado === 'lote 1'; }).length, mao = d.skills.filter(function (x) { return x.estado === 'replay'; }).length, fic = d.skills.filter(function (x) { return window.SKILL_FICHAS[x.chave]; }).length;
+    document.getElementById('numeros').innerHTML =
+      '<div class="num"><b>' + (mao + lote1) + '</b><span>feitas à mão</span></div>' +
+      '<div class="num"><b>' + fic + '</b><span>por ficha</span></div>' +
+      '<div class="num"><b>' + d.skills_vistas + '</b><span>skills vistas em ' + d.partidas + ' partidas do grupo</span></div>';
+    mostrarFichas(d);
+  };
+  if (window.FILA) mostrarFila(window.FILA);
+  else fetch('fila.json').then(function (r) { return r.json(); }).then(mostrarFila).catch(function () {});
+})();
+</script>
+</body>
+</html>

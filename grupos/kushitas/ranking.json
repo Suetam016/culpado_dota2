@@ -1,42 +1,42 @@
 {
-  "atualizadoEm": "2026-11-06T19:23:20.502Z",
-  "semAnalise": 0,
+  "atualizadoEm": "2026-11-07T02:23:29.129Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
-      "culpados": 68,
+      "culpados": 71,
       "craques": 28,
-      "partidas": 284,
-      "vitorias": 136,
-      "winRate": 48,
+      "partidas": 291,
+      "vitorias": 137,
+      "winRate": 47,
       "streak": "culpado",
-      "mmrGanho": 3400,
-      "mmrPerdido": 3700
+      "mmrGanho": 3425,
+      "mmrPerdido": 3850
     },
     {
       "accountId": "200957620",
       "nome": "Danylera",
       "culpados": 34,
       "craques": 37,
-      "partidas": 202,
+      "partidas": 203,
       "vitorias": 95,
       "winRate": 47,
       "streak": "culpado",
       "mmrGanho": 2325,
-      "mmrPerdido": 2625
+      "mmrPerdido": 2650
     },
     {
       "accountId": "85686824",
       "nome": "Rannis",
       "culpados": 5,
       "craques": 3,
-      "partidas": 29,
+      "partidas": 30,
       "vitorias": 10,
-      "winRate": 34,
+      "winRate": 33,
       "streak": "culpado",
       "mmrGanho": 250,
-      "mmrPerdido": 475
+      "mmrPerdido": 500
     }
   ],
   "historicos": {
@@ -359,6 +359,18 @@
         "heroi": 48,
         "culpa": 0.137,
         "merito": 0.197
+      },
+      {
+        "matchId": 9079357737,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794013750,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 26,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "86736516": [
@@ -3485,6 +3497,86 @@
         "heroi": 32,
         "culpa": 0.301,
         "merito": 0.214
+      },
+      {
+        "matchId": 9078768842,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1793982115,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 32,
+        "culpa": 0.367,
+        "merito": 0.151
+      },
+      {
+        "matchId": 9079091528,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1793995370,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 73,
+        "culpa": 0.236,
+        "merito": 0.111
+      },
+      {
+        "matchId": 9079158755,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1793998526,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 43,
+        "culpa": 0.174,
+        "merito": 0.329
+      },
+      {
+        "matchId": 9079214328,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1794001635,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 39,
+        "culpa": 0.299,
+        "merito": 0.251
+      },
+      {
+        "matchId": 9079265514,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794005100,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 22,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9079316069,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794009505,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 39,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9079357737,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794013750,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "200957620": [
@@ -5709,6 +5801,18 @@
         "heroi": 80,
         "culpa": 0.04,
         "merito": 0.233
+      },
+      {
+        "matchId": 9079357737,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794013750,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 80,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ]
   },
@@ -5720,7 +5824,7 @@
     },
     "86736516": {
       "avatar": "https://avatars.steamstatic.com/1eb8d095cf5340aacb647cb5869f4a57cf41e8be_full.jpg",
-      "rankTier": 64,
+      "rankTier": 63,
       "leaderboard": null
     },
     "200957620": {
@@ -5729,5 +5833,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-06T14:39:06.927Z"
+  "perfisEm": "2026-11-06T20:45:38.639Z"
 }
