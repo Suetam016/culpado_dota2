@@ -171,10 +171,17 @@
     if (inv) L.push({ t: inv[0], tipo: 'sumiu', p: 4 });
     // ritmo: velocidade por meio segundo de jogo
     var chaves = D.abates.map(function (k) { return k[0]; }).concat(D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; }), L.filter(function (x) { return x.tipo !== 'abertura'; }).map(function (x) { return x.t; }));
+    // ritmo: a ação (abates, troca de dano do carry com herói, ult dele) anda devagar e com folga; prédio caindo só
+    // segura no instante da queda, e o caminho entre um e outro acelera (pedido do Mat: menos perseguição de torre)
+    var acao = D.abates.map(function (k) { return k[0]; })
+      .concat(D.dano.filter(function (d) { return d[3] >= 150 && ((d[1] === NAK && d[2] >= 5) || (d[2] === NAK && d[1] >= 5)); }).map(function (d) { return d[0]; }))
+      .concat(D.ev.filter(function (e) { return e[1] === NAK && e[3] === 'u'; }).map(function (e) { return e[0]; }));
+    var predios = D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; });
+    var perto = function (lista, t) { var d = Infinity; lista.forEach(function (k) { d = Math.min(d, Math.abs(t - k)); }); return d; };
     var vel = [];
     for (var s = 0; s <= FIM * 2 + 1; s++) {
-      var t = s / 2, d = Infinity; chaves.forEach(function (k) { d = Math.min(d, Math.abs(t - k)); });
-      vel.push(t < 4 ? 2 : d < 3 ? 1.6 : d < 8 ? 3 : d < 16 ? 5 : 8);
+      var t = s / 2, dA = perto(acao, t), dP = perto(predios, t);
+      vel.push(t < 4 ? 2 : dA < 2.5 ? 1.2 : dA < 6 ? 1.8 : dP < 2 ? 1.6 : dA < 12 || dP < 5 ? 3.5 : dA < 20 ? 6 : 9);
     }
     // "enquanto isso": no maior trecho acelerado
     var ini, best;
@@ -253,6 +260,9 @@
     var info = h('div', 'pl-info'); var mudoLbl = h('label'); var mudo = h('input'); mudo.type = 'checkbox'; mudoLbl.append(mudo, ' sem som');
     var tempo = h('span', '', 'Medindo o tempo…'); var sorteio = h('span');
     info.append(mudoLbl, tempo, sorteio);
+    // tempo de preparo e nº do sorteio só na página de teste (?visao=plantao): no site, só o "sem som" (pedido do Mat)
+    var teste = false; try { teste = new URLSearchParams(location.search).get('visao') === 'plantao'; } catch (e) { /* sem URL */ }
+    if (!teste) { tempo.hidden = true; sorteio.hidden = true; }
     caixa.append(peca, info);
 
     // ----- banco de falas: baixa só as sorteadas
@@ -596,7 +606,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(parado);
 
     carregarBanco().then(function (indice) { TEXTOS = indice || {}; return preparar2(); })
-      .catch(function () { tempo.textContent = 'O locutor não carregou: a perseguição toca sem a voz.'; btn.disabled = false; bLbl.textContent = 'Assistir com som'; });
+      .catch(function () { tempo.hidden = false; tempo.textContent = 'O locutor não carregou: a perseguição toca sem a voz.'; btn.disabled = false; bLbl.textContent = 'Assistir com som'; });
     return { parar: function () { if (tocando) parar(false); } };
   }
 
