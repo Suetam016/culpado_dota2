@@ -88,6 +88,14 @@
       'Foi a quadrilha toda! Não sobrou nada!',
       'Fecharam o cerco! Não tinha pra onde correr!',
     ]],
+    // elogio ao jogador: 1 ou 2 por vídeo, no melhor lance (pedido do Mat)
+    elogio: ['b', [
+      'Esse cara é muito bom, minha gente!',
+      'Que jogada absurda, Brasil! Absurda!',
+      'Isso aqui é aula, minha senhora! Aula!',
+      'Joga muito! Joga muito! Eu tô arrepiado!',
+      'Que jogador! Me dá o replay disso, produção!',
+    ]],
     torre: ['c', [
       'Caiu a torre! Cadê a segurança dessa base?',
       'Derrubou a torre! Isso é um absurdo, minha gente!',
@@ -129,7 +137,7 @@
   const QUANTOS = ['{N} de uma vez! Que isso, minha gente?', 'Pegou {n} de uma vez! Me dá o replay disso!', '{N} de uma vez só! Você que tá em casa viu isso?'];
   const NUMEROS = ['{Num} de dano num tapa só!', 'Olha o número, Brasil: {num} de dano!'];
   const HEROI = { quem: 'É {o_heroi}! {O_heroi} tá na base deles!', vitima: '{O_heroi} no chão!' };
-  const AMIGO = { quem: 'É o {nick}! O {nick} não tem limite!', dono: 'Chama a mamãe, {nick}!' };
+  const AMIGO = { quem: 'É o {nick}! O {nick} não tem limite!', dono: 'Chama a mamãe, {nick}!', elogio: 'O {nick} fez uma jogada absurda! Que jogador!' };
   // nick do jeito que se fala (o TTS não lê número, colchete nem sigla grudada)
   const FALADO = { '3rvinha': 'Ervinha', 'ptn': 'pê tê ene', '[Pau]DeCamelo': 'Pau de Camelo', 'gustavoDotinhaPro': 'Gustavo Dotinha Pró' };
 
@@ -177,7 +185,7 @@
     const amigo = (nick) => nick && ctx.amigos && ctx.amigos.has(nick);
     const tem = (id) => !ctx.tem || ctx.tem(id); // só fala que já foi gravada
     let abates = 0; let mamae = false; let calado = 0;
-    return eventos.map((e) => {
+    const saida = eventos.map((e) => {
       const ids = [];
       if (e.tipo === 'abertura') {
         ids.push(tira('abertura'));
@@ -200,6 +208,20 @@
       else if (GENERICAS[e.tipo]) ids.push(tira(e.tipo));
       return { t: e.t, tipo: e.tipo, ids };
     });
+    // elogio no melhor lance (vários de uma vez > dano grande > abate a partir do 2º), no máximo 2 e longe um do outro
+    const nota = { varios: 3, dano: 2, abate: 1 };
+    const cand = saida.map((x, i) => ({ x, i, p: (nota[x.tipo] || 0) + (x.tipo === 'abate' && i === saida.findIndex((y) => y.tipo === 'abate') ? -1 : 0) }))
+      .filter((c) => c.p > 0 && c.x.ids.length).sort((a, b) => b.p - a.p || rnd() - 0.5);
+    const escolhidos = [];
+    for (const c of cand) { if (escolhidos.length >= 2) break; if (escolhidos.some((o) => Math.abs(o.i - c.i) < 3)) continue; escolhidos.push(c); }
+    escolhidos.forEach((c, k) => {
+      const meu = amigo(ctx.quem) && k === 0 && `a.${slug(ctx.quem)}.elogio`;
+      const id = meu && tem(meu) ? meu : tira('elogio');
+      if (!tem(id)) return;
+      if (c.x.ids.length >= 3) c.x.ids.pop();
+      c.x.ids.push(id);
+    });
+    return saida;
   }
 
   const API = { GENERICAS, QUANTOS, NUMEROS, HEROI, AMIGO, todas, montar, extenso, slug };
