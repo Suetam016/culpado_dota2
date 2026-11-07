@@ -38,6 +38,13 @@
         if (vk != null) add(kl.time, 450);
       });
     });
+    // skills do jogador em herói (stun, save, escudo no aliado): é o que o suporte faz numa luta sem dar muito dano
+    var aliadoK = {}; (m.players || []).forEach(function (p, pi) { var r = p.isRadiant != null ? p.isRadiant : p.player_slot < 128; if (r === lado && kDe[pi] != null && kDe[pi] !== k) aliadoK[kDe[pi]] = true; });
+    var hab = mapa.hab || [];
+    (mapa.usos || []).forEach(function (u) {
+      if (u[1] !== k || !hab[u[2]] || /tpscroll|ward/.test(hab[u[2]][0])) return;
+      if (inimigoK[u[3]]) add(u[0], 250); else if (aliadoK[u[3]]) add(u[0], 300); else if (hab[u[2]][2] === 'u') add(u[0], 200);
+    });
     var soma = function (fim) { var s = 0; for (var t = fim - 124; t <= fim; t++) s += ponto[t] || 0; return s; };
     var noFim = soma(TF), melhor = TF, maior = noFim;
     for (var fim = t0 + 130; fim < TF - 60; fim += 5) { var v = soma(fim); if (v > maior) { maior = v; melhor = fim; } }
@@ -201,7 +208,7 @@
     // segura no instante da queda, e o caminho entre um e outro acelera (pedido do Mat: menos perseguição de torre)
     var acao = D.abates.map(function (k) { return k[0]; })
       .concat(D.dano.filter(function (d) { return d[3] >= 150 && ((d[1] === NAK && d[2] >= 5) || (d[2] === NAK && d[1] >= 5)); }).map(function (d) { return d[0]; }))
-      .concat(D.ev.filter(function (e) { return e[1] === NAK && e[3] === 'u'; }).map(function (e) { return e[0]; }));
+      .concat(D.ev.filter(function (e) { return e[1] === NAK && (e[3] === 'u' || e[4] >= 0); }).map(function (e) { return e[0]; }));
     var predios = D.est.filter(function (e) { return e[4] !== null && e[4] >= 0; }).map(function (e) { return e[4]; });
     var perto = function (lista, t) { var d = Infinity; lista.forEach(function (k) { d = Math.min(d, Math.abs(t - k)); }); return d; };
     var vel = [];

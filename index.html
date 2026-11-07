@@ -1615,7 +1615,27 @@ obsVida: 360, senVida: 420, dewardObs: 60, dewardObsVida: 200, dewardSen: 25, de
 visaoPickoff: 0.3, // fatia do ouro do abate fora de luta que vai para quem tinha observer de pé
 roamAte: 12 * 60, roam: 0.35, roamFlag: 1.3,
 creditoCulpa: 0.3, // quanto desse trabalho desconta da culpa do suporte
+// pull: o lugar de onde o suporte da safe puxa o camp pequeno (coordenadas do OpenDota, as mesmas do lane_pos e do
+// mapa). Achado nas partidas da base: é onde o suporte da safe mais fica nos :15 e :45 dos 10 primeiros minutos.
+pullPonto: { radiant: [161, 86], dire: [95, 169] }, pullRaio: 3, pullFolga: 12, pullSeg: 10, pullMax: 8,
+pull: 100, // cada puxada tira uma wave do inimigo (ouro e XP) e devolve a rota pro nosso lado da torre
+// zoning: last hits que o core deles deixou de fazer até os 10 min na rota do suporte (contra a mediana da posição)
+zoning: 0.35, zoningCreep: 40, deny: 15,
+// salvar aliado: skill de save lançada num aliado (sem contar ele mesmo), em fração do ouro de uma morte
+saveForte: 0.25, saveEscudo: 0.06, saveItem: 0.04, saveMax: 4,
+utilidade: 0.4, utilidadeMax: 500, // fatia do ouro gasto em smoke, dust e gem (coisa que o time inteiro usa), com teto
 };
+// skills que salvam o aliado de morrer (forte) ou só seguram dano (escudo); contadas pelo ability_targets do OpenDota
+const SAVES_FORTES = new Set(['dazzle_shallow_grave', 'oracle_false_promise', 'shadow_demon_disruption', 'winter_wyvern_cold_embrace',
+'vengefulspirit_nether_swap', 'obsidian_destroyer_astral_imprisonment', 'pugna_decrepify', 'bane_nightmare', 'omniknight_martyr',
+'wisp_relocate', 'keeper_of_the_light_recall', 'earth_spirit_geomagnetic_grip', 'marci_companion_run', 'tusk_snowball', 'snapfire_gobble_up']);
+const SAVES_ESCUDO = new Set(['abaddon_aphotic_shield', 'lich_frost_shield', 'treant_living_armor', 'legion_commander_press_the_attack',
+'oracle_fates_edict', 'marci_bodyguard', 'ogre_magi_smash', 'wisp_tether', 'chen_divine_favor',
+'grimstroke_spirit_walk', 'undying_soul_rip']);
+// itens de save e de time (o OpenDota não diz em quem foi usado: vale menos que a skill)
+const ITENS_SAVE = new Set(['glimmer_cape', 'force_staff', 'lotus_orb', 'solar_crest', 'pavise', 'hurricane_pike', 'mekansm', 'guardian_greaves',
+'pipe', 'crimson_guard', 'holy_locket', 'boots_of_bearing']);
+const ITENS_UTILIDADE = { smoke_of_deceit: 50, dust: 80, gem: 900 };
 function trabalhoDeSuporte(ctx, match) {
 const { nos, eles } = ctx;
 const out = Object.fromEntries(nos.map((p) => [p.idx, {}]));
@@ -1681,6 +1701,82 @@ const dentro = fp && (fp.damage || (fp.ability_uses && Object.keys(fp.ability_us
 const mortosEles = soma(eles.map((e) => e.idx), (j) => tf.players[j].deaths || 0);
 if (dentro && mortosEles) add(p.idx, 'roam', SUPORTE.roam * mult * mortosEles * ouroEstimado(tf.start) * 0.5, tf.start);
 }
+}
+
+// pull: só o suporte da safe. Com o mapa, conta os :15/:45 em que ele estava no ponto de pull (o primeiro não conta:
+// é o que até o core faz passando). Sem o mapa, usa o tempo perto do ponto no lane_pos (10 primeiros min).
+const idxMapa = ctx.mapa ? idxDoMapa(ctx.mapa, ctx.jog) : null;
+for (const p of nos) {
+if (p.posicao < 4 || !p.rota || p.rota.tipo !== 'safe') continue;
+const [px, py] = SUPORTE.pullPonto[p.radiant ? 'radiant' : 'dire'];
+let puxadas = null;
+const k = idxMapa ? idxMapa.indexOf(p.idx) : -1;
+if (k >= 0 && ctx.mapa.x && ctx.mapa.x[k]) {
+const xs = ctx.mapa.x[k]; const ys = ctx.mapa.y[k]; const t0 = ctx.mapa.t0 || 0;
+let janelas = 0;
+for (let m = 1; m < 10; m++) for (const s0 of [12, 42]) {
+let ok = 0;
+for (let t = m * 60 + s0; t < m * 60 + s0 + 10; t++) { const i = t - t0; if (i >= 0 && i < xs.length && xs[i] != null && Math.hypot(xs[i] - px, ys[i] - py) <= SUPORTE.pullRaio + 1) ok++; }
+if (ok >= 3) janelas++;
+}
+puxadas = Math.max(0, janelas - 1);
+} else if (p.raw.lane_pos) {
+let perto = 0;
+for (const [x, col] of Object.entries(p.raw.lane_pos)) for (const [y, n] of Object.entries(col || {})) if (Math.hypot(Number(x) - px, Number(y) - py) <= SUPORTE.pullRaio) perto += Number(n) || 0;
+puxadas = Math.floor(Math.max(0, perto - SUPORTE.pullFolga) / SUPORTE.pullSeg);
+}
+puxadas = Math.min(SUPORTE.pullMax, puxadas || 0);
+if (puxadas) add(p.idx, 'pull', puxadas * SUPORTE.pull, { puxadas, fonte: k >= 0 ? 'mapa' : 'lane_pos' });
+}
+
+// zoning: o core deles na rota do suporte terminou os 10 min com menos last hit que a mediana da posição dele;
+// o que faltou vira espaço criado, dividido entre os suportes nossos daquela rota. Denies do suporte somam junto.
+const base = ctx.contexto && ctx.contexto.posicao;
+const Q = base && Array.isArray(base.q) ? base.q : null;
+for (const av of avaliarRotas(ctx)) {
+const sups = av.a.filter((p) => p.posicao >= 4);
+if (!sups.length) continue;
+for (const sp of sups) {
+const dn = valorEm(sp.raw, 'dn_t', CULPA.rotaMin);
+if (dn) add(sp.idx, 'zoning', dn * SUPORTE.deny, { denies: dn });
+}
+if (!Q || !base.farm) continue;
+for (const e of av.b) {
+if (!(e.posicao <= 3)) continue;
+const lh = valorEm(e.raw, 'lh_t', CULPA.rotaMin);
+const doHeroi = base.farm.h && base.farm.h[`${e.raw.hero_id}.${e.posicao}`];
+const daPos = base.farm.p && base.farm.p[String(e.posicao)];
+const ref = doHeroi && Array.isArray(doHeroi.lh10) && doHeroi.n >= (base.min_n || 15) ? doHeroi : daPos && Array.isArray(daPos.lh10) ? daPos : null;
+if (lh == null || !ref) continue;
+const mediana = ref.lh10[Q.indexOf(50)];
+const faltou = mediana - lh;
+if (!(faltou >= 3)) continue;
+for (const sp of sups) add(sp.idx, 'zoning', (SUPORTE.zoning * faltou * SUPORTE.zoningCreep) / sups.length, { rival: e.heroi.nome, pos: e.posicao, lh, mediana, faltou });
+}
+}
+
+// save: skill de save num aliado (ability_targets) e itens de save/time usados
+const npcsNos = new Set(nos.map((p) => p.heroi.npc));
+const ouroMorte = ouroEstimado(ctx.duracao / 2);
+for (const p of nos) {
+let fortes = 0; let escudos = 0;
+for (const [ab, alvos] of Object.entries(p.raw.ability_targets || {})) {
+const forte = SAVES_FORTES.has(ab); const escudo = SAVES_ESCUDO.has(ab);
+if (!forte && !escudo) continue;
+let n = 0;
+for (const [npc, q] of Object.entries(alvos || {})) if (npc !== p.heroi.npc && npcsNos.has(npc)) n += Number(q) || 0;
+if (forte) fortes += n; else escudos += n;
+}
+let itens = 0;
+for (const [it, q] of Object.entries(p.raw.item_uses || {})) if (ITENS_SAVE.has(it)) itens += Number(q) || 0;
+const ouro = Math.min(SUPORTE.saveMax * ouroMorte, ouroMorte * (fortes * SUPORTE.saveForte + escudos * SUPORTE.saveEscudo + itens * SUPORTE.saveItem));
+if (ouro > 0) add(p.idx, 'save', ouro, { fortes, escudos, itens });
+let gasto = 0; const comprou = [];
+for (const [it, custo] of Object.entries(ITENS_UTILIDADE)) {
+const q = Number((p.raw.purchase || {})[it]) || 0;
+if (q) { gasto += q * ((ctx.items && ctx.items[it] && ctx.items[it].cost) || custo); comprou.push([it, q]); }
+}
+if (p.posicao >= 4 && gasto) add(p.idx, 'utilidade', Math.min(SUPORTE.utilidadeMax, gasto * SUPORTE.utilidade), { gasto, comprou });
 }
 return out;
 }
@@ -1816,7 +1912,7 @@ for (const p of nos) {
 if (p.posicao < 4) continue;
 const partes = Object.entries(sup[p.idx]);
 const total = soma(partes, ([, c]) => c.ouro);
-if (total > 0) add(p.idx, 'credito_suporte', -C.creditoSuporte * total, Object.fromEntries(partes.map(([k, c]) => [k, c.infos.length || c.ouro])));
+if (total > 0) add(p.idx, 'credito_suporte', -C.creditoSuporte * total, Object.fromEntries(partes.map(([k, c]) => [k, ['pull', 'zoning', 'save', 'utilidade'].includes(k) ? c.infos : c.infos.length || c.ouro])));
 }
 return acc;
 }
@@ -1875,7 +1971,8 @@ case 'credito_abates': return `${fmtK(-ouro / CULPA.creditoAbates)} de ouro tira
 case 'credito_suporte': {
 const x = infos[0] || {};
 const partes = [x.stacks ? plural(p.raw.camps_stacked, 'stack', 'stacks') : '', x.deward ? plural(x.deward, 'ward inimiga quebrada', 'wards inimigas quebradas') : '',
-x.visaoPickoff ? plural(x.visaoPickoff, 'abate fora de luta com ward dele de pé', 'abates fora de luta com ward dele de pé') : '', x.roam ? 'roam que rendeu abate no começo' : ''].filter(Boolean);
+x.visaoPickoff ? plural(x.visaoPickoff, 'abate fora de luta com ward dele de pé', 'abates fora de luta com ward dele de pé') : '', x.roam ? 'roam que rendeu abate no começo' : '',
+...['pull', 'zoning', 'save', 'utilidade'].map((k) => (x[k] ? textoDoSuporte(k, x[k]) : ''))].filter(Boolean);
 return partes.join(', ');
 }
 default: return '';
@@ -1885,12 +1982,34 @@ default: return '';
 
 
 
-const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15, rotaSuporte: 0.9 };
+// texto (com o número que sustenta) das métricas novas de suporte: pull, zoning, save e o que pagou pro time
+function textoDoSuporte(k, infos) {
+infos = infos || [];
+switch (k) {
+case 'pull': { const x = infos[0] || {}; return `${plural(x.puxadas || 0, 'puxada', 'puxadas')} do camp pequeno nos 10 primeiros min${x.fonte === 'mapa' ? '' : ' (pelo tempo no ponto de pull)'}`; }
+case 'zoning': {
+const rivais = infos.filter((x) => x.rival);
+const dn = soma(infos.filter((x) => x.denies), (x) => x.denies);
+const r = rivais.sort((a, b) => b.faltou - a.faltou)[0];
+return [r ? `${r.rival} (pos${r.pos}) chegou aos 10 min com ${r.lh} last hits, ${Math.round(r.faltou)} abaixo da mediana da posição (${Math.round(r.mediana)})` : '',
+dn ? `${plural(dn, 'deny', 'denies')} até os 10 min` : ''].filter(Boolean).join('; ');
+}
+case 'save': { const x = infos[0] || {};
+return [x.fortes ? `${plural(x.fortes, 'skill de save', 'skills de save')} em aliados` : '', x.escudos ? `${plural(x.escudos, 'escudo', 'escudos')} em aliados` : '',
+x.itens ? `${plural(x.itens, 'uso', 'usos')} de item de save ou de time` : ''].filter(Boolean).join(', '); }
+case 'utilidade': { const x = infos[0] || {}; const nome = { smoke_of_deceit: ['smoke', 'smokes'], dust: ['dust', 'dusts'], gem: ['gem', 'gems'] };
+return `comprou ${(x.comprou || []).map(([it, q]) => plural(q, ...(nome[it] || [it, it]))).join(', ')} (${fmtK(x.gasto || 0)} de ouro pro time)`; }
+default: return '';
+}
+}
+
+const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, lutaCura: 0.8, lutaSkill: 80, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15, rotaSuporte: 0.9 };
 const LABELS_BOM = {
 rota: 'Ganhou a rota', abates: 'Abates', assist: 'Assistências', lutas: 'Decidiu as lutas ganhas', objetivos: 'Derrubou estruturas',
 roshan: 'Pegou o Roshan', farm: 'Farm acima do herói', dano: 'Dano acima do herói', visao: 'Visão do mapa', controle: 'Controle (stuns)',
 cura: 'Segurou o time vivo', vivo: 'Ficou vivo',
 stacks: 'Stackou os camps', deward: 'Quebrou a visão deles', visaoPickoff: 'Visão que achou abate', roam: 'Roam que rendeu abate',
+pull: 'Puxou o camp', zoning: 'Segurou o core deles na rota', save: 'Salvou aliados', utilidade: 'Pagou as coisas do time',
 };
 // Frases do lado bom. Cada tipo de mérito tem várias; a função recebe o que aconteceu com o jogador na partida
 // (x: heroi, k/d/a, min, pos, gpm, n, info) e devolve null quando a frase não combina com o jogo. A frase tem que
@@ -2059,6 +2178,30 @@ visaoPickoff: [
 'os pickoffs começaram na visão dele',
 'o inimigo passou pela ward dele e não voltou',
 ],
+pull: [
+'puxou o camp no tempo certo e a wave deles sumiu',
+'fez o inimigo da rota perder wave inteira pro pull',
+'o relógio dele marcava :15 e :45 o jogo todo',
+'puxou, voltou, puxou de novo: a rota ficou do nosso lado da torre',
+],
+zoning: [
+'não deixou o core deles chegar perto da wave',
+'o core deles passou a rota olhando creep morrer de longe',
+(x) => (x.info && x.info.rival ? `deixou ${x.info.rival} sem last hit na rota` : null),
+'fez o espaço que o nosso core precisava',
+'ficou na cara do core deles a rota inteira',
+],
+save: [
+'salvou aliado que já estava com o nome no placar de mortes',
+'o time só ficou vivo porque ele estava olhando',
+'gastou a skill no aliado na hora que importava',
+'tirou companheiro de luta perdida inteiro',
+],
+utilidade: [
+'pagou a smoke e o dust que o time inteiro usou',
+'investiu o ouro dele no time, não no inventário',
+'bancou as coisas que ninguém quer comprar',
+],
 roam: [
 'saiu da rota na hora certa e voltou com abate',
 'apareceu nas outras rotas antes deles entenderem',
@@ -2114,12 +2257,21 @@ if (!tf.players || tf.players.length < 10) continue;
 const mortosEles = soma(elesIdx, (j) => tf.players[j].deaths || 0);
 const mortosNos = soma(nosIdx, (i) => tf.players[i].deaths || 0);
 if (mortosEles < 2 || mortosEles <= mortosNos) continue;
-const danoTotal = soma(nosIdx, (i) => tf.players[i].damage || 0);
+// suporte troca dano por controle e cura: na luta, a cura e cada skill lançada dele também contam como trabalho
+const trabalho = (i) => {
+const fp = tf.players[i]; const p = ctx.jog[i];
+if (!p || !(p.posicao >= 4)) return { d: fp.damage || 0, skills: 0, cura: 0 };
+const skills = soma(Object.values(fp.ability_uses || {})) + soma(Object.entries(fp.item_uses || {}).filter(([k]) => ITENS_SAVE.has(k)).map(([, q]) => q));
+return { d: fp.damage || 0, skills, cura: fp.healing || 0 };
+};
+const peso = (w) => w.d + MERITO.lutaCura * w.cura + MERITO.lutaSkill * w.skills;
+const ws = Object.fromEntries(nosIdx.map((i) => [i, trabalho(i)]));
+const danoTotal = soma(nosIdx, (i) => peso(ws[i]));
 if (!danoTotal) continue;
 const premio = mortosEles * ouroEstimado(tf.start || 0) * MERITO.lutaDano;
 for (const i of nosIdx) {
-const d = tf.players[i].damage || 0;
-if (d) add(i, 'lutas', (premio * d) / danoTotal, { t: tf.start, fatia: d / danoTotal, placar: [mortosEles, mortosNos] });
+const d = peso(ws[i]);
+if (d) add(i, 'lutas', (premio * d) / danoTotal, { t: tf.start, fatia: d / danoTotal, placar: [mortosEles, mortosNos], skills: ws[i].skills, cura: ws[i].cura });
 }
 }
 
@@ -2171,7 +2323,8 @@ case 'abates': return `${plural(p.raw.kills, 'abate', 'abates')}${ctx.mortes ? `
 case 'assist': return `${plural(c.infos[0], 'assistência', 'assistências')}`;
 case 'lutas': {
 const top = [...c.infos].sort((a, b) => b.fatia - a.fatia)[0];
-return `presente em ${plural(n, 'luta ganha', 'lutas ganhas')}; na melhor, aos ${mmss(top.t)} (${top.placar[0]} x ${top.placar[1]}), fez ${pct(top.fatia)} do dano do time`;
+const sup = p.posicao >= 4 && (top.skills || top.cura);
+return `presente em ${plural(n, 'luta ganha', 'lutas ganhas')}; na melhor, aos ${mmss(top.t)} (${top.placar[0]} x ${top.placar[1]}), fez ${pct(top.fatia)} ${sup ? `do trabalho do time (dano, cura e ${plural(top.skills || 0, 'skill lançada', 'skills lançadas')})` : 'do dano do time'}`;
 }
 case 'objetivos': {
 const tor = c.infos.filter((x) => x === 'torre').length; const qua = c.infos.filter((x) => x === 'quartel').length;
@@ -2189,6 +2342,7 @@ case 'deward': { const obs = c.infos.filter((x) => x.tipo === 'obs'); const sen 
 return `quebrou ${[obs.length ? plural(obs.length, 'observer', 'observers') : '', sen ? plural(sen, 'sentry', 'sentries') : ''].filter(Boolean).join(' e ')} deles${obs.length ? `, com ~${Math.round(sobra / 60)} min de vida sobrando em média` : ''}`; }
 case 'visaoPickoff': return `${plural(c.infos.length, 'abate fora de luta', 'abates fora de luta')} com observer dele de pé no mapa`;
 case 'roam': return `${plural(c.infos.length, 'abate ou luta ganha', 'abates ou lutas ganhas')} com ele antes dos ${SUPORTE.roamAte / 60} min${p.raw.is_roaming ? ' (jogou rodando o mapa)' : ''}`;
+case 'pull': case 'zoning': case 'save': case 'utilidade': return textoDoSuporte(k, c.infos);
 case 'cura': return `${fmtK(c.infos[0])} de vida curada nos aliados`;
 default: return '';
 }
@@ -6629,7 +6783,9 @@ vice.length ? h('p', { class: 'vice' }, h('span', { class: 'vice-rot' }, 'També
 // Menção honrosa (vitória de time) → Proclamação do Reino → Edição Extra do jornal → Ordem do Mérito → Monumento na praça.
 // Recalibrado em 06/11/2026 na fatia do 1º colocado em 520 vitórias (Marocas + Kushitas): <26% ~22%, 26–29% ~26%,
 // 29–32% ~22%, 32–35,5% ~16%, 35,5%+ ~13% (antes, com 27/30/34/38%, o Monumento saía em ~7% e quase ninguém via).
-const MERITO_CORTES = [0.26, 0.29, 0.32, 0.355];
+// 07/11/2026: com o trabalho de suporte novo (pull, zoning, save, lutas por cura e skill) o mérito fica mais dividido
+// e o 1º tem fatia menor; recalibrado em 734 vitórias para manter as mesmas proporções (Monumento ~13%).
+const MERITO_CORTES = [0.255, 0.283, 0.31, 0.34];
 const nivelDoMerito = (cs) => MERITO_CORTES.filter((c) => cs[0].fatia >= c).length;
 
 const pluralMr = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
