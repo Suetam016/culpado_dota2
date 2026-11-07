@@ -8498,6 +8498,54 @@ passo_();
 };
 }
 
+// A voz do herói na revelação: o craque ri e solta uma fala feliz, o culpado só uma fala triste.
+// Falas originais do jogo (wiki do Dota, falas/baixar.py): falas/indice.json {heroi: {riso|feliz|morte|triste: [[arquivo, legenda]]}}.
+// Só baixa o índice (~60 KB) e os 1-2 mp3 (~11 KB cada) do herói da revelação.
+let indiceDasFalas = null;
+const falasDoIndice = () => (indiceDasFalas = indiceDasFalas || (SO_EMBUTIDO ? Promise.resolve({})
+: fetch('falas/indice.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({}))));
+function vozDoVeredito(p, vitoria) {
+if (!p || !p.heroi || !p.heroi.npc || !somLigado() || !volumeMapa()) return null;
+const heroi = p.heroi.npc.replace('npc_dota_hero_', '');
+const vol = Math.min(1, volumeMapa());
+// os <audio> existem desde já para o toque do "Toque para abrir" destravá-los no celular
+const faixas = [new Audio(), new Audio()];
+faixas.forEach((a) => { a.preload = 'auto'; a.volume = vol; });
+let lista = [];
+const um = (xs) => (xs && xs.length ? xs[Math.floor(Math.random() * xs.length)] : null);
+const pronto = falasDoIndice().then((ind) => {
+const f = ind[heroi];
+if (!f) return;
+const riso = vitoria ? um(f.riso) : null;
+const fala = vitoria ? um(f.feliz || f.riso) : um(f.triste || f.morte);
+lista = [riso, fala].filter((x, i, xs) => x && xs.indexOf(x) === i).map((x) => `falas/${heroi}/${x[0]}`);
+lista.forEach((src, i) => { faixas[i].src = src; });
+});
+let parado = false;
+return {
+// duração estimada em segundos (0 = sem fala); a revelação espera a fala terminar
+duracao() {
+if (!lista.length) return 0;
+const dur = faixas.slice(0, lista.length).reduce((s, x) => s + (Number.isFinite(x.duration) ? x.duration : 2), 0);
+return Math.min(9, dur + (lista.length > 1 ? 0.15 : 0));
+},
+// risada e fala em sequência
+tocar() {
+if (!lista.length || parado) return;
+const [a, b] = faixas;
+if (lista.length > 1) a.addEventListener('ended', () => { if (!parado) setTimeout(() => !parado && b.play().catch(() => {}), 150); }, { once: true });
+a.play().catch(() => {});
+},
+destravar() {
+pronto.then(() => faixas.slice(0, lista.length).forEach((a) => {
+a.muted = true;
+a.play().then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+}));
+},
+parar() { parado = true; faixas.forEach((a) => a.pause()); },
+};
+}
+
 // Raridade da revelação, como os itens do Dota: sobe com a gravidade da culpa (mesmos níveis dos cartazes)
 const RARIDADES = [['Raro', '#4b69ff'], ['Mítico', '#8847ff'], ['Lendário', '#d32ce6'], ['Imortal', '#e4ae39'], ['Arcana', '#ade55c']];
 // o nome que aparece na revelação do culpado, na mesma escala dos cartazes
@@ -8560,6 +8608,7 @@ let quadro = 0;
 const relogios = [];
 let alarmeTocando = null;
 const alarme = vitoria ? null : alarmeDoNivel(raridade); // já começa a baixar enquanto as cartas giram
+const voz = vozDoVeredito(finais[0], vitoria); // a fala do herói também já começa a baixar
 const terminar = () => {
 if (fim) return;
 fim = true;
@@ -8590,6 +8639,7 @@ foi = true;
 botao.remove();
 if (comSom && audio) {
 if (alarme) alarme.destravar();
+if (voz) voz.destravar();
 audio.play().then(() => { tocando = !fim; if (fim) audio.pause(); }).catch(() => { audio = null; som = somDoBau(); }).finally(ok);
 } else { audio = null; som = somDoBau(); ok(); }
 };
@@ -8622,7 +8672,11 @@ if (raridade >= 1) ov.classList.add(raridade >= 4 ? 'alarme-nuclear' : 'alarme-p
 if (trocaPlim && audio) { audio.pause(); audio = null; }
 }
 if (som && !(durAlarme && trocaPlim)) som.brilho(raridade);
-const resta = Math.max((ABERTURA.fecha - ABERTURA.revela) / (tocando ? 1 : ABERTURA_SEM_SOM), durAlarme ? durAlarme + 0.3 : 0);
+// o herói reage logo depois da batida; a revelação espera ele terminar de falar
+const ATRASO_VOZ = 0.45;
+const durVoz = voz ? voz.duracao() : 0;
+if (durVoz) relogios.push(setTimeout(() => voz.tocar(), ATRASO_VOZ * 1000));
+const resta = Math.max((ABERTURA.fecha - ABERTURA.revela) / (tocando ? 1 : ABERTURA_SEM_SOM), durAlarme ? durAlarme + 0.3 : 0, durVoz ? ATRASO_VOZ + durVoz + 0.4 : 0);
 relogios.push(setTimeout(() => { calarAudio(); terminar(); }, reduz && !durAlarme ? 900 : resta * 1000));
 };
 
