@@ -38,6 +38,11 @@ def chaves_lotes():
     return out
 
 
+def chaves_fichas():
+    src = open(os.path.join(RAIZ, 'skills', 'fichas.js'), encoding='utf-8').read()
+    return set(re.findall(r"([a-z_0-9]+): '", src))
+
+
 def herois():
     nomes = [os.path.basename(p)[:-4] for p in glob.glob(os.path.join(RAIZ, 'img', 'herois', '*.png'))]
     return sorted(nomes, key=len, reverse=True)
@@ -53,6 +58,7 @@ def heroi_de(chave, nomes):
 def main():
     assin = chaves_assin()
     lotes = chaves_lotes()
+    fichas = chaves_fichas()
     nomes = herois()
     partidas = collections.Counter()
     usos = collections.Counter()
@@ -77,7 +83,7 @@ def main():
     for k, n in partidas.most_common():
         if FORA.match(k):
             continue
-        estado = 'lote %d' % lotes[k] if k in lotes else ('replay' if k in assin else 'generico')
+        estado = 'lote %d' % lotes[k] if k in lotes else ('replay' if k in assin else ('ficha' if k in fichas else 'generico'))
         linhas.append({'chave': k, 'heroi': heroi_de(k, nomes), 'nome': info[k][1], 'ult': info[k][2] == 'u',
                        'partidas': n, 'usos': usos[k], 'estado': estado})
 
