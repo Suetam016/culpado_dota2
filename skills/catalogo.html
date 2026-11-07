@@ -48,21 +48,24 @@ code{font-size:13px;background:var(--card);border:1px solid var(--line);border-r
 <body>
 <main>
 <h1>Catálogo de skills do replay</h1>
-<p class="sub">Primeiro lote da esteira de animações. Cada quadro roda a animação nova em uma cena de mentira, com o mesmo código que vai para o replay do site e para o Plantão. Clique num quadro para recomeçar.</p>
+<p class="sub">Todas as skills que o grupo já usou têm animação própria. Cada quadro roda a animação numa cena de exemplo, com o mesmo código do replay do site e do Plantão. Clique num quadro para recomeçar.</p>
 <div class="numeros" id="numeros"></div>
-<h2>Lote 1</h2>
+<h2>Feitas à mão (lote 1)</h2>
 <div class="barra"><span style="color:var(--sub)">Velocidade:</span><button data-vel="1" aria-pressed="true">Normal</button><button data-vel="0.5" aria-pressed="false">Câmera lenta</button></div>
 <div class="grade" id="grade"></div>
-<h2>Fila dos próximos lotes</h2>
-<p class="sub">Skills que ainda caem no desenho genérico, em ordem de quantas partidas do grupo usaram. Cada lote tem 12.</p>
-<div class="tabela"><table><thead><tr><th>Lote</th><th>Herói</th><th>Skill</th><th class="n">Partidas</th></tr></thead><tbody id="fila"></tbody></table></div>
+<h2>Por ficha (todas as outras)</h2>
+<p class="sub">Cada skill tem uma ficha com molde, cor e forma próprios. Escolha o herói. As mais vistas pelo grupo aparecem primeiro.</p>
+<div class="barra"><label for="heroi" style="color:var(--sub)">Herói:</label><select id="heroi"></select></div>
+<div class="grade" id="grade2"></div>
 <h2>Como a esteira anda</h2>
 <ol class="passos">
-<li><code>python3 skills/fila.py</code> recalcula a fila a partir das partidas do grupo.</li>
-<li>As 12 primeiras viram <code>skills/lote-N.js</code>, no mesmo formato das animações que o replay já tem.</li>
-<li>O catálogo mostra o lote para aprovar. Aprovado, entra no site e vale no replay e no Plantão.</li>
+<li><code>python3 skills/fila.py</code> lista as skills usadas nas partidas do grupo e diz quais ainda não têm desenho.</li>
+<li>Skill nova ganha uma ficha em <code>skills/fichas.js</code> (molde, cor e forma).</li>
+<li>As mais vistas podem ganhar desenho feito à mão em <code>skills/lote-N.js</code>, que passa na frente da ficha.</li>
 </ol>
 </main>
+<script src="fichas.js"></script>
+<script src="moldes.js"></script>
 <script src="lote-1.js"></script>
 <script>
 (function () {
@@ -101,11 +104,23 @@ code{font-size:13px;background:var(--card);border:1px solid var(--line);border-r
 
   var vel = 1;
   var FIXO = new URLSearchParams(location.search).get('t');
-  var lote = window.SKILL_LOTES[0];
+  var LOTE1 = window.SKILL_LOTES.find(function (l) { return l.numero === 1; }), MOLDES = window.SKILL_LOTES.find(function (l) { return l.numero === 0; });
   var cartoes = [];
 
-  function montarCena(chave, ficha) {
-    var c = CENAS[chave];
+  // cena automática pelo molde da ficha: quem usou à esquerda, dois inimigos à direita, um aliado atrás
+  function cenaAuto(chave, heroi) {
+    var m = MOLDES.ler(window.SKILL_FICHAS[chave]), d = m.dur || 3;
+    var h = { 0: [heroi, [[0, 123, 128]]], 1: ['crystal_maiden', [[0, 121.5, 126.6]]], 5: ['pudge', [[0, 127.6, 128.8]]], 6: ['axe', [[0, 128.9, 127.2]]] };
+    if (heroi === 'pudge' || heroi === 'axe') { h[5][0] = 'lion'; h[6][0] = 'sniper'; }
+    var c = { h: h, uso: [1, 0, null], dano: [] };
+    var alvo1 = ['proj', 'feixe', 'corrente', 'marca', 'golpe'].indexOf(m.molde) >= 0;
+    if (alvo1) { c.uso[2] = 5; c.dano.push([1.35, 0, 5]); if (m.molde === 'corrente' || m.molde === 'marca') for (var t = 2.4; t < 1 + d; t += 1) c.dano.push([t, 0, 5]); }
+    else if (['onda', 'linha', 'area', 'chuva', 'vortice', 'cupula'].indexOf(m.molde) >= 0) { var a = 1.3 + (m.atraso || 0); c.dano.push([a, 0, 5], [a + 0.05, 0, 6]); }
+    if (m.molde === 'salto') h[0][1] = [[0, 122, 128], [1, 122.3, 128], [2, 126.5, 128.6]];
+    if (m.molde === 'aura' && /\b(escudo)\b/.test(window.SKILL_FICHAS[chave]) === false) {}
+    return c;
+  }
+  function montarCena(chave, ficha, c, lote) {
     var idxs = Object.keys(c.h).map(Number);
     var nosSet = new Set(idxs.filter(function (i) { return i < 5; }));
     var todos = idxs.map(function (i) { return { idx: i }; });
@@ -128,7 +143,7 @@ code{font-size:13px;background:var(--card);border:1px solid var(--line);border-r
     var area = function (mundo, z) { return Math.max(mundo * UNID * 1.5, (R + 1.6) * z); };
     var trilhaDe = function (quem, t0, t1) { var pts = []; for (var tt = t0; tt <= t1 + 1e-6; tt += 0.1) pts.push(Q(pos(tt)[quem])); return pts.length > 1 ? 'M' + pts.map(function (p) { return p[0].toFixed(2) + ',' + p[1].toFixed(2); }).join('L') : ''; };
     var K = { s: s, at: at, Q: Q, pos: pos, mix: mix, lim: lim, saiDe: saiDe, sorte: sorte, dist: dist, R: R, UNID: UNID, area: area, todos: todos, nosSet: nosSet, morto: morto, DANO: DANO, USOS: USOS, acertosDe: acertosDe, ticksDe: ticksDe, pontaPara: pontaPara, inimigoPerto: inimigoPerto, centroDe: centroDe, trilhaDe: trilhaDe };
-    var skills = lote.fazer(K);
+    var skills = lote.fazer(K); if (!c.dur) { /* duração sai da animação */ }
     var assin = skills[chave](USOS[0]);
 
     // câmera: quadrado de LADO unidades em volta de todo mundo
@@ -136,7 +151,7 @@ code{font-size:13px;background:var(--card);border:1px solid var(--line);border-r
     idxs.forEach(function (i) { c.h[i][1].forEach(function (p) { var q = Q([p[1], p[2]]); xs.push(q[0]); ys.push(q[1]); }); });
     var cx = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2, cy = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2;
     var lado = Math.max(LADO, Math.max.apply(null, xs) - Math.min.apply(null, xs) + 6);
-    var z = Math.max(0.35, lado / W);
+    var z = Math.max(0.35, lado / W), DUR = c.dur || Math.min(12, (assin ? assin.fim : 3) + 0.9);
     var svg = s('svg', { viewBox: [cx - lado / 2, cy - lado / 2, lado, lado].map(function (n) { return n.toFixed(2); }).join(' '), role: 'img', 'aria-label': ficha.nome });
     var id = 'rc-' + chave;
     svg.append(s('defs', {}, s('clipPath', { id: id }, s('circle', { r: (R - 0.3) * z }))));
@@ -161,7 +176,7 @@ code{font-size:13px;background:var(--card);border:1px solid var(--line);border-r
     var t = 0;
     var quadro = function (dt) {
       t = FIXO != null ? Number(FIXO) : t + dt * vel;
-      if (t > c.dur) { t = 0; if (vivo) { vivo.g.remove(); vivo = null; } }
+      if (t > DUR) { t = 0; if (vivo) { vivo.g.remove(); vivo = null; } }
       F.t = t;
       var ps = pos(t);
       idxs.forEach(function (i) { var q = Q(ps[i]); toks[i].setAttribute('transform', 'translate(' + q[0].toFixed(2) + ',' + q[1].toFixed(2) + ')'); });
@@ -170,43 +185,55 @@ code{font-size:13px;background:var(--card);border:1px solid var(--line);border-r
         assin.desenhar(vivo, t, F);
       } else if (vivo) { vivo.g.remove(); vivo = null; }
     };
+    svg.dataset.vazio = assin ? '' : '1';
     return { svg: svg, quadro: quadro, reiniciar: function () { t = 0; if (vivo) { vivo.g.remove(); vivo = null; } } };
   }
 
-  var grade = document.getElementById('grade');
-  Object.keys(lote.fichas).forEach(function (chave) {
-    var f = lote.fichas[chave];
-    var cena = montarCena(chave, f);
+  var nomeH = function (h) { return h.replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); }); };
+  var visiveis = new Set();
+  var obs = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) visiveis.add(e.target.cena); else visiveis.delete(e.target.cena); }); }) : null;
+  var cartao = function (grade, chave, f, c, lote) {
+    var cena = montarCena(chave, f, c, lote);
     var card = document.createElement('div'); card.className = 'card'; card.title = 'Clique para recomeçar';
     card.append(cena.svg);
     var rot = document.createElement('div'); rot.className = 'rot';
-    var nomeHeroi = f.heroi.replace(/_/g, ' ').replace(/\b\w/g, function (m) { return m.toUpperCase(); });
-    rot.innerHTML = '<img alt="" src="' + retrato(f.heroi) + '"><div><b>' + f.nome + '</b><small>' + nomeHeroi + '</small></div>' + (f.refaz ? '<span class="tag refaz">refeita</span>' : '') + (f.ult ? '<span class="tag ult">ult</span>' : '');
+    rot.innerHTML = '<img alt="" src="' + retrato(f.heroi) + '"><div><b>' + f.nome + '</b><small>' + nomeH(f.heroi) + (f.molde ? ' · ' + f.molde : '') + '</small></div>' + (f.refaz ? '<span class="tag refaz">refeita</span>' : '') + (f.ult ? '<span class="tag ult">ult</span>' : '');
     card.append(rot);
     card.addEventListener('click', cena.reiniciar);
-    grade.append(card);
-    cartoes.push(cena);
-  });
+    card.cena = cena; grade.append(card);
+    cena.quadro(0);
+    if (obs) obs.observe(card); else visiveis.add(cena);
+  };
+  var grade = document.getElementById('grade');
+  Object.keys(LOTE1.fichas).forEach(function (chave) { cartao(grade, chave, LOTE1.fichas[chave], CENAS[chave], LOTE1); });
+  var mostrarFichas = function (d) {
+    var lista = d.skills.filter(function (x) { return window.SKILL_FICHAS[x.chave]; });
+    var sel = document.getElementById('heroi'), herois = [];
+    lista.forEach(function (x) { if (herois.indexOf(x.heroi) < 0) herois.push(x.heroi); });
+    sel.innerHTML = '<option value="">As 24 mais vistas</option>' + herois.slice().sort().map(function (h) { return '<option value="' + h + '">' + nomeH(h) + '</option>'; }).join('');
+    var g2 = document.getElementById('grade2');
+    var pintar = function () {
+      g2.textContent = ''; visiveis.forEach(function (c) { if (!grade.contains(c.svg)) visiveis.delete(c); });
+      (sel.value ? lista.filter(function (x) { return x.heroi === sel.value; }) : lista.slice(0, 24)).forEach(function (x) {
+        var heroi = /^(black_dragon|dark_troll|enraged|forest_troll|frogmen|giant_wolf|mud_golem|polar|satyr|spawnlord)/.test(x.chave) ? 'chen' : x.heroi;
+        cartao(g2, x.chave, { heroi: heroi, nome: x.nome, ult: x.ult, molde: MOLDES.ler(window.SKILL_FICHAS[x.chave]).molde }, cenaAuto(x.chave, heroi), MOLDES);
+      });
+    };
+    sel.addEventListener('change', pintar); pintar();
+  };
   var ultimo = null;
-  var laco = function (agora) { var dt = ultimo == null ? 0 : Math.min(0.05, (agora - ultimo) / 1000); ultimo = agora; cartoes.forEach(function (c) { c.quadro(dt); }); requestAnimationFrame(laco); };
+  var laco = function (agora) { var dt = ultimo == null ? 0 : Math.min(0.05, (agora - ultimo) / 1000); ultimo = agora; visiveis.forEach(function (c) { c.quadro(dt); }); requestAnimationFrame(laco); };
   requestAnimationFrame(laco);
   document.querySelectorAll('[data-vel]').forEach(function (b) { b.addEventListener('click', function () { vel = Number(b.dataset.vel); document.querySelectorAll('[data-vel]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }); });
 
   // números e fila (skills/fila.json; no catálogo publicado vem embutido)
   var mostrarFila = function (d) {
-    var lote1 = d.skills.filter(function (x) { return x.estado === 'lote 1'; }).length;
-    var antes = d.com_desenho - lote1;
+    var lote1 = d.skills.filter(function (x) { return x.estado === 'lote 1'; }).length, mao = d.skills.filter(function (x) { return x.estado === 'replay'; }).length, fic = d.skills.filter(function (x) { return window.SKILL_FICHAS[x.chave]; }).length;
     document.getElementById('numeros').innerHTML =
-      '<div class="num"><b>' + antes + '</b><span>skills que o replay já desenhava</span></div>' +
-      '<div class="num"><b>+' + lote1 + '</b><span>neste lote</span></div>' +
-      '<div class="num"><b>' + d.skills_vistas + '</b><span>skills vistas em ' + d.partidas + ' partidas</span></div>' +
-      '<div class="num"><b>' + Math.round(d.cobertura_partidas * 100) + '%</b><span>das aparições com desenho próprio, com este lote</span></div>';
-    var tb = document.getElementById('fila');
-    d.skills.filter(function (x) { return x.estado === 'generico'; }).slice(0, d.tam_lote * 3).forEach(function (x) {
-      var tr = document.createElement('tr');
-      tr.innerHTML = '<td><span class="est lote">Lote ' + x.proximo_lote + '</span></td><td>' + x.heroi.replace(/_/g, ' ') + '</td><td>' + x.nome + (x.ult ? ' <span class="tag ult">ult</span>' : '') + '</td><td class="n">' + x.partidas + '</td>';
-      tb.append(tr);
-    });
+      '<div class="num"><b>' + (mao + lote1) + '</b><span>feitas à mão</span></div>' +
+      '<div class="num"><b>' + fic + '</b><span>por ficha</span></div>' +
+      '<div class="num"><b>' + d.skills_vistas + '</b><span>skills vistas em ' + d.partidas + ' partidas do grupo</span></div>';
+    mostrarFichas(d);
   };
   if (window.FILA) mostrarFila(window.FILA);
   else fetch('fila.json').then(function (r) { return r.json(); }).then(mostrarFila).catch(function () {});
