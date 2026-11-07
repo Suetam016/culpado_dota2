@@ -1,11 +1,11 @@
 name: Falas dos heróis
 
-# Baixa da wiki de Dota as falas de risada/alegria e morte/tristeza de cada herói (protótipo do veredito).
-# Roda com um push em falas/baixar.py ou falas/pedido; salva no próprio branch.
+# Baixa da wiki de Dota as falas de risada/alegria e morte/tristeza de cada herói (voz da revelação do veredito).
+# Roda na mão ou com um push em falas/pedido (ex.: herói novo); salva no próprio branch.
 on:
   workflow_dispatch:
   push:
-    paths: ["falas/baixar.py", ".github/workflows/falas.yml", "falas/pedido"]
+    paths: ["falas/pedido"]
 
 permissions:
   contents: write
