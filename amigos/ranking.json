@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-06T23:12:35.730Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-07T00:01:50.781Z",
+  "semAnalise": 1,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -78,11 +78,11 @@
       "accountId": "83300280",
       "nome": "ptn",
       "culpados": 9,
-      "craques": 2,
+      "craques": 3,
       "partidas": 45,
       "vitorias": 27,
       "winRate": 60,
-      "streak": null,
+      "streak": "craque",
       "mmrGanho": 600,
       "mmrPerdido": 425
     },
@@ -4632,14 +4632,13 @@
       {
         "matchId": 9079222535,
         "lado": "dire",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1794002140,
         "comStack": true,
         "ranqueada": true,
         "heroi": 12,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.166,
+        "merito": 0.285
       }
     ],
     "96286191": [
@@ -10155,9 +10154,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 54,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.051,
+        "merito": 0.249
       },
       {
         "matchId": 9079174909,
@@ -10167,9 +10165,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 47,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.15,
+        "merito": 0.187
       },
       {
         "matchId": 9079222535,
@@ -10179,9 +10176,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 15,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.15,
+        "merito": 0.198
       }
     ],
     "1000265186": [
