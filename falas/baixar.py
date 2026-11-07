@@ -1,19 +1,24 @@
-"""Falas dos heróis para o veredito: risada/fala feliz para o craque, morte/fala triste para o culpado.
+"""Falas dos heróis para o veredito: risada + fala feliz para o craque, som de morte + fala triste para o culpado.
 
-1) Lista na wiki de Dota (Fandom, API MediaWiki list=allimages) todos os áudios "Vo_<heroi>_...".
-2) Separa por herói (nomes de img/herois/*.png) e por categoria pelo nome do arquivo
-   (laugh, happy, win, kill... / death, pain, lose, failure...).
-3) Baixa alguns de cada categoria e reduz com ffmpeg (mono, 22 kHz, 40 kbps) em falas/<heroi>/<arquivo>.mp3.
-4) Escreve falas/indice.json {heroi: {categoria: [arquivo, ...]}} e falas/cobertura.json.
+1) Lista na wiki de Dota (Fandom, API MediaWiki list=allimages) todos os áudios "Vo_<heroi>_..." (cache em catalogo-bruto.json).
+2) Separa por herói (nomes de img/herois/*.png) e categoria pelo fim do nome do arquivo:
+   riso = laugh; feliz = happy/win/thanks; morte = death/die; triste = lose/failure/sad (pain se faltar).
+   Fora: arcanas, personas, brinquedos, falas de skill/compra/abate.
+3) Baixa poucos de cada e reduz com ffmpeg (mono, 22 kHz, 40 kbps, sem silêncio nas pontas, volume igualado)
+   em falas/<heroi>/<categoria>-<n>.mp3.
+4) Pega a transcrição na página <Herói>/Responses da wiki (texto em inglês) para legenda.
+5) Escreve falas/indice.json {heroi: {categoria: [[arquivo, texto], ...]}} e falas/cobertura.json.
 Os sons são da Valve; uso de fã, sem fins comerciais.
 
     python falas/baixar.py
 """
 from __future__ import annotations
 
+import collections
 import gzip
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -25,10 +30,11 @@ UA = "culpado-dota2-falas/1.0 (site de fã sem fins comerciais; github.com/Sueta
 WIKI = "https://dota2.fandom.com/api.php"
 RAIZ = Path(__file__).resolve().parent
 PAUSA = 0.6
+VERSAO = 2
 
 # nome da voz na wiki quando difere do nome do retrato (npc_dota_hero_<x>)
 APELIDO_VOZ = {
-    "furion": ["furion", "natures_prophet", "nature's_prophet"],
+    "furion": ["furion", "natures_prophet"],
     "zuus": ["zuus", "zeus"],
     "rattletrap": ["rattletrap", "clockwerk"],
     "windrunner": ["windrunner", "windranger"],
@@ -46,36 +52,28 @@ APELIDO_VOZ = {
     "vengefulspirit": ["vengefulspirit", "vengeful_spirit", "vengeful"],
     "queenofpain": ["queenofpain", "queen_of_pain"],
     "antimage": ["antimage", "anti_mage"],
-    "centaur": ["centaur"],
     "keeper_of_the_light": ["keeper_of_the_light", "keeper"],
     "drow_ranger": ["drow_ranger", "drowranger", "drow"],
     "sand_king": ["sand_king", "sandking"],
     "crystal_maiden": ["crystal_maiden", "crystalmaiden"],
     "storm_spirit": ["storm_spirit", "stormspirit"],
-    "dark_seer": ["dark_seer"],
     "night_stalker": ["night_stalker", "nightstalker"],
     "faceless_void": ["faceless_void", "faceless"],
-    "monkey_king": ["monkey_king"],
-    "dragon_knight": ["dragon_knight"],
-    "phantom_assassin": ["phantom_assassin"],
-    "templar_assassin": ["templar_assassin"],
-    "winter_wyvern": ["winter_wyvern"],
-    "elder_titan": ["elder_titan"],
-    "spirit_breaker": ["spirit_breaker"],
-    "ancient_apparition": ["ancient_apparition"],
+    "pangolier": ["pangolier", "pangolin"],
+    "shadow_shaman": ["shadow_shaman", "shadowshaman"],
+    "witch_doctor": ["witch_doctor", "witchdoctor"],
 }
 
-CATEGORIAS = {
-    # craque
-    "riso": r"laugh",
-    "feliz": r"happy|win|victory|thanks|kill|rival|lasthit|cast_haste|immort|bottle|rare",
-    # culpado
-    "morte": r"death|die|dying",
-    "triste": r"lose|loss|fail|pain|deny|defeat|despair|sad|respawn|anger|frustr",
-}
-QUANTOS = {"riso": 3, "feliz": 4, "morte": 3, "triste": 4}
-# nomes que não queremos (pacotes de anunciador, arcanas, persona e falas longas de loja)
-RUINS = re.compile(r"announcer|arcana|persona|_ti\d|battlepass|_dlc|_tv_|purch|_shop|_item_|_move|_attack|_cast_\d", re.I)
+CATEGORIAS = [
+    ("riso", ["laugh"]),
+    ("feliz", ["happy", "win", "thanks", "victory", "emote_good", "inthebag"]),
+    ("morte", ["death", "die", "death_defeat"]),
+    ("triste", ["lose", "failure", "fail", "sad", "despair", "emote_bad", "defeat", "pain"]),
+]
+QUANTOS = {"riso": 2, "feliz": 4, "morte": 2, "triste": 4}
+VARIANTE = re.compile(r"(^|_)(arc|arcana\d*|toy|persona|per|dlc|item|helmet|wheel|ti\d+|crownfall|kid|bp)(_|\d|$)")
+CONTEXTO_RUIM = re.compile(r"ability|lasthit|last_hit|kill|rival|cast|ally|purch|item|rune|spawn|move|attack|bottle|regen|deny|respawn|immort|tp_|teleport")
+APOSTROFOS = "'" * 2
 
 
 def get(url: str) -> bytes:
@@ -86,6 +84,8 @@ def get(url: str) -> bytes:
                 corpo = r.read()
                 return gzip.decompress(corpo) if r.headers.get("Content-Encoding") == "gzip" else corpo
         except Exception as e:  # noqa: BLE001
+            if "404" in str(e):
+                raise
             print(f"    falhou ({e}); de novo")
             time.sleep(3 * (tentativa + 1))
     raise RuntimeError(url)
@@ -106,8 +106,68 @@ def listar(prefixo: str) -> list[dict]:
         cont = dados["continue"]
 
 
+def nomes_dos_herois() -> dict[str, str]:
+    """npc curto -> nome em inglês, das constantes embutidas no index.html."""
+    html = (RAIZ.parent / "index.html").read_text()
+    m = re.search(r'<script type="application/json" id="dados-embutidos">(.*?)</script>', html, re.S)
+    h = json.loads(m.group(1))["constantes"]["h"]
+    return {v[0]: v[1] for v in h.values()}
+
+
+def limpar_frase(linha: str) -> str:
+    s = re.sub(r"<sm2>.*?</sm2>", "", linha)
+    s = re.sub(r"\{\{[^{}]*\}\}", "", s)
+    s = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", s)
+    s = re.sub(r"<[^>]+>", "", s).replace(APOSTROFOS + "'", "").replace(APOSTROFOS, "")
+    return re.sub(r"^[*#:\s]+", "", s).strip()
+
+
+def transcricoes(nome_ingles: str) -> dict[str, str]:
+    """arquivo (minúsculo, sem extensão) -> frase, da página <Herói>/Responses."""
+    q = {"action": "parse", "page": f"{nome_ingles}/Responses", "prop": "wikitext", "format": "json", "redirects": 1}
+    try:
+        txt = json.loads(get(f"{WIKI}?{urllib.parse.urlencode(q)}"))["parse"]["wikitext"]["*"]
+    except Exception as e:  # noqa: BLE001
+        print(f"  {nome_ingles}: sem página de falas ({e})")
+        return {}
+    out = {}
+    for linha in txt.splitlines():
+        arqs = re.findall(r"<sm2>\s*([^<|]+?)\s*</sm2>", linha) or re.findall(r"\{\{\s*sm2\s*\|\s*([^|}]+)", linha)
+        if not arqs:
+            continue
+        frase = limpar_frase(linha)
+        for a in arqs:
+            out[Path(a.strip().lower().replace(" ", "_")).stem] = frase
+    return out
+
+
+def escolher(arqs: list[tuple[str, dict]]) -> dict[str, list[dict]]:
+    limpos = [(r, x) for r, x in arqs if not VARIANTE.search(r) and x["b"] < 300_000]
+    cats = {}
+    for c, tipos in CATEGORIAS:
+        achados: list[dict] = []
+        for t in tipos:  # prefere o primeiro tipo; pain só se faltar fala triste
+            rx = re.compile(rf"(^|_)({t})(_?\d+)*\.(mp3|wav|ogg)$")
+            for r, x in limpos:
+                m = rx.search(r)
+                if m and not CONTEXTO_RUIM.search(r[:m.start()]) and x not in achados:
+                    achados.append(x)
+            if len(achados) >= 6:
+                break
+        cats[c] = achados
+    return cats
+
+
+def reduzir(origem: Path, destino: Path) -> bool:
+    filtro = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+              "silenceremove=start_periods=1:start_threshold=-45dB,areverse,loudnorm=I=-16:TP=-1.5:LRA=11")
+    return subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(origem), "-ac", "1", "-ar", "22050",
+                           "-b:a", "40k", "-af", filtro, str(destino)]).returncode == 0
+
+
 def main() -> int:
     herois = sorted(p.stem for p in (RAIZ.parent / "img" / "herois").glob("*.png"))
+    ingles = nomes_dos_herois()
     bruto_arq = RAIZ / "catalogo-bruto.json"
     if bruto_arq.exists():
         bruto = json.loads(bruto_arq.read_text())
@@ -116,40 +176,38 @@ def main() -> int:
         bruto_arq.write_text(json.dumps(bruto, ensure_ascii=False, separators=(",", ":")))
     print(f"{len(bruto)} áudios Vo_ na wiki")
 
-    # herói de cada arquivo: o apelido mais longo que casa com o começo do nome
-    chaves = []
-    for h in herois:
-        for a in APELIDO_VOZ.get(h, [h]):
-            chaves.append((a.lower(), h))
-    chaves.sort(key=lambda t: -len(t[0]))
-    por_heroi: dict[str, list[dict]] = {h: [] for h in herois}
+    versao_arq = RAIZ / "versao.txt"
+    if not versao_arq.exists() or versao_arq.read_text().strip() != str(VERSAO):
+        for p in RAIZ.iterdir():
+            if p.is_dir() and p.name != "__pycache__":
+                shutil.rmtree(p)
+        versao_arq.write_text(f"{VERSAO}\n")
+
+    chaves = sorted(((a.lower(), h) for h in herois for a in APELIDO_VOZ.get(h, [h])), key=lambda t: -len(t[0]))
+    por_heroi: dict[str, list[tuple[str, dict]]] = collections.defaultdict(list)
     for x in bruto:
         nome = x["n"].lower().replace(" ", "_")
-        if not nome.startswith("vo_"):
-            continue
-        resto = nome[3:]
         for a, h in chaves:
-            if resto.startswith(a + "_"):
-                por_heroi[h].append(x)
+            if nome.startswith(f"vo_{a}_"):
+                por_heroi[h].append((nome[len(a) + 4:], x))
                 break
 
     cobertura, indice = {}, {}
     for h in herois:
-        arqs = [x for x in por_heroi[h] if not RUINS.search(x["n"])]
-        cat: dict[str, list[dict]] = {}
-        for c, rx in CATEGORIAS.items():
-            r = re.compile(r"_(" + rx + r")(_|\d|\.)", re.I)
-            cat[c] = sorted([x for x in arqs if r.search(x["n"].replace(" ", "_")) and x["b"] <= 400_000],
-                            key=lambda x: (x["b"] > 120_000, x["n"]))
-        cobertura[h] = {"total": len(por_heroi[h]), **{c: len(v) for c, v in cat.items()},
-                        "exemplos": {c: [x["n"] for x in v[:6]] for c, v in cat.items()}}
+        cats = escolher(por_heroi[h])
+        cobertura[h] = {"total": len(por_heroi[h]), **{c: len(v) for c, v in cats.items()}}
+        if not any(cats.values()):
+            print(f"  {h}: sem falas na wiki")
+            continue
+        textos = transcricoes(ingles.get(h, h.replace("_", " ").title()))
+        time.sleep(PAUSA)
         pasta = RAIZ / h
         indice[h] = {}
-        for c, v in cat.items():
-            # espalha a escolha pela lista para variar o tipo de fala (happy, win, kill...)
-            escolhidos = v if len(v) <= QUANTOS[c] else [v[i * len(v) // QUANTOS[c]] for i in range(QUANTOS[c])]
-            for x in escolhidos:
-                nome = re.sub(r"[^a-z0-9_]", "", Path(x["n"]).stem.lower().replace(" ", "_")) + ".mp3"
+        for c, v in cats.items():
+            n = QUANTOS[c]
+            escolhidos = v if len(v) <= n else [v[i * len(v) // n] for i in range(n)]
+            for k, x in enumerate(escolhidos, 1):
+                nome = f"{c}-{k}.mp3"
                 destino = pasta / nome
                 if not destino.exists():
                     try:
@@ -160,22 +218,21 @@ def main() -> int:
                     pasta.mkdir(exist_ok=True)
                     tmp = pasta / ("_tmp" + Path(urllib.parse.urlparse(x["u"]).path.split("/revision")[0]).suffix)
                     tmp.write_bytes(corpo)
-                    ok = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(tmp), "-ac", "1", "-ar", "22050",
-                                         "-b:a", "40k", "-af", "silenceremove=1:0:-50dB,areverse,silenceremove=1:0:-50dB,areverse",
-                                         str(destino)]).returncode == 0
+                    ok = reduzir(tmp, destino)
                     tmp.unlink()
                     if not ok:
                         print(f"  {h} {c}: ffmpeg falhou em {x['n']}")
                         continue
                     time.sleep(PAUSA)
-                indice[h].setdefault(c, []).append(nome)
-        print(f"  {h}: {len(por_heroi[h])} falas; " + ", ".join(f"{c} {len(v)}" for c, v in cat.items()))
+                texto = textos.get(Path(x["n"].lower().replace(" ", "_")).stem, "")
+                indice[h].setdefault(c, []).append([nome, texto])
+        print(f"  {h}: " + ", ".join(f"{c} {len(v)}" for c, v in cats.items()) + f"; {len(textos)} legendas")
 
-    (RAIZ / "cobertura.json").write_text(json.dumps(cobertura, indent=1, ensure_ascii=False) + "\n")
-    (RAIZ / "indice.json").write_text(json.dumps(indice, indent=0, ensure_ascii=False) + "\n")
-    sem = [h for h in herois if not indice[h].get("riso") and not indice[h].get("feliz")]
-    sem2 = [h for h in herois if not indice[h].get("morte") and not indice[h].get("triste")]
-    print(f"sem fala de craque: {sem}\nsem fala de culpado: {sem2}")
+    (RAIZ / "cobertura.json").write_text(json.dumps(cobertura, indent=0, ensure_ascii=False) + "\n")
+    (RAIZ / "indice.json").write_text(json.dumps(indice, ensure_ascii=False, separators=(",", ":")) + "\n")
+    print("sem falas:", [h for h in herois if h not in indice])
+    print("sem risada:", [h for h in indice if not indice[h].get("riso")])
+    print("sem morte:", [h for h in indice if not indice[h].get("morte")])
     return 0
 
 
