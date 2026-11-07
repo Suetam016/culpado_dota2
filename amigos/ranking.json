@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-07T00:01:50.781Z",
-  "semAnalise": 1,
+  "atualizadoEm": "2026-11-07T02:23:23.075Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -19,12 +19,12 @@
       "nome": "[Pau]DeCamelo",
       "culpados": 42,
       "craques": 32,
-      "partidas": 316,
+      "partidas": 318,
       "vitorias": 151,
-      "winRate": 48,
+      "winRate": 47,
       "streak": null,
       "mmrGanho": 3600,
-      "mmrPerdido": 4025
+      "mmrPerdido": 4075
     },
     {
       "accountId": "81918076",
@@ -51,16 +51,28 @@
       "mmrPerdido": 575
     },
     {
+      "accountId": "83300280",
+      "nome": "ptn",
+      "culpados": 11,
+      "craques": 3,
+      "partidas": 47,
+      "vitorias": 27,
+      "winRate": 57,
+      "streak": "culpado",
+      "mmrGanho": 600,
+      "mmrPerdido": 475
+    },
+    {
       "accountId": "111257540",
       "nome": "Kuscomem",
       "culpados": 11,
       "craques": 4,
-      "partidas": 112,
-      "vitorias": 48,
+      "partidas": 116,
+      "vitorias": 50,
       "winRate": 43,
       "streak": "culpado",
-      "mmrGanho": 1200,
-      "mmrPerdido": 1575
+      "mmrGanho": 1250,
+      "mmrPerdido": 1625
     },
     {
       "accountId": "77621319",
@@ -73,18 +85,6 @@
       "streak": null,
       "mmrGanho": 1100,
       "mmrPerdido": 1075
-    },
-    {
-      "accountId": "83300280",
-      "nome": "ptn",
-      "culpados": 9,
-      "craques": 3,
-      "partidas": 45,
-      "vitorias": 27,
-      "winRate": 60,
-      "streak": "craque",
-      "mmrGanho": 600,
-      "mmrPerdido": 425
     },
     {
       "accountId": "1254464470",
@@ -4639,6 +4639,28 @@
         "heroi": 12,
         "culpa": 0.166,
         "merito": 0.285
+      },
+      {
+        "matchId": 9079272334,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1794005625,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 12,
+        "culpa": 0.313,
+        "merito": 0.162
+      },
+      {
+        "matchId": 9079317395,
+        "lado": "radiant",
+        "tipo": "culpado",
+        "inicio": 1794009630,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 44,
+        "culpa": 0.254,
+        "merito": 0.118
       }
     ],
     "96286191": [
@@ -6700,6 +6722,52 @@
         "heroi": 112,
         "culpa": 0.147,
         "merito": 0.166
+      },
+      {
+        "matchId": 9079215624,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794001716,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 86,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9079272334,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794005625,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 86,
+        "culpa": 0.252,
+        "merito": 0.227
+      },
+      {
+        "matchId": 9079317395,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794009630,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 112,
+        "culpa": 0.131,
+        "merito": 0.27
+      },
+      {
+        "matchId": 9079343857,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794012300,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 40,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "241782761": [
@@ -10178,6 +10246,28 @@
         "heroi": 15,
         "culpa": 0.15,
         "merito": 0.198
+      },
+      {
+        "matchId": 9079272334,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794005625,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 30,
+        "culpa": 0.138,
+        "merito": 0.22
+      },
+      {
+        "matchId": 9079317395,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794009630,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 47,
+        "culpa": 0.19,
+        "merito": 0.261
       }
     ],
     "1000265186": [
@@ -14024,7 +14114,7 @@
     },
     "241782761": {
       "avatar": "https://avatars.steamstatic.com/0f60b23488f593182554cbf7deaef8e7eed75965_full.jpg",
-      "rankTier": 45,
+      "rankTier": 51,
       "leaderboard": null
     },
     "1000265186": {
