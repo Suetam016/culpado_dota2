@@ -30,7 +30,7 @@ UA = "culpado-dota2-falas/1.0 (site de fã sem fins comerciais; github.com/Sueta
 WIKI = "https://dota2.fandom.com/api.php"
 RAIZ = Path(__file__).resolve().parent
 PAUSA = 0.6
-VERSAO = 2
+VERSAO = 3
 
 # nome da voz na wiki quando difere do nome do retrato (npc_dota_hero_<x>)
 APELIDO_VOZ = {
@@ -141,7 +141,7 @@ def transcricoes(nome_ingles: str) -> dict[str, str]:
     return out
 
 
-def escolher(arqs: list[tuple[str, dict]]) -> dict[str, list[dict]]:
+def escolher(arqs: list[tuple[str, dict]], textos: dict[str, str] | None = None) -> dict[str, list[dict]]:
     limpos = [(r, x) for r, x in arqs if not VARIANTE.search(r) and x["b"] < 300_000]
     cats = {}
     for c, tipos in CATEGORIAS:
@@ -152,8 +152,17 @@ def escolher(arqs: list[tuple[str, dict]]) -> dict[str, list[dict]]:
                 m = rx.search(r)
                 if m and not CONTEXTO_RUIM.search(r[:m.start()]) and x not in achados:
                     achados.append(x)
-            if len(achados) >= 6:
+            if len(achados) >= 6 and not textos:
                 break
+        if textos and c in ("feliz", "triste"):
+            # fala de verdade (frase com 3+ palavras) antes de gemido ("Ah!", "Mm hm.")
+            def palavras(x: dict) -> int:
+                return len(textos.get(Path(x["n"].lower().replace(" ", "_")).stem, "").split())
+            for minimo in (3, 2):
+                bons = [x for x in achados if palavras(x) >= minimo]
+                if len(bons) >= QUANTOS[c]:
+                    achados = bons
+                    break
         cats[c] = achados
     return cats
 
@@ -194,13 +203,14 @@ def main() -> int:
 
     cobertura, indice = {}, {}
     for h in herois:
-        cats = escolher(por_heroi[h])
-        cobertura[h] = {"total": len(por_heroi[h]), **{c: len(v) for c, v in cats.items()}}
-        if not any(cats.values()):
+        if not any(escolher(por_heroi[h]).values()):
+            cobertura[h] = {"total": len(por_heroi[h])}
             print(f"  {h}: sem falas na wiki")
             continue
         textos = transcricoes(ingles.get(h, h.replace("_", " ").title()))
         time.sleep(PAUSA)
+        cats = escolher(por_heroi[h], textos)
+        cobertura[h] = {"total": len(por_heroi[h]), **{c: len(v) for c, v in cats.items()}}
         pasta = RAIZ / h
         indice[h] = {}
         for c, v in cats.items():
