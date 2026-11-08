@@ -3430,6 +3430,34 @@ motivo: `Você estava apanhando (${estado.motivos.join(', ')})${estado.quem && e
 };
 }
 
+// Item que o herói costuma fazer só vira sugestão quando o jogo mostra a falta que ele fez:
+// farm baixo (item de farm), pouco dano (item de dano) ou fora das lutas (item de luta). Item de defesa fica com as
+// ameaças e a sobrevivência, que já mostram quem bateu e como.
+// Sem essa prova, ou se outro item grande da build já fez o mesmo papel, não sugere: "todo mundo faz" não é motivo.
+// Componentes (Yasha, Essence Distiller, Pavise...) também não: a sugestão é sempre o item que fecha.
+const ITENS_DEGRAU = new Set(['yasha', 'sange', 'kaya', 'pers', 'lesser_crit', 'oblivion_staff', 'ultimate_scepter_2', 'wraith_pact', 'cornucopia', 'soul_booster', 'essence_distiller', 'pavise', 'dragon_lance', 'buckler', 'urn_of_shadows', 'ring_of_basilius', 'vanguard', 'headdress', 'diadem']);
+function porqueDoPopular(p, ctx, item, comprou) {
+const tipo = intencaoDe(item.key);
+if (!tipo || tipo === 'botas') return null;
+const custo = (k) => itemInfo(ctx.items, k).custo || 0;
+const mesmoPapel = [...comprou.keys()].find((k) => k !== item.key && intencaoDe(k) === tipo && custo(k) >= 1800);
+if (mesmoPapel) return null;
+const s = p.stats || {};
+const b = s.bench || {};
+const core = p.funcao === 'core';
+const h = p.heroi.nome;
+if (tipo === 'farm' && core && b.gold_per_min != null && b.gold_per_min < 0.4) {
+return `o seu farm ficou no percentil ${pct(b.gold_per_min)} de quem joga de ${h}, e ${item.nome} é o item que acelera o farm`;
+}
+if (tipo === 'dano' && core && b.hero_damage_per_min != null && b.hero_damage_per_min < 0.4) {
+return `faltou dano: percentil ${pct(b.hero_damage_per_min)} de dano em heróis entre quem joga de ${h}, e ${item.nome} é dano direto na luta`;
+}
+if (tipo === 'luta' && s.tfp != null && s.tfp < 0.5) {
+return `você esteve em só ${pct(s.tfp)} dos abates do time, e ${item.nome} é o que coloca ${h} dentro da luta`;
+}
+return null;
+}
+
 function parecerDeItens(p, ctx, inimigo, compras, populares) {
 const comprou = new Map();
 for (const x of p.raw.purchase_log || []) if (!comprou.has(x.key)) comprou.set(x.key, Number(x.time) || 0);
@@ -3520,16 +3548,21 @@ propor(['dust', 'ward_sentry'], `${nomes} ${inimigo.invis.length > 1 ? 'ficam' :
 }
 
 if (populares) {
-const top = populares.meio.slice(0, 3);
-const naoComprado = top.find((i) => !comprou.has(i.key));
-if (naoComprado) {
-cand.push({ ...naoComprado, motivo: `É o ${top.indexOf(naoComprado) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome} (OpenDota), e você não comprou.`, prioridade: 1, quando: ctx.ancora, porque: ctx.ancoraMotivo });
+// a popularidade só escolhe o candidato; o motivo tem que vir do jogo (porqueDoPopular), senão o item não é sugerido
+const top = populares.meio.filter((i) => !ITENS_DEGRAU.has(i.key)).slice(0, 3);
+for (const i of top) {
+if (comprou.has(i.key)) continue;
+const pq = porqueDoPopular(p, ctx, i, comprou);
+if (!pq) continue;
+cand.push({ ...i, motivo: `${frase0(pq)}. ${i.nome} está entre os itens mais comprados no meio do jogo por quem joga de ${p.heroi.nome} (OpenDota), e você não comprou.`, prioridade: 1, quando: ctx.ancora, porque: ctx.ancoraMotivo, porqueJogo: pq, curto: pq });
+break;
 }
 for (const i of top) {
 const t0 = comprou.get(i.key);
 if (t0 != null && t0 > LATE) {
 const x = textoDoAtraso(p, ctx, i.key, null);
-cand.push({ ...i, motivo: `É o ${top.indexOf(i) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome}. ${x ? x.texto : `O seu saiu aos ${mmss(t0)}.`}`, prioridade: 2.5, quando: ctx.ancora, porque: ctx.ancoraMotivo, atrasado: true });
+const curto = `é o item central do ${p.heroi.nome}, e o seu só saiu aos ${minutos(t0)}`;
+cand.push({ ...i, motivo: `É o ${top.indexOf(i) + 1}º item mais comprado no meio do jogo por quem joga de ${p.heroi.nome}. ${x ? x.texto : `O seu saiu aos ${mmss(t0)}.`}`, prioridade: 2.5, quando: ctx.ancora, porque: ctx.ancoraMotivo, atrasado: true, tFeito: t0, curto });
 }
 }
 }
@@ -3657,7 +3690,7 @@ fisico: [
 { pos: [3], itens: ['crimson_guard', 'assault', 'shivas_guard'], por: 'aura de armadura e bloqueio para o time inteiro' },
 { pos: [5], itens: ['ghost', 'force_staff'], por: 'fica imune a ataque quando ele pular em você' },
 { pos: [4], itens: ['solar_crest', 'force_staff'], por: 'armadura no aliado que ele focar' },
-{ pos: [1, 2], todos: true, itens: ['heavens_halberd', 'blade_mail', 'butterfly', 'black_king_bar'], por: 'desarma ou desvia os ataques dele na luta' },
+{ pos: [1, 2], todos: true, itens: ['heavens_halberd', 'blade_mail', 'butterfly'], por: 'desarma ou desvia os ataques dele na luta' },
 ],
 magico: [
 { pos: [3, 4], itens: ['pipe'], por: 'escudo mágico para o time inteiro' },
@@ -4033,7 +4066,7 @@ const abre = ['O contexto importa: você chegou ao meio do jogo apanhando', 'Olh
 paragrafos.push(`${abre} (${est.motivos.join(', ')})${est.quem ? `, e o dano que te matava era ${tipoTxt}, principalmente de ${est.quem}` : ''}. Nessa situação a build muda: primeiro sobreviver, depois farmar.${it.ganancia ? ` ${it.ganancia.nome} é o item mais comum de ${p.heroi.nome} no meio do jogo, mas é item de quem está na frente: atrás e morrendo, só aumenta o alvo nas suas costas.` : ''}`);
 }
 if (sg.length) {
-const motivo = (x) => (x.sobrevivencia ? `${x.papel}${x.popular && x.saiu == null ? ` (é a escolha defensiva mais comum de quem joga de ${p.heroi.nome})` : ''}` : x.papel ? `${x.papel}${x.contra && !/cura/.test(x.papel) ? `, contra ${x.contra}` : ''}` : x.atrasado ? 'é o item central do herói' : x.prioridade === 1 ? `é o que quase todo ${p.heroi.nome} faz no meio do jogo` : x.contra ? `responde a ${x.contra}` : 'fecha o buraco da build');
+const motivo = (x) => (x.sobrevivencia ? `${x.papel}${x.popular && x.saiu == null ? ` (é a escolha defensiva mais comum de quem joga de ${p.heroi.nome})` : ''}` : x.papel ? `${x.papel}${x.contra && !/cura/.test(x.papel) ? `, contra ${x.contra}` : ''}` : x.atrasado ? `é o item central do herói${x.tFeito ? `, e o seu só saiu aos ${minutos(x.tFeito)}` : ''}` : x.porqueJogo ? x.porqueJogo : x.contra ? `responde a ${x.contra}` : 'fecha o buraco da build');
 const ordem = sg.map((x) => x.nome);
 const base = botas ? `depois de ${botas.nome}, ` : '';
 const porques = sg.length === 2 && sg.every((x) => x.atrasado && !x.sobrevivencia)
