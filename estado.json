@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-07T23:58:43Z",
+  "quando": "2026-11-08T00:36:59Z",
   "restante": {
-   "dia": 2955,
-   "minuto": 15
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -461,7 +461,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-07T23:58:23Z",
+   "em": "2026-11-08T00:36:56Z",
    "partidas": {
     "9059125948": 1792824853,
     "9059172324": 1792827798,
@@ -2823,46 +2823,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9080677416": {
-   "inicio": 1794082238,
-   "pedido_em": "2026-11-07T23:58:38Z",
-   "primeira_vez": "2026-11-07T23:58:37Z",
-   "proxima": "2026-11-08T00:28:37Z",
-   "tentativas": 0
-  },
-  "9080759275": {
-   "inicio": 1794086038,
-   "pedido_em": "2026-11-07T23:58:40Z",
-   "primeira_vez": "2026-11-07T23:58:39Z",
-   "proxima": "2026-11-08T00:28:39Z",
-   "tentativas": 0
-  },
-  "9080891815": {
-   "inicio": 1794094611,
-   "pedido_em": "2026-11-07T23:58:43Z",
-   "primeira_vez": "2026-11-07T23:58:42Z",
-   "proxima": "2026-11-08T00:28:42Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 13,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-05T12:22:45Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2987,
-    "minuto": 47
-   },
-   "sobra_do_dia": 2747
-  },
   {
    "basicas": 0,
    "chamadas": 10,
@@ -3614,10 +3576,25 @@
     "minuto": 15
    },
    "sobra_do_dia": 2594
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-08T00:36:56Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2796
   }
  ],
  "uso": {
-  "2026-10-25": 111,
   "2026-10-26": 117,
   "2026-10-27": 83,
   "2026-10-28": 44,
@@ -3630,6 +3607,7 @@
   "2026-11-04": 70,
   "2026-11-05": 74,
   "2026-11-06": 1312,
-  "2026-11-07": 206
+  "2026-11-07": 206,
+  "2026-11-08": 4
  }
 }
