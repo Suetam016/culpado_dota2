@@ -4,7 +4,7 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-08T03:21:14Z",
+  "quando": "2026-11-08T04:01:15Z",
   "restante": {
    "dia": 2998,
    "minuto": 58
@@ -452,7 +452,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-08T03:21:13Z",
+   "em": "2026-11-08T04:01:15Z",
    "partidas": {
     "9059125948": 1792824853,
     "9059172324": 1792827798,
@@ -700,15 +700,6 @@
   }
  },
  "lo": {
-  "9035882915": {
-   "companheiros": [
-    149994738,
-    155510388,
-    178612777,
-    1000265186
-   ],
-   "inicio": 1791516339
-  },
   "9036627330": {
    "companheiros": [
     67415664,
@@ -2582,7 +2573,6 @@
   "148131975": "Borys o Dragão de Athas",
   "148364503": "Manaos Man",
   "149153157": "LARGA TIXA",
-  "149994738": "EL DESTROZA CARRYS",
   "150437875": "kludd",
   "152767398": "og8",
   "153112978": "VODANAKARA",
@@ -2592,7 +2582,6 @@
   "153690834": "Tarabai",
   "153828895": "TOMMY 9 STARZ",
   "1540058266": "BlackDoGGi",
-  "155510388": "ꭙ Taηaka ꭙ",
   "1560507258": "Sister Hong",
   "1582362165": "TOPSON",
   "158369144": "Miguel",
@@ -2615,7 +2604,6 @@
   "177711427": "Spy #Woz",
   "178043357": "MUTED",
   "178048658": "FMV GoiabaManca",
-  "178612777": "Sad Panda",
   "17935045": "sH0Cx!",
   "1805570054": "GOPinnacle",
   "1833998767": "Nika, o Deus-Sol!",
@@ -2796,27 +2784,11 @@
    "inicio": 1794093165,
    "pedido_em": "2026-11-08T02:41:28Z",
    "primeira_vez": "2026-11-08T02:41:27Z",
-   "proxima": "2026-11-08T03:36:14Z",
-   "tentativas": 1
+   "proxima": "2026-11-08T04:16:15Z",
+   "tentativas": 2
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-05T22:18:51Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2726
-  },
   {
    "basicas": 0,
    "chamadas": 19,
@@ -3568,6 +3540,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2770
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-08T04:01:14Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2768
   }
  ],
  "uso": {
@@ -3584,6 +3572,6 @@
   "2026-11-05": 74,
   "2026-11-06": 1312,
   "2026-11-07": 206,
-  "2026-11-08": 30
+  "2026-11-08": 32
  }
 }
