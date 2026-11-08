@@ -98,6 +98,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 .pq-placar li.e-ele .pq-barra i{background:var(--pq)}
 .pq-placar li.e-ele .pq-v{color:var(--pq)}
 .pq-nota{margin:4px 0 0;font-size:.8rem;color:var(--muted);line-height:1.4}
+.pq-jogadas{display:grid;gap:10px;margin-top:14px;padding-top:16px;border-top:1px solid var(--line)}
+.pq-jog-quem{margin:4px 0 0;font-weight:700;font-size:.9rem}
+.pq-jog{list-style:none;margin:0;padding:0;display:grid;position:relative}
+.pq-jog li{display:grid;grid-template-columns:3.2em minmax(0,1fr);gap:10px;padding:0 0 12px;position:relative}
+.pq-jog li::before{content:"";position:absolute;left:calc(3.2em + 4px);top:7px;width:7px;height:7px;border-radius:50%;background:var(--pq)}
+.pq-jog li:not(:last-child)::after{content:"";position:absolute;left:calc(3.2em + 7px);top:17px;bottom:0;width:1px;background:color-mix(in srgb,var(--pq) 35%,transparent)}
+.pq-jog li>div{padding-left:18px}
+.pq-jog-t{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--muted);text-align:right;padding-top:1px}
+.pq-jog strong{display:block;font-size:.95rem;line-height:1.3}
+.pq-jog p{margin:2px 0 0;font-size:.84rem;color:var(--muted);line-height:1.4}
 @media (max-width:760px){
 .pq-grade{grid-template-columns:minmax(0,1fr)}
 .pq-time{padding:16px 0 0;border-left:0;border-top:1px solid var(--line)}
@@ -7072,6 +7082,72 @@ listaDeFatos(fatos, 'mr-fatos mn-fatos')),
 h('p', { class: 'mn-aviso' }, rnd.um(['Proibido pombo pousar na cabeça.', 'Visitação gratuita. Proibido pedir farm.', `Os quatro colegas de ${fa.jogador.nome} pediram uma plaquinha também. Negado.`, 'Ao passar, faça silêncio e um +rep.'])));
 }
 
+// ---------- Jogadas que importaram: a partida dele contada em lances, em ordem, cada um com a prova ----------
+// Vitória: rota, rotações que mataram, e os momentos decisivos do motor (virada, solo kill, luta que abriu/fechou...).
+// Derrota: rota, as mortes que mais custaram, o freguês de alguém, o throw do jogo e o tempo morto quando caiu base.
+function jogadasDe(v, r, vitoria) {
+const p = v.jogador;
+const out = [];
+const add = (t, titulo, texto, peso) => out.push({ t, titulo, texto, peso });
+const mortes = r.mortes || null;
+const morteDe = (i) => (mortes && mortes[i]) || [];
+const nomeJ = (i) => { const q = [...r.nos, ...(r.eles || [])].find((x) => x.idx === i); return q ? q.heroi.nome : 'alguém'; };
+const minTxt = (t) => `${Math.floor(t / 60)} min`;
+const naLuta = (t) => (r.lutas || []).find((l) => t >= l.inicio - 8 && t <= (l.fim ?? l.inicio) + 8);
+
+// a rota dele
+const rota = (r.rotas || []).find((l) => l.nos.some((q) => q.idx === p.idx));
+const duelo = rota && (rota.duelos || []).find((d) => d.jogador && d.jogador.idx === p.idx);
+if (rota && duelo && duelo.rival) {
+const nomeRota = { mid: 'a mid', safe: 'a safe lane', off: 'a offlane' }[rota.tipo] || 'a rota';
+const dif = duelo.ouroDiff || 0;
+if (vitoria && dif >= 400) add(600, `Ganhou ${nomeRota}`, `Contra ${duelo.rival.heroi.nome}: ${fmtK(dif)} de ouro na frente aos 10 min${rota.abatesNos ? `, ${plural(rota.abatesNos, 'abate', 'abates')} na rota` : ''}.`, 6 + dif / 400);
+else if (!vitoria && dif <= -400) add(600, `Perdeu ${nomeRota}`, `Contra ${duelo.rival.heroi.nome}: ${fmtK(-dif)} de ouro atrás aos 10 min${morteDe(p.idx).filter((d) => d.t < 600).length ? `, com ${plural(morteDe(p.idx).filter((d) => d.t < 600).length, 'morte', 'mortes')} antes disso` : ''}.`, 6 + -dif / 400);
+}
+
+if (vitoria) {
+// rotação: saiu da rota e matou antes dos 12 min
+if (mortes && r.eles && rota) {
+const fora = r.eles.filter((e) => !rota.eles.some((x) => x.idx === e.idx))
+.flatMap((e) => morteDe(e.idx).filter((d) => d.assassino === p.idx && d.t >= 90 && d.t < 720).map((d) => ({ ...d, e })));
+if (fora.length) add(fora[0].t, fora.length > 1 ? 'Saiu da rota para matar' : 'Saiu da rota e pegou um', `${fora.map((d) => `${d.e.heroi.nome} aos ${mmss(d.t)}`).join(', ').replace(/, ([^,]*)$/, ' e $1')}, fora da rota dele.`, 5 + fora.length);
+}
+// os momentos decisivos que o motor achou (um por família)
+const fams = new Set();
+for (const m of ((r.momentos || {})[p.idx] || []).filter((x) => !fams.has(x.familia) && fams.add(x.familia))) {
+if (m.tipo === 'rota' || m.tipo === 'mid' || m.tipo === 'anulou') continue; // a rota já entrou acima
+const rnd = sorteador(`jogada-${r.partida.id}-${p.idx}-${m.tipo}`);
+add(m.t, capital(rnd.um(m.frases)), `${capital(m.prova)}.`, m.peso);
+}
+} else {
+const ms = morteDe(p.idx).filter((d) => d.t > 60);
+// as mortes que mais custaram
+for (const d of [...ms].filter((x) => x.ouro != null).sort((a, b) => b.ouro - a.ouro).slice(0, 2)) {
+const l = naLuta(d.t);
+const onde = l ? (l.mortesNos > l.mortesEles ? `numa luta perdida de ${l.mortesEles} x ${l.mortesNos}` : `numa luta de ${l.mortesEles} x ${l.mortesNos}`) : 'fora de luta, sem ninguém do time perto';
+add(d.t, `${!l ? 'Pego sozinho' : l.mortesNos > l.mortesEles ? 'Caiu na luta perdida' : 'Morreu na luta'}${d.ouro >= 1000 ? ', e custou caro' : ''}`, `${d.assassino != null ? `Para ${nomeJ(d.assassino)}` : 'Morreu'} ${onde}: ${fmtK(d.ouro)} de ouro para eles.`, 4 + d.ouro / 400);
+}
+// virou freguês de alguém
+if (ms.length >= 4) {
+const cont = {};
+for (const d of ms) if (d.assassino != null) cont[d.assassino] = (cont[d.assassino] || 0) + 1;
+const [quem, n] = Object.entries(cont).sort((a, b) => b[1] - a[1])[0] || [];
+if (n >= 3) add(ms.filter((d) => String(d.assassino) === quem)[2].t, `Virou freguês de ${nomeJ(Number(quem))}`, `${n} das ${ms.length} mortes dele foram para o mesmo herói (${ms.filter((d) => String(d.assassino) === quem).map((d) => mmss(d.t)).join(', ')}).`, 5 + n);
+}
+// o throw do jogo, se ele caiu nele
+const throwL = (r.lances || []).find((l) => l.fixo === 'throw' && (l.foco || []).includes(p.idx));
+if (throwL) add(throwL.t, 'Caiu no throw do jogo', `${capital(throwL.legenda)}.`, 9);
+}
+// as mais importantes, contadas em ordem
+const top = [];
+for (const x of out.sort((a, b) => b.peso - a.peso)) {
+if (x.t != null && top.some((y) => y.t != null && Math.abs(y.t - x.t) < 20)) continue; // o mesmo lance contado duas vezes
+top.push(x);
+if (top.length >= 4) break;
+}
+return top.sort((a, b) => (a.t ?? 1e9) - (b.t ?? 1e9));
+}
+
 // ---------- Por que: o motivo do veredito em números, para a culpa e para o mérito ----------
 // Feito sob medida: só entra o que é deste jogador (a conta dos pontos dele e onde ele foi o 1º ou o último do time).
 // Morte não ganha cartão próprio: o K/D/A já mostra, e na culpa ela entra pela conta ("Ouro entregue morrendo").
@@ -7146,6 +7222,17 @@ h('p', { class: 'pq-heroi' }, `${p.heroi.nome} · pos ${p.posicao} · `, h('span
 h('p', { class: 'pq-placar-dele' }, h('b', {}, String(Math.round(v.score))), h('span', {}, `pontos de ${tipo}`, h('small', {}, `${pct(v.fatia)} ${vitoria ? 'do mérito' : 'da culpa'} do time`))),
 dest.length ? h('ul', { class: 'pq-destaques' }, dest.map((t) => h('li', {}, t))) : null);
 };
+// o espaço embaixo do placar: as jogadas que importaram, em ordem, de quem levou o veredito
+const jogadas = () => {
+const blocos = cs.map((v) => ({ v, js: jogadasDe(v, r, vitoria) })).filter((x) => x.js.length);
+if (!blocos.length) return null;
+return h('div', { class: 'pq-jogadas' },
+h('p', { class: 'pq-rot' }, 'Jogadas que importaram'),
+blocos.map(({ v, js }) => [cs.length > 1 ? h('p', { class: 'pq-jog-quem' }, v.jogador.nome) : null,
+h('ol', { class: 'pq-jog' }, js.map((j) => h('li', {},
+h('span', { class: 'pq-jog-t' }, j.t != null ? mmss(j.t) : '·'),
+h('div', {}, h('strong', {}, j.titulo), h('p', {}, j.texto)))))]));
+};
 return h('section', { class: `cartao motivo ${vitoria ? 'pq-merito' : 'pq-culpa'}`, 'aria-label': `Por que o ${tipo}` },
 h('div', { class: 'pq-topo' },
 h('h3', { class: 'pq-titulo' }, vitoria ? 'Por que o mérito é ' : 'Por que a culpa é ', dupla ? 'deles' : 'dele'),
@@ -7159,7 +7246,8 @@ h('span', { class: 'pq-n' }, `${i + 1}`),
 h('span', { class: 'pq-quem-nome' }, v.jogador.nome),
 h('span', { class: 'pq-v' }, `${Math.round(v.score)}`),
 h('span', { class: 'pq-barra', 'aria-hidden': 'true' }, h('i', { style: `width:${Math.max(2, Math.round((100 * Math.max(0, v.score)) / max))}%` }))))),
-h('p', { class: 'pq-nota' }, `Cada ponto vale cerca de 100 de ouro ${vitoria ? 'de impacto a favor do time' : 'de prejuízo para o time'}.`))));
+h('p', { class: 'pq-nota' }, `Cada ponto vale cerca de 100 de ouro ${vitoria ? 'de impacto a favor do time' : 'de prejuízo para o time'}.`),
+jogadas())));
 }
 
 // ---------- Áudio do craque: quem carregou "manda um áudio" no grupo, estilo zap ----------
