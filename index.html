@@ -84,7 +84,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 .pq-linhas p{margin:1px 0 0;color:var(--muted);font-size:.86rem;line-height:1.4}
 .pq-linhas .pq-menor strong{font-weight:500;color:var(--muted)}
 .pq-linhas .pq-menor .pq-pts{color:var(--muted);font-weight:500}
-.pq-linhas .pq-alivio .pq-pts{color:var(--good-ink)}
+.pq-linhas .pq-alivio .pq-pts{color:var(--good-ink)}.pq-linhas .pq-desconto .pq-pts{color:var(--bad-ink)}
 .pq-linhas .pq-alivio strong{font-weight:600;color:var(--ink-2)}
 .pq-time{display:grid;gap:10px;padding-left:28px;border-left:1px solid var(--line)}
 .pq-placar{list-style:none;margin:0;padding:0;display:grid;gap:9px}
@@ -2023,7 +2023,12 @@ default: return '';
 }
 }
 
-const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, lutaCura: 0.8, lutaSkill: 80, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15, rotaSuporte: 0.9 };
+const MERITO = { abates: 0.6, assist: 0.15, lutaDano: 0.5, lutaCura: 0.8, lutaSkill: 80, rotaMult: 1.0, torreDano: 0.08, aegis: 500, stun: 20, cura: 0.15, rotaSuporte: 0.9,
+// 08/11/2026 (feedback do Léo, partida 9080478706): o mérito só somava, e abate tardio valia até 3x um abate cedo
+// (ouroEstimado cresce com o tempo). Agora o valor do abate e da luta para de crescer aos tetoMin, e o tempo morto
+// acima do normal vira desconto (o time jogou 4 contra 5 esse tempo todo).
+tetoMin: 30, mortoTol: 0.10, morto: 1.0, descontoMax: 0.4 };
+const valorDoAbate = (t) => ouroEstimado(Math.min(t || 0, MERITO.tetoMin * 60));
 const LABELS_BOM = {
 rota: 'Ganhou a rota', abates: 'Abates', assist: 'Assistências', lutas: 'Decidiu as lutas ganhas', objetivos: 'Derrubou estruturas',
 roshan: 'Pegou o Roshan', farm: 'Farm acima do herói', dano: 'Dano acima do herói', visao: 'Visão do mapa', controle: 'Controle (stuns)',
@@ -2242,6 +2247,27 @@ if (t) xs.push(t);
 const peso = (t) => { let a = 2166136261; for (const ch of `${semente}|${t}`) a = Math.imul(a ^ ch.charCodeAt(0), 16777619); return a >>> 0; };
 return xs.map((t) => [peso(t), t]).sort((a, b) => a[0] - b[0]).map((y) => y[1]);
 }
+// O que pesa contra no mérito de quem venceu. Só tempo morto acima do normal, por enquanto: é o único que a base
+// mostrou separar quem carregou de quem só pegou abate (ver a thread "Analisar mérito", 08/11/2026). Cada desconto
+// vem com a prova e nunca leva mais que `teto` pontos do jogador (o mérito não vira culpa).
+function descontosDoMerito(ctx, p, teto) {
+const ds = [];
+const morto = p.stats.timeDead;
+const dur = ctx.duracao;
+if (morto != null && dur > 0) {
+const excesso = morto - MERITO.mortoTol * dur;
+const ouroSeg = soma(ctx.nos, (q) => q.raw.gold_per_min || 0) / Math.max(1, ctx.nos.length) / 60;
+const ouro = excesso * ouroSeg * MERITO.morto;
+if (ouro >= CULPA.escala * 0.5) {
+ds.push({ key: 'morto', label: 'Tempo morto', pontos: Math.round(ouro / CULPA.escala * 10) / 10,
+evidencia: `${Math.round(morto / 60)} min morto em ${Math.round(dur / 60)} (${pct(morto / dur)} do jogo; o normal é até ${pct(MERITO.mortoTol)}), o time jogou ${Math.round(excesso / 60)} min a mais com um a menos` });
+}
+}
+let resto = teto;
+for (const d of ds) { d.pontos = Math.round(Math.min(d.pontos, resto) * 10) / 10; resto -= d.pontos; }
+return ds.filter((d) => d.pontos >= 0.5);
+}
+
 function craquesDaPartida(ctx, match) {
 const { nos, eles, duracao } = ctx;
 const minutos = duracao / 60;
@@ -2265,11 +2291,11 @@ for (const dl of av.duelos) add(dl.jogador.idx, 'rota', MERITO.rotaMult * sobra 
 }
 
 if (ctx.mortes) {
-for (const j of elesIdx) for (const x of mortesDe(j)) if (x.assassino in acc) add(x.assassino, 'abates', MERITO.abates * x.ouro, x.t);
+for (const j of elesIdx) for (const x of mortesDe(j)) if (x.assassino in acc) add(x.assassino, 'abates', MERITO.abates * Math.min(x.ouro, valorDoAbate(x.t)), x.t);
 } else {
-for (const p of nos) add(p.idx, 'abates', MERITO.abates * p.raw.kills * ouroEstimado(duracao / 2), null);
+for (const p of nos) add(p.idx, 'abates', MERITO.abates * p.raw.kills * valorDoAbate(duracao / 2), null);
 }
-const ouroMedioDeles = ctx.mortes ? (soma(elesIdx, (j) => soma(mortesDe(j), (x) => x.ouro)) / Math.max(1, soma(elesIdx, (j) => mortesDe(j).length))) : ouroEstimado(duracao / 2);
+const ouroMedioDeles = ctx.mortes ? (soma(elesIdx, (j) => soma(mortesDe(j), (x) => Math.min(x.ouro, valorDoAbate(x.t)))) / Math.max(1, soma(elesIdx, (j) => mortesDe(j).length))) : valorDoAbate(duracao / 2);
 for (const p of nos) if (p.raw.assists) add(p.idx, 'assist', MERITO.assist * p.raw.assists * ouroMedioDeles, p.raw.assists);
 
 for (const tf of match.teamfights || []) {
@@ -2288,7 +2314,7 @@ const peso = (w) => w.d + MERITO.lutaCura * w.cura + MERITO.lutaSkill * w.skills
 const ws = Object.fromEntries(nosIdx.map((i) => [i, trabalho(i)]));
 const danoTotal = soma(nosIdx, (i) => peso(ws[i]));
 if (!danoTotal) continue;
-const premio = mortosEles * ouroEstimado(tf.start || 0) * MERITO.lutaDano;
+const premio = mortosEles * valorDoAbate(tf.start || 0) * MERITO.lutaDano;
 for (const i of nosIdx) {
 const d = peso(ws[i]);
 if (d) add(i, 'lutas', (premio * d) / danoTotal, { t: tf.start, fatia: d / danoTotal, placar: [mortosEles, mortosNos], skills: ws[i].skills, cura: ws[i].cura });
@@ -2339,7 +2365,7 @@ const evid = (k, c, p) => {
 const n = c.infos.length;
 switch (k) {
 case 'rota': { const { tipo, ouroDiff, rivais, esperado, temDado, tipicas, n: nRota } = c.infos[0]; return `${{ mid: 'mid', safe: 'safe lane', off: 'offlane' }[tipo]} contra ${rivais}: ${ouroDiff >= 0 ? `${fmtK(ouroDiff)} de ouro na frente` : `só ${fmtK(-ouroDiff)} de ouro atrás`} aos 10 min${nRota > 1 ? ' (média dos duelos, core pesa mais)' : ''}; ${esperadoTxt(esperado, temDado, tipicas)}`; }
-case 'abates': return `${plural(p.raw.kills, 'abate', 'abates')}${ctx.mortes ? `, ${fmtK(c.ouro / MERITO.abates)} de ouro tirado deles` : ''}`;
+case 'abates': return `${plural(p.raw.kills, 'abate', 'abates')}${ctx.mortes ? `, valendo ${fmtK(c.ouro / MERITO.abates)} de ouro${c.infos.some((t) => t > MERITO.tetoMin * 60) ? ` (depois dos ${MERITO.tetoMin} min, cada abate vale o mesmo que aos ${MERITO.tetoMin})` : ''}` : ''}`;
 case 'assist': return `${plural(c.infos[0], 'assistência', 'assistências')}`;
 case 'lutas': {
 const top = [...c.infos].sort((a, b) => b.fatia - a.fatia)[0];
@@ -2376,7 +2402,9 @@ const elogios = elogiosDe(key, x, `${match.match_id}-${p.idx}-${key}`);
 return { key, label: LABELS_BOM[key], pontos: arred(c.ouro / CULPA.escala), evidencia: evid(key, c, p), elogio: elogios[0] || LABELS_BOM[key].toLowerCase(), elogios };
 })
 .sort((a, b) => b.pontos - a.pontos);
-return { jogador: p, score: arred(soma(cs, (c) => c.pontos)), fatia: 0, componentes: cs, brilhou: cs.slice(0, 3) };
+const bruto = soma(cs, (c) => c.pontos);
+const ds = descontosDoMerito(ctx, p, bruto * MERITO.descontoMax);
+return { jogador: p, score: arred(Math.max(0, bruto - soma(ds, (c) => c.pontos))), bruto: arred(bruto), fatia: 0, componentes: cs, descontos: ds, brilhou: cs.slice(0, 3) };
 });
 const total = soma(vs, (v) => v.score) || 1;
 vs.forEach((v) => { v.fatia = v.score / total; });
@@ -6805,7 +6833,9 @@ vice.length ? h('p', { class: 'vice' }, h('span', { class: 'vice-rot' }, 'També
 // 29–32% ~22%, 32–35,5% ~16%, 35,5%+ ~13% (antes, com 27/30/34/38%, o Monumento saía em ~7% e quase ninguém via).
 // 07/11/2026: com o trabalho de suporte novo (pull, zoning, save, lutas por cura e skill) o mérito fica mais dividido
 // e o 1º tem fatia menor; recalibrado em 734 vitórias para manter as mesmas proporções (Monumento ~13%).
-const MERITO_CORTES = [0.255, 0.283, 0.31, 0.34];
+// 08/11/2026: com o desconto de tempo morto e o teto no valor do abate, o 1º fica com fatia maior; recalibrado em
+// 754 vitórias para manter as mesmas proporções.
+const MERITO_CORTES = [0.263, 0.295, 0.334, 0.358];
 const nivelDoMerito = (cs) => MERITO_CORTES.filter((c) => cs[0].fatia >= c).length;
 
 const pluralMr = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
@@ -7056,7 +7086,7 @@ const conta = (v) => {
 const pos = (v.componentes || []).filter((c) => c.pontos >= 1);
 const linhas = pos.slice(0, MAX_LINHAS);
 const resto = pos.slice(MAX_LINHAS).reduce((x, c) => x + c.pontos, 0);
-const alivio = vitoria ? [] : (v.atenuantes || []);
+const alivio = vitoria ? (v.descontos || []) : (v.atenuantes || []);
 const tom = (i) => Math.max(0.28, 1 - i * 0.2).toFixed(2);
 return h('div', { class: 'pq-conta' },
 h('p', { class: 'pq-rot' }, `De onde vieram os ${Math.round(v.score)} pontos`),
@@ -7068,9 +7098,9 @@ linhas.map((c, i) => h('li', { style: `--a:${tom(i)}` },
 h('span', { class: 'pq-pts' }, `+${Math.round(c.pontos)}`),
 h('div', {}, h('strong', {}, c.label), c.evidencia ? h('p', {}, `${capital(c.evidencia)}.`) : null))),
 resto >= 1 ? h('li', { class: 'pq-menor' }, h('span', { class: 'pq-pts' }, `+${Math.round(resto)}`), h('div', {}, h('strong', {}, pos.length - MAX_LINHAS === 1 ? 'Outro detalhe' : `Outros ${pos.length - MAX_LINHAS} detalhes`), h('p', {}, `${capital(pos.slice(MAX_LINHAS).map((c) => c.label.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' e $1'))}.`))) : null,
-alivio.map((c) => h('li', { class: 'pq-alivio' },
-h('span', { class: 'pq-pts' }, `−${Math.round(-c.pontos)}`),
-h('div', {}, h('strong', {}, `A favor: ${c.label.charAt(0).toLowerCase()}${c.label.slice(1)}`), c.evidencia ? h('p', {}, `${capital(c.evidencia)}.`) : null)))));
+alivio.map((c) => h('li', { class: vitoria ? 'pq-alivio pq-desconto' : 'pq-alivio' },
+h('span', { class: 'pq-pts' }, `−${Math.round(Math.abs(c.pontos))}`),
+h('div', {}, h('strong', {}, `${vitoria ? 'Pesou contra' : 'A favor'}: ${c.label.charAt(0).toLowerCase()}${c.label.slice(1)}`), c.evidencia ? h('p', {}, `${capital(c.evidencia)}.`) : null)))));
 };
 const ficha = (v) => {
 const p = v.jogador;
@@ -15078,7 +15108,10 @@ h('span', { class: 'pts' }, fmtPts(c.pontos)),
 h('span', {}, h('strong', {}, c.label), ` — ${c.evidencia}.`)));
 const doMerito = merito ? merito.componentes.map((c) => h('li', { class: 'credito' },
 h('span', { class: 'pts' }, `+${Math.round(c.pontos)}`),
-h('span', {}, h('strong', {}, c.label), ` — ${c.evidencia}.`))) : [];
+h('span', {}, h('strong', {}, c.label), ` — ${c.evidencia}.`)))
+.concat((merito.descontos || []).map((c) => h('li', {},
+h('span', { class: 'pts' }, `−${Math.round(c.pontos)}`),
+h('span', {}, h('strong', {}, `Pesou contra: ${c.label.toLowerCase()}`), ` — ${c.evidencia}.`)))) : [];
 return h('details', { class: 'detalhes' },
 h('summary', {}, h('span', {}, h('strong', { class: 'detalhes-rot' }, 'Ver detalhes'),
 h('small', {}, merito ? ' · de onde veio o mérito, o que dá para limpar, contra quem você jogou e a ordem de compra' : ' · de onde veio a culpa, contra quem você jogou e a ordem de compra'))),
