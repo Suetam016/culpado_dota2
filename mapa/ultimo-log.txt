@@ -3847,3 +3847,12 @@ Fila: [9082446358, 9080872548]
 OK 9082446358
 FALHOU 9080872548: HTTP Error 404: Not Found
 1 mapas novos
+Fila: [9081094595] (pedidos do site: [9081094595])
+  replay http://replay201.valve.net/570/9081094595_1357291878.dem.bz2 -> HTTP 200 application/octet-stream 60935554 inicio=b'(\xb5/\xfd\x00`\x9c1\x0f\xce?\x1e'
+  9081094595: 187093 eventos; tipos [('actions', 71132), ('interval', 34250), ('DOTA_COMBATLOG_DAMAGE', 34059), ('DOTA_COMBATLOG_MODIFIER_ADD', 10464), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 10432), ('DOTA_COMBATLOG_HEAL', 7287), ('DOTA_COMBATLOG_XP', 5144), ('DOTA_COMBATLOG_DEATH', 4987)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Obsidian_Destroyer", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 76, "variant": 0, "facet_hero_id": 76, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_picku
+  exemplo de habilidade: {"time": -86, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_hero_storm_spirit", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "plus_high_five"}
+  3180 registros de dano herói->herói
+  1840 usos de skill/item de 3115 no combat log
+OK 9081094595
+1 mapas novos
