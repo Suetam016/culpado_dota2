@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Day": "2995",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-09T10:21:46Z",
+  "quando": "2026-11-09T11:01:23Z",
   "restante": {
-   "dia": 2976,
-   "minuto": 36
+   "dia": 2994,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -461,7 +461,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-09T10:21:31Z",
+   "em": "2026-11-09T11:01:22Z",
    "partidas": {
     "9062176055": 1792967835,
     "9062207210": 1792970460,
@@ -710,15 +710,6 @@
   }
  },
  "lo": {
-  "9037879146": {
-   "companheiros": [
-    96012418,
-    112896929,
-    120355673,
-    241782761
-   ],
-   "inicio": 1791628846
-  },
   "9037953862": {
    "companheiros": [
     117645408,
@@ -2494,7 +2485,6 @@
   "111997561": "ᔕβ𝔲Ž𝐀เ𝐦𝓂",
   "1126109970": "daniel.arpex",
   "112651822": "Corvus",
-  "112896929": "Voidreaper",
   "1129897628": "『ᴬˢ』•",
   "1131397592": "-_- MadeInBR -_-",
   "114175312": "B b t ã o",
@@ -2516,7 +2506,6 @@
   "119559567": "Vraules",
   "119606119": "M[U]CHA",
   "119838604": "ThyNooB",
-  "120355673": "Zé",
   "120391656": "Mwins",
   "120460127": "El pintor austriaco is back",
   "120604854": "ᵗʷᶦᵗᶜʰ PêagáAfonso",
@@ -2754,7 +2743,6 @@
   "92576496": "raawr",
   "93064519": "Cabo Mathias",
   "95336818": "Judas",
-  "96012418": "Pai de familia",
   "96286191": "charlinho",
   "969256392": "Prezida",
   "969496875": "Wallace",
@@ -2773,32 +2761,9 @@
    "primeira_vez": "2026-11-08T02:41:27Z",
    "proxima": "2026-11-09T22:21:44Z",
    "tentativas": 12
-  },
-  "9082765847": {
-   "inicio": 1794211561,
-   "pedido_em": "2026-11-09T10:21:46Z",
-   "primeira_vez": "2026-11-09T10:21:45Z",
-   "proxima": "2026-11-09T10:51:45Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 6,
-   "descartadas": [],
-   "faltam": 2,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T08:01:12Z",
-   "novas": 2,
-   "pedidos": 1,
-   "pendentes": 2,
-   "restante": {
-    "dia": 2985,
-    "minuto": 45
-   },
-   "sobra_do_dia": 2723
-  },
   {
    "basicas": 0,
    "chamadas": 3,
@@ -3547,6 +3512,22 @@
     "minuto": 36
    },
    "sobra_do_dia": 2674
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-09T11:01:22Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2994,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2672
   }
  ],
  "uso": {
@@ -3563,6 +3544,6 @@
   "2026-11-06": 1312,
   "2026-11-07": 206,
   "2026-11-08": 229,
-  "2026-11-09": 126
+  "2026-11-09": 128
  }
 }
