@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2998",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-09T07:42:05Z",
+  "quando": "2026-11-09T08:21:20Z",
   "restante": {
-   "dia": 2965,
-   "minuto": 38
+   "dia": 2997,
+   "minuto": 57
   }
  },
  "desistencias": {
@@ -460,7 +460,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-09T07:41:19Z",
+   "em": "2026-11-09T08:21:19Z",
    "partidas": {
     "9062176055": 1792967835,
     "9062207210": 1792970460,
@@ -710,15 +710,6 @@
   }
  },
  "lo": {
-  "9037711110": {
-   "companheiros": [
-    111939377,
-    241782761,
-    1069164895,
-    1092661459
-   ],
-   "inicio": 1791620285
-  },
   "9037768913": {
    "companheiros": [
     93753322,
@@ -2498,20 +2489,17 @@
   "105551889": "_evilhair_",
   "106326409": "Marx",
   "1068067743": "Agosto Mouse(Dooley)",
-  "1069164895": "h3",
   "1075339011": "Sabor  Negro",
   "1076370673": "LEEROY JENKINS 💀",
   "1077646785": "3",
   "1087732759": "𝕲 kenpachi 𝕲",
   "109010624": "@ByCarica",
-  "1092661459": "xdddd",
   "109873249": "Muerte",
   "110262667": "FakerChovyShowmaker",
   "110593143": "Magoprost Kommandant",
   "111257540": "O Kulpado",
   "111452285": "bigode",
   "1116193156": "ARTIFAC MOQUEGUA",
-  "111939377": "Jhun",
   "111997561": "ᔕβ𝔲Ž𝐀เ𝐦𝓂",
   "1126109970": "daniel.arpex",
   "112651822": "Corvus",
@@ -2797,39 +2785,9 @@
    "primeira_vez": "2026-11-08T02:41:27Z",
    "proxima": "2026-11-09T09:41:35Z",
    "tentativas": 11
-  },
-  "9082596362": {
-   "inicio": 1794192931,
-   "pedido_em": "2026-11-09T07:42:03Z",
-   "primeira_vez": "2026-11-09T07:42:02Z",
-   "proxima": "2026-11-09T08:12:02Z",
-   "tentativas": 0
-  },
-  "9082647546": {
-   "inicio": 1794198781,
-   "pedido_em": "2026-11-09T07:42:05Z",
-   "primeira_vez": "2026-11-09T07:42:04Z",
-   "proxima": "2026-11-09T08:12:04Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T06:41:13Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2998,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2749
-  },
   {
    "basicas": 0,
    "chamadas": 3,
@@ -3581,6 +3539,22 @@
     "minuto": 38
    },
    "sobra_do_dia": 2694
+  },
+  {
+   "basicas": 0,
+   "chamadas": 3,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-09T08:21:17Z",
+   "novas": 2,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2997,
+    "minuto": 57
+   },
+   "sobra_do_dia": 2691
   }
  ],
  "uso": {
@@ -3597,6 +3571,6 @@
   "2026-11-06": 1312,
   "2026-11-07": 206,
   "2026-11-08": 229,
-  "2026-11-09": 106
+  "2026-11-09": 109
  }
 }
