@@ -4,7 +4,7 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-09T21:21:16Z",
+  "quando": "2026-11-09T22:01:15Z",
   "restante": {
    "dia": 2999,
    "minuto": 59
@@ -456,7 +456,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-09T21:21:16Z",
+   "em": "2026-11-09T22:01:15Z",
    "partidas": {
     "9062176055": 1792967835,
     "9062207210": 1792970460,
@@ -708,15 +708,6 @@
   }
  },
  "lo": {
-  "9039007106": {
-   "companheiros": [
-    65357559,
-    77621319,
-    111257540,
-    241782761
-   ],
-   "inicio": 1791668206
-  },
   "9039073425": {
    "companheiros": [
     77621319,
@@ -2634,7 +2625,6 @@
   "56965232": "kaiomm",
   "62300589": "fulgore",
   "63232443": "virτuaL ↯",
-  "65357559": "HoMeN-CodOrNa",
   "672861582": "NeonEagle6775",
   "69874576": "Petris",
   "70181495": "Mestre Splinter",
@@ -2703,22 +2693,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 12,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T19:01:19Z",
-   "novas": 0,
-   "pedidos": 2,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2970,
-    "minuto": 30
-   },
-   "sobra_do_dia": 2613
-  },
   {
    "basicas": 0,
    "chamadas": 2,
@@ -3464,6 +3438,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2569
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-09T22:01:15Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2568
   }
  ],
  "uso": {
@@ -3480,6 +3470,6 @@
   "2026-11-06": 1312,
   "2026-11-07": 206,
   "2026-11-08": 229,
-  "2026-11-09": 231
+  "2026-11-09": 232
  }
 }
