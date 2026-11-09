@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-09T13:21:18Z",
+  "quando": "2026-11-09T14:01:16Z",
   "restante": {
-   "dia": 2997,
-   "minuto": 57
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -458,7 +458,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-09T13:21:16Z",
+   "em": "2026-11-09T14:01:16Z",
    "partidas": {
     "9062176055": 1792967835,
     "9062207210": 1792970460,
@@ -707,15 +707,6 @@
   }
  },
  "lo": {
-  "9038154182": {
-   "companheiros": [
-    69757739,
-    88147570,
-    133495123,
-    241782761
-   ],
-   "inicio": 1791639120
-  },
   "9038253207": {
    "companheiros": [
     160291024,
@@ -2521,7 +2512,6 @@
   "1313520742": "danfer2.0",
   "131441173": "shimith",
   "133076088": "Sampaioph",
-  "133495123": "Ted",
   "135293311": "CAPIVARANOIADA",
   "137191831": "Astro!",
   "137595823": "Lord of Woe",
@@ -2668,7 +2658,6 @@
   "63232443": "virτuaL ↯",
   "65357559": "HoMeN-CodOrNa",
   "672861582": "NeonEagle6775",
-  "69757739": "groovy",
   "69874576": "Petris",
   "70181495": "Mestre Splinter",
   "71861775": "s4x",
@@ -2702,7 +2691,6 @@
   "877219490": "O Pato Amarelo",
   "88054389": "Bruno",
   "880654998": "MuFaza",
-  "88147570": "Do-Fro",
   "887005060": "PFEDERAL",
   "887627645": "BIZ 110 NOVINHAAA",
   "890209361": "LoKoMoTiOm",
@@ -2737,22 +2725,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T11:21:13Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2695
-  },
   {
    "basicas": 0,
    "chamadas": 12,
@@ -3498,6 +3470,22 @@
     "minuto": 57
    },
    "sobra_do_dia": 2651
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-09T14:01:16Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2650
   }
  ],
  "uso": {
@@ -3514,6 +3502,6 @@
   "2026-11-06": 1312,
   "2026-11-07": 206,
   "2026-11-08": 229,
-  "2026-11-09": 149
+  "2026-11-09": 150
  }
 }
