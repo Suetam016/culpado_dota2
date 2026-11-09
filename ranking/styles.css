@@ -340,6 +340,15 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 }
 .fb-enviar:disabled { opacity: .6; cursor: wait; }
 .fb-status { font-size: 14px; min-height: 1.2em; color: var(--ink-2); }
+.fb-falar {
+  min-height: 48px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong); background: var(--surface-2);
+  color: var(--ink); font: inherit; font-weight: 800; cursor: pointer;
+}
+.fb-falar.gravando { background: #b3261e; border-color: #b3261e; color: #fff; animation: fb-pulso 1.2s ease-in-out infinite; }
+@keyframes fb-pulso { 50% { box-shadow: 0 0 0 6px rgba(179, 38, 30, .25); } }
+@media (prefers-reduced-motion: reduce) { .fb-falar.gravando { animation: none; } }
+.fb-voz-aviso { margin: 0; font-size: 13px; color: var(--ink-2); }
+.fb-voz-aviso:empty { display: none; }
 .rodape { padding-bottom: 80px; }
 
 /* Abas: blocos grandes */

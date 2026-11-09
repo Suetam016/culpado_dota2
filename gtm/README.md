@@ -78,3 +78,10 @@ O workflow `gtm.yml` roda `node gtm/checar.js` em todo PR que mexe nas páginas.
 exemplo e o ranking e confere tudo da tabela acima (lendo direto de `container.json`).
 Se falhar: mantenha os nomes antigos, ou avise o Mat para repassar a mudança ao responsável do GTM.
 Quando o GTM for atualizado, troque `container.json` pela exportação nova.
+
+## Feedback por voz (09/11/2026)
+
+A caixa do "💬 Feedback" (home e /ranking/) ganhou o botão **🎤 Falar em vez de escrever**: `.fb-falar` com
+`data-gtm="feedback-voz"` (no /ranking/ também `#fb-falar`). A transcrição é do próprio navegador e cai no mesmo campo
+de texto; o envio continua por `.fb-enviar` / `#fb-enviar`. Nenhum id, classe ou evento antigo mudou. O botão não aparece
+no Firefox (não transcreve). Ainda sem gatilho: se quiser medir, um clique em `[data-gtm="feedback-voz"]`.
