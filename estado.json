@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2995",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-09T11:01:23Z",
+  "quando": "2026-11-09T11:41:19Z",
   "restante": {
-   "dia": 2994,
-   "minuto": 58
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -461,7 +461,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-09T11:01:22Z",
+   "em": "2026-11-09T11:41:19Z",
    "partidas": {
     "9062176055": 1792967835,
     "9062207210": 1792970460,
@@ -710,15 +710,6 @@
   }
  },
  "lo": {
-  "9037953862": {
-   "companheiros": [
-    117645408,
-    241782761,
-    339142055,
-    1126109970
-   ],
-   "inicio": 1791632072
-  },
   "9038035832": {
    "companheiros": [
     187652627,
@@ -2483,7 +2474,6 @@
   "111452285": "bigode",
   "1116193156": "ARTIFAC MOQUEGUA",
   "111997561": "ᔕβ𝔲Ž𝐀เ𝐦𝓂",
-  "1126109970": "daniel.arpex",
   "112651822": "Corvus",
   "1129897628": "『ᴬˢ』•",
   "1131397592": "-_- MadeInBR -_-",
@@ -2500,7 +2490,6 @@
   "1166582746": "꧁️☠️Շѧмѯ_️θѵэя",
   "117024581": "É o Ucão, é o cânhamo...",
   "1174444135": "MEIK0",
-  "117645408": "MysTicaL",
   "118838113": "Amorim",
   "1192098289": "武家]ᴳᴼᴰ Jบňįøř[",
   "119559567": "Vraules",
@@ -2646,7 +2635,6 @@
   "330630331": "Great Sans",
   "335021549": "toji",
   "338267325": "Lalo",
-  "339142055": "WCAMARGOC",
   "341892600": "EL CASTIGADOR_laREALEZA",
   "34737534": "seupai",
   "347516491": "castillo csmr",
@@ -2764,22 +2752,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 3,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T08:41:11Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2997,
-    "minuto": 57
-   },
-   "sobra_do_dia": 2720
-  },
   {
    "basicas": 0,
    "chamadas": 8,
@@ -3528,6 +3500,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2672
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-09T11:41:19Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2671
   }
  ],
  "uso": {
@@ -3544,6 +3532,6 @@
   "2026-11-06": 1312,
   "2026-11-07": 206,
   "2026-11-08": 229,
-  "2026-11-09": 128
+  "2026-11-09": 129
  }
 }
