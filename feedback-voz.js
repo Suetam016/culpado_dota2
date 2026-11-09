@@ -43,7 +43,7 @@
     antesDe.parentNode.insertBefore(aviso, antesDe);
 
     let rec = null, querGravar = false, usou = false, base = '', antes = '', partes = [];
-    let inicio = 0, tique = 0, erroFatal = '', ultimoErro = '', religadasRapidas = 0, comecouEm = 0;
+    let provisorioVisto = '', fechado = true, corte = 0, inicio = 0, tique = 0, erroFatal = '', ultimoErro = '', religadasRapidas = 0, comecouEm = 0;
 
     const fala = (provisorio) => [antes].concat(partes, provisorio ? [provisorio] : []).join(' ').replace(/\s+/g, ' ').trim();
     const juntar = (provisorio) => {
@@ -65,24 +65,31 @@
       if (Date.now() - inicio > LIMITE_MS) parar();
     };
 
+    // terminar: fecha a gravação na tela. Roda uma vez só, na hora do clique em Parar (no celular o navegador
+    // demora segundos para confirmar o stop; antes a tela esperava e parecia que ainda gravava).
     const terminar = () => {
+      if (fechado) return;
+      fechado = true;
       querGravar = false;
       clearInterval(tique);
+      clearTimeout(corte);
       antes = fala('');
       partes = [];
       pintar();
       if (erroFatal) aviso.textContent = erroFatal;
-      else if (antes) aviso.textContent = 'Pronto! Confere o texto abaixo (pode corrigir) e clica em Enviar.';
+      else if (antes || provisorioVisto) aviso.textContent = 'Pronto! Confere o texto abaixo (pode corrigir) e clica em Enviar.';
       else aviso.textContent = 'Não captei nenhuma palavra' + (ultimoErro && ultimoErro !== 'no-speech' && ultimoErro !== 'aborted' ? ` (erro: ${ultimoErro})` : '') + '. Fala perto do microfone e tenta de novo, ou escreve aí.';
     };
 
     const ouvir = () => {
-      rec = new Reconhecer();
-      rec.lang = 'pt-BR';
-      rec.continuous = true;
-      rec.interimResults = true;
+      const r = new Reconhecer();
+      rec = r;
+      r.lang = 'pt-BR';
+      r.continuous = true;
+      r.interimResults = true;
       comecouEm = Date.now();
-      rec.onresult = (ev) => {
+      r.onresult = (ev) => {
+        if (r !== rec) return; // resposta atrasada de uma escuta que já foi encerrada
         let provisorio = '';
         for (let i = ev.resultIndex; i < ev.results.length; i++) {
           const t = ev.results[i][0].transcript.trim();
@@ -93,13 +100,16 @@
           else if (t) partes.push(t);
         }
         if (provisorio || partes.length) usou = true;
-        juntar(provisorio);
+        if (fechado) { antes = fala(''); partes = []; juntar(''); if (antes) aviso.textContent = 'Pronto! Confere o texto abaixo (pode corrigir) e clica em Enviar.'; } // última palavra chegou depois do Parar
+        else { provisorioVisto = provisorio; juntar(provisorio); }
       };
-      rec.onerror = (ev) => {
+      r.onerror = (ev) => {
+        if (r !== rec) return;
         ultimoErro = ev.error || '';
         if (FATAIS[ultimoErro]) erroFatal = FATAIS[ultimoErro];
       };
-      rec.onend = () => {
+      r.onend = () => {
+        if (r !== rec) return;
         rec = null;
         antes = fala('');
         partes = [];
@@ -110,18 +120,26 @@
         if (religadasRapidas >= 5) { terminar(); return; }
         try { ouvir(); } catch (e) { terminar(); }
       };
-      rec.start();
+      r.start();
     };
 
     const parar = () => {
-      querGravar = false;
-      if (rec) { try { rec.stop(); } catch (e) { terminar(); } } else terminar();
+      if (fechado) return;
+      const r = rec;
+      terminar(); // a tela para na hora
+      if (!r) return;
+      try { r.stop(); } catch (e) { /* já parou */ }
+      // se o navegador não confirmar em 2 s, corta de vez (e ignora o que vier dessa escuta depois)
+      corte = setTimeout(() => { if (rec === r) { rec = null; try { r.abort(); } catch (e) { /* já parou */ } } }, 2000);
     };
 
     const comecar = () => {
+      if (rec) { try { rec.abort(); } catch (e) { /* já parou */ } rec = null; } // escuta anterior ainda fechando
+      clearTimeout(corte);
       base = campo.value.trim();
-      antes = ''; partes = []; erroFatal = ''; ultimoErro = ''; religadasRapidas = 0;
+      antes = ''; partes = []; provisorioVisto = ''; erroFatal = ''; ultimoErro = ''; religadasRapidas = 0;
       querGravar = true;
+      fechado = false;
       inicio = Date.now();
       contar();
       tique = setInterval(contar, 250);
@@ -133,6 +151,6 @@
 
     pintar();
     botao.addEventListener('click', () => (querGravar ? parar() : comecar()));
-    return { usouVoz: () => usou, parar: () => { if (querGravar) parar(); }, zerar: () => { usou = false; aviso.textContent = ''; pintar(); } };
+    return { usouVoz: () => usou, parar: () => parar(), zerar: () => { usou = false; aviso.textContent = ''; pintar(); } };
   };
 })();
