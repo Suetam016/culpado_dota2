@@ -1241,7 +1241,7 @@ async function saudeMapa(env) {
   return dados;
 }
 
-// Feedback do site: POST /feedback {texto, partida?, nome?} grava feedback/<data>-<rand>.json no repositório.
+// Feedback do site: POST /feedback {texto, partida?, nome?, via?} grava feedback/<data>-<rand>.json no repositório.
 const FEEDBACK_POR_HORA = 10; // por conexão
 async function receberFeedback(req, env, origem) {
   const texto = await lerCorpo(req, 6_000);
@@ -1258,6 +1258,7 @@ async function receberFeedback(req, env, origem) {
   contagem.set(k, n);
   const quando = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
   const dados = { quando, texto: msg, partida: String((c && c.partida) || '').replace(/[^0-9a-z-]/gi, '').slice(0, 30), nome: String((c && c.nome) || '').slice(0, 40) };
+  if (c && c.via === 'voz') dados.via = 'voz'; // falou no microfone e o navegador transcreveu
   const arq = `feedback/${quando.replace(/[:]/g, '-')}-${Math.random().toString(36).slice(2, 8)}.json`;
   try {
     const r = await github(env, 'PUT', arq, { message: 'Feedback do site', content: base64(JSON.stringify(dados, null, 1) + '\n') });

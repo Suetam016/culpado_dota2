@@ -2299,6 +2299,10 @@ function montarFeedback() {
   const status = $('fb-status'), enviar = $('fb-enviar');
 
   try { nome.value = localStorage.getItem('culpado:fb-nome') || ''; } catch (e) { /* sem storage */ }
+  // botão de falar (transcrição no navegador, ../feedback-voz.js); some no navegador que não transcreve
+  const voz = window.ligarVozFeedback ? window.ligarVozFeedback(campo, campo) : { usouVoz: () => false, parar: () => {}, zerar: () => {} };
+  const falar = caixa.querySelector('.fb-falar');
+  if (falar) falar.id = 'fb-falar';
 
   botao.addEventListener('click', () => {
     caixa.hidden = !caixa.hidden;
@@ -2308,8 +2312,9 @@ function montarFeedback() {
 
   caixa.addEventListener('submit', async ev => {
     ev.preventDefault();
+    voz.parar();
     const texto = campo.value.trim();
-    if (texto.length < 3) { status.textContent = 'Escreve um pouquinho mais.'; return; }
+    if (texto.length < 3) { status.textContent = voz.usouVoz() ? 'Não entendi o áudio. Fala de novo ou escreve.' : 'Escreve (ou fala) um pouquinho mais.'; return; }
     const url = await urlDoCoach();
     if (!url) { status.textContent = 'O envio está desligado agora.'; return; }
     const aba = document.body.classList.contains('modo-liga') ? 'liga' : (document.querySelector('.aba-ativa') || {}).dataset?.aba || 'geral';
@@ -2319,11 +2324,12 @@ function montarFeedback() {
       const r = await fetch(`${url}/feedback`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ texto, nome: nome.value.trim(), partida: `ranking-${aba}` }),
+        body: JSON.stringify({ texto, nome: nome.value.trim(), partida: `ranking-${aba}`, via: voz.usouVoz() ? 'voz' : 'texto' }),
       });
       if (!r.ok) throw new Error(r.status);
       try { localStorage.setItem('culpado:fb-nome', nome.value.trim()); } catch (e) { /* sem storage */ }
       campo.value = '';
+      voz.zerar();
       status.textContent = 'Valeu! Recebido.';
       setTimeout(() => { caixa.hidden = true; botao.setAttribute('aria-expanded', 'false'); status.textContent = ''; }, 1800);
     } catch (e) {
