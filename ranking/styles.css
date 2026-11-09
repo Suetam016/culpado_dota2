@@ -349,6 +349,13 @@ a.ponto:hover { transform: translateY(-2px) scale(1.15); outline: 1px solid var(
 @media (prefers-reduced-motion: reduce) { .fb-falar.gravando { animation: none; } }
 .fb-voz-aviso { margin: 0; font-size: 13px; color: var(--ink-2); }
 .fb-voz-aviso:empty { display: none; }
+.fb-voz-painel { padding: 10px; border-radius: var(--radius-sm); border: 1px solid #b3261e; background: rgba(179, 38, 30, .12); }
+.fb-voz-painel[hidden] { display: none; }
+.fb-voz-topo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; }
+.fb-voz-ponto { width: 10px; height: 10px; border-radius: 50%; background: #e5372b; animation: fb-pisca 1s steps(2) infinite; }
+@keyframes fb-pisca { 50% { opacity: .2; } }
+.fb-voz-ouvido { margin: 6px 0 0; max-height: 7.5em; overflow: auto; font-size: 16px; line-height: 1.4; }
+.fb-voz-ouvido.vazio { color: var(--ink-2); font-style: italic; }
 .rodape { padding-bottom: 80px; }
 
 /* Abas: blocos grandes */
