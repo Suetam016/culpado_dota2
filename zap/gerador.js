@@ -42,12 +42,53 @@ function gerar(M, semente, forcar, evitar) {
   const dia = new Date(M.inicio * 1000).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' });
 
   // ---------- bancos de fala (jeito do grupo) ----------
-  const RISO = ['kkkkkkk', 'KKKKKKKKKK', 'kkkkkkkkkkkkk', 'mkkkkkkk', 'hsuahsuahsua', 'hahahahahah', 'shaushuashuas', 'kkkk'];
-  const UAU = ['slc', 'oloco', 'pqp', 'carai', 'Forte', 'oh man', 'oh my', 'absurdo', 'mt real', 'Nise', 'Ma brotha', 'Celoko', 'Auuu', 'vsf', 'brabo'];
-  const EGO = ['izi', 'izi wiiin', 'o pai tá on', 'sigam o pai', 'quem sabe faz ao vivo', 'eu e a máquina', 'tá no papo', 'podem relaxar', 'lembra bem meus games', 'nem suei'];
-  const ZOA = ['saco de batata', 'cry more', 'newba', 'tapete', 'eterno arconte', 'fider', 'arcontinho', 'hero batata', 'batendo ponto na fonte', 'turismo na fonte'];
-  const DEFESA = ['eu tava abrindo espaço', 'foi o lag', 'tava sem item', 'tava comprando ward', 'o jogo me odeia', 'vou me mutar e seguir jogando', 'sem stress', 'eu sou o mais importante do time', 'tava dando visão', 'foi proposital, isca', 'meus advogados vão entrar em contato'];
-  const FECHO = ['abrindo espaço no cemitério', 'abriu espaço pro inimigo farmar', 'isca de quê, de PA?', 'lag de caráter', 'sem item e sem vergonha', 'visão do cinza', 'mutou foi o cérebro', 'o advogado também morreu'];
+  const RISO = ['kkkkkkk', 'KKKKKKKKKK', 'kkkkkkkkkkkkk', 'mkkkkkkk', 'hsuahsuahsua', 'hahahahahah', 'shaushuashuas', 'kkkk', 'KKKKKKKKKKKKKKKKK', 'kkkkkkkkk socorro', 'rachei', 'chorando aqui', 'me mijei', 'kkkkkkk não aguento', 'AKSJDHAKSJDH', 'rsrsrs', 'kkkkk morri', 'tô passando mal kkkk', 'KKKKKKK PARA', 'eu ri alto aqui'];
+  const UAU = ['slc', 'oloco', 'pqp', 'carai', 'Forte', 'oh man', 'oh my', 'absurdo', 'mt real', 'Nise', 'Ma brotha', 'Celoko', 'Auuu', 'vsf', 'brabo', 'puta que pariu', 'caralho mano', 'que isso', 'tá maluco', 'meu deus do céu', 'vai se foder kkkk', 'mds', 'ai sim', 'sinistro', 'monstro', 'cruzes', 'jesus amado', 'nossa senhora', 'é o bicho', 'covardia', 'apelação', 'ridículo', 'desumano', 'pai amado'];
+  const EGO = ['izi', 'izi wiiin', 'o pai tá on', 'sigam o pai', 'quem sabe faz ao vivo', 'tá no papo', 'podem relaxar', 'nem suei', 'tô voando hj', 'hj não erro', 'deixa comigo', 'é só me dar espaço', 'tá fácil demais', 'aprende aí', 'anota aí', 'pode bater palma', 'vcs não tão prontos', 'mão quente', 'joga muito esse menino', 'hj é dia', 'é o meu jeito', 'tô no modo pro', 'chupa', 'segura essa'];
+  const ZOA = ['saco de batata', 'cry more', 'newba', 'tapete', 'eterno arconte', 'fider', 'arcontinho', 'hero batata', 'batendo ponto na fonte', 'turismo na fonte', 'cone de trânsito', 'enfeite de mapa', 'creep com nick', 'peso morto', 'boneco de treino', 'figurante', 'saco de pancada', 'decoração da fonte', 'mascote do time deles', 'patrocinador oficial deles', 'sócio torcedor do respawn', 'cliente vip da fonte', 'estagiário do time', 'carta fora do baralho'];
+  const DEFESA = ['eu tava abrindo espaço', 'foi o lag', 'tava sem item', 'tava comprando ward', 'o jogo me odeia', 'sem stress', 'eu sou o mais importante do time', 'tava dando visão', 'foi proposital, isca', 'vai tomar no cu', 'vsf', 'cala a boca', 'me erra', 'vai se foder', 'chupa meu ovo', 'o problema é o teclado', 'meu mouse tá zoado', 'minha mãe me chamou', 'tava no banheiro', 'o cachorro pisou no teclado', 'foi a internet da vivo', 'vai pra puta que pariu', 'enfia no cu', 'vc nem tava lá', 'fica quieto', 'ninguém te perguntou', 'segura teu choro', 'eu tava testando uma build', 'era o plano desde o começo', 'tava segurando a lane', 'quero ver vc fazer melhor', 'cuida da tua vida', 'nem fudendo que foi culpa minha', 'tava de olho no mapa', 'tô com sono', 'vou dormir já', 'tava ajudando o time de longe', 'deixa eu em paz', 'que inveja hein'];
+  // resposta a uma defesa: as genéricas servem pra qualquer desculpa; RESPOSTA casa com a desculpa específica
+  const FECHO = ['abrindo espaço no cemitério', 'sem item e sem vergonha', 'visão do cinza', 'olha quem fala, o patrocinador', 'chora no travesseiro', 'resposta de quem morreu muito', 'fala isso pro respawn', 'aceita que dói menos', 'cala a boca tu, morto', 'tá bom, tá bom', 'aham, senta lá', 'conta outra', 'mentira tem perna curta e tela cinza', 'falou o cadáver', 'nem tu acredita nisso', 'anotado, próxima', 'o replay discorda', 'chorou'];
+  const RESPOSTA = {
+    'eu tava abrindo espaço': ['abrindo espaço no cemitério', 'abriu espaço pro inimigo farmar'],
+    'foi o lag': ['lag de caráter', 'o lag só acontece contigo né', 'engraçado, o meu ping tá 30'],
+    'tava sem item': ['e vai continuar sem item morrendo assim', 'sem item e sem vergonha'],
+    'tava comprando ward': ['comprando ward morto?', 'a ward tá no teu inventário até agora'],
+    'o jogo me odeia': ['o jogo não, o time deles te ama', 'o jogo te odeia e o inimigo te agradece'],
+    'tava dando visão': ['visão do cinza', 'visão pro time deles'],
+    'foi proposital, isca': ['isca sem ninguém pra pescar', 'isca de quê, se ninguém foi'],
+    'vai tomar no cu': ['tomar no cu é o teu KDA', 'vai tu, que tá cinza'],
+    'vsf': ['vsf tu', 'perdeu a discussão e a lane'],
+    'cala a boca': ['calo quando tu parar de morrer', 'cala a boca tu, morto'],
+    'me erra': ['quem não erra é o time deles em ti', 'te errar é impossível, tu tá parado'],
+    'vai se foder': ['nossa, nervosinho', 'eu vou, mas vivo'],
+    'chupa meu ovo': ['chupa a tela cinza', 'ovo de quem, de creep?'],
+    'o problema é o teclado': ['o teclado tá ótimo, quem tá zoado é tu', 'troca o jogador, não o teclado'],
+    'meu mouse tá zoado': ['o mouse tá bom, o problema tá entre a cadeira e o teclado', 'clica no botão de não morrer'],
+    'minha mãe me chamou': ['tua mãe joga melhor', 'manda ela no teu lugar então'],
+    'tava no banheiro': ['banheiro de 40 segundos de respawn', 'ficou lá o jogo todo então'],
+    'o cachorro pisou no teclado': ['cachorro joga melhor', 'deixa o cachorro jogar a próxima'],
+    'foi a internet da vivo': ['a vivo pede desculpa', 'a vivo não tem culpa de tu ir sozinho'],
+    'vai pra puta que pariu': ['nossa, que agressivo', 'tá nervoso pq morreu'],
+    'enfia no cu': ['enfia tu, que tá na fonte', 'grosso'],
+    'vc nem tava lá': ['eu tava vivo, já é mais que tu', 'tava vendo tu morrer de camarote'],
+    'fica quieto': ['quieto tu ficou no respawn', 'fico, mas o replay fala'],
+    'ninguém te perguntou': ['ninguém perguntou mas a tela cinza respondeu', 'o placar perguntou'],
+    'segura teu choro': ['quem tá chorando é tu', 'segura tua vida primeiro'],
+    'eu tava testando uma build': ['a build do caixão', 'teste reprovado'],
+    'era o plano desde o começo': ['o plano era morrer?', 'plano do time deles então'],
+    'tava segurando a lane': ['segurou a lane deitado', 'a lane te segurou'],
+    'quero ver vc fazer melhor': ['fiz, olha meu KDA', 'faço melhor dormindo'],
+    'cuida da tua vida': ['cuida da tua, que tu perdeu várias', 'a minha tá cheia, obrigado'],
+    'nem fudendo que foi culpa minha': ['o site discorda', 'foi sim kkkk'],
+    'tava de olho no mapa': ['de olho no mapa e de costas pro inimigo', 'olha o minimapa da fonte'],
+    'tô com sono': ['dormiu no jogo inteiro', 'vai dormir que é melhor pro time'],
+    'vou dormir já': ['dormir é o que tu fez o jogo inteiro', 'boa noite, descansa da fonte'],
+    'tava ajudando o time de longe': ['de longe mesmo, lá da fonte', 'ajuda de longe é torcida'],
+    'deixa eu em paz': ['descansa em paz mesmo, tu morreu muito', 'em paz tu ficou no respawn'],
+    'que inveja hein': ['a inveja é de quem, de cadáver?', 'inveja do teu respawn? nunca'],
+  };
+  const fecharDefesa = (d) => um([...(RESPOSTA[d] || []), ...(RESPOSTA[d] ? [] : FECHO)]);
   const matar = (x) => (V ? V.matar(x) : [`matou ${x}`]);
   // ---------- fábrica de figurinhas: memes montados com o retrato do herói + número da partida ----------
   // intenção -> quem manda e sobre quem. Nada de legenda solta: toda figurinha diz algo da partida.
@@ -65,6 +106,14 @@ function gerar(M, semente, forcar, evitar) {
       meme(craque.heroi, 'SIGAM O PAI', `${craque.gpm} DE GPM`);
       if (itemTop) meme(craque.heroi, `${itemTop[1].toUpperCase()} COM ${itemTop[0]} MIN`, 'PODEM RELAXAR', 1.3);
       if (craque.torre > 8000) meme(craque.heroi, 'DERRUBEI A BASE', `${(craque.torre / 1000).toFixed(0)} MIL EM TORRE`);
+      meme(craque.heroi, 'CHUPA', `${kdaS(craque)} E ${pctS(craque)}`, 0.8);
+      meme(craque.heroi, 'PODE APLAUDIR', `${craque.k} ABATES`, 0.9);
+      meme(craque.heroi, 'É O PAI', `${(craque.dano / 1000).toFixed(0)} MIL DE DANO`, 0.9);
+      meme(craque.heroi, 'APRENDE AÍ', `${pctS(craque)} DO MÉRITO`, 0.8);
+      meme(craque.heroi, 'O JUIZ DECIDIU', `CRAQUE · ${pctS(craque)}`, 0.8);
+      op.push({ p: 1, f: { tpl: 'func', img: craque.heroi, nome: craque.nome, txt: `${pctS(craque)} do mérito · ${kdaS(craque)}`, titulo: 'Funcionário do mês' } });
+      op.push({ p: 0.9, f: { tpl: 'duo', img: craque.heroi, la: 'o time', lb: `eu: ${pctS(craque)}` } });
+      if (craque.d <= 2) meme(craque.heroi, `${craque.d === 0 ? 'ZERO' : craque.d} MORTE${craque.d === 1 ? '' : 'S'}`, 'INTOCÁVEL', 1.3);
       if (resto.length >= 2) op.push({ p: 1.6, f: { tpl: 'carrega', img: craque.heroi, imgs: resto.map((n) => n.heroi), cima: `O PAI E OS ${resto.length + (nos.length - amigos.length)} MOCHILAS` } });
     }
     if (intencao === 'exalta') {
@@ -74,9 +123,14 @@ function gerar(M, semente, forcar, evitar) {
         op.push({ p: 1.6, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'EU QUE CRIEI', baixo: `${de.wards} WARDS PRO MEU FILHO` } });
         op.push({ p: 1.3, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'RESPEITA MEU FILHO', baixo: `${de.a} ASSISTÊNCIAS PRA ELE` } });
         op.push({ p: 1, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'POR TRÁS DE UM GRANDE ' + filho, baixo: 'TEM UM SUPORTE' } });
+        op.push({ p: 1, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'PAI DE CARRY', baixo: 'ORGULHOSO' } });
+        op.push({ p: 0.9, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'CRIEI, ALIMENTEI', baixo: 'AGORA ELE CARREGA' } });
+        op.push({ p: 0.9, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'O CRAQUE É ELE', baixo: 'A BABÁ SOU EU' } });
       } else if (de && de !== craque) {
         op.push({ p: 1.3, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'O ESPAÇO FUI EU', baixo: `${de.k} ABATES MEUS TAMBÉM` } });
         op.push({ p: 1, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: `SEM MIM O ${filho}`, baixo: 'NÃO FARMAVA' } });
+        op.push({ p: 0.9, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'DIVIDE O MÉRITO', baixo: `${de.a} ASSISTÊNCIAS AQUI` } });
+        op.push({ p: 0.8, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: 'ELE SÓ BRILHOU', baixo: 'PQ EU SEGUREI' } });
       }
       if (!craqueAmigo) { op.push({ p: 1.5, f: { tpl: 'func', img: craque.heroi, nome: `${curto(craque.heroiNome)} random`, txt: `${pctS(craque)} do mérito · ${kdaS(craque)}` } }); meme(craque.heroi, 'NEM É DO GRUPO', 'E CARREGOU', 1.5); }
     }
@@ -88,6 +142,14 @@ function gerar(M, semente, forcar, evitar) {
       if (m.d >= 6) op.push({ p: 1.5, f: { tpl: 'procurado', img: m.heroi, crime: 'por patrocinar o time deles', recompensa: `${m.d} mortes` } });
       op.push({ p: 1.3, f: { tpl: 'duo', img: m.heroi, la: 'expectativa', lb: `realidade: ${pctS(m)}` } });
       meme(m.heroi, `${pctS(m)} DO MÉRITO`, 'MAS VENCEU IGUAL');
+      meme(m.heroi, 'PASSAGEIRO', `${pctS(m)} DO MÉRITO`, 1);
+      meme(m.heroi, 'GANHOU DE CARONA', kdaS(m), 1);
+      op.push({ p: 1, f: { tpl: 'duo', img: m.heroi, la: 'como eu me vejo', lb: `o site: ${pctS(m)}` } });
+      op.push({ p: 1, f: { tpl: 'duo', img: m.heroi, la: 'eu no draft', lb: `eu no jogo: ${kdaS(m)}` } });
+      if (m.d >= 6) op.push({ p: 1.2, f: { tpl: 'rip', img: m.heroi, txt: `aqui jaz ${m.nome}`, sub: `${m.d} vezes, ${m.d} enterros` } });
+      if (m.d >= 6) meme(m.heroi, 'DOADOR UNIVERSAL', `${m.d} MORTES`, 1.2);
+      if (m.d >= 6) op.push({ p: 1.1, f: { tpl: 'procurado', img: m.heroi, crime: 'por doação ilegal de ouro', recompensa: `${m.d} mortes` } });
+      if (m.d >= 6) op.push({ p: 1, f: { tpl: 'func', img: m.heroi, nome: m.nome, txt: `${m.d} mortes de dedicação`, titulo: 'Funcionário do mês deles' } });
     }
     if (intencao === 'contra' && craqueAmigo) {
       if (craque.d >= 3) meme(craque.heroi, `E O ${H1(craque)}?`, `${craque.d} MORTES TAMBÉM`, 1.5);
@@ -97,15 +159,24 @@ function gerar(M, semente, forcar, evitar) {
       if (itemTop && craque.pos === 1) meme(craque.heroi, `CARREGAR COM ${itemTop[1].toUpperCase()} AOS ${itemTop[0]}`, 'ATÉ EU', 1.2);
       if (de && de.a >= 15) op.push({ p: 1.2, f: { tpl: 'criou', img: de.heroi, img2: craque.heroi, cima: `${de.a} ASSISTÊNCIAS MINHAS`, baixo: `E O MÉRITO É DO ${H1(craque)}` } });
       if (de && de.d >= 7) meme(de.heroi, 'EU MORRI', 'PRA ELE FARMAR EM PAZ', 1);
+      if (de) meme(de.heroi, 'VAI TOMAR NO CU', `${H1(craque)} E SEUS ${pctS(craque)}`, 1);
+      if (de) meme(de.heroi, 'O SITE É COMPRADO', `${pctS(craque)} PRO ${H1(craque)}?`, 0.9);
+      if (de && craque.d >= 4) op.push({ p: 1, f: { tpl: 'duo', img: craque.heroi, la: 'o craque', lb: `${craque.d} mortes` } });
     }
     if (intencao === 'fregues' && fregues) {
       op.push({ p: 1.5, f: { tpl: 'rip', img: fregues.e.heroi, txt: `aqui jaz o ${curto(fregues.e.heroiNome)}`, sub: `${fregues.n}x pro ${fregues.q.nome}` } });
       meme(fregues.e.heroi, 'FREGUÊS', `${fregues.n}x PRO ${fregues.q.nome.toUpperCase()}`, 1.2);
       op.push({ p: 1, f: { tpl: 'duo', img: fregues.e.heroi, la: 'minuto 0', lb: `depois de ${fregues.n} mortes` } });
+      op.push({ p: 1.1, f: { tpl: 'procurado', img: fregues.e.heroi, crime: `por fugir do ${fregues.q.nome} e não conseguir`, recompensa: `${fregues.n} abates` } });
+      meme(fregues.e.heroi, 'CLIENTE FIEL', `${fregues.n}x NO ${fregues.q.nome.toUpperCase()}`, 1);
+      meme(fregues.e.heroi, 'ALUGUEL PAGO', `${fregues.n} VEZES`, 0.9);
     }
     if (intencao === 'suporte' && alvo && alvo.wards >= 6) {
       meme(alvo.heroi, `${alvo.wards} WARDS`, 'E NINGUÉM AGRADECE', 1.3);
       op.push({ p: 1, f: { tpl: 'func', img: alvo.heroi, nome: alvo.nome, txt: `${alvo.wards} wards · ${alvo.a} assistências`, titulo: 'Herói invisível' } });
+      meme(alvo.heroi, 'COMPREI WARD', 'PRA ELES BRILHAREM', 1);
+      op.push({ p: 1, f: { tpl: 'duo', img: alvo.heroi, la: `${alvo.wards} wards`, lb: '0 obrigados' } });
+      meme(alvo.heroi, 'SUPORTE NÃO CHORA', `SÓ PLANTA ${alvo.wards} WARDS`, 0.9);
     }
     if (!op.length) return null;
     const tot = op.reduce((a, o) => a + o.p, 0); let x = r() * tot;
@@ -182,87 +253,87 @@ function gerar(M, semente, forcar, evitar) {
         const vit = curto(heroiDeles(l.ab.vit[1]));
         const fala = autor.amigo ? autor : null;
         const a = qualquer(fala);
-        if (fala && chance(0.7)) msg(fala, um([[l.tipo === 'fb' ? 'FIRST BLOOD' : 'solei', `o ${vit}`, um(['🩸', '😌', '🔪'])], [`${vit} veio sozinho`, 'voltou pra fonte'], [`x1 com o ${vit}?`, 'izi'], [um(EGO)], [`${vit} achou que ia me pegar`, um(RISO)]]));
-        if (a) msg(a, um([[um(UAU), `${l.tipo === 'fb' ? 'first blood' : 'solo'} do ${fala ? fala.nome : 'random'}`], [um(UAU)], [um(RISO), `o ${vit} tá procurando o mouse até agora`], [`o ${vit} saiu de casa pra isso`], [`${l.n >= 2 ? `de novo o ${vit}? ${l.n}x` : `o ${vit} vai dar report`}`, um(RISO)]]), { rapido: true });
-        if (l.n >= 3 && chance(0.7)) msg(qualquer(fala, a), um([`tá pessoal isso aí`, `o ${vit} virou freguês`, `cobra aluguel do ${vit} já`]), { rapido: true });
+        if (fala && chance(0.7)) msg(fala, um([[l.tipo === 'fb' ? 'FIRST BLOOD' : 'solei', `o ${vit}`, um(['🩸', '😌', '🔪', '🫡', '😎'])], [`${vit} veio sozinho`, 'voltou pra fonte'], [`x1 com o ${vit}?`, 'izi'], [um(EGO)], [`${vit} achou que ia me pegar`, um(RISO)], [`tchau ${vit}`], [`${vit} veio de graça`], [`alguém avisa o ${vit} que é 5v5`], [`o ${vit} esqueceu que eu existo`], [`segura ${vit}`, 'vai chorando pra fonte'], [`${vit} pediu`, 'eu só entreguei'], ['quem é o próximo'], [`o ${vit} tava com saudade da fonte`], ['deu nem graça']]));
+        if (a) msg(a, um([[um(UAU), `${l.tipo === 'fb' ? 'first blood' : 'solo'} do ${fala ? fala.nome : 'random'}`], [um(UAU)], [um(RISO), `o ${vit} tá procurando o mouse até agora`], [`o ${vit} saiu de casa pra isso`], [`${l.n >= 2 ? `de novo o ${vit}? ${l.n}x` : `o ${vit} vai dar report`}`, um(RISO)], [`o ${vit} desinstalando`], [`humilhou o ${vit}`], [`o ${vit} vai pedir pra trocar de lane`], ['assassinato', um(RISO)], [`coitado do ${vit}`, 'mentira, bem feito'], [`deixa o ${vit} jogar, porra`], [`${vit} levou um sacode`], ['tá com raiva hj hein'], [`o ${vit} já tá digitando no chat`, um(RISO)]]), { rapido: true });
+        if (l.n >= 3 && chance(0.7)) msg(qualquer(fala, a), um([`tá pessoal isso aí`, `o ${vit} virou freguês`, `cobra aluguel do ${vit} já`, `o ${vit} tá pagando pensão pra ele`, `deixa o ${vit} em paz, ele tem família`, `o ${vit} vai bloquear ele na steam`, `isso já é bullying`, `alguém chama o conselho tutelar pro ${vit}`]), { rapido: true });
         if (fala && fregues && fregues.q === fala && l.n >= 2 && chance(0.5)) stk(fala, 'fregues');
         break;
       }
       case 'fbdeles': {
         const vit = nos[l.ab.vit[1]];
-        if (vit.amigo) { const a = qualquer(vit); msg(a, um([[`${vit.nome} de first blood`, um(RISO)], [`começou cedo hj ${vit.nome}`], [`1 min de jogo e ${vit.nome} já foi`]])); msg(vit, um([[um(DEFESA)], ['nem tinha nascido direito'], ['ward deles tava lá']]), { rapido: true }); }
+        if (vit.amigo) { const a = qualquer(vit); msg(a, um([[`${vit.nome} de first blood`, um(RISO)], [`começou cedo hj ${vit.nome}`], [`1 min de jogo e ${vit.nome} já foi`], [`${vit.nome} abrindo os trabalhos`], [`o ${vit.nome} nem esperou o jogo começar`], [`já? ${vit.nome}?`, um(RISO)], [`${vit.nome} doando o first blood como sempre`], [`${vit.nome} pagou o pedágio`]])); msg(vit, um([[um(DEFESA)], ['nem tinha nascido direito'], ['ward deles tava lá'], ['vieram 3'], ['tava pegando a runa porra'], ['faz parte'], ['first blood não ganha jogo'], ['aquece primeiro, depois cobra']]), { rapido: true }); }
         break;
       }
       case 'morte': {
         const m = nos[l.ab.vit[1]]; const z = qualquer(m); const f = qualquer(m, z);
         const quemMatou = l.ab.de[0] === 'e' ? curto(heroiDeles(l.ab.de[1])) : 'creep';
-        if (chance(0.6)) msg(m, um([[`morri de novo`, quemMatou], [`o ${quemMatou} me deu 3 hit`, 'e eu morri'], [`${quemMatou} só me olhou`], ['nem vi de onde veio']]));
-        const z1 = comId({ t: 'msg', de: z && z.key, txt: um([`${m.nome} ${l.n} morte em ${Math.floor(l.ab.t / 60)} min`, `${m.nome} hj é ${um(ZOA)}`, `${m.nome} ${um(['batendo ponto na fonte', 'fazendo turismo na fonte', 'alimentando o inimigo de colherzinha', 'patrocinando o time deles'])}`, `${um(UAU)} ${m.nome}`]), rapido: true });
+        if (chance(0.6)) msg(m, um([[`morri de novo`, quemMatou], [`o ${quemMatou} me deu 3 hit`, 'e eu morri'], [`${quemMatou} só me olhou`], ['nem vi de onde veio'], [`esse ${quemMatou} tá roubado`], [`o ${quemMatou} tá com tudo`], [`cadê a ward caralho`], ['ninguém veio né', 'obrigado time'], [`${quemMatou} de novo`, 'vou caçar esse filho da puta'], ['ué'], ['como assim'], ['tava full vida', 'juro']]));
+        const z1 = comId({ t: 'msg', de: z && z.key, txt: um([`${m.nome} ${l.n} morte em ${Math.floor(l.ab.t / 60)} min`, `${m.nome} hj é ${um(ZOA)}`, `${m.nome} ${um(['batendo ponto na fonte', 'fazendo turismo na fonte', 'alimentando o inimigo de colherzinha', 'patrocinando o time deles', 'dando aula de como morrer', 'com milhas no respawn', 'virou caixa eletrônico deles', 'pagando o salário do ' + quemMatou, 'fazendo delivery de ouro', 'morando no cinza'])}`, `${um(UAU)} ${m.nome}`, `de novo ${m.nome}???`, `${m.nome} parou de jogar e começou a doar`, `alguém tira o ${m.nome} da frente do ${quemMatou}`, `${m.nome} tá jogando pelo time deles?`, `o ${quemMatou} já agradeceu o ${m.nome}?`, `${m.nome} pelo amor de deus`, `${m.nome} desliga o pc`]), rapido: true });
         if (z) out.push(z1);
         const d = um(DEFESA);
         msg(m, d, { rapido: true });
-        if (f && chance(0.75)) msg(f, um(FECHO), { rapido: true, reply: { de: m.key, txt: d } });
+        if (f && chance(0.75)) msg(f, fecharDefesa(d), { rapido: true, reply: { de: m.key, txt: d } });
         if (chance(0.4)) reac(um(['😂 3', '💀 2', '😂💀 4']));
         if (chance(0.45)) stk(z || f, 'zoa', m);
         break;
       }
       case 'morteCraque': {
         if (!craqueAmigo) break; const z = qualquer(craque);
-        msg(z, um([`o ${craque.nome} morreu`, 'ninguém fala nada né'].concat(chance(0.5) ? [] : [um(RISO)])));
-        msg(craque, um(['foi estratégico', 'tava farmando o respawn', 'não conta', 'deixa eu', 'cry more']), { rapido: true });
+        msg(z, um([[`o ${craque.nome} morreu`, 'ninguém fala nada né'], [`ih o pai caiu`, um(RISO)], [`${craque.nome} morreu e ninguém vai zoar?`], ['o intocável morreu'], [`opa, ${craque.nome} no chão`, 'print'], ['agora sim um jogo justo']]));
+        msg(craque, um(['foi estratégico', 'tava farmando o respawn', 'não conta', 'deixa eu', 'cry more', 'morri por vcs', 'o pai também é humano', 'volto já', 'foi o buyback mental', 'vsf, uma morte só', 'deixa eu respirar porra']), { rapido: true });
         break;
       }
       case 'luta': {
         const top = l.f.top ? nos[l.f.top[0]] : null;
-        if (top && top.amigo && chance(0.6)) msg(top, um([['GIRAAA'], ['VEM'], ['entrei'], ['segura que eu vou'], ['agora']]), { rapido: true });
+        if (top && top.amigo && chance(0.6)) msg(top, um([['GIRAAA'], ['VEM'], ['entrei'], ['segura que eu vou'], ['agora'], ['VAI VAI VAI'], ['PULA'], ['CHAMA'], ['é agora porra'], ['ninguém recua'], ['tô indo']]), { rapido: true });
         const a = qualquer(top); const b = qualquer(top, a); const c = qualquer(top, a, b);
-        if (a) out.push({ t: 'msg', de: a.key, txt: um([top && l.f.top[1] >= 3 ? `${['', '', 'DOIS', 'TRÊS', 'QUATRO', 'CINCO'][Math.min(5, l.f.top[1])]}???` : 'pqp', 'CARALHO', 'que luta', 'absurdo']), rapido: true, duplo: b && b.key });
-        if (b) msg(b, um([[um(UAU), 'o time deles evaporou'], ['eles sumiram', um(RISO)], [`${l.f.eles} no chão`, 'pode tirar print']]), { rapido: true });
-        if (c && l.f.nos) msg(c, um([['eu morri no começo', 'voltei e o jogo tava ganho'], ['morri mas valeu'], ['eu fui a isca', 'de nada']]), { rapido: true });
+        if (a) out.push({ t: 'msg', de: a.key, txt: um([top && l.f.top[1] >= 3 ? `${['', '', 'DOIS', 'TRÊS', 'QUATRO', 'CINCO'][Math.min(5, l.f.top[1])]}???` : 'pqp', 'CARALHO', 'que luta', 'absurdo', 'PUTA QUE PARIU', 'O QUE FOI ISSO', 'MASSACRE', 'que porra foi essa', 'tô tremendo', 'CHACINA', 'ACABOU COM ELES', 'sacode']), rapido: true, duplo: b && b.key });
+        if (b) msg(b, um([[um(UAU), 'o time deles evaporou'], ['eles sumiram', um(RISO)], [`${l.f.eles} no chão`, 'pode tirar print'], ['limpou'], ['passou o rodo'], ['o time deles tá no lobby já'], ['tão no cinza tudo', um(RISO)], ['wipe'], ['virou cemitério ali'], [`${l.f.eles} pra conta`], ['eles vão abandonar'], ['manda o GG pra eles']]), { rapido: true });
+        if (c && l.f.nos) msg(c, um([['eu morri no começo', 'voltei e o jogo tava ganho'], ['morri mas valeu'], ['eu fui a isca', 'de nada'], ['morri primeiro mas tô contando como assistência'], ['eu segurei o stun deles todo', 'aplausos pra mim'], ['meu sacrifício não será esquecido'], ['morri feliz'], ['eu tava no cinza torcendo'], ['quem morreu primeiro? não interessa'], ['assisti do respawn, lindo'], ['eu abri, vcs fecharam'], ['tomei tudo na cara', 'mas valeu'], ['entrei, apanhei, ganhamos']]), { rapido: true });
         if (top && top === craque && craqueAmigo && chance(0.5)) stk(top, 'ego'); else if (chance(0.3)) stk(qualquer(top), 'exalta');
-        if (chance(0.5)) reac(um(['🔥 4', '😂🔥 3', '🐐 4']));
+        if (chance(0.5)) reac(um(['🔥 4', '😂🔥 3', '🐐 4', '🔥🔥 5', '😱 3', '👏 4']));
         break;
       }
       case 'lutaRuim': {
         const a = qualquer(); const b = qualquer(a);
-        msg(a, um([['quem chamou essa luta'], ['pq a gente foi'], ['cada um pulou numa hora'], ['tp atrasado de novo']]));
-        if (b) msg(b, um([['calma que dá'], ['eles vão errar'], ['respira'], ['foi o lag']]), { rapido: true });
+        msg(a, um([['quem chamou essa luta'], ['pq a gente foi'], ['cada um pulou numa hora'], ['tp atrasado de novo'], ['que merda foi essa'], ['jogaram fora'], ['não tinha nem visão'], ['ninguém tinha bkb ali né'], ['quem iniciou isso', 'quero nome e cpf'], ['caralho que luta horrível']]));
+        if (b) msg(b, um([['calma que dá'], ['eles vão errar'], ['respira'], ['foi o lag'], ['faz parte'], ['jogo longo, relaxa'], ['ninguém surta'], ['ainda dá, porra'], ['eles vão pushar sozinho e morrer']]), { rapido: true });
         break;
       }
       case 'item': {
-        if (!craqueAmigo) { const a = qualquer(); msg(a, um([`o random fechou ${l.it} com ${Math.floor(l.t / 60)}`, `${l.it} com ${Math.floor(l.t / 60)} min, esse random é bom`])); break; }
-        msg(craque, um([[`${l.it} com ${Math.floor(l.t / 60)}`, um(EGO)], [`${l.it} na mão`, 'agora é outro jogo'], [`${l.it} pronta`, 'podem relaxar']]));
+        if (!craqueAmigo) { const a = qualquer(); msg(a, um([`o random fechou ${l.it} com ${Math.floor(l.t / 60)}`, `${l.it} com ${Math.floor(l.t / 60)} min, esse random é bom`, `adota esse random`, `o random tá jogando sério`, `alguém adiciona esse random`])); break; }
+        msg(craque, um([[`${l.it} com ${Math.floor(l.t / 60)}`, um(EGO)], [`${l.it} na mão`, 'agora é outro jogo'], [`${l.it} pronto`, 'podem relaxar'], [`${l.it} ✅`], [`fechei ${l.it}`, 'agora me segue'], [`${l.it} saiu`, 'acabou a brincadeira'], [`agora com ${l.it}`, 'deixa comigo']]));
         const a = qualquer(craque);
-        if (a && chance(0.7)) msg(a, um([['relaxar vc fala né', 'eu tô apanhando aqui'], ['finalmente'], ['agora vai'], ['demorou']]), { rapido: true });
+        if (a && chance(0.7)) msg(a, um([['relaxar vc fala né', 'eu tô apanhando aqui'], ['finalmente'], ['agora vai'], ['demorou'], ['agora joga porra'], ['tá bom, agora carrega'], ['vou cobrar hein'], ['amém'], ['nem mais uma desculpa agora']]), { rapido: true });
         break;
       }
       case 'aegis': {
         const q = nos[l.o.quem[1]];
-        if (q.amigo) msg(q, um([['aegis comigo', 'sigam o pai'], ['aegis no bolso'], ['vida extra 😌']]));
-        const a = qualquer(q); if (a && chance(0.6)) msg(a, um(['quem sabe faz ao vivo né', 'agora pula na frente', 'não desperdiça pfv']), { rapido: true });
+        if (q.amigo) msg(q, um([['aegis comigo', 'sigam o pai'], ['aegis no bolso'], ['vida extra 😌'], ['aegis é meu', 'ninguém discute'], ['peguei o queijo também?', 'não? ok'], ['aegis + eu = gg']]));
+        const a = qualquer(q); if (a && chance(0.6)) msg(a, um(['quem sabe faz ao vivo né', 'agora pula na frente', 'não desperdiça pfv', 'se morrer com aegis eu saio do grupo', 'gasta essa vida direito', 'agora sim, vai lá morrer duas vezes']), { rapido: true });
         break;
       }
       case 'quartel': {
-        const a = qualquer(); if (a && chance(0.7)) msg(a, um([['quartel caiu', 'acabou pra eles'], ['mega creep vindo'], ['podem pedir GG'], ['fecha logo que eu tô com fome']]));
+        const a = qualquer(); if (a && chance(0.7)) msg(a, um([['quartel caiu', 'acabou pra eles'], ['mega creep vindo'], ['podem pedir GG'], ['fecha logo que eu tô com fome'], ['quebra tudo'], ['não para não'], ['agora é só empurrar'], ['casa caindo'], ['tchau base deles'], ['fecha que amanhã tem trampo']]));
         break;
       }
       case 'quartelNosso': {
         const a = qualquer(); const b = qualquer(a);
-        msg(a, um([['PERDEMOS O QUARTEL'], ['defende defende defende'], ['TP TP TP']]));
-        if (b) msg(b, um([['calma que eles não fecham'], ['eu tava farmando'], ['tô sem bb']]), { rapido: true });
+        msg(a, um([['PERDEMOS O QUARTEL'], ['defende defende defende'], ['TP TP TP'], ['CADÊ TODO MUNDO'], ['caralho, a base'], ['volta volta volta']]));
+        if (b) msg(b, um([['calma que eles não fecham'], ['eu tava farmando'], ['tô sem bb'], ['era só um quartel'], ['respira, dá'], ['tava do outro lado do mapa porra']]), { rapido: true });
         break;
       }
       case 'chat': {
         const deles = l.c.quem[0] === 'e';
         const a = qualquer(); const b = qualquer(a);
-        if (deles) { msg(a, um([[`o ${curto(heroiDeles(l.c.quem[1]))} chorando no chat`, um(RISO)], ['olha o chat', um(RISO)], ['print disso pfv']])); if (b) msg(b, um(['cry more', 'chora mais', 'talk little']), { rapido: true }); }
-        else { const q = nos[l.c.quem[1]]; if (a && a !== q) msg(a, um([[`${q.nome} humildade zero`], [`${q.nome} provocando`, 'vai dar ruim'], ['não provoca não', um(RISO)]])); }
+        if (deles) { msg(a, um([[`o ${curto(heroiDeles(l.c.quem[1]))} chorando no chat`, um(RISO)], ['olha o chat', um(RISO)], ['print disso pfv'], [`o ${curto(heroiDeles(l.c.quem[1]))} tá puto`], ['eles tão brigando entre eles kkkk'], ['o chat deles tá pegando fogo']])); if (b) msg(b, um(['cry more', 'chora mais', 'talk little', 'responde não', 'deixa chorar', 'manda um ?', 'ignora e ganha']), { rapido: true }); }
+        else { const q = nos[l.c.quem[1]]; if (a && a !== q) msg(a, um([[`${q.nome} humildade zero`], [`${q.nome} provocando`, 'vai dar ruim'], ['não provoca não', um(RISO)], [`${q.nome} para de digitar e joga`], [`${q.nome} arrumando briga`, 'clássico']])); }
         break;
       }
       case 'virada': {
         const a = qualquer(); const b = qualquer(a);
-        msg(a, um([['VIROU'], ['tava -' + Math.round(Math.abs(l.pior) / 1000) + ' mil', 'e virou'], ['eu falei que dava']]));
-        if (b) msg(b, um([['ninguém acreditou'], ['eu já tinha aceitado'], ['nunca duvidei']]), { rapido: true });
+        msg(a, um([['VIROU'], ['tava -' + Math.round(Math.abs(l.pior) / 1000) + ' mil', 'e virou'], ['eu falei que dava'], ['VIRADAAA'], ['QUE VIRADA PORRA'], ['do nada', 'virou']]));
+        if (b) msg(b, um([['ninguém acreditou'], ['eu já tinha aceitado'], ['nunca duvidei'], ['eu já ia dar alt f4', 'ainda bem que não'], ['time de guerreiro'], ['isso que é time']]), { rapido: true });
         break;
       }
     }
@@ -285,7 +356,7 @@ function gerar(M, semente, forcar, evitar) {
   }
 
   const card = (de, extra = {}) => ({ t: 'card', de: de.key, ...extra });
-  const legCard = () => (craqueAmigo ? um(['carreguei, de nada', 'saiu o veredito 😌', 'o site não mente', 'podem conferir', 'printem', 'só deixando aqui']) : um(['o random carregou kkkk', 'nem foi a gente', 'obrigado random desconhecido', 'o site deu pro random']));
+  const legCard = () => (craqueAmigo ? um(['carreguei, de nada', 'saiu o veredito 😌', 'o site não mente', 'podem conferir', 'printem', 'só deixando aqui', 'documento oficial', 'contra fatos não há argumentos', 'lê e chora', 'vou emoldurar', 'tá registrado', 'chupa', 'quem duvida clica no link', 'o juiz decidiu', 'vou mandar pra minha mãe', 'agradecimentos ao time, mas né']) : um(['o random carregou kkkk', 'nem foi a gente', 'obrigado random desconhecido', 'o site deu pro random', 'vergonha', 'o random carregou 4 marmanjos', 'alguém adiciona esse cara', 'que humilhação']));
   const pick5 = (f) => amigos.length ? f : null;
   const cenarios = ['aovivo', 'enquete', 'figurinha'];
   const pesos = { aovivo: 4, enquete: 3, figurinha: 2 };
@@ -305,8 +376,8 @@ function gerar(M, semente, forcar, evitar) {
     const ini = retaFinal ? M.dur - 12 * 60 : 0;
     ev.push({ t: 'sys', txt: retaFinal ? `Reta final · ${mmss(ini)} de jogo` : `A partida começou · vocês são ${M.lado === 'radiant' ? 'Radiant' : 'Dire'}`, min: ini / 60 });
     const abre = qualquer();
-    if (!retaFinal && abre) { ev.push({ t: 'msg', de: abre.key, txt: um([['doots', 'o pai tá on'], ['bora que hj vai'], ['quem pickou isso'], ['vamo com calma hj'], ['essa é a da virada']]), min: 0.3 }); }
-    if (!retaFinal && craqueAmigo && chance(0.6)) ev.push({ t: 'msg', de: craque.key, txt: um([[`${curto(craque.heroiNome)} hj`, 'deixa o pai farmar em paz'], ['me deixa farmar', 'depois eu resolvo'], ['tô de ' + curto(craque.heroiNome), 'confiem']]), min: 0.5, rapido: true });
+    if (!retaFinal && abre) { ev.push({ t: 'msg', de: abre.key, txt: um([['doots', 'o pai tá on'], ['bora que hj vai'], ['quem pickou isso'], ['vamo com calma hj'], ['essa é a da virada'], ['draft deles é bom hein'], ['hj ninguém tilta'], ['bora porra'], ['esse draft vai dar merda'], ['foco hj'], ['quem morrer primeiro paga a pizza'], ['joga sério hj pfv'], ['vai ser rápido']]), min: 0.3 }); }
+    if (!retaFinal && craqueAmigo && chance(0.6)) ev.push({ t: 'msg', de: craque.key, txt: um([[`${curto(craque.heroiNome)} hj`, 'deixa o pai farmar em paz'], ['me deixa farmar', 'depois eu resolvo'], ['tô de ' + curto(craque.heroiNome), 'confiem'], ['me protejam que eu carrego'], ['hj eu tô com a mão quente'], ['só me dar 20 min'], [`${curto(craque.heroiNome)} na mão do pai`, 'é outro herói']]), min: 0.5, rapido: true });
     const lances = escolher(retaFinal ? 6 : 9 + Math.floor(r() * 3), ini);
     lances.forEach((l) => {
       const p = pilula(l); if (p) ev.push({ t: 'sys', cls: 'lance', txt: p, min: l.t / 60 });
@@ -314,9 +385,9 @@ function gerar(M, semente, forcar, evitar) {
     });
     ev.push({ t: 'sys', cls: 'lance', txt: `🏆 Vitória · ${M.placar[0]} × ${M.placar[1]} em ${mmss(M.dur)}`, min: M.dur / 60 });
     const q = craqueAmigo ? craque : qualquer(); if (q) ev.push(card(q, { min: M.dur / 60 + 0.4, legenda: legCard() }));
-    if (mochila && chance(0.8)) ev.push({ t: 'msg', de: mochila.key, txt: um([[`${String(mochila.merito).replace('.', ',')}%`, 'mas a vitória conta igual tá'], ['eu tava lá também tá'], [`${kda(mochila)} e nem uma menção`]]), min: M.dur / 60 + 0.6 });
-    if (suporte && suporte !== mochila && suporte.wards >= 6 && chance(0.6)) ev.push({ t: 'msg', de: suporte.key, txt: [`${suporte.wards} ward, ${suporte.a} assistência`, 'e eu nem apareço no cartão 😭'], min: M.dur / 60 + 0.7 });
-    if (craqueAmigo && chance(0.7)) { const e = chance(0.5) ? figEv(craque, 'ego', null, { min: M.dur / 60 + 0.8 }) : null; ev.push(e || { t: 'msg', de: craque.key, txt: um(['izi wiiin', 'obrigado grande irmão 🙏', 'sigam o pai', 'de nada']), min: M.dur / 60 + 0.8 }); }
+    if (mochila && chance(0.8)) ev.push({ t: 'msg', de: mochila.key, txt: um([[`${String(mochila.merito).replace('.', ',')}%`, 'mas a vitória conta igual tá'], ['eu tava lá também tá'], [`${kda(mochila)} e nem uma menção`], ['esse site é comprado'], ['vitória é vitória porra'], ['o importante é o time'], ['ganhei e é isso que importa'], ['vou processar esse site'], ['o mérito é coletivo'], ['quem fez esse site me odeia']]), min: M.dur / 60 + 0.6 });
+    if (suporte && suporte !== mochila && suporte.wards >= 6 && chance(0.6)) ev.push({ t: 'msg', de: suporte.key, txt: um([[`${suporte.wards} ward, ${suporte.a} assistência`, 'e eu nem apareço no cartão 😭'], [`${suporte.wards} wards`, 'e o mérito é dele'], ['suporte nesse grupo é invisível'], [`quem comprou as ${suporte.wards} wards?`, 'ninguém pergunta'], ['da próxima eu pego carry e quero ver']]), min: M.dur / 60 + 0.7 });
+    if (craqueAmigo && chance(0.7)) { const e = chance(0.5) ? figEv(craque, 'ego', null, { min: M.dur / 60 + 0.8 }) : null; ev.push(e || { t: 'msg', de: craque.key, txt: um(['izi wiiin', 'obrigado grande irmão 🙏', 'sigam o pai', 'próxima', 'aceito pix', 'mais uma?', 'sem esforço', 'carregar cansa viu', 'de nada de novo']), min: M.dur / 60 + 0.8 }); }
     if (mochila && craqueAmigo && chance(0.35)) { const e = figEv(mochila, 'contra', null, { min: M.dur / 60 + 0.9 }); if (e) ev.push(e); }
     return { cenario: 'Ao vivo' + (retaFinal ? ' · reta final' : ''), grupo, sub, strip: true, P, ev, memoria: [...usados], inicio: M.inicio, ouro: M.ouro, dur: M.dur };
   }
@@ -329,39 +400,57 @@ function gerar(M, semente, forcar, evitar) {
   const replays = escolher(cen === 'enquete' ? 3 : 2);
 
   if (cen === 'enquete') {
-    if (craqueAmigo && chance(0.5)) { const novo = um([`${craque.nome} e os 4 mochilas`, `${craque.merito.toFixed(0)}% é do ${craque.nome}`, `fã clube do ${curto(craque.heroiNome)}`, 'sigam o pai']); ev.push({ t: 'sys', txt: `<b>${craque.nome}</b> mudou o nome do grupo para “${novo}”`, h: H(), grupo: novo }); }
+    if (craqueAmigo && chance(0.5)) { const novo = um([`${craque.nome} e os 4 mochilas`, `${craque.merito.toFixed(0)}% é do ${craque.nome}`, `fã clube do ${curto(craque.heroiNome)}`, 'sigam o pai', `${craque.nome} carrega, o resto assiste`, `escola do ${craque.nome}`, `os protegidos do ${craque.nome}`, 'DOTA - CARREGADOS', `${curto(craque.heroiNome)} e os figurantes`, `obrigado ${craque.nome}`]); ev.push({ t: 'sys', txt: `<b>${craque.nome}</b> mudou o nome do grupo para “${novo}”`, h: H(), grupo: novo }); }
     if (craqueAmigo) { const e = figEv(craque, 'ego', null, { h: H(), id: 'st1' }); if (e) ev.push(e); } else { const e = figEv(qualquer(), 'exalta', null, { h: H(), id: 'st1' }); if (e) ev.push(e); }
-    const z = qualquer(craque, quemManda); if (z) ev.push({ t: 'msg', de: z.key, txt: um([[um(RISO)], [um(UAU), 'humildade zero'], ['já começou'], ['lá vem'], ['pronto, agora aguenta']]), h: H(), reply: craqueAmigo ? { de: craque.key, txt: '🖼️ Figurinha' } : undefined });
+    const z = qualquer(craque, quemManda); if (z) ev.push({ t: 'msg', de: z.key, txt: um([[um(RISO)], [um(UAU), 'humildade zero'], ['já começou'], ['lá vem'], ['pronto, agora aguenta'], ['alguém tira o admin dele'], ['vai ficar assim a semana toda'], ['o ego não cabe no grupo'], ['silencia ele'], ['ah pronto']]), h: H(), reply: craqueAmigo ? { de: craque.key, txt: '🖼️ Figurinha' } : undefined });
     ev.push({ t: 'react', alvo: 'st1', emo: um(['😂 4', '😂🔥 3', '🙄 2']) });
     // lances lembrados com replay
     replays.forEach((l) => { ev.push({ t: 'sys', cls: 'lance', txt: '🔁 Replay ' + mmss(l.t) + ' · ' + pilula(l).replace(/^\S+\s/, ''), h: H() }); fio(l).slice(0, 3).forEach((m) => ev.push({ ...m, h: H() })); });
-    if (morredor && chance(0.5)) { ev.push({ t: 'del', de: morredor.key, h: H() }); const a = qualquer(morredor); if (a) ev.push({ t: 'msg', de: a.key, txt: um([`deu tempo de ler ${morredor.nome} kkkkk`, 'apagou pq?', 'printei já']), h: H() }); }
+    if (morredor && chance(0.5)) { ev.push({ t: 'del', de: morredor.key, h: H() }); const a = qualquer(morredor); if (a) ev.push({ t: 'msg', de: a.key, txt: um([`deu tempo de ler ${morredor.nome} kkkkk`, 'apagou pq?', 'printei já', 'apagou mas eu vi', 'tarde demais, tá no print', 'fala de novo, covarde', 'o que tu escreveu aí hein', 'apagou o xingamento kkkk']), h: H() }); }
     // enquete: a piada é sempre sobre UMA pessoa (o mochila), com resultado claro: a maioria vota na mesma opção,
     // o zoado vota na desculpa dele sozinho. Nada de porcentagem nem empate.
     const alvoE = morredor && morredor.d >= 6 ? morredor : null;
-    const tipo = alvoE ? um(['mochila', 'oque', 'proxima', 'desculpa']) : 'play';
+    const tipo = alvoE ? um(['mochila', 'oque', 'proxima', 'desculpa', 'castigo', 'apelido', 'nota', 'culpa']) : 'play';
     const quemPerg = qualquer(alvoE) || craque;
+    // opções: uma lista grande de onde saem 3 (+ a desculpa do zoado, quando tem)
+    const tres = (xs) => embaralhar(xs).slice(0, 3);
     let q, ops, maioria = 0, desculpa = -1;
     if (tipo === 'mochila') {
       const outro = resto.filter((n) => n !== alvoE).sort((a, b) => b.d - a.d)[0];
-      q = um(['Quem foi o mochila?', 'Quem foi carregado hoje?', 'Quem pesou na mochila?']);
-      ops = [`${alvoE.nome} (${alvoE.d} mortes)`, ...(outro ? [`${outro.nome} (${outro.d} mortes)`] : []), um(['o lag', 'o servidor', 'o draft'])];
+      q = um(['Quem foi o mochila?', 'Quem foi carregado hoje?', 'Quem pesou na mochila?', 'Quem foi de passageiro?', 'Quem pegou carona na vitória?', 'Quem só assistiu?']);
+      ops = [`${alvoE.nome} (${alvoE.d} mortes)`, ...(outro ? [`${outro.nome} (${outro.d} mortes)`] : []), um(['o lag', 'o servidor', 'o draft', 'a internet da vivo', 'o patch novo', 'o mouse de alguém'])];
       desculpa = ops.length - 1;
     } else if (tipo === 'oque') {
-      q = `O que o ${alvoE.nome} tava fazendo no jogo?`;
-      ops = ['turismo na fonte', 'patrocinando o time deles', `isca profissional (${alvoE.d} mortes)`, 'abrindo espaço'];
+      q = um([`O que o ${alvoE.nome} tava fazendo no jogo?`, `Qual era a função do ${alvoE.nome} hoje?`, `${alvoE.nome} tava jogando o quê?`]);
+      ops = [...tres(['turismo na fonte', 'patrocinando o time deles', `isca profissional (${alvoE.d} mortes)`, 'delivery de ouro', 'estágio no time deles', 'tour pelo respawn', 'assistindo o jogo de graça', 'treinando o time deles', 'decorando o mapa']), um(['abrindo espaço', 'segurando a lane', 'dando visão', 'jogando pro time'])];
       maioria = Math.floor(r() * 3); desculpa = 3;
     } else if (tipo === 'proxima') {
-      q = `Na próxima o ${alvoE.nome} joga de quê?`;
-      ops = ['espectador', 'coach do time deles', `${curto(alvoE.heroiNome)} de novo`, 'courier'];
-      maioria = um([0, 1, 3]); desculpa = 2;
+      q = um([`Na próxima o ${alvoE.nome} joga de quê?`, `Qual a função do ${alvoE.nome} na próxima?`, `O que fazer com o ${alvoE.nome} na próxima?`]);
+      ops = [...tres(['espectador', 'coach do time deles', 'courier', 'ward ambulante', 'banco de reserva', 'torcida', 'cameraman', 'pausa pro lanche']), `${curto(alvoE.heroiNome)} de novo`];
+      maioria = Math.floor(r() * 3); desculpa = 3;
     } else if (tipo === 'desculpa') {
-      q = `Melhor desculpa do ${alvoE.nome} pras ${alvoE.d} mortes`;
-      ops = ['foi o lag', 'tava abrindo espaço', 'o draft era ruim', 'tava ruim mesmo'];
-      maioria = 3; desculpa = um([0, 1, 2]);
+      q = um([`Melhor desculpa do ${alvoE.nome} pras ${alvoE.d} mortes`, `Por que o ${alvoE.nome} morreu ${alvoE.d} vezes?`, `${alvoE.d} mortes do ${alvoE.nome}: o que houve?`]);
+      ops = [...tres(['foi o lag', 'tava abrindo espaço', 'o draft era ruim', 'a mãe chamou', 'o cachorro pisou no teclado', 'tava no banheiro', 'mouse zoado', 'internet da vivo']), um(['tava ruim mesmo', 'é ruim mesmo', 'joga mal e pronto', 'falta de vergonha'])];
+      maioria = 3; desculpa = Math.floor(r() * 3);
+    } else if (tipo === 'castigo') {
+      q = um([`Castigo do ${alvoE.nome} pelas ${alvoE.d} mortes`, `O que o ${alvoE.nome} paga pelas ${alvoE.d} mortes?`, `Pena do ${alvoE.nome}`]);
+      ops = [...tres(['paga a pizza', 'joga de suporte a semana toda', 'compra todas as wards', 'muda o nick pra "doador"', 'foto de perfil de Pudge', 'fica sem falar no grupo 1 dia']), um(['absolvido', 'perdão pq ganhamos', 'nada, foi o time'])];
+      maioria = Math.floor(r() * 3); desculpa = 3;
+    } else if (tipo === 'apelido') {
+      q = um([`Apelido novo do ${alvoE.nome}`, `Como a gente chama o ${alvoE.nome} agora?`, `Nick novo pro ${alvoE.nome}`]);
+      ops = [...tres(['Doador Universal', 'Cliente VIP da Fonte', 'Patrocinador', 'Caixa Eletrônico', 'Saco de Pancada', 'Delivery', 'Turista']), um([alvoE.nome + ' mesmo', 'Lenda', 'Abridor de Espaço'])];
+      maioria = Math.floor(r() * 3); desculpa = 3;
+    } else if (tipo === 'nota') {
+      q = um([`Nota pro jogo do ${alvoE.nome}`, `De 0 a 10, o ${alvoE.nome} hoje`, `Avaliação do ${alvoE.nome}`]);
+      ops = [um(['0', 'zero']), um(['2, pela presença', '1, pq conectou']), um(['5, pq ganhou', '4, com boa vontade']), um(['10', '10, injustiçado'])];
+      maioria = um([0, 1]); desculpa = 3;
+    } else if (tipo === 'culpa') {
+      q = um([`De quem é a culpa das ${alvoE.d} mortes do ${alvoE.nome}?`, `Quem matou o ${alvoE.nome} ${alvoE.d} vezes?`]);
+      ops = [`do ${alvoE.nome}`, ...tres(['do time deles, que é bom', 'do suporte, sem ward', 'do Icefrog', 'da mãe dele']).slice(0, 2), um(['do lag', 'do draft', 'da vivo'])];
+      maioria = 0; desculpa = 3;
     } else {
       const lutas = replays.filter((l) => l.tipo === 'luta' || l.tipo === 'solo').slice(0, 3);
-      q = 'Melhor play da partida?';
+      q = um(['Melhor play da partida?', 'Lance da partida?', 'Qual foi o momento?', 'Replay da noite?']);
       ops = lutas.map((l) => pilula(l).replace(/<[^>]+>/g, '').replace(/^\S+\s/, '').replace(/ \(perdemos \d+\)/, '').replace(/ \(\d+ª vez\)/, '').slice(0, 46));
       if (ops.length < 2) ops = [`${craque.amigo ? craque.nome : 'o random'} carregando`, 'o veredito do site'];
     }
@@ -370,9 +459,9 @@ function gerar(M, semente, forcar, evitar) {
     const votoDe = (n) => (n === alvoE && desculpa >= 0 ? desculpa : n === dissidente ? (maioria + 1 + Math.floor(r() * (ops.length - 1))) % ops.length : maioria);
     ev.push({ t: 'poll', de: quemPerg.key, id: 'p', q, ops, h: H() });
     votantes.forEach((n) => ev.push({ t: 'vote', poll: 'p', de: n.key, op: votoDe(n) }));
-    if (alvoE && tipo !== 'play') ev.push({ t: 'msg', de: alvoE.key, txt: um([[`eu tive ${alvoE.a} assistência`, 'quero recontagem'], ['enquete comprada'], ['vou chamar meus advogados'], ['votei certo pelo menos'], ['vcs não sabem perder', 'nem ganhar']]), h: H() });
+    if (alvoE && tipo !== 'play') ev.push({ t: 'msg', de: alvoE.key, txt: um([[`eu tive ${alvoE.a} assistência`, 'quero recontagem'], ['enquete comprada'], ['vai tomar no cu', 'todos vocês'], ['votei certo pelo menos'], ['vcs não sabem perder', 'nem ganhar'], ['vsf'], ['fraude'], ['vou sair do grupo'], ['cambada de filho da puta', 'kkkkk'], ['enquete manipulada', 'quero auditoria'], ['denunciei a enquete'], ['tô rindo mas tô puto'], ['lembrarei disso'], ['ok, anotei o nome de cada um']]), h: H() });
     const mochila_ = alvoE;
-    if (suporte && suporte.wards >= 6 && chance(0.5)) ev.push({ t: 'msg', de: suporte.key, txt: [`${suporte.wards} ward e ${suporte.a} assistência`, 'e ninguém faz enquete pra me elogiar 😭'], h: H() });
+    if (suporte && suporte.wards >= 6 && chance(0.5)) ev.push({ t: 'msg', de: suporte.key, txt: um([[`${suporte.wards} ward e ${suporte.a} assistência`, 'e ninguém faz enquete pra me elogiar 😭'], ['cadê a enquete do melhor suporte?'], [`${suporte.wards} wards e nem uma opção na enquete`], ['suporte nesse grupo só aparece quando morre']]), h: H() });
     if (mochila && chance(0.7)) { const e = figEv(qualquer(mochila), 'zoa', mochila, { h: H(), id: 'st2' }); if (e) { ev.push(e); ev.push({ t: 'react', alvo: 'st2', emo: um(['💀 3', '😂 4', '😂💀 3']) }); if (craqueAmigo && chance(0.5)) { const c = figEv(mochila, 'contra', null, { h: H() }); if (c) ev.push(c); } } }
     ev.push({ t: 'pin', txt: `${vereditoTxt} · ${curto(craque.heroiNome)} · ${String(craque.merito).replace('.', ',')}% do mérito` });
     return { cenario: 'Resenha com enquete', grupo, sub, strip: false, P, ev, memoria: [...usados] };
@@ -394,7 +483,7 @@ function gerar(M, semente, forcar, evitar) {
     const b = qualquer(q); if (b && chance(0.5)) ev.push({ t: 'msg', de: b.key, txt: um(RISO), h: H() });
   });
   seq.forEach(([q, i, al]) => { const e = q && figEv(q, i, al, { h: H() }); if (e) { ev.push(e); if (chance(0.4)) ev.push({ t: 'react', alvo: e.id, emo: um(['😂 3', '💀 2', '🔥 3']) }); } });
-  const ult = qualquer(); if (ult && chance(0.6)) ev.push({ t: 'msg', de: ult.key, txt: um(['chega de figurinha', 'next?', 'mais uma?', 'quem joga a próxima']), h: H() });
+  const ult = qualquer(); if (ult && chance(0.6)) ev.push({ t: 'msg', de: ult.key, txt: um(['chega de figurinha', 'next?', 'mais uma?', 'quem joga a próxima', 'para de figurinha porra', 'vcs não trabalham não?', 'bora outra', 'amanhã tem mais', 'quem fez essas figurinhas tá desempregado', 'salvei todas']), h: H() });
   return { cenario: 'Guerra de figurinha', grupo, sub, strip: false, P, ev, memoria: [...usados] };
 }
 
