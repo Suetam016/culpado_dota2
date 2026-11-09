@@ -8026,10 +8026,10 @@ return corpo;
 // Para pôr uma visão nova (Plantão da Selva, Stories, Post...): escreva visaoX(r) devolvendo o <article> e some uma
 // linha aqui. `peso` é a chance relativa; `pode(r)` diz se a visão funciona nessa partida. ?visao=<id> na URL força
 // (inclusive uma visão desligada). `ligada: false` tira a visão do sorteio sem apagar o código.
-// Zap (conversa com vários áudios curtos do banco de falas) desligado de novo em 06/11/2026: o Mat achou cru.
-// ?visao=zap ainda força para testar; para religar, troque ligada para true.
+// Zap: o antigo (áudios curtos, visaoZap) saiu em 06/11/2026; desde 09/11/2026 o id 'zap' é a conversa sorteada
+// (visaoZapConversa, zap/). O evento victory_zap_cenario diz qual cenário saiu.
 const VISOES_VITORIA = [
-{ id: 'zap', nome: 'Grupo do zap', peso: 7, ligada: false, pode: (r) => !SO_EMBUTIDO && r.partida.parseado, montar: (r) => visaoZap(r) },
+{ id: 'zap', nome: 'Grupo do zap', peso: 3, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0 && r.nos.filter((p) => p.conta != null).length >= 2, montar: (r) => visaoZapConversa(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
 // Plantão da Selva (no sorteio desde 06/11/2026): helicóptero no fim do replay; sem replay vira o documento
 { id: 'plantao', nome: 'Plantão da Selva', peso: 3, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoPlantao(r) },
@@ -8107,6 +8107,98 @@ return { idx: i, slot: p.player_slot, radiant: p.isRadiant != null ? Boolean(p.i
 const fxReplay = (ini, fim) => montarLances(r, mapa, h('div'), h('div'), null, h('div'), { externo: true, unico: { t: fim, ini, fim, tipo: 'bom', foco: [v.jogador.idx], titulo: '', legenda: '' } });
 P.montar(palco, { fxReplay, match: dados.match, mapa, carry: v.jogador.idx, jog, est: ESTRUTURAS, arv: ARVORES_B64, tri: TRILHAS_B64, ladoNome, data, fatia: v.fatia, amigos: Object.values(AMIGOS) });
 }).catch((e) => { console.error('plantao', e); palco.replaceChildren(espera); espera.textContent = 'O plantão não carregou agora. Recarregue a página para tentar de novo.'; });
+return caixa;
+}
+
+// ---------- Zap da vitória (no sorteio desde 09/11/2026): a vitória vira uma conversa do grupo de WhatsApp, sorteada
+// a cada partida entre três cenários (ao vivo com os lances no minuto, resenha com enquete, guerra de figurinha).
+// O roteiro sai de zap/gerador.js (puro: partida + semente) e o celular de zap/zap.js; os dois só baixam quando esta
+// visão abre. Quem fala são os amigos (de algum grupo); random do time aparece como "<herói> random" e não fala.
+let zapJs = null;
+function carregarZap() {
+if (!zapJs) zapJs = new Promise((ok, erro) => {
+document.head.append(h('link', { rel: 'stylesheet', href: 'zap/zap.css' }));
+const um = (src) => new Promise((ok2, erro2) => { const js = document.createElement('script'); js.src = src; js.onload = ok2; js.onerror = erro2; document.head.append(js); });
+um('zap/gerador.js').then(() => um('zap/zap.js')).then(() => ok(window.ZapConversa)).catch(() => { zapJs = null; erro(new Error('zap')); });
+});
+return zapJs;
+}
+const ITENS_ZAP = { bfury: 'Battle Fury', ultimate_scepter: 'Aghanim', blink: 'Blink', black_king_bar: 'BKB', radiance: 'Radiance', manta: 'Manta', desolator: 'Desolator', butterfly: 'Butterfly', skadi: 'Skadi', satanic: 'Satanic', abyssal_blade: 'Abyssal', mjollnir: 'Mjollnir', heart: 'Heart', refresher: 'Refresher', sheepstick: 'Scythe', assault: 'Assault Cuirass', shivas_guard: "Shiva's", orchid: 'Orchid', bloodthorn: 'Bloodthorn', maelstrom: 'Maelstrom', glimmer_cape: 'Glimmer', force_staff: 'Force Staff', aether_lens: 'Aether Lens', greater_crit: 'Daedalus', monkey_king_bar: 'MKB', silver_edge: 'Silver Edge', blade_mail: 'Blade Mail', echo_sabre: 'Echo Sabre', harpoon: 'Harpoon', swift_blink: 'Swift Blink', overwhelming_blink: 'Overwhelming Blink', arcane_blink: 'Arcane Blink', hand_of_midas: 'Midas', diffusal_blade: 'Diffusal', disperser: 'Disperser', sange_and_yasha: 'S&Y', kaya_and_sange: 'K&S', yasha_and_kaya: 'Y&K', octarine_core: 'Octarine', travel_boots: 'BoT', aeon_disk: 'Aeon Disk', pipe: 'Pipe', lotus_orb: 'Lotus', guardian_greaves: 'Greaves', spirit_vessel: 'Vessel', vladmir: 'Vladmir', dagon: 'Dagon', ethereal_blade: 'Ethereal', gleipnir: 'Gleipnir', nullifier: 'Nullifier', wind_waker: 'Wind Waker', crimson_guard: 'Crimson', heavens_halberd: 'Halberd', rapier: 'Rapier' };
+// a partida no formato do gerador (o mesmo que o protótipo usava): amigos, heróis, abates com solo, lutas, objetivos, ouro
+function partidaDoZap(r, match, grupos) {
+const rad = r.partida.ladoRadiant;
+const slug = (p) => (p.heroi.npc || `heroi_${p.heroi.id}`).replace('npc_dota_hero_', '');
+const img = {};
+const foto = (p) => { img[slug(p)] = `img/herois/${slug(p)}.png`; }; // retratos do próprio site (img/herois)
+const fatia = new Map((r.craques || []).map((c) => [c.jogador.idx, c.fatia]));
+const lugar = {}; // idx da partida -> ['n'|'e', i]
+const nos = r.nos.map((p, i) => {
+const x = p.raw || {};
+foto(p); lugar[p.idx] = ['n', i];
+const amigo = deAlgumGrupo(p.conta, grupos);
+const vistos = new Set();
+const itens = (x.purchase_log || []).filter((c) => ITENS_ZAP[c.key] && c.time > 0 && !vistos.has(c.key) && vistos.add(c.key)).map((c) => [Math.floor(c.time / 60), ITENS_ZAP[c.key]]);
+return { nome: p.nome === 'gustavoDotinhaPro' ? 'Gustavo' : p.nome, amigo: Boolean(amigo), heroi: slug(p), heroiNome: p.heroi.nome, k: x.kills || 0, d: x.deaths || 0, a: x.assists || 0, merito: Math.round((fatia.get(p.idx) || 0) * 1000) / 10, pos: p.posicao || null, wards: (x.obs_placed || 0) + (x.sen_placed || 0), gpm: x.gold_per_min || 0, torre: x.tower_damage || 0, dano: x.hero_damage || 0, itens };
+});
+const eles = r.eles.map((p, i) => { const x = p.raw || {}; foto(p); lugar[p.idx] = ['e', i]; return { heroi: slug(p), heroiNome: p.heroi.nome, k: x.kills || 0, d: x.deaths || 0, a: x.assists || 0 }; });
+const players = match.players || [];
+const porSlot = {}; const porNpc = {};
+players.forEach((p, i) => { if (lugar[i]) porSlot[p.player_slot] = lugar[i]; });
+[...r.nos, ...r.eles].forEach((p) => { if (p.heroi.npc) porNpc[p.heroi.npc] = lugar[p.idx]; });
+const abates = [];
+players.forEach((p, i) => { for (const k of p.kills_log || []) if (porNpc[k.key] && lugar[i]) abates.push({ t: k.time, de: lugar[i], vit: porNpc[k.key] }); });
+abates.sort((a, b) => a.t - b.t);
+const tfs = (match.teamfights || []).map((t) => [t.start, t.end]);
+for (const a of abates) a.solo = !abates.some((b) => b !== a && Math.abs(b.t - a.t) <= 15) && !tfs.some(([s, e]) => s - 3 <= a.t && a.t <= e + 3);
+const lutas = [];
+for (const t of match.teamfights || []) {
+const ks = abates.filter((a) => t.start - 2 <= a.t && a.t <= t.end + 2);
+const nosM = ks.filter((a) => a.vit[0] === 'n').length; const elesM = ks.filter((a) => a.vit[0] === 'e').length;
+const cont = {};
+for (const a of ks) if (a.de[0] === 'n' && a.vit[0] === 'e') cont[a.de[1]] = (cont[a.de[1]] || 0) + 1;
+const top = Object.entries(cont).sort((a, b) => b[1] - a[1])[0];
+if (nosM + elesM >= 3) lutas.push({ ini: t.start, fim: t.end, nos: nosM, eles: elesM, top: top ? [Number(top[0]), top[1]] : null });
+}
+const obj = [];
+for (const o of match.objectives || []) {
+const q = o.player_slot != null ? porSlot[o.player_slot] || null : null;
+if (o.type === 'building_kill' && typeof o.key === 'string') {
+const k = o.key; const deles = k.includes('goodguys') === !rad;
+const tipo = k.includes('fort') ? 'trono' : k.includes('rax') ? 'quartel' : k.includes('tower4') ? 'torre4' : 'torre';
+if (tipo === 'torre' && k.includes('tower1')) continue;
+const faixa = k.includes('_top') ? 'top' : k.includes('_bot') ? 'bot' : k.includes('_mid') ? 'mid' : '';
+obj.push({ t: o.time, tipo, deles, faixa, quem: q });
+} else if (o.type === 'CHAT_MESSAGE_AEGIS') obj.push({ t: o.time, tipo: 'aegis', quem: q });
+else if (o.type === 'CHAT_MESSAGE_FIRSTBLOOD') obj.push({ t: o.time, tipo: 'fb', quem: q });
+}
+const chat = (match.chat || []).filter((c) => c.type === 'chat' && porSlot[c.player_slot]).map((c) => ({ t: c.time, quem: porSlot[c.player_slot], txt: c.key }));
+const ouro = (match.radiant_gold_adv || []).map((g) => (rad ? g : -g));
+const craqueIdx = craquesDe(r)[0].jogador.idx;
+const craque = Math.max(0, r.nos.findIndex((p) => p.idx === craqueIdx));
+return { id: r.partida.id, dur: r.partida.duracao, inicio: r.partida.inicio || match.start_time || 0, lado: rad ? 'radiant' : 'dire', placar: [r.partida.placarNos, r.partida.placarEles], nos, eles, abates, lutas, obj, chat, ouro, craque, img };
+}
+function visaoZapConversa(r) {
+const caixa = h('article', { class: 'cartao veredito vitoria zap-visao' });
+const espera = h('p', { class: 'zap-aviso' }, 'Abrindo o grupo…');
+const palco = h('div', { class: 'zap-palco' }, espera); // a conversa entra aqui, antes da barra de compartilhar
+caixa.append(palco);
+const virarDocumento = () => { // sem dados do replay ou sem amigos para conversar: a vitória fica com o documento
+const doc = documentoDoMerito(r);
+caixa.className = doc.className;
+Object.assign(caixa.dataset, doc.dataset, { visao: 'documento' });
+if (caixa.parentNode && caixa.parentNode.dataset) caixa.parentNode.dataset.visao = 'documento';
+caixa.replaceChildren(...doc.childNodes);
+};
+const match = estado.dados && estado.dados.match;
+if (!match || String(match.match_id) !== String(r.partida.id)) { setTimeout(virarDocumento); return caixa; }
+Promise.all([carregarGrupos().catch(() => []), carregarZap()]).then(([grupos, Z]) => {
+const M = partidaDoZap(r, match, grupos || []);
+if (M.nos.filter((n) => n.amigo).length < 2) { virarDocumento(); return; }
+espera.remove();
+const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
+Z.montar(palco, M, { semente: 1 + Math.floor(sorteFixa(`zap-${r.partida.id}-${lado}`) * 1e9), tocar: true, livre: () => !document.querySelector('.revelacao'),
+aoSortear: (g) => { try { (window.dataLayer = window.dataLayer || []).push({ event: 'victory_zap_cenario', victory_zap_cenario: g.cenario }); } catch (e) { /* sem GTM */ } } });
+}).catch((e) => { console.error('zap', e); virarDocumento(); });
 return caixa;
 }
 

@@ -49,13 +49,17 @@ O GTM também espera estes eventos no `dataLayer`, que **o site ainda não envia
 
 ## Tela de vitória: visões sorteadas (desde 04/11/2026)
 
-Numa vitória, a tela sorteia uma "visão" (`documento`; Plantão, Stories e Post entram depois). **Desde 04/11/2026 a
-visão `zap` está desligada**: toda vitória mostra o `documento`, então `victory_view` chega sempre com `documento` e
-`victory_view_switch: false`, o botão `.trocar-visao` some (só aparece quando há mais de uma visão) e `.zap-play` /
-`.zap-pedir` não aparecem mais. O código ficou para religar depois. O site envia `dataLayer.push({ event: 'victory_view', victory_view: '<id>', victory_view_switch: <true se a pessoa trocou> })`.
-A visão também fica em `.visao-vitoria[data-visao]`. Elementos novos ainda sem gatilho: o botão `.trocar-visao`
-(`data-gtm="vitoria-trocar-visao"`, "Ver em outra tela"). Os botões do áudio (`.zap-play`, `.zap-pedir`) continuam iguais,
-agora dentro da visão do zap. `?visao=zap` (ou `documento`) na URL força uma visão, mesmo desligada, útil para testar.
+Numa vitória, a tela sorteia uma "visão": `documento`, `plantao` e, **desde 09/11/2026, `zap` de novo, agora como
+conversa de WhatsApp sorteada** (pesos iguais). O site envia `dataLayer.push({ event: 'victory_view', victory_view: '<id>', victory_view_switch: <true se a pessoa trocou> })`.
+A visão também fica em `.visao-vitoria[data-visao]`. Quando a partida não tem replay ou o time tem menos de 2 amigos,
+a visão sorteada `zap` vira o documento na tela (como o Plantão sem mapa), mas o `victory_view` já saiu com `zap`.
+Elementos ainda sem gatilho: o botão `.trocar-visao` (`data-gtm="vitoria-trocar-visao"`, "Ver em outra tela").
+
+**Zap novo (09/11/2026):** os botões antigos `.zap-play` / `.zap-pedir` (áudio) não existem mais. Novos, sem gatilho:
+`[data-gtm="vitoria-zap-tocar"]` ("Ver chegando", toca a conversa de novo) e `[data-gtm="vitoria-zap-sortear"]`
+("Outra conversa"). Cada conversa montada manda `dataLayer.push({ event: 'victory_zap_cenario', victory_zap_cenario })`,
+com o cenário: `Ao vivo`, `Ao vivo · reta final`, `Resenha com enquete` ou `Guerra de figurinha`.
+`?visao=zap` (ou `documento`, `plantao`) na URL força uma visão, útil para testar.
 
 ## Boas-vindas a grupo novo na home (desde 06/11/2026)
 
