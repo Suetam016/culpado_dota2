@@ -2556,10 +2556,20 @@ const mortes = ctx.mortes ? ctx.mortes[p.idx] : [];
 
 if (mortes.length >= 4) {
 const cont = {};
-for (const d of mortes) { const n = nomeAssassino(d, ctx.jog); cont[n] = (cont[n] || 0) + 1; }
+const idxDe = {};
+for (const d of mortes) { const n = nomeAssassino(d, ctx.jog); cont[n] = (cont[n] || 0) + 1; if (d.assassino != null) idxDe[n] = d.assassino; }
 const n = Math.max(...Object.values(cont));
+// Abates do jogador no mesmo herói: quem troca morte por morte não "morreu mais para" ninguém.
+const abatesEm = (nome) => (idxDe[nome] == null || !ctx.mortes ? 0 : (ctx.mortes[idxDe[nome]] || []).filter((d) => d.assassino === p.idx).length);
 const tops = Object.keys(cont).filter((k) => cont[k] === n);
-if (n >= 3) add('ruim', tops.length > 1 ? `Morreu mais para ${tops.join(' e ')}: ${n} mortes para cada um, de ${mortes.length}.` : `Morreu mais para ${tops[0]}: ${n} de ${mortes.length} mortes.`, 1.2);
+const perdeu = tops.filter((k) => n > abatesEm(k));
+const trocou = tops.filter((k) => n <= abatesEm(k));
+if (n >= 3 && perdeu.length) {
+const saldo = (k) => { const a = abatesEm(k); return a ? ` (matou ${a === 1 ? 'uma vez' : `${a} vezes`})` : ''; };
+add('ruim', perdeu.length > 1 ? `Morreu mais para ${perdeu.join(' e ')}: ${n} mortes para cada um, de ${mortes.length}.` : `Morreu mais para ${perdeu[0]}: ${n} de ${mortes.length} mortes${saldo(perdeu[0])}.`, 1.2);
+} else if (n >= 3 && trocou.length) {
+add('neutro', `Trocou ${n} x ${abatesEm(trocou[0])} com ${trocou[0]}: morreu para ele tanto quanto o matou.`, 0.6);
+}
 }
 const caras = mortes.filter((d) => d.ouro != null).sort((a, b) => b.ouro - a.ouro);
 if (caras.length && caras[0].ouro >= 600) add('ruim', `Morte mais cara aos ${mmss(caras[0].t)}: ${fmtInt(caras[0].ouro)} de ouro para ${nomeAssassino(caras[0], ctx.jog)}.`, 1.1);
