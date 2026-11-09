@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-09T22:45:01Z",
+  "quando": "2026-11-09T23:21:23Z",
   "restante": {
-   "dia": 2999,
-   "minuto": 59
+   "dia": 2994,
+   "minuto": 54
   }
  },
  "desistencias": {
@@ -459,9 +459,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-09T22:45:01Z",
+   "em": "2026-11-09T23:21:18Z",
    "partidas": {
-    "9062207210": 1792970460,
     "9062243978": 1792974125,
     "9062297114": 1792979805,
     "9062321346": 1792982370,
@@ -707,15 +706,6 @@
   }
  },
  "lo": {
-  "9039109856": {
-   "companheiros": [
-    51970773,
-    111257540,
-    153112978,
-    241782761
-   ],
-   "inicio": 1791674421
-  },
   "9039151585": {
    "companheiros": [
     111257540,
@@ -2488,7 +2478,6 @@
   "149153157": "LARGA TIXA",
   "150437875": "kludd",
   "152767398": "og8",
-  "153112978": "VODANAKARA",
   "153197325": "VINI",
   "1532603023": "Not So Bad",
   "1536664773": "MORPHEUS",
@@ -2608,7 +2597,6 @@
   "49180617": "Loky",
   "49353273": "Morodo",
   "51945162": "Nights",
-  "51970773": "Marciano~na~Babilonia",
   "52973903": "qisso",
   "56418387": "GordoSoporte",
   "56965232": "kaiomm",
@@ -2679,60 +2667,9 @@
    "primeira_vez": "2026-11-08T02:41:27Z",
    "proxima": "2026-11-10T10:41:29Z",
    "tentativas": 13
-  },
-  "9083533378": {
-   "inicio": 1794251222,
-   "pedido_em": "2026-11-09T22:41:30Z",
-   "primeira_vez": "2026-11-09T22:41:29Z",
-   "proxima": "2026-11-09T23:11:29Z",
-   "tentativas": 0
-  },
-  "9083598066": {
-   "inicio": 1794254476,
-   "pedido_em": "2026-11-09T22:41:33Z",
-   "primeira_vez": "2026-11-09T22:41:31Z",
-   "proxima": "2026-11-09T23:11:31Z",
-   "tentativas": 0
-  },
-  "9083605926": {
-   "inicio": 1794254907,
-   "pedido_em": "2026-11-09T22:41:35Z",
-   "primeira_vez": "2026-11-09T22:41:34Z",
-   "proxima": "2026-11-09T23:11:34Z",
-   "tentativas": 0
-  },
-  "9083663194": {
-   "inicio": 1794258362,
-   "pedido_em": "2026-11-09T22:41:37Z",
-   "primeira_vez": "2026-11-09T22:41:36Z",
-   "proxima": "2026-11-09T23:11:36Z",
-   "tentativas": 0
-  },
-  "9083672354": {
-   "inicio": 1794258996,
-   "pedido_em": "2026-11-09T22:44:42Z",
-   "primeira_vez": "2026-11-09T22:41:38Z",
-   "proxima": "2026-11-09T23:11:38Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T19:42:30Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2603
-  },
   {
    "basicas": 0,
    "chamadas": 2,
@@ -3478,6 +3415,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2543
+  },
+  {
+   "basicas": 0,
+   "chamadas": 6,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-09T23:21:18Z",
+   "novas": 5,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2994,
+    "minuto": 54
+   },
+   "sobra_do_dia": 2537
   }
  ],
  "uso": {
@@ -3494,6 +3447,6 @@
   "2026-11-06": 1312,
   "2026-11-07": 206,
   "2026-11-08": 229,
-  "2026-11-09": 257
+  "2026-11-09": 263
  }
 }
