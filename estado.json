@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-10T05:01:20Z",
+  "quando": "2026-11-10T05:41:15Z",
   "restante": {
-   "dia": 2995,
-   "minuto": 55
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -459,7 +459,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-10T05:01:16Z",
+   "em": "2026-11-10T05:41:15Z",
    "partidas": {
     "9063540993": 1793050571,
     "9063567259": 1793052486,
@@ -703,15 +703,6 @@
   }
  },
  "lo": {
-  "9039367119": {
-   "companheiros": [
-    103161920,
-    120749445,
-    227676886,
-    1000265186
-   ],
-   "inicio": 1791695271
-  },
   "9039417589": {
    "companheiros": [
     93064519,
@@ -2338,7 +2329,6 @@
   "1019756848": "darckness",
   "102212531": "mat1aek-",
   "103098079": "Véio",
-  "103161920": "Mgr. Vicuña",
   "103594857": "DanDanDoMel",
   "103866021": "Alucarde",
   "104167138": "ΩHetzεl©Kill.Mαsτ€я®♣",
@@ -2381,7 +2371,6 @@
   "120391656": "Mwins",
   "120460127": "El pintor austriaco is back",
   "120604854": "ᵗʷᶦᵗᶜʰ PêagáAfonso",
-  "120749445": "Crown Clown",
   "121094559": "Desastroso",
   "121382254": "W i i Gar\"",
   "121469682": "kOyOte ︻デ 一:",
@@ -2478,7 +2467,6 @@
   "214666857": "yux.nix",
   "214803129": ":* **.♥HU$KÂ®♥½.** :*",
   "215148345": "Furemen_26",
-  "227676886": "BOMB MAN",
   "233221455": "Federoso O.o",
   "233537899": "NoX",
   "239728989": "MenuZZera   xD",
@@ -2612,22 +2600,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-09T01:41:13Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2793
-  },
   {
    "basicas": 0,
    "chamadas": 17,
@@ -3373,6 +3345,22 @@
     "minuto": 55
    },
    "sobra_do_dia": 2728
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-10T05:41:15Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2727
   }
  ],
  "uso": {
@@ -3389,6 +3377,6 @@
   "2026-11-07": 206,
   "2026-11-08": 229,
   "2026-11-09": 263,
-  "2026-11-10": 72
+  "2026-11-10": 73
  }
 }
