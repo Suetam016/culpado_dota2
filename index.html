@@ -106,7 +106,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 .pq-jog li:not(:last-child)::after{content:"";position:absolute;left:calc(3.2em + 7px);top:17px;bottom:0;width:1px;background:color-mix(in srgb,var(--pq) 35%,transparent)}
 .pq-jog li>div{padding-left:18px}
 .pq-jog-t{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--muted);text-align:right;padding-top:1px}
-/* ---- Peças novas do veredito (?pecas=1): ficha corrida (fc-), reconstituição (rc-), laudo (ld-) ---- */
+/* ---- Peças novas do veredito: ficha corrida (fc-), reconstituição (rc-), laudo (ld-) ---- */
 .pecas-ficha:empty,.pecas-crime:empty{display:none}
 .fc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px 14px;align-items:start}
 .fc-placar{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line-strong);border-radius:6px;overflow:hidden;background:var(--surface)}
@@ -7283,12 +7283,12 @@ if (top.length >= 4) break;
 return top.sort((a, b) => (a.t ?? 1e9) - (b.t ?? 1e9));
 }
 
-// ---------- Peças novas do veredito (aprendidas do Dotaflix), escondidas atrás de ?pecas=1 ----------
+// ---------- Peças novas do veredito (aprendidas do Dotaflix), ligadas para todos ----------
 // Autos do réu: cada lance que pesou contra (agravante) ou a favor (atenuante), com a cena e o que devia ter feito.
 // Ficha corrida: o placar de agravantes, gravíssimos e atenuantes (clicável) e a parede da cela.
 // Reconstituição: o ouro do time no tempo, com os lances do réu e o mapa (torres, Roshan); cada lance abre o replay.
 // Laudo pericial: régua da posição (meta/posicao.json) no parecer completo.
-const PECAS_NOVAS = (() => { try { return new URLSearchParams(location.search).get('pecas') === '1'; } catch (e) { return false; } })();
+const PECAS_NOVAS = true; // peças do veredito (ficha corrida, reconstituição, laudo) valem pra todo mundo
 
 const AUTOS_DEVIA_SEM_HORA = {
 rotacoes: 'Quando o mid deles some da rota, avisar e ir atrás: ward no rio e TP pronto.',
