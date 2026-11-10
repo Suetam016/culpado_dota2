@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-10T17:02:04Z",
+  "quando": "2026-11-10T17:41:19Z",
   "restante": {
-   "dia": 2994,
-   "minuto": 56
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -458,7 +458,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-10T17:01:39Z",
+   "em": "2026-11-10T17:41:19Z",
    "partidas": {
     "9063540993": 1793050571,
     "9063567259": 1793052486,
@@ -700,15 +700,6 @@
   }
  },
  "lo": {
-  "9040474096": {
-   "companheiros": [
-    70181495,
-    100817932,
-    241782761,
-    1254464470
-   ],
-   "inicio": 1791738495
-  },
   "9040531117": {
    "companheiros": [
     82651314,
@@ -2290,7 +2281,6 @@
   "100112408": "Jurupa",
   "100151959": "Grampo",
   "100722951": "Neoxa.Mauwek",
-  "100817932": "General",
   "1008435916": "MEIY",
   "1016615889": "ychigo.kurosaky",
   "101716841": "victeck",
@@ -2500,7 +2490,6 @@
   "63232443": "virτuaL ↯",
   "672861582": "NeonEagle6775",
   "69874576": "Petris",
-  "70181495": "Mestre Splinter",
   "71861775": "s4x",
   "728280074": "elói",
   "748007181": "NegoBrimba 3.0",
@@ -2561,22 +2550,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 16,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-09T12:41:14Z",
-   "novas": 0,
-   "pedidos": 2,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2966,
-    "minuto": 26
-   },
-   "sobra_do_dia": 2654
-  },
   {
    "basicas": 0,
    "chamadas": 3,
@@ -3328,6 +3301,22 @@
     "minuto": 56
    },
    "sobra_do_dia": 2617
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-10T17:41:19Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2616
   }
  ],
  "uso": {
@@ -3344,6 +3333,6 @@
   "2026-11-07": 206,
   "2026-11-08": 229,
   "2026-11-09": 263,
-  "2026-11-10": 183
+  "2026-11-10": 184
  }
 }
