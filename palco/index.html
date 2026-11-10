@@ -357,7 +357,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </defs>
 </svg>
 <header class="topo">
-<div class="palco-marca"><img src="palco/logo.svg" alt="O Culpado"></div>
+
   <div class="topo-inner">
     <a class="ir-ranking" href="ranking/" title="Liga dos grupos"><span aria-hidden="true">🏆</span><span class="ir-ranking-txt">Liga dos grupos</span></a>
     <div class="marca">
@@ -379,36 +379,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button type="button" class="letreiro-x" id="letreiro-fechar" aria-label="Fechar aviso">×</button>
   </div>
 </div>
-<section class="home" id="home" aria-labelledby="home-titulo">
-  <div class="home-hero">
-    <p class="home-eyebrow">O tribunal das suas partidas de Dota 2</p>
-    <h2 id="home-titulo">Quem perdeu o jogo <em>pra vocês?<a class="home-splash" id="home-splash" href="ranking/#liga" hidden><span></span></a></em></h2>
-    <p class="home-sub">Cole o ID da partida e o tribunal decide: o culpado, os craques e o replay dos lances no mapinha. De graça.</p>
-    <form class="home-busca" id="home-busca" role="search" autocomplete="off">
+<section class="home palco-home" id="home" aria-labelledby="home-titulo">
+  <div class="palco-luz" aria-hidden="true"></div>
+  <div class="palco-hero">
+    <img class="palco-logo" src="palco/logo.svg" alt="O Culpado">
+    <p class="palco-eyebrow">Tribunal de partidas de Dota 2</p>
+    <h2 id="home-titulo" class="palco-titulo">Quem perdeu o jogo <span>pra vocês?</span></h2>
+    <p class="palco-sub">Cole o ID da partida. Em segundos o martelo bate e mostra o culpado, com prova.</p>
+    <form class="home-busca palco-busca" id="home-busca" role="search" autocomplete="off">
       <label><span class="sr-only">ID da partida</span><input id="home-id" inputmode="numeric" placeholder="ID da partida, ex.: 9041118764"></label>
-      <button class="botao" type="submit">Julgar partida</button>
+      <button class="botao" type="submit">Bater o martelo</button>
     </form>
     <p class="home-erro" id="home-erro" role="alert"></p>
-    <p class="home-ajuda">O ID aparece no fim da partida, no placar do Dota, e no seu histórico no OpenDota ou Dotabuff.</p>
+    <a id="home-splash" href="ranking/#liga" hidden><span></span></a><div class="letreiro" id="home-letreiro" hidden><div class="letreiro-inner"><span class="letreiro-tag">Novo</span><div class="letreiro-janela" id="letreiro-janela"></div><span class="letreiro-pontos" id="letreiro-pontos"></span><button type="button" class="letreiro-x" id="letreiro-fechar" aria-label="Fechar aviso">×</button></div></div><button type="button" id="home-pedir-grupo" hidden></button><button type="button" data-ir="exemplo" hidden></button><button type="button" data-ir="replay" hidden></button>
+    <p class="palco-mini">Grátis · sem cadastro · O ID aparece no fim da partida, no placar do Dota e no seu histórico.</p>
     <p class="home-atalhos"><button type="button" class="home-link" id="home-exemplo">Ver uma partida de exemplo</button><span id="home-ultima" hidden> · <button type="button" class="home-link" id="home-ultima-btn"></button></span></p>
   </div>
-  <div class="home-cartoes">
-    <button type="button" class="home-cartao" data-ir="exemplo">
-      <span class="home-foto"><img src="img/home-veredito.jpg" alt="Boletim de ocorrência do culpado de uma partida" width="640" height="366" loading="lazy"></span>
-      <span class="home-cartao-txt"><strong>O veredito</strong><span>Um culpado, um documento: B.O., cartaz de procurado ou mandado da Interpol, conforme o tamanho do estrago.</span></span>
-    </button>
-    <button type="button" class="home-cartao" data-ir="replay">
-      <span class="home-foto"><img src="img/home-replay.jpg" alt="Replay animado do mapinha com os heróis" width="480" height="480" loading="lazy"></span>
-      <span class="home-cartao-txt"><strong>O replay no mapinha</strong><span>Os lances que decidiram o jogo, animados no mapa: o Play e o Throw of the Game, com som.</span></span>
-    </button>
-    <a class="home-cartao" href="ranking/">
-      <span class="home-foto"><img src="img/home-ranking.jpg" alt="Liga dos grupos: o ranking do grupo Marocas" width="640" height="353" loading="lazy"></span>
-      <span class="home-cartao-txt"><strong>A liga dos grupos</strong><span>Os grupos que jogam juntos, com o MMR da semana, o craque e o culpado de cada um. Clique no grupo para ver a Bolsa e o ranking dele.</span></span>
-    </a>
+  <div class="palco-passos">
+    <div><i>1</i><b>Cole o ID</b><span>Ele aparece no fim da partida e no seu histórico.</span></div>
+    <div><i>2</i><b>O martelo bate</b><span>A gente lê a partida inteira e aponta um culpado.</span></div>
+    <div><i>3</i><b>Mande no grupo</b><span>O veredito já sai pronto para o WhatsApp.</span></div>
   </div>
-  <div class="home-grupo">
-    <div><strong>Quer o seu grupo na liga?</strong><span>É de graça enquanto estamos em teste. Basta o ID de uma partida que vocês jogaram juntos.</span></div>
-    <button type="button" class="botao secundario" id="home-pedir-grupo">Quero o meu grupo</button>
+  <div class="palco-recebe">
+    <div><span class="k">O veredito</span><b>Um culpado, com prova</b><span>Quanto da derrota é de cada um e os lances que pesaram.</span></div>
+    <div><span class="k">O replay</span><b>O lance no mapinha</b><span>O throw e a jogada do jogo, animados.</span></div>
+    <div><span class="k">A liga</span><b>Seu grupo no ranking</b><span>MMR da semana, o craque e o culpado de cada grupo.</span></div>
+  </div>
+  <div class="palco-plano">
+    <div><span class="k">Hoje</span><b>Grátis</b><span>Vereditos ilimitados, replay e liga dos grupos.</span></div>
+    <div class="pago"><span class="k">Em breve</span><b>Grupo Premium · R$ 9,90/mês</b><span>Histórico do grupo, temporadas e troféus.</span></div>
   </div>
 </section>
 <div class="status" id="status" aria-live="polite"></div>
