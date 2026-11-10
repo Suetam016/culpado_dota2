@@ -1,16 +1,30 @@
 /* Página paralela "Palco" (teste). Não indexada. Só visual: a lógica é a do index.html. */
-:root { --palco-vermelho: #d93a2b; --palco-preto: #0a0a0a; }
-html, body {
-  background: var(--palco-preto) !important;
-  color: #fff;
+:root {
+  --font-display: "Archivo Black", sans-serif;
+  --font-body: "Archivo", sans-serif;
+  --font-mono: "Archivo Narrow", sans-serif;
+  --palco-vermelho: #d93a2b;
 }
+html, body { background: #0a0a0a !important; color: #fff !important; }
 body::before {
-  content: "";
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse 60% 45% at 50% 20%, rgba(255,255,255,.10), transparent 70%);
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 55% 40% at 50% 0%, rgba(255,255,255,.22), transparent 70%);
 }
+.palco-marca { text-align: center; padding: 28px 16px 8px; position: relative; z-index: 1; }
+.palco-marca img { width: min(260px, 60vw); height: auto; }
+.topo, header.topo { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+main, section, .home, .pagina, .cartao, .bloco, .silhueta {
+  background: transparent !important; color: #fff !important;
+}
+h1, h2, h3 { font-family: var(--font-display) !important; text-transform: uppercase; letter-spacing: .02em; color: #fff !important; }
+.home-cartao, .cartao, .bloco { border: 1px solid #222 !important; background: #111 !important; }
+button, .home-link, a.botao, .btn {
+  background: var(--palco-vermelho) !important; color: #fff !important; border: 0 !important;
+  font-family: var(--font-display) !important; text-transform: uppercase; border-radius: 0 !important;
+}
+p, li, span, small { color: #ddd; }
 .palco-tag {
   position: fixed; top: 8px; right: 10px; z-index: 9999;
   font: 700 11px/1 "Archivo Narrow", sans-serif; letter-spacing: .12em;
-  color: #fff; background: var(--palco-vermelho); padding: 5px 8px; border-radius: 3px;
+  color: #fff; background: var(--palco-vermelho); padding: 5px 8px;
 }
