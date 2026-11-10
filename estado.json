@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-10T22:41:23Z",
+  "quando": "2026-11-10T23:21:19Z",
   "restante": {
-   "dia": 2995,
-   "minuto": 55
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -460,9 +460,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-10T22:41:19Z",
+   "em": "2026-11-10T23:21:18Z",
    "partidas": {
-    "9063599534": 1793055231,
     "9063627402": 1793058056,
     "9063656098": 1793061302,
     "9063691146": 1793065342,
@@ -701,15 +700,6 @@
   }
  },
  "lo": {
-  "9040913972": {
-   "companheiros": [
-    77621319,
-    149153157,
-    799841855,
-    1075339011
-   ],
-   "inicio": 1791758812
-  },
   "9040983293": {
    "companheiros": [
     104538589,
@@ -2326,7 +2316,6 @@
   "142965109": "mutty™",
   "148131975": "Borys o Dragão de Athas",
   "148364503": "Manaos Man",
-  "149153157": "LARGA TIXA",
   "150437875": "kludd",
   "152767398": "og8",
   "153197325": "VINI",
@@ -2449,7 +2438,6 @@
   "77621319": "Jalim",
   "78321070": "Sparking York Shire",
   "79114090": "Moor",
-  "799841855": "ßµÐ",
   "805395786": "NagatO_xd",
   "80626598": "lezardfleck",
   "80989545": "Thatoso",
@@ -2494,27 +2482,11 @@
    "inicio": 1794093165,
    "pedido_em": "2026-11-08T02:41:28Z",
    "primeira_vez": "2026-11-08T02:41:27Z",
-   "proxima": "2026-11-10T23:01:28Z",
-   "tentativas": 14
+   "proxima": "2026-11-11T11:21:19Z",
+   "tentativas": 15
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-09T18:41:19Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2600
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -3266,6 +3238,22 @@
     "minuto": 55
    },
    "sobra_do_dia": 2568
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-10T23:21:17Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2566
   }
  ],
  "uso": {
@@ -3282,6 +3270,6 @@
   "2026-11-07": 206,
   "2026-11-08": 229,
   "2026-11-09": 263,
-  "2026-11-10": 232
+  "2026-11-10": 234
  }
 }
