@@ -84,14 +84,14 @@
       .map(function (u) { return [Math.round((u[0] - T0) * 10) / 10, iDeK[u[1]], hab[u[2]][0], hab[u[2]][2], u[3] != null && u[3] >= 0 && iDeK[u[3]] != null ? iDeK[u[3]] : -1, hab[u[2]][1] || '']; });
     var dano = (mapa.dano || []).filter(function (d) { return dentro(d[0]) && iDeK[d[1]] != null && iDeK[d[2]] != null; })
       .map(function (d) { return [d[0] - T0, iDeK[d[1]], iDeK[d[2]], d[3], d[4] >= 0 && hab[d[4]] ? hab[d[4]][0] : '']; });
-    var abates = [], mortes = ordem.map(function () { return []; }), antes = [0, 0];
+    var abates = [], mortes = ordem.map(function () { return []; }), antes = [0, 0], meusAntes = 0;
     (m.players || []).forEach(function (p, pi) {
       var ik = iDeIdx[pi];
       (p.kills_log || []).forEach(function (k) {
         var v = npcDe[k.key]; if (v == null || ik == null) return;
         mortes[v].push(k.time);
         if (dentro(k.time)) abates.push([k.time - T0, ik, v]);
-        else if (k.time < T0) antes[jog[pi].radiant ? 0 : 1]++;
+        else if (k.time < T0) { antes[jog[pi].radiant ? 0 : 1]++; if (ik === 0) meusAntes++; }
       });
     });
     abates.sort(function (a, b) { return a[0] - b[0]; });
@@ -130,7 +130,7 @@
       return row;
     });
     return { T0: T0, N: N, final: final, NAK: NAK, ordem: ordem, herois: ordem.map(slugDe), nomes: ordem.map(function (j) { return j.nome; }), heroiNome: ordem.map(function (j) { return (j.heroi && j.heroi.nome) || '?'; }),
-      pos: pos, ev: ev, dano: dano, abates: abates, pred: pred, est: est, vivo: vivo,
+      pos: pos, ev: ev, dano: dano, abates: abates, meusAntes: meusAntes, pred: pred, est: est, vivo: vivo,
       placar0: antes, radiant: carry.radiant, raw: m.players[carry.idx] || {} };
   }
 
@@ -270,7 +270,7 @@
     var plc = h('div', 'plc'); var nRad = h('span', 'n'), nDire = h('span', 'n');
     plc.append(h('span', 't', ab3(true)), nRad, nDire, h('span', 't', ab3(false)));
     topo.append(vin, vivoEl, plc);
-    var chips = h('div', 'pl-chips'); var cAb = h('b', '', '0'), cPr = h('b', '', '0');
+    var chips = h('div', 'pl-chips'); var cAb = h('b', '', String(D.meusAntes)), cPr = h('b', '', '0');
     var d1 = h('div'); d1.append(cAb, 'ABATES'); var d2 = h('div'); d2.append(cPr, 'PRÉDIOS'); chips.append(d1, d2);
     var gc = h('div', 'pl-gc'); var nm = h('div', 'nome'); var foto = h('img'); foto.alt = ''; foto.src = BASE + 'img/herois/' + D.herois[NAK] + '.png'; nm.append(foto, nick);
     if (nick.length > 11) nm.style.fontSize = Math.max(3.4, 7.6 * 11 / nick.length).toFixed(2) + 'cqw'; // nick comprido cabe na tarja
@@ -589,7 +589,7 @@
     function eventos(a, b) {
       var cruza = function (x) { return x > a && x <= b; };
       D.abates.forEach(function (k) { if (!cruza(k[0])) return; var rad = (k[1] < 5) === D.radiant; if (rad) placar[0]++; else placar[1]++; pulsar(rad ? nRad : nDire, placar[rad ? 0 : 1]);
-        if (k[1] === NAK) { estrago.ab++; pulsar(cAb, estrago.ab); carimbos.push({ txt: 'ABATE CONFIRMADO', sub: D.heroiNome[k[2]] + ' (' + String(D.nomes[k[2]]).trim() + ')', cor: '#d81e1e', vida: 0, max: 2.1 }); }
+        if (k[1] === NAK) { estrago.ab++; pulsar(cAb, D.meusAntes + estrago.ab); carimbos.push({ txt: 'ABATE CONFIRMADO', sub: D.heroiNome[k[2]] + ' (' + String(D.nomes[k[2]]).trim() + ')', cor: '#d81e1e', vida: 0, max: 2.1 }); }
         var pv = pos(k[2], k[0]); explosao(pv[0], pv[1], false); });
       D.est.forEach(function (e) { if (e[4] === null || e[4] < 0 || !cruza(e[4])) return; explosao(e[1], e[2], e[3] === 'fort');
         var mir = D.pred.some(function (p) { return Math.abs(p[0] - e[4]) < 1 && p[1] === NAK && p[2] === e[0]; }); if (mir) { estrago.pr++; pulsar(cPr, estrago.pr); }
@@ -598,11 +598,11 @@
       GC.forEach(function (x) { if (cruza(x[0])) { sub.textContent = x[1]; sub.classList.remove('nova'); void sub.offsetWidth; sub.classList.add('nova'); } });
     }
     function mostrarFala(txt) { falaTx.textContent = txt; fala.classList.remove('nova'); void fala.offsetWidth; fala.classList.add('nova'); }
-    function pulsar(n, v) { n.textContent = v; n.classList.remove('pulso'); void n.offsetWidth; n.classList.add('pulso'); }
+    function pulsar(n, v) { n.textContent = v; n.classList.remove('pl-pulsa'); void n.offsetWidth; n.classList.add('pl-pulsa'); }
 
     // ----- laço
     var t = 0, ant = null;
-    function reset() { t = 0; cam = null; parts = []; carimbos = []; placar = D.placar0.slice(); estrago = { ab: 0, pr: 0 }; nRad.textContent = placar[0]; nDire.textContent = placar[1]; cAb.textContent = 0; cPr.textContent = 0; sub.textContent = GC[0][1]; falaTx.textContent = ''; fimHold = 0; ultimoModo = 'normal'; }
+    function reset() { t = 0; cam = null; parts = []; carimbos = []; placar = D.placar0.slice(); estrago = { ab: 0, pr: 0 }; nRad.textContent = placar[0]; nDire.textContent = placar[1]; cAb.textContent = D.meusAntes; cPr.textContent = 0; sub.textContent = GC[0][1]; falaTx.textContent = ''; fimHold = 0; ultimoModo = 'normal'; }
     function loop(ms) {
       if (!tocando) return; if (!caixa.isConnected) { parar(false); return; }
       if (ant === null) ant = ms; var dt = Math.min(.1, (ms - ant) / 1000); ant = ms;
