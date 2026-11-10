@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-10T01:31:56Z",
+  "quando": "2026-11-10T02:01:21Z",
   "restante": {
-   "dia": 2998,
-   "minuto": 58
+   "dia": 2994,
+   "minuto": 54
   }
  },
  "desistencias": {
@@ -459,9 +459,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-10T01:31:54Z",
+   "em": "2026-11-10T02:01:16Z",
    "partidas": {
-    "9062297114": 1792979805,
     "9062321346": 1792982370,
     "9062351268": 1792985595,
     "9063540993": 1793050571,
@@ -705,15 +704,6 @@
   }
  },
  "lo": {
-  "9039209488": {
-   "companheiros": [
-    27376824,
-    111257540,
-    177711427,
-    241782761
-   ],
-   "inicio": 1791683056
-  },
   "9039242123": {
    "companheiros": [
     111257540,
@@ -2482,7 +2472,6 @@
   "176383419": "Nego",
   "177095272": "THE RETURN",
   "177260869": "Mateo tu especial",
-  "177711427": "Spy #Woz",
   "178048658": "FMV GoiabaManca",
   "178422984": "Change of Heart",
   "17935045": "sH0Cx!",
@@ -2521,7 +2510,6 @@
   "25734425": "Steve Jobs *",
   "258121999": "RLM",
   "26668150": "3rvinha",
-  "27376824": "Leemssegit_451",
   "274323496": "NumbeR_OnE",
   "274480448": "Rem",
   "278089376": "MaX",
@@ -2644,60 +2632,9 @@
    "primeira_vez": "2026-11-08T02:41:27Z",
    "proxima": "2026-11-10T10:41:29Z",
    "tentativas": 13
-  },
-  "9083710920": {
-   "inicio": 1794261966,
-   "pedido_em": "2026-11-10T01:23:05Z",
-   "primeira_vez": "2026-11-10T01:23:04Z",
-   "proxima": "2026-11-10T01:53:04Z",
-   "tentativas": 0
-  },
-  "9083712389": {
-   "inicio": 1794262092,
-   "pedido_em": "2026-11-10T01:23:07Z",
-   "primeira_vez": "2026-11-10T01:23:06Z",
-   "proxima": "2026-11-10T01:53:06Z",
-   "tentativas": 0
-  },
-  "9083739539": {
-   "inicio": 1794264821,
-   "pedido_em": "2026-11-10T01:23:10Z",
-   "primeira_vez": "2026-11-10T01:23:09Z",
-   "proxima": "2026-11-10T01:53:09Z",
-   "tentativas": 0
-  },
-  "9083771700": {
-   "inicio": 1794268416,
-   "pedido_em": "2026-11-10T01:23:11Z",
-   "primeira_vez": "2026-11-10T01:23:10Z",
-   "proxima": "2026-11-10T01:53:10Z",
-   "tentativas": 0
-  },
-  "9083773896": {
-   "inicio": 1794268681,
-   "pedido_em": "2026-11-10T01:23:14Z",
-   "primeira_vez": "2026-11-10T01:23:12Z",
-   "proxima": "2026-11-10T01:53:12Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-08T22:41:11Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2585
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -3443,6 +3380,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2774
+  },
+  {
+   "basicas": 0,
+   "chamadas": 6,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-10T02:01:15Z",
+   "novas": 5,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2994,
+    "minuto": 54
+   },
+   "sobra_do_dia": 2768
   }
  ],
  "uso": {
@@ -3459,6 +3412,6 @@
   "2026-11-07": 206,
   "2026-11-08": 229,
   "2026-11-09": 263,
-  "2026-11-10": 26
+  "2026-11-10": 32
  }
 }
