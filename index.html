@@ -14310,6 +14310,11 @@ const CRIMES_DO_NIVEL = [
 ['Genocídio de creeps aliados', 'Extermínio do próprio MMR', 'Crimes contra a humanidade e contra o Ancient', 'Destruição em massa da paz do grupo'],
 ];
 
+// Apelido de feed (Doador Universal, Rei do Feed, Tela Cinza...) só para quem morreu muito. Feedback de 09/11: um 8/4
+// virou "Doador Universal" porque o apelido era sorteado sem olhar as mortes.
+const APELIDO_DE_FEED = /feed|doador|patroc|tela (cinza|preta)|respawn|morre|caixa eletr|banco central|bounty|delivery|benfeitor|garçom|papai noel|ministro da fazenda|investidor|fiador|fiel da fonte|iluminado|mártir/i;
+const morreuMuito = (p) => { const d = (p.raw && p.raw.deaths) || 0; return d >= 8 || (d >= 6 && d > ((p.raw && p.raw.kills) || 0)); };
+const apelidosPara = (lista, p) => (morreuMuito(p) ? lista : lista.filter((a) => !APELIDO_DE_FEED.test(a)));
 const ALCUNHAS = ['De Mentalist', 'O Patrocinador', 'Mão de Alface', 'O Fantasma da Lane', 'Doador Universal', 'O Turista', 'Rei do Feed', 'Buyback Nunca',
 'O Cego do Rio', 'Courier Humano', 'O Arquiteto da Derrota', 'Pé Frio', 'Banco Central do Inimigo', 'O Desaparecido', 'Tela Cinza',
 'O Contador de Respawn', 'Bounty Ambulante', 'Caixa Eletrônico', 'O Benfeitor', 'Garçom do Inimigo', 'Papai Noel do Rio', 'Mão Furada',
@@ -14396,7 +14401,7 @@ const local = { safe: 'Rota segura', mid: 'Rota do meio', off: 'Offlane' }[p.rot
 return {
 p, v, rnd, local,
 acusacoes: acusacoesDe(v, nivel, rnd, r),
-alcunha: rnd.um(ALCUNHAS),
+alcunha: rnd.um(apelidosPara(ALCUNHAS, p)),
 paradeiro: rnd.um(PARADEIROS),
 entregue: ouroEntregue(r, p),
 kda: `${p.raw.kills}/${p.raw.deaths}/${p.raw.assists}`,
@@ -14557,8 +14562,9 @@ const pick = [...fortes.slice(0, n)];
 while (pick.length < n) { const x = rnd.um(xs); if (!pick.includes(x)) pick.push(x); else break; }
 return pick;
 };
-const alcunhas = cs.map(() => rnd.um(ALCUNHAS_FAROESTE));
-if (dividido && alcunhas[1] === alcunhas[0]) alcunhas[1] = ALCUNHAS_FAROESTE[(ALCUNHAS_FAROESTE.indexOf(alcunhas[0]) + 1) % ALCUNHAS_FAROESTE.length];
+const listasAlc = fichas.map((f) => apelidosPara(ALCUNHAS_FAROESTE, f.p));
+const alcunhas = listasAlc.map((l) => rnd.um(l));
+if (dividido && alcunhas[1] === alcunhas[0]) alcunhas[1] = listasAlc[1][(listasAlc[1].indexOf(alcunhas[0]) + 1) % listasAlc[1].length];
 const quadro = (f, i) => h('div', { class: 'wt-reu' },
 h('div', { class: 'wt-quadro' }, fotoDe(f.p, true)),
 h('p', { class: 'wt-nome' }, f.p.nome),
@@ -14812,7 +14818,7 @@ visao: ['Apagão', 'Breu', 'Boca de Ward', 'Zé do Escuro'], participacao: ['Tor
 function vulgoDoBO(f, r) {
 const rnd = sorteador(`vulgo-${r.partida.id}-${f.p.idx}`, r.partida.id);
 const k = ((f.v.pesou && f.v.pesou[0]) || {}).key;
-return VULGOS_POR_CULPA[k] && rnd.num(0, 1) ? rnd.um(VULGOS_POR_CULPA[k]) : rnd.um(VULGOS_BO);
+return VULGOS_POR_CULPA[k] && (k !== 'mortes' || morreuMuito(f.p)) && rnd.num(0, 1) ? rnd.um(VULGOS_POR_CULPA[k]) : rnd.um(apelidosPara(VULGOS_BO, f.p));
 }
 
 // tudo que as frases precisam saber de um autor
@@ -14843,6 +14849,9 @@ k1, k2: chaves.find((k) => k !== k1),
 
 // o que o autor fez (oração que cabe depois de "o autor ...")
 const FATOS_BO = {
+mortesPoucas: [(c) => `morreu só ${c.d} vezes, mas justamente nas horas que mais custaram ao time`,
+(c) => `caiu ${c.d} vezes, poucas, mas sempre na hora errada, entregando ouro e tempo ao time adversário`,
+(c) => `morreu ${c.d} vezes, cada uma num momento em que o time precisava dele vivo`],
 mortes: [(c) => `entregou-se ao inimigo por ${c.d} vezes${c.nMatador > 1 ? `, sendo ${c.nMatador} delas para ${c.m}` : ''}`,
 (c) => `passou a morrer de forma reiterada (${c.d} vezes), abastecendo o caixa do time adversário`,
 (c) => `fez ${c.d} doações não declaradas ao inimigo, na forma de mortes`,
@@ -14988,11 +14997,11 @@ const k = c.k1;
 const p = c.p;
 if (k === 'throw') return 'throw';
 if (c.suporte && (['visao', 'ausencia', 'participacao'].includes(k) || (c.w <= 4 && (p.raw.assists || 0) < 10))) return 'suporteOmisso';
-if (c.suporte && ['mortes', 'pickoff', 'snowball', 'rota'].includes(k)) return 'suporteFeeder';
+if (c.suporte && (k === 'rota' || (['mortes', 'pickoff', 'snowball'].includes(k) && morreuMuito(p)))) return 'suporteFeeder';
 if (p.posicao === 1 && ['ausencia', 'participacao', 'farm', 'dano', 'objetivos'].includes(k)) return 'carryOmisso';
 if (p.posicao === 2 && ['rotacoes', 'rota', 'farm', 'dano'].includes(k)) return 'midSumido';
 if (p.posicao === 3 && ['rota', 'ausencia', 'participacao'].includes(k)) return 'offOmisso';
-if (c.d >= 10 || ['mortes', 'snowball', 'pickoff'].includes(k)) return 'feeder';
+if (c.d >= 10 || (['mortes', 'snowball', 'pickoff'].includes(k) && morreuMuito(p))) return 'feeder';
 return 'geral';
 }
 const ENQUADRAMENTOS_BO = {
@@ -15083,7 +15092,8 @@ function historiaDoBO(fichas, r) {
 const cs = fichas.map((f) => contextoDoBO(f, r));
 const rnd = fichas[0].rnd;
 const um = (xs, ...a) => rnd.um(xs)(...a);
-const fato = (c, k) => um(FATOS_BO[k] || FATOS_BO.mortes, c);
+// poucas mortes (8/4 do charlinho, 09/11) não viram "morrer de forma reiterada": a culpa é a hora em que caíram
+const fato = (c, k) => um(k === 'mortes' && !morreuMuito(c.p) ? FATOS_BO.mortesPoucas : FATOS_BO[k] || FATOS_BO.mortes, c);
 const hora = (c) => new Date(dataDaPartida(r).getTime() + c.t1 * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 const quem = (q) => `${q.nome} (${q.heroi.nome}, pos ${q.posicao})`;
 const abertura = rnd.um(['Comparece a esta Delegacia', 'Apresentou-se espontaneamente nesta Unidade', 'Compareceu, visivelmente abalado(a), a esta Delegacia',
@@ -15106,7 +15116,7 @@ um(ENQUADRAMENTOS_BO[arq], c),
 c.k2 ? `Relata ainda que o autor ${fato(c, c.k2)}. ${rnd.um(['Acrescenta: ', 'E desabafa: ', 'Em tom de revolta, completa: '])}“${desabafo(c.k2)}”` : null,
 testemunha(), prejuizo(), `Ouvido, o autor alegou que ${desculpa()} ${rnd.um(FECHOS_BO)}`],
 // 2. flagrante de uma viatura
-() => [`${rnd.um(['Uma guarnição da PM em patrulha de rotina pelo rio', 'Uma viatura da Ronda Ostensiva do Ancient', 'A Delegacia de Repressão ao Feed', 'A equipe tática do Courier Blindado'])}, ao passar pela ${c.rota} por volta das ${hora(c)}, flagrou ${autorVulgo}, utilizando-se do herói ${c.p.heroi.nome}, em plena atividade criminosa. Levantamento posterior apurou que o autor ${fato(c, c.k1)}.`,
+() => [`${rnd.um(['Uma guarnição da PM em patrulha de rotina pelo rio', 'Uma viatura da Ronda Ostensiva do Ancient', ...(morreuMuito(c.p) ? ['A Delegacia de Repressão ao Feed'] : []), 'A equipe tática do Courier Blindado'])}, ao passar pela ${c.rota} por volta das ${hora(c)}, flagrou ${autorVulgo}, utilizando-se do herói ${c.p.heroi.nome}, em plena atividade criminosa. Levantamento posterior apurou que o autor ${fato(c, c.k1)}.`,
 `Abordado, o autor ${rnd.um(['alegou que', 'tentou explicar que', 'jurou que'])} ${desculpa()}`,
 `A vítima, ${vit}, que presenciou tudo, declarou: “${desabafo()}”`,
 c.k2 ? `Em revista, a equipe constatou ainda que o autor ${fato(c, c.k2)}.` : null,
@@ -15136,7 +15146,7 @@ const cenario = cenarioDaDupla(a, b);
 const juntos = cenario === 'coreESuporte' || cenario === 'mesmaRota';
 const vit = vitimas.length ? listaE(vitimas.map((q) => q.nome)) : 'o resto do time';
 const estilo = rnd.num(0, 2); // 0: vítimas comparecem; 1: flagrante; 2: termina em acareação
-paras.push(estilo === 1 ? `${rnd.um(['Uma guarnição da PM', 'A Delegacia de Repressão ao Feed', 'Uma viatura da Ronda Ostensiva do Ancient'])} flagrou, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), agindo em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}. As vítimas, ${vit}, foram ouvidas em seguida.` : `${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
+paras.push(estilo === 1 ? `${rnd.um(['Uma guarnição da PM', ...(morreuMuito(a.p) && morreuMuito(b.p) ? ['A Delegacia de Repressão ao Feed'] : []), 'Uma viatura da Ronda Ostensiva do Ancient'])} flagrou, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), agindo em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}. As vítimas, ${vit}, foram ouvidas em seguida.` : `${abertura.replace(/^Compareceu(?!,)/, 'Compareceram').replace(/^Comparece /, 'Comparecem ').replace(/^Apresentou-se/, 'Apresentaram-se')} as vítimas ${vit}, relatando que, a partir das ${hora(a.t1 <= b.t1 ? a : b)}, a dupla ${a.p.nome}, vulgo “${a.vulgo}” (${a.p.heroi.nome}), e ${b.p.nome}, vulgo “${b.vulgo}” (${b.p.heroi.nome}), passou a agir em concurso de pessoas e com divisão de tarefas: ${juntos ? `dividindo a ${a.rota}, enquanto ${a.p.nome} ${fato(a, a.k1)}, ${b.p.nome} ${fato(b, b.k1)}` : `enquanto ${a.p.nome}, na ${a.rota}, ${fato(a, a.k1)}, ${b.p.nome}, na ${b.rota}, ${fato(b, b.k1)}`}.`);
 paras.push([um(ENQUADRAMENTOS_DUPLA[cenario], a, b), ...AGRAVANTES_DUPLA.map((g) => g(a, b)).filter(Boolean).slice(0, 1)].join(' '));
 paras.push(`Nas palavras de ${vitimas.length ? rnd.um(vitimas).nome : 'uma das vítimas'}: “${um(DESABAFOS_DUPLA, a, b)}”`);
 const extra = [a.k2 ? `${a.p.nome} ${fato(a, a.k2)}` : null, b.k2 ? `${b.p.nome} ${fato(b, b.k2)}` : null].filter(Boolean);
