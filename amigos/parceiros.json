@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-10T21:22:18Z",
+ "atualizadoEm": "2026-11-10T22:02:13Z",
  "desde": "2025-12-21",
  "partidasLidas": 1247,
  "jogadores": {
@@ -1231,9 +1231,9 @@
     {
      "posA": 5,
      "posB": 1,
-     "jogos": 9,
-     "vitorias": 7,
-     "winRate": 78
+     "jogos": 11,
+     "vitorias": 8,
+     "winRate": 73
     },
     {
      "posA": 4,
@@ -1297,8 +1297,8 @@
      "venceu": false,
      "heroiA": 37,
      "heroiB": 49,
-     "posA": null,
-     "posB": null
+     "posA": 5,
+     "posB": 1
     },
     {
      "matchId": 9084785513,
@@ -1306,8 +1306,8 @@
      "venceu": true,
      "heroiA": 33,
      "heroiB": 46,
-     "posA": null,
-     "posB": null
+     "posA": 5,
+     "posB": 1
     },
     {
      "matchId": 9084702404,
@@ -16746,6 +16746,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 46,
+    "pos": 1,
+    "jogos": 4,
+    "vitorias": 2
+   },
+   {
     "heroi": 8,
     "pos": 1,
     "jogos": 4,
@@ -16765,12 +16771,6 @@
    },
    {
     "heroi": 6,
-    "pos": 1,
-    "jogos": 3,
-    "vitorias": 1
-   },
-   {
-    "heroi": 46,
     "pos": 1,
     "jogos": 3,
     "vitorias": 1
@@ -17028,12 +17028,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 46,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
     "heroi": 68,
     "pos": 5,
     "jogos": 1,
@@ -17244,13 +17238,13 @@
     "vitorias": 0
    },
    {
-    "heroi": 25,
-    "pos": 0,
+    "heroi": 49,
+    "pos": 1,
     "jogos": 1,
     "vitorias": 0
    },
    {
-    "heroi": 49,
+    "heroi": 25,
     "pos": 0,
     "jogos": 1,
     "vitorias": 0
@@ -17318,6 +17312,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 37,
+    "pos": 5,
+    "jogos": 4,
+    "vitorias": 2
+   },
+   {
     "heroi": 86,
     "pos": 5,
     "jogos": 4,
@@ -17338,12 +17338,6 @@
    {
     "heroi": 53,
     "pos": 1,
-    "jogos": 3,
-    "vitorias": 2
-   },
-   {
-    "heroi": 37,
-    "pos": 5,
     "jogos": 3,
     "vitorias": 2
    },
@@ -17541,7 +17535,7 @@
    },
    {
     "heroi": 33,
-    "pos": 0,
+    "pos": 5,
     "jogos": 1,
     "vitorias": 1
    },
@@ -17626,12 +17620,6 @@
    {
     "heroi": 138,
     "pos": 1,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 37,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -34157,16 +34145,16 @@
     [
      "1000265186",
      46,
-     0,
-     null,
-     null
+     1,
+     1,
+     1
     ],
     [
      "111257540",
      33,
-     0,
-     null,
-     null
+     5,
+     1,
+     1
     ]
    ]
   },
@@ -34179,16 +34167,16 @@
     [
      "1000265186",
      49,
-     0,
-     null,
-     null
+     1,
+     1,
+     0
     ],
     [
      "111257540",
      37,
-     0,
-     null,
-     null
+     5,
+     1,
+     0
     ]
    ]
   }

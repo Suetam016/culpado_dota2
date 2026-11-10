@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-10T21:22:10.668Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-10T22:02:05.263Z",
+  "semAnalise": 2,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -39,6 +39,18 @@
       "mmrPerdido": 3050
     },
     {
+      "accountId": "111257540",
+      "nome": "Kuscomem",
+      "culpados": 13,
+      "craques": 6,
+      "partidas": 139,
+      "vitorias": 66,
+      "winRate": 47,
+      "streak": "culpado",
+      "mmrGanho": 1650,
+      "mmrPerdido": 1800
+    },
+    {
       "accountId": "26668150",
       "nome": "3rvinha",
       "culpados": 12,
@@ -61,18 +73,6 @@
       "streak": "culpado",
       "mmrGanho": 675,
       "mmrPerdido": 550
-    },
-    {
-      "accountId": "111257540",
-      "nome": "Kuscomem",
-      "culpados": 12,
-      "craques": 6,
-      "partidas": 139,
-      "vitorias": 66,
-      "winRate": 47,
-      "streak": "culpado",
-      "mmrGanho": 1650,
-      "mmrPerdido": 1800
     },
     {
       "accountId": "77621319",
@@ -7545,21 +7545,19 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 33,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.14,
+        "merito": 0.136
       },
       {
         "matchId": 9084847370,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1794340147,
         "comStack": true,
         "ranqueada": true,
         "heroi": 37,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.249,
+        "merito": 0.138
       }
     ],
     "241782761": [
@@ -14328,9 +14326,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 46,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.204,
+        "merito": 0.173
       },
       {
         "matchId": 9084847370,
@@ -14340,9 +14337,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 49,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.092,
+        "merito": 0.241
       }
     ],
     "1254464470": [
@@ -15750,7 +15746,7 @@
     },
     "1000265186": {
       "avatar": "https://avatars.steamstatic.com/740cfa81e42ad1e100c8e53da9db583c7e2dd29b_full.jpg",
-      "rankTier": 61,
+      "rankTier": 62,
       "leaderboard": null
     },
     "1254464470": {
