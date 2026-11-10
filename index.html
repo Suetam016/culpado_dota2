@@ -8029,7 +8029,7 @@ return corpo;
 // Zap: o antigo (áudios curtos, visaoZap) saiu em 06/11/2026; desde 09/11/2026 o id 'zap' é a conversa sorteada
 // (visaoZapConversa, zap/). O evento victory_zap_cenario diz qual cenário saiu.
 const VISOES_VITORIA = [
-{ id: 'zap', nome: 'Grupo do zap', peso: 3, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0 && r.nos.filter((p) => p.conta != null).length >= 2, montar: (r) => visaoZapConversa(r) },
+{ id: 'zap', nome: 'Grupo do zap', peso: 3, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoZapConversa(r) },
 { id: 'documento', nome: 'Documento do mérito', peso: 3, pode: () => true, montar: (r) => documentoDoMerito(r) },
 // Plantão da Selva (no sorteio desde 06/11/2026): helicóptero no fim do replay; sem replay vira o documento
 { id: 'plantao', nome: 'Plantão da Selva', peso: 3, pode: (r) => !SO_EMBUTIDO && r.partida.parseado && craquesDe(r).length > 0, montar: (r) => visaoPlantao(r) },
@@ -8113,7 +8113,7 @@ return caixa;
 // ---------- Zap da vitória (no sorteio desde 09/11/2026): a vitória vira uma conversa do grupo de WhatsApp, sorteada
 // a cada partida entre três cenários (ao vivo com os lances no minuto, resenha com enquete, guerra de figurinha).
 // O roteiro sai de zap/gerador.js (puro: partida + semente) e o celular de zap/zap.js; os dois só baixam quando esta
-// visão abre. Quem fala são os amigos (de algum grupo); random do time aparece como "<herói> random" e não fala.
+// visão abre. Desde 10/11/2026 todo mundo do time fala (amigo de grupo ou não) e não há botão de outra conversa.
 let zapJs = null;
 function carregarZap() {
 if (!zapJs) zapJs = new Promise((ok, erro) => {
@@ -8125,7 +8125,15 @@ return zapJs;
 }
 const ITENS_ZAP = { bfury: 'Battle Fury', ultimate_scepter: 'Aghanim', blink: 'Blink', black_king_bar: 'BKB', radiance: 'Radiance', manta: 'Manta', desolator: 'Desolator', butterfly: 'Butterfly', skadi: 'Skadi', satanic: 'Satanic', abyssal_blade: 'Abyssal', mjollnir: 'Mjollnir', heart: 'Heart', refresher: 'Refresher', sheepstick: 'Scythe', assault: 'Assault Cuirass', shivas_guard: "Shiva's", orchid: 'Orchid', bloodthorn: 'Bloodthorn', maelstrom: 'Maelstrom', glimmer_cape: 'Glimmer', force_staff: 'Force Staff', aether_lens: 'Aether Lens', greater_crit: 'Daedalus', monkey_king_bar: 'MKB', silver_edge: 'Silver Edge', blade_mail: 'Blade Mail', echo_sabre: 'Echo Sabre', harpoon: 'Harpoon', swift_blink: 'Swift Blink', overwhelming_blink: 'Overwhelming Blink', arcane_blink: 'Arcane Blink', hand_of_midas: 'Midas', diffusal_blade: 'Diffusal', disperser: 'Disperser', sange_and_yasha: 'S&Y', kaya_and_sange: 'K&S', yasha_and_kaya: 'Y&K', octarine_core: 'Octarine', travel_boots: 'BoT', aeon_disk: 'Aeon Disk', pipe: 'Pipe', lotus_orb: 'Lotus', guardian_greaves: 'Greaves', spirit_vessel: 'Vessel', vladmir: 'Vladmir', dagon: 'Dagon', ethereal_blade: 'Ethereal', gleipnir: 'Gleipnir', nullifier: 'Nullifier', wind_waker: 'Wind Waker', crimson_guard: 'Crimson', heavens_halberd: 'Halberd', rapier: 'Rapier' };
 // a partida no formato do gerador (o mesmo que o protótipo usava): amigos, heróis, abates com solo, lutas, objetivos, ouro
-function partidaDoZap(r, match, grupos) {
+// todo mundo do time fala (o site é para qualquer um, não só para os grupos): amigo com o nome do grupo, o resto com o
+// nick da Steam, e quem não tem nick público aparece pelo herói
+function nomeNoZap(p) {
+if (p.nome === 'gustavoDotinhaPro') return 'Gustavo';
+const n = String(p.nome || '').trim();
+if (n && n !== 'Anônimo') return n.length > 18 ? `${n.slice(0, 17)}…` : n;
+return (window.GERADOR && window.GERADOR.CURTO[p.heroi.nome]) || p.heroi.nome;
+}
+function partidaDoZap(r, match) {
 const rad = r.partida.ladoRadiant;
 const slug = (p) => (p.heroi.npc || `heroi_${p.heroi.id}`).replace('npc_dota_hero_', '');
 const img = {};
@@ -8135,10 +8143,9 @@ const lugar = {}; // idx da partida -> ['n'|'e', i]
 const nos = r.nos.map((p, i) => {
 const x = p.raw || {};
 foto(p); lugar[p.idx] = ['n', i];
-const amigo = deAlgumGrupo(p.conta, grupos);
 const vistos = new Set();
 const itens = (x.purchase_log || []).filter((c) => ITENS_ZAP[c.key] && c.time > 0 && !vistos.has(c.key) && vistos.add(c.key)).map((c) => [Math.floor(c.time / 60), ITENS_ZAP[c.key]]);
-return { nome: p.nome === 'gustavoDotinhaPro' ? 'Gustavo' : p.nome, amigo: Boolean(amigo), heroi: slug(p), heroiNome: p.heroi.nome, k: x.kills || 0, d: x.deaths || 0, a: x.assists || 0, merito: Math.round((fatia.get(p.idx) || 0) * 1000) / 10, pos: p.posicao || null, wards: (x.obs_placed || 0) + (x.sen_placed || 0), gpm: x.gold_per_min || 0, torre: x.tower_damage || 0, dano: x.hero_damage || 0, itens };
+return { nome: nomeNoZap(p), amigo: true, heroi: slug(p), heroiNome: p.heroi.nome, k: x.kills || 0, d: x.deaths || 0, a: x.assists || 0, merito: Math.round((fatia.get(p.idx) || 0) * 1000) / 10, pos: p.posicao || null, wards: (x.obs_placed || 0) + (x.sen_placed || 0), gpm: x.gold_per_min || 0, torre: x.tower_damage || 0, dano: x.hero_damage || 0, itens };
 });
 const eles = r.eles.map((p, i) => { const x = p.raw || {}; foto(p); lugar[p.idx] = ['e', i]; return { heroi: slug(p), heroiNome: p.heroi.nome, k: x.kills || 0, d: x.deaths || 0, a: x.assists || 0 }; });
 const players = match.players || [];
@@ -8182,7 +8189,7 @@ const caixa = h('article', { class: 'cartao veredito vitoria zap-visao' });
 const espera = h('p', { class: 'zap-aviso' }, 'Abrindo o grupo…');
 const palco = h('div', { class: 'zap-palco' }, espera); // a conversa entra aqui, antes da barra de compartilhar
 caixa.append(palco);
-const virarDocumento = () => { // sem dados do replay ou sem amigos para conversar: a vitória fica com o documento
+const virarDocumento = () => { // sem os dados da partida: a vitória fica com o documento
 const doc = documentoDoMerito(r);
 caixa.className = doc.className;
 Object.assign(caixa.dataset, doc.dataset, { visao: 'documento' });
@@ -8191,9 +8198,8 @@ caixa.replaceChildren(...doc.childNodes);
 };
 const match = estado.dados && estado.dados.match;
 if (!match || String(match.match_id) !== String(r.partida.id)) { setTimeout(virarDocumento); return caixa; }
-Promise.all([carregarGrupos().catch(() => []), carregarZap()]).then(([grupos, Z]) => {
-const M = partidaDoZap(r, match, grupos || []);
-if (M.nos.filter((n) => n.amigo).length < 2) { virarDocumento(); return; }
+carregarZap().then((Z) => {
+const M = partidaDoZap(r, match);
 espera.remove();
 const lado = r.partida.ladoRadiant ? 'radiant' : 'dire';
 Z.montar(palco, M, { semente: 1 + Math.floor(sorteFixa(`zap-${r.partida.id}-${lado}`) * 1e9), tocar: true, livre: () => !document.querySelector('.revelacao'),

@@ -51,13 +51,13 @@ O GTM também espera estes eventos no `dataLayer`, que **o site ainda não envia
 
 Numa vitória, a tela sorteia uma "visão": `documento`, `plantao` e, **desde 09/11/2026, `zap` de novo, agora como
 conversa de WhatsApp sorteada** (pesos iguais). O site envia `dataLayer.push({ event: 'victory_view', victory_view: '<id>', victory_view_switch: <true se a pessoa trocou> })`.
-A visão também fica em `.visao-vitoria[data-visao]`. Quando a partida não tem replay ou o time tem menos de 2 amigos,
-a visão sorteada `zap` vira o documento na tela (como o Plantão sem mapa), mas o `victory_view` já saiu com `zap`.
+A visão também fica em `.visao-vitoria[data-visao]`. Desde 10/11 todo mundo do time fala na conversa (não só os amigos de grupo). Se os dados da partida não
+carregam, a visão sorteada `zap` vira o documento na tela (como o Plantão sem mapa), mas o `victory_view` já saiu com `zap`.
 Elementos ainda sem gatilho: o botão `.trocar-visao` (`data-gtm="vitoria-trocar-visao"`, "Ver em outra tela").
 
-**Zap novo (09/11/2026):** os botões antigos `.zap-play` / `.zap-pedir` (áudio) não existem mais. Novos, sem gatilho:
-`[data-gtm="vitoria-zap-tocar"]` ("Ver chegando", toca a conversa de novo) e `[data-gtm="vitoria-zap-sortear"]`
-("Outra conversa"). Cada conversa montada manda `dataLayer.push({ event: 'victory_zap_cenario', victory_zap_cenario })`,
+**Zap novo (09/11/2026):** os botões antigos `.zap-play` / `.zap-pedir` (áudio) não existem mais. Novo, sem gatilho:
+`[data-gtm="vitoria-zap-tocar"]` ("Ver chegando", toca a conversa de novo). O botão "Outra conversa"
+(`vitoria-zap-sortear`) existiu só em 09/11 e saiu em 10/11: cada vitória tem uma conversa só. Cada conversa montada manda `dataLayer.push({ event: 'victory_zap_cenario', victory_zap_cenario })`,
 com o cenário: `Ao vivo`, `Ao vivo · reta final`, `Resenha com enquete` ou `Guerra de figurinha`.
 `?visao=zap` (ou `documento`, `plantao`) na URL força uma visão, útil para testar.
 

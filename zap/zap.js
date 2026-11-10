@@ -2,7 +2,7 @@
 // O site monta a partida no formato do gerador (index.html, partidaDoZap) e chama ZapConversa.montar(caixa, M, opções).
 // Memória entre conversas: as falas e figurinhas que saíram ficam no navegador (localStorage 'zap-memoria'), e a
 // próxima conversa foge delas enquanto houver opção nova. A semente sai da partida, então a mesma vitória tende a
-// reabrir com a mesma conversa; o 🎲 sorteia outra.
+// reabrir com a mesma conversa.
 (function (root) {
 const CHAVE = 'zap-memoria';
 const MAX_MEMORIA = 360; // ~10 conversas
@@ -76,8 +76,7 @@ function montar(alvo, M, opc = {}) {
     pin, strip, chat,
     el('div', { class: 'wa-bottom', 'aria-hidden': 'true' }, el('div', { class: 'z-campo' }, 'Mensagem'), el('div', { class: 'z-mic' }, '🎤')));
   const btPlay = el('button', { class: 'z-play', type: 'button', 'data-gtm': 'vitoria-zap-tocar' }, '▶ Ver chegando');
-  const btDado = el('button', { type: 'button', 'data-gtm': 'vitoria-zap-sortear' }, '🔄 Outra conversa');
-  alvo.append(el('div', { class: 'zap-ctrl' }, btPlay, btDado), phone);
+  alvo.append(el('div', { class: 'zap-ctrl' }, btPlay), phone); // uma conversa só por vitória: sem botão de sortear outra
 
   let g = null; let rodada = 0;
   const est = { ultimo: null, ids: {}, polls: {}, hora: '' };
@@ -179,11 +178,9 @@ function montar(alvo, M, opc = {}) {
     if (minha === rodada) { subG.textContent = g.sub; subG.classList.remove('ativo'); btPlay.textContent = '▶ Ver chegando'; }
   }
 
-  let anterior = [];
   function sortear(semente) {
-    const evitar = evitarPara(M.id); anterior.forEach((k) => evitar.add(k)); // o 🎲 também foge da conversa que estava na tela
+    const evitar = evitarPara(M.id);
     g = root.GERADOR.gerar(M, semente, opc.cenario || undefined, evitar);
-    anterior = g.memoria || [];
     g.ev = expandir(g.ev);
     lembrar(g.memoria || [], M.id);
     phone.dataset.cenario = g.cenario;
@@ -191,7 +188,6 @@ function montar(alvo, M, opc = {}) {
     if (opc.aoSortear) opc.aoSortear(g);
   }
   btPlay.addEventListener('click', tocar);
-  btDado.addEventListener('click', () => sortear(1 + Math.floor(Math.random() * 1e9)));
   sortear(opc.semente || 1);
   // a conversa vai chegando quando o celular aparece na tela pela primeira vez (antes disso fica tudo à mostra)
   if (opc.tocar && 'IntersectionObserver' in window) {
