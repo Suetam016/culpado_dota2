@@ -1,3 +1,22 @@
 SLF4J(W): No SLF4J providers were found.
 SLF4J(W): Defaulting to no-operation (NOP) logger implementation
 SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+java.io.EOFException
+	at skadistats.clarity.source.InputStreamSource.readBytes(InputStreamSource.java:89)
+	at skadistats.clarity.processor.packet.PacketReader.readFromSource(PacketReader.java:33)
+	at skadistats.clarity.engine.PacketInstanceReaderProtobufDemo$1.parse(PacketInstanceReaderProtobufDemo.java:71)
+	at skadistats.clarity.processor.reader.InputSourceProcessor.processSource(InputSourceProcessor.java:170)
+	at skadistats.clarity.processor.runner.OnInputSource_Event.raise(OnInputSource_Event.java:30)
+	at skadistats.clarity.processor.runner.AbstractFileRunner.initAndRunWith(AbstractFileRunner.java:78)
+	at skadistats.clarity.processor.runner.SimpleRunner.runWith(SimpleRunner.java:67)
+	at opendota.Parse.<init>(Parse.java:156)
+	at opendota.Main$MyHandler.handle(Main.java:78)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:82)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:101)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:969)
+	at jdk.httpserver/com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:98)
+	at jdk.httpserver/sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:945)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
