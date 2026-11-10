@@ -1,30 +1,48 @@
-/* Página paralela "Palco" (teste). Não indexada. Só visual: a lógica é a do index.html. */
-:root {
-  --font-display: "Archivo Black", sans-serif;
-  --font-body: "Archivo", sans-serif;
-  --font-mono: "Archivo Narrow", sans-serif;
-  --palco-vermelho: #d93a2b;
-}
-html, body { background: #0a0a0a !important; color: #fff !important; }
-body::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse 55% 40% at 50% 0%, rgba(255,255,255,.22), transparent 70%);
-}
-.palco-marca { text-align: center; padding: 28px 16px 8px; position: relative; z-index: 1; }
-.palco-marca img { width: min(260px, 60vw); height: auto; }
-.topo, header.topo { background: transparent !important; border: 0 !important; box-shadow: none !important; }
-main, section, .home, .pagina, .cartao, .bloco, .silhueta {
-  background: transparent !important; color: #fff !important;
-}
-h1, h2, h3 { font-family: var(--font-display) !important; text-transform: uppercase; letter-spacing: .02em; color: #fff !important; }
-.home-cartao, .cartao, .bloco { border: 1px solid #222 !important; background: #111 !important; }
-button, .home-link, a.botao, .btn {
-  background: var(--palco-vermelho) !important; color: #fff !important; border: 0 !important;
-  font-family: var(--font-display) !important; text-transform: uppercase; border-radius: 0 !important;
-}
-p, li, span, small { color: #ddd; }
-.palco-tag {
-  position: fixed; top: 8px; right: 10px; z-index: 9999;
-  font: 700 11px/1 "Archivo Narrow", sans-serif; letter-spacing: .12em;
-  color: #fff; background: var(--palco-vermelho); padding: 5px 8px;
+/* Página paralela "Palco" (teste). Não indexada. Lógica = index.html; aqui só o visual do croqui Palco. */
+:root { --font-display:"Archivo Black",sans-serif; --font-body:"Archivo",sans-serif; --font-mono:"Archivo Narrow",sans-serif; }
+html,body{background:#0a0a0a!important;color:#fff!important;font-family:var(--font-body)}
+body{min-height:100vh}
+header.topo{background:#000!important;border-bottom:1px solid #1d1d1d!important;box-shadow:none!important}
+header.topo h1,.topo h1 em{font-family:var(--font-display)!important;color:#fff!important}
+.topo .tag{color:#d93a2b!important}
+.topo .ir-ranking{color:#fff!important}
+.topo .botao{background:#d93a2b!important;border-radius:0!important;color:#fff!important}
+.palco-home{position:relative;background:transparent;text-align:center;padding:0 16px 48px;overflow:hidden}
+.palco-luz{position:absolute;left:50%;top:-40px;width:900px;height:620px;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,250,235,.30),rgba(255,250,235,.06) 40%,transparent 70%);
+  clip-path:polygon(44% 0,56% 0,92% 100%,8% 100%)}
+.palco-hero{position:relative;padding:56px 0 28px;max-width:860px;margin:0 auto}
+.palco-logo{width:min(220px,55vw);height:auto;display:block;margin:0 auto 18px}
+.palco-eyebrow{font:700 12px/1 var(--font-mono);letter-spacing:.3em;text-transform:uppercase;color:#8d8d8d;margin:0 0 22px}
+.palco-home .palco-titulo{font-family:"Archivo Black",sans-serif!important;font-weight:400!important;font:400 clamp(40px,8vw,88px)/.95 var(--font-display);text-transform:uppercase;letter-spacing:-.01em;margin:0 0 20px;color:#fff}
+.palco-titulo span{color:#fff;-webkit-text-stroke:0}
+.palco-sub{font:400 18px/1.45 var(--font-body);color:#c9c9c9;max-width:520px;margin:0 auto 28px}
+.palco-busca{display:flex;gap:0;justify-content:center;max-width:620px;margin:0 auto}
+.palco-busca label{flex:1;display:flex}
+.palco-busca input{background-image:none!important;flex:1;min-width:0;height:60px;background:#111;border:1px solid #333;color:#fff;padding:0 18px;font:600 18px var(--font-mono);border-radius:0}
+.palco-busca input::placeholder{color:#666}
+.palco-busca .botao{background:#d93a2b!important;background-image:none!important;box-shadow:none!important;height:60px;padding:0 26px;background:#d93a2b;color:#fff;border:0;border-radius:0;font:400 18px var(--font-display);text-transform:uppercase;white-space:nowrap}
+.palco-mini{font:600 13px/1.5 var(--font-mono);color:#8d8d8d;letter-spacing:.04em;margin:18px auto 10px;max-width:560px}
+.palco-home .home-erro{color:#ff7a6b}
+.palco-home .home-atalhos{margin:6px 0 0}
+.palco-home .home-link{background:none!important;color:#fff!important;border-bottom:1px solid #d93a2b;font:600 14px var(--font-mono);text-transform:uppercase;letter-spacing:.06em;padding:4px 0}
+.palco-passos,.palco-recebe,.palco-plano{display:grid;gap:14px;max-width:1040px;margin:28px auto 0;text-align:left}
+.palco-passos{grid-template-columns:repeat(3,1fr)}
+.palco-recebe{grid-template-columns:repeat(3,1fr)}
+.palco-plano{grid-template-columns:1fr 1fr}
+.palco-passos>div,.palco-recebe>div,.palco-plano>div{background:#111;border:1px solid #232323;padding:22px 20px}
+.palco-passos i{font:400 36px/1 var(--font-display);color:#d93a2b;font-style:normal;display:block;margin-bottom:10px}
+.palco-passos b,.palco-recebe b,.palco-plano b{display:block;font:400 22px/1.1 var(--font-display);text-transform:uppercase;color:#fff;margin:6px 0 8px}
+.palco-passos span,.palco-recebe span:not(.k),.palco-plano span:not(.k){font:400 15px/1.45 var(--font-body);color:#b5b5b5}
+.palco-recebe .k,.palco-plano .k{font:700 12px var(--font-mono);letter-spacing:.2em;text-transform:uppercase;color:#8d8d8d}
+.palco-plano .pago{border-color:#d93a2b}
+.palco-plano .pago .k{color:#d93a2b}
+.palco-marca{display:none}
+.palco-home .home-cartoes,.palco-home .home-cartao{display:none!important}
+.palco-tag{position:fixed;top:8px;right:10px;z-index:9999;font:700 11px/1 var(--font-mono);letter-spacing:.12em;color:#fff;background:#d93a2b;padding:5px 8px}
+@media (max-width:760px){
+  .palco-passos,.palco-recebe,.palco-plano{grid-template-columns:1fr}
+  .palco-busca{flex-direction:column}
+  .palco-busca .botao{height:56px}
+  .palco-busca input{height:56px}
 }
