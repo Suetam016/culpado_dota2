@@ -4131,3 +4131,12 @@ OK 9083773896
   2275 usos de skill/item de 3434 no combat log
 OK 9083771700
 10 mapas novos
+Fila: [9084103314]
+  replay http://replay201.valve.net/570/9084103314_109629181.dem.bz2 -> HTTP 200 application/octet-stream 49980166 inicio=b'(\xb5/\xfd\x00`\x94C\x0f^z^'
+  9084103314: 186599 eventos; tipos [('actions', 81531), ('DOTA_COMBATLOG_DAMAGE', 36190), ('interval', 29190), ('DOTA_COMBATLOG_MODIFIER_ADD', 8938), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 8906), ('DOTA_COMBATLOG_HEAL', 5959), ('DOTA_COMBATLOG_XP', 4110), ('DOTA_COMBATLOG_DEATH', 3723)]
+  exemplo de interval: {"time": -90, "type": "interval", "unit": "CDOTA_Unit_Hero_Centaur", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 96, "variant": 0, "facet_hero_id": 96, "life_state": 0, "level": 0, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ra
+  exemplo de habilidade: {"time": -88, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_witch_doctor", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_smoke_of_deceit"}
+  3630 registros de dano herói->herói
+  1775 usos de skill/item de 2637 no combat log
+OK 9084103314
+1 mapas novos
