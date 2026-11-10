@@ -1,0 +1,16 @@
+/* Página paralela "Palco" (teste). Não indexada. Só visual: a lógica é a do index.html. */
+:root { --palco-vermelho: #d93a2b; --palco-preto: #0a0a0a; }
+html, body {
+  background: var(--palco-preto) !important;
+  color: #fff;
+}
+body::before {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 60% 45% at 50% 20%, rgba(255,255,255,.10), transparent 70%);
+}
+.palco-tag {
+  position: fixed; top: 8px; right: 10px; z-index: 9999;
+  font: 700 11px/1 "Archivo Narrow", sans-serif; letter-spacing: .12em;
+  color: #fff; background: var(--palco-vermelho); padding: 5px 8px; border-radius: 3px;
+}
