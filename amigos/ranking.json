@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-10T03:22:10.247Z",
-  "semAnalise": 3,
+  "atualizadoEm": "2026-11-10T04:02:12.296Z",
+  "semAnalise": 5,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -19,12 +19,12 @@
       "nome": "[Pau]DeCamelo",
       "culpados": 46,
       "craques": 33,
-      "partidas": 351,
-      "vitorias": 167,
+      "partidas": 355,
+      "vitorias": 169,
       "winRate": 48,
       "streak": null,
-      "mmrGanho": 4000,
-      "mmrPerdido": 4500
+      "mmrGanho": 4050,
+      "mmrPerdido": 4550
     },
     {
       "accountId": "81918076",
@@ -4481,9 +4481,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.21,
+        "merito": 0.189
       }
     ],
     "83300280": [
@@ -6015,9 +6014,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 5,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.122,
+        "merito": 0.688
       }
     ],
     "111257540": [
@@ -11359,6 +11357,18 @@
         "merito": 0.143
       },
       {
+        "matchId": 9083746726,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1794265592,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 48,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
         "matchId": 9083771700,
         "lado": "dire",
         "tipo": "vitoria",
@@ -11368,6 +11378,41 @@
         "heroi": 70,
         "culpa": 0.28,
         "merito": 0.132
+      },
+      {
+        "matchId": 9083799652,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1794271821,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 41,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9083832303,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1794275756,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 4,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9083866845,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794279671,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 71,
+        "culpa": 0.175,
+        "merito": 0.144
       }
     ],
     "1000265186": [
