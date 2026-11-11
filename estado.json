@@ -1,14 +1,10 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
-   "X-Rate-Limit-Remaining-Minute": "59"
+   "Retry-After": "120"
   },
-  "quando": "2026-11-11T20:01:27Z",
-  "restante": {
-   "dia": 2985,
-   "minuto": 45
-  }
+  "quando": "2026-11-11T21:02:58Z",
+  "restante": {}
  },
  "desistencias": {
   "1820161034": {
@@ -132,7 +128,32 @@
    "salva": true
   }
  },
- "falhas": {},
+ "falhas": {
+  "9085000735": {
+   "inicio": 1794350837,
+   "motivo": "HTTP 521",
+   "n": 0,
+   "proxima": "2026-11-11T21:32:56Z",
+   "quando": "2026-11-11T21:02:56Z",
+   "t": 1
+  },
+  "9085063266": {
+   "inicio": 1794358041,
+   "motivo": "HTTP 521",
+   "n": 0,
+   "proxima": "2026-11-11T21:32:57Z",
+   "quando": "2026-11-11T21:02:57Z",
+   "t": 1
+  },
+  "9086019004": {
+   "inicio": 1794420533,
+   "motivo": "HTTP 521",
+   "n": 0,
+   "proxima": "2026-11-11T21:32:58Z",
+   "quando": "2026-11-11T21:02:58Z",
+   "t": 1
+  }
+ },
  "historico": {
   "1000265186": {
    "analisadas": {},
@@ -704,15 +725,6 @@
   }
  },
  "lo": {
-  "9042320122": {
-   "companheiros": [
-    111257540,
-    241782761,
-    1000265186,
-    1254464470
-   ],
-   "inicio": 1791837464
-  },
   "9042378073": {
    "companheiros": [
     111257540,
@@ -2437,22 +2449,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 6,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-10T17:01:16Z",
-   "novas": 3,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2994,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2617
-  },
-  {
-   "basicas": 0,
    "chamadas": 1,
    "descartadas": [],
    "faltam": 1,
@@ -3202,6 +3198,19 @@
     "minuto": 45
    },
    "sobra_do_dia": 2583
+  },
+  {
+   "basicas": 0,
+   "chamadas": 12,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-11T21:01:23Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {},
+   "sobra_do_dia": 2571
   }
  ],
  "uso": {
@@ -3218,6 +3227,6 @@
   "2026-11-08": 229,
   "2026-11-09": 263,
   "2026-11-10": 242,
-  "2026-11-11": 217
+  "2026-11-11": 229
  }
 }
