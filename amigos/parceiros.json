@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-11T01:22:05Z",
+ "atualizadoEm": "2026-11-11T02:08:23Z",
  "desde": "2025-12-21",
- "partidasLidas": 1249,
+ "partidasLidas": 1254,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -296,17 +296,17 @@
    "rotas": [
     {
      "posA": 2,
+     "posB": 1,
+     "jogos": 8,
+     "vitorias": 6,
+     "winRate": 75
+    },
+    {
+     "posA": 2,
      "posB": 3,
      "jogos": 15,
      "vitorias": 11,
      "winRate": 73
-    },
-    {
-     "posA": 2,
-     "posB": 1,
-     "jogos": 7,
-     "vitorias": 5,
-     "winRate": 71
     },
     {
      "posA": 3,
@@ -384,8 +384,8 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 12,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 1
     },
     {
      "matchId": 9081169561,
@@ -16283,8 +16283,8 @@
    {
     "heroi": 107,
     "pos": 2,
-    "jogos": 102,
-    "vitorias": 57
+    "jogos": 103,
+    "vitorias": 58
    },
    {
     "heroi": 107,
@@ -16421,12 +16421,6 @@
    {
     "heroi": 76,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 107,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -16869,6 +16863,12 @@
    {
     "heroi": 137,
     "pos": 3,
+    "jogos": 2,
+    "vitorias": 1
+   },
+   {
+    "heroi": 91,
+    "pos": 0,
     "jogos": 2,
     "vitorias": 1
    },
@@ -18011,8 +18011,8 @@
    {
     "heroi": 12,
     "pos": 1,
-    "jogos": 4,
-    "vitorias": 2
+    "jogos": 5,
+    "vitorias": 3
    },
    {
     "heroi": 64,
@@ -18089,12 +18089,6 @@
    {
     "heroi": 31,
     "pos": 5,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 12,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -34215,6 +34209,21 @@
    ]
   },
   {
+   "id": 9084993903,
+   "t": 1794350172,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     91,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
    "id": 9085035012,
    "t": 1794354961,
    "v": 1,
@@ -34223,13 +34232,28 @@
     [
      "83300280",
      12,
-     0,
-     null,
-     null
+     1,
+     1,
+     -1
     ],
     [
      "81918076",
      107,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9085063266,
+   "t": 1794358041,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "1000265186",
+     91,
      0,
      null,
      null

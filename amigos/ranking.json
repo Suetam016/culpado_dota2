@@ -1,18 +1,18 @@
 {
-  "atualizadoEm": "2026-11-11T01:21:57.555Z",
-  "semAnalise": 3,
+  "atualizadoEm": "2026-11-11T02:08:14.954Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
       "culpados": 58,
       "craques": 67,
-      "partidas": 259,
-      "vitorias": 127,
+      "partidas": 261,
+      "vitorias": 128,
       "winRate": 49,
       "streak": null,
-      "mmrGanho": 3100,
-      "mmrPerdido": 3275
+      "mmrGanho": 3125,
+      "mmrPerdido": 3300
     },
     {
       "accountId": "241782761",
@@ -4492,9 +4492,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.29,
+        "merito": 0.114
       }
     ],
     "83300280": [
@@ -5089,9 +5088,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 12,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.216,
+        "merito": 0.16
       }
     ],
     "96286191": [
@@ -14374,6 +14372,30 @@
         "heroi": 91,
         "culpa": 0.25,
         "merito": 0.126
+      },
+      {
+        "matchId": 9084993903,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1794350172,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 91,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9085063266,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794358041,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 91,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "1254464470": [
@@ -15790,5 +15812,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-10T19:43:57.178Z"
+  "perfisEm": "2026-11-11T02:08:14.874Z"
 }
