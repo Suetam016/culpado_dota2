@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-11T00:02:08Z",
+ "atualizadoEm": "2026-11-11T01:22:05Z",
  "desde": "2025-12-21",
- "partidasLidas": 1248,
+ "partidasLidas": 1249,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,8 +11,8 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 237,
-   "vitorias": 119,
+   "jogos": 238,
+   "vitorias": 120,
    "winRate": 50
   },
   "26668150": {
@@ -53,8 +53,8 @@
   },
   "83300280": {
    "nome": "ptn",
-   "jogos": 53,
-   "vitorias": 30,
+   "jogos": 54,
+   "vitorias": 31,
    "winRate": 57
   }
  },
@@ -290,9 +290,9 @@
    "b": "83300280",
    "nomeA": "Suéter",
    "nomeB": "ptn",
-   "jogos": 39,
-   "vitorias": 26,
-   "winRate": 67,
+   "jogos": 40,
+   "vitorias": 27,
+   "winRate": 68,
    "rotas": [
     {
      "posA": 2,
@@ -355,6 +355,13 @@
     },
     {
      "heroiA": 107,
+     "heroiB": 12,
+     "jogos": 3,
+     "vitorias": 2,
+     "winRate": 67
+    },
+    {
+     "heroiA": 107,
      "heroiB": 8,
      "jogos": 3,
      "vitorias": 2,
@@ -371,6 +378,15 @@
     }
    ],
    "partidas": [
+    {
+     "matchId": 9085035012,
+     "inicio": 1794354961,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 12,
+     "posA": null,
+     "posB": null
+    },
     {
      "matchId": 9081169561,
      "inicio": 1794119211,
@@ -431,15 +447,6 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 4,
-     "posA": 2,
-     "posB": 1
-    },
-    {
-     "matchId": 9077993525,
-     "inicio": 1793930614,
-     "venceu": true,
-     "heroiA": 107,
-     "heroiB": 8,
      "posA": 2,
      "posB": 1
     }
@@ -16418,6 +16425,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 107,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
     "heroi": 94,
     "pos": 1,
     "jogos": 1,
@@ -18076,6 +18089,12 @@
    {
     "heroi": 31,
     "pos": 5,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 12,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -34192,6 +34211,28 @@
      2,
      2,
      -1
+    ]
+   ]
+  },
+  {
+   "id": 9085035012,
+   "t": 1794354961,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "83300280",
+     12,
+     0,
+     null,
+     null
+    ],
+    [
+     "81918076",
+     107,
+     0,
+     null,
+     null
     ]
    ]
   }
