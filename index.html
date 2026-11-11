@@ -14613,10 +14613,7 @@ null);
 function rodape(r) {
 const id = r.partida.id;
 return h('footer', { class: 'rodape' },
-h('p', {}, 'Dados do ', h('a', { href: `https://www.opendota.com/matches/${id}`, target: '_blank', rel: 'noopener' }, 'OpenDota'),
-': a partida, o replay analisado, a comparação com quem joga o mesmo herói, os itens mais comprados por herói e a taxa de vitória por horário de item (amostras de partidas públicas; faixas com menos de 30 partidas são ignoradas).'),
-h('p', {}, 'Como a culpa é calculada: cada jogador soma pontos (1 ponto = 100 de ouro) pelo que custou ao time em situações comuns de Dota. Entram rota perdida aos 10 min (pesa 1,5x, porque ouro cedo vira bola de neve; a mid é 1x1 e é toda do mid), mortes pesadas pelo momento (entre 10 e 20 min pesam mais), morrer para quem disparou no jogo, morrer sozinho, morrer com o jogo ganho, estar morto quando caem torres e quartéis, ficar fora de lutas perdidas e farm ou visão abaixo do papel. Farm baixo pesa menos quando o time já estava muito atrás. Rota ganha e abates viram crédito. A fatia é a parte de cada um no total do time.'),
-h('p', {}, 'O índice é um ponto de partida para conversar sobre o jogo, não uma sentença final. Taxa de vitória por horário mostra correlação: quem fecha item cedo geralmente já está ganhando.'),
+h('p', {}, 'Dados: ', h('a', { href: `https://www.opendota.com/matches/${id}`, target: '_blank', rel: 'noopener' }, 'OpenDota')),
 r.partida.replay ? h('p', {}, 'Replay: ', h('span', { class: 'mono' }, r.partida.replay)) : null);
 }
 
