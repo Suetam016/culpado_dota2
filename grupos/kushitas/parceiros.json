@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-11T02:08:31Z",
+ "atualizadoEm": "2026-11-11T02:42:18Z",
  "desde": "2026-03-31",
  "partidasLidas": 1254,
  "jogadores": {
@@ -759,6 +759,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 1,
+    "pos": 1,
+    "jogos": 3,
+    "vitorias": 2
+   },
+   {
     "heroi": 123,
     "pos": 4,
     "jogos": 3,
@@ -803,12 +809,6 @@
    {
     "heroi": 7,
     "pos": 4,
-    "jogos": 2,
-    "vitorias": 2
-   },
-   {
-    "heroi": 1,
-    "pos": 1,
     "jogos": 2,
     "vitorias": 2
    },
@@ -1011,14 +1011,8 @@
     "vitorias": 0
    },
    {
-    "heroi": 1,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
     "heroi": 94,
-    "pos": 0,
+    "pos": 1,
     "jogos": 1,
     "vitorias": 0
    }
@@ -9545,9 +9539,9 @@
     [
      "86736516",
      1,
-     0,
-     null,
-     null
+     1,
+     1,
+     -1
     ]
    ]
   },
@@ -9560,9 +9554,9 @@
     [
      "86736516",
      94,
-     0,
-     null,
-     null
+     1,
+     3,
+     1
     ]
    ]
   }
