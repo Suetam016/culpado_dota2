@@ -4,9 +4,9 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-11T16:22:35Z",
+  "quando": "2026-11-11T16:37:36Z",
   "restante": {
-   "dia": 2984,
+   "dia": 2999,
    "minuto": 59
   }
  },
@@ -464,7 +464,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-11T16:21:22Z",
+   "em": "2026-11-11T16:37:36Z",
    "partidas": {
     "9065049474": 1793144497,
     "9065111656": 1793151497,
@@ -2448,22 +2448,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-10T13:00:03Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2998,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2665
-  },
-  {
-   "basicas": 0,
    "chamadas": 10,
    "descartadas": [],
    "faltam": 1,
@@ -3213,6 +3197,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2611
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-11T16:37:35Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2610
   }
  ],
  "uso": {
@@ -3229,6 +3229,6 @@
   "2026-11-08": 229,
   "2026-11-09": 263,
   "2026-11-10": 242,
-  "2026-11-11": 189
+  "2026-11-11": 190
  }
 }
