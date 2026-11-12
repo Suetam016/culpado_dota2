@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-12T01:01:29Z",
+  "quando": "2026-11-12T01:41:18Z",
   "restante": {
-   "dia": 2984,
-   "minuto": 44
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -482,9 +482,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-12T01:01:20Z",
+   "em": "2026-11-12T01:41:17Z",
    "partidas": {
-    "9065111656": 1793151497,
     "9067252567": 1793288747,
     "9067682312": 1793307420,
     "9067739040": 1793311069,
@@ -725,15 +724,6 @@
   }
  },
  "lo": {
-  "9042515483": {
-   "companheiros": [
-    104538589,
-    1000265186,
-    1017234657,
-    1166582746
-   ],
-   "inicio": 1791854042
-  },
   "9042547503": {
    "companheiros": [
     100151959,
@@ -2166,7 +2156,6 @@
   "1008435916": "MEIY",
   "1016615889": "ychigo.kurosaky",
   "101716841": "victeck",
-  "1017234657": "RAUUL",
   "101882024": "5HURR0",
   "1019756848": "darckness",
   "102212531": "mat1aek-",
@@ -2201,7 +2190,6 @@
   "115364841": "uNnder",
   "115824323": " Uuaagh",
   "116352364": "Itaxi",
-  "1166582746": "꧁️☠️Շѧмѯ_️θѵэя",
   "117024581": "É o Ucão, é o cânhamo...",
   "1174444135": "MEIK0",
   "118838113": "Amorim",
@@ -2417,32 +2405,9 @@
    "primeira_vez": "2026-11-11T02:01:34Z",
    "proxima": "2026-11-12T09:42:23Z",
    "tentativas": 11
-  },
-  "9086296667": {
-   "inicio": 1794436895,
-   "pedido_em": "2026-11-12T01:01:29Z",
-   "primeira_vez": "2026-11-12T01:01:28Z",
-   "proxima": "2026-11-12T01:31:28Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-10T21:21:20Z",
-   "novas": 0,
-   "pedidos": 2,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2972,
-    "minuto": 32
-   },
-   "sobra_do_dia": 2578
-  },
   {
    "basicas": 0,
    "chamadas": 5,
@@ -3191,6 +3156,22 @@
     "minuto": 44
    },
    "sobra_do_dia": 2782
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-12T01:41:17Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2780
   }
  ],
  "uso": {
@@ -3207,6 +3188,6 @@
   "2026-11-09": 263,
   "2026-11-10": 242,
   "2026-11-11": 260,
-  "2026-11-12": 18
+  "2026-11-12": 20
  }
 }
