@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-12T01:41:18Z",
+  "quando": "2026-11-12T02:21:17Z",
   "restante": {
-   "dia": 2998,
-   "minuto": 58
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -482,7 +482,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-12T01:41:17Z",
+   "em": "2026-11-12T02:21:17Z",
    "partidas": {
     "9067252567": 1793288747,
     "9067682312": 1793307420,
@@ -724,15 +724,6 @@
   }
  },
  "lo": {
-  "9042547503": {
-   "companheiros": [
-    100151959,
-    104538589,
-    116352364,
-    1000265186
-   ],
-   "inicio": 1791857417
-  },
   "9043986939": {
    "companheiros": [
     71861775,
@@ -2151,7 +2142,6 @@
   "1000265186": "gustavoDotinhaPro",
   "1000729794": "Catabriga God MODE",
   "100112408": "Jurupa",
-  "100151959": "Grampo",
   "100722951": "Neoxa.Mauwek",
   "1008435916": "MEIY",
   "1016615889": "ychigo.kurosaky",
@@ -2164,7 +2154,6 @@
   "103866021": "Alucarde",
   "104167138": "ΩHetzεl©Kill.Mαsτ€я®♣",
   "1045015170": "ᴋwaи 友",
-  "104538589": "KurObi",
   "105551889": "_evilhair_",
   "1068067743": "Agosto Mouse(Dooley)",
   "1075339011": "Sabor  Negro",
@@ -2189,7 +2178,6 @@
   "115357158": "RicoSuave",
   "115364841": "uNnder",
   "115824323": " Uuaagh",
-  "116352364": "Itaxi",
   "117024581": "É o Ucão, é o cânhamo...",
   "1174444135": "MEIK0",
   "118838113": "Amorim",
@@ -2408,22 +2396,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 5,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-10T22:01:19Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2995,
-    "minuto": 55
-   },
-   "sobra_do_dia": 2573
-  },
   {
    "basicas": 0,
    "chamadas": 5,
@@ -3172,6 +3144,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2780
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-12T02:21:17Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2779
   }
  ],
  "uso": {
@@ -3188,6 +3176,6 @@
   "2026-11-09": 263,
   "2026-11-10": 242,
   "2026-11-11": 260,
-  "2026-11-12": 20
+  "2026-11-12": 21
  }
 }
