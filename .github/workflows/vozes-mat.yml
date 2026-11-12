@@ -1,0 +1,61 @@
+name: Voz do Mat no Kokoro (protótipo)
+
+# Procura um estilo de voz do Kokoro parecido com a voz do Mat (prototipos/vozes/mat/procurar.py, CPU).
+# Trechos de 26 s da voz do Mat (publicados com o ok dele). Só roda neste branch.
+on:
+  push:
+    branches: ["claude/project-thread-tws8d6"]
+    paths: [".github/workflows/vozes-mat.yml", "prototipos/vozes/mat/procurar.py", "prototipos/vozes/mat/pedido"]
+
+permissions:
+  contents: read
+
+jobs:
+  procurar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq espeak-ng ffmpeg >/dev/null
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -q "kokoro>=0.9.4" resemblyzer soundfile huggingface_hub
+      - name: Procurar a voz
+        run: timeout 300m python prototipos/vozes/mat/procurar.py prototipos/vozes/mat/alvo.wav prototipos/vozes/mat/alvo2.wav 240 /tmp/saida 2>&1 | tee /tmp/log.txt | grep -v Warning | tail -80
+      - name: Juntar o resultado
+        if: always()
+        run: |
+          mkdir -p /tmp/saida && cp /tmp/log.txt /tmp/saida/ 2>/dev/null || true
+          cd /tmp/saida && for f in *.wav; do [ -f "$f" ] && ffmpeg -loglevel error -y -i "$f" -b:a 96k "${f%.wav}.mp3" && rm "$f"; done; ls -la
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resultado
+          path: /tmp/saida
+          retention-days: 3
+
+  salvar:
+    needs: procurar
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: resultado
+          path: prototipos/vozes/mat/resultado
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/vozes/mat/resultado
+          git diff --cached --quiet && exit 0
+          git commit -m "Voz do Mat: resultado"
+          for i in 1 2 3 4 5; do git pull --rebase origin claude/project-thread-tws8d6 && git push origin HEAD:claude/project-thread-tws8d6 && exit 0; sleep 7; done; exit 1

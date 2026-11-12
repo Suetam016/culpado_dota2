@@ -1,0 +1,46 @@
+name: Clone da voz do Mat (protótipo)
+
+# Clona a voz do Mat (trechos publicados com o ok dele) no Chatterbox e no Qwen3-TTS, na CPU. Só roda neste branch.
+on:
+  push:
+    branches: ["claude/project-thread-tws8d6"]
+    paths: ["prototipos/vozes/mat/clonar.py", "prototipos/vozes/mat/roteiros.json", ".github/workflows/vozes-clone.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  clonar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        modelo: [chatterbox]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost && df -h / | tail -1
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox libsox-dev >/dev/null
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
+          pip install -q soundfile numpy
+          case "${{ matrix.modelo }}" in
+            chatterbox) pip install -q chatterbox-tts ;;
+            qwen) pip install -q qwen-tts faster-whisper ;;
+          esac
+      - run: python prototipos/vozes/mat/clonar.py ${{ matrix.modelo }} 2>&1 | grep -v -i warn | tail -40 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        run: |
+          cd prototipos/vozes/mat/clone 2>/dev/null || exit 0
+          for f in *.wav; do [ -f "$f" ] && ffmpeg -loglevel error -y -i "$f" -b:a 96k "${f%.wav}.mp3" && rm "$f"; done
+          cd -
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/vozes/mat/clone
+          git diff --cached --quiet && exit 0
+          git commit -m "Clone da voz do Mat: ${{ matrix.modelo }}"
+          for i in 1 2 3 4 5; do git pull --rebase -X theirs origin claude/project-thread-tws8d6 && git push origin HEAD:claude/project-thread-tws8d6 && exit 0; git rebase --abort 2>/dev/null; sleep 7; done; exit 1
