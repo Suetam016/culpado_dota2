@@ -1,0 +1,45 @@
+name: Narrador policial (protótipo do Plantão)
+
+# Protótipo: grava as falas do locutor do Plantão com a voz do Mat (Qwen3-TTS, mesmo modelo do áudio do zap)
+# usando a imitação de programa policial dele como referência. Só roda neste branch; o resultado volta para
+# prototipos/vozes/policial/saida/.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-48ueuw]
+    paths: ["prototipos/vozes/policial/*", ".github/workflows/narrador-policial.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  narrar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+          key: qwen-tts-0.6b-v1
+      - name: Instalar
+        run: |
+          sudo apt-get install -y -qq ffmpeg sox >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg sox >/dev/null)
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch torchaudio
+          pip install -q qwen-tts==0.1.1 soundfile numpy faster-whisper
+      - name: Narrar
+        run: python prototipos/vozes/policial/narrar.py 2>&1 | grep -v -i -E "warn|pci_bus" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Salvar
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A prototipos/vozes/policial/saida
+          git diff --cached --quiet && exit 0
+          git commit -m "Narrador policial: falas gravadas"
+          git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}
