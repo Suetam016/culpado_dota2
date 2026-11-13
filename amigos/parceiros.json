@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-12T23:42:32Z",
+ "atualizadoEm": "2026-11-13T00:26:40Z",
  "desde": "2025-12-21",
- "partidasLidas": 1285,
+ "partidasLidas": 1287,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -29,15 +29,15 @@
   },
   "1000265186": {
    "nome": "gustavoDotinhaPro",
-   "jogos": 121,
-   "vitorias": 59,
+   "jogos": 122,
+   "vitorias": 60,
    "winRate": 49
   },
   "111257540": {
    "nome": "Kuscomem",
-   "jogos": 100,
-   "vitorias": 49,
-   "winRate": 49
+   "jogos": 101,
+   "vitorias": 50,
+   "winRate": 50
   },
   "77621319": {
    "nome": "Jalim",
@@ -1144,9 +1144,9 @@
    "b": "1000265186",
    "nomeA": "Kuscomem",
    "nomeB": "gustavoDotinhaPro",
-   "jogos": 44,
-   "vitorias": 23,
-   "winRate": 52,
+   "jogos": 45,
+   "vitorias": 24,
+   "winRate": 53,
    "rotas": [
     {
      "posA": 5,
@@ -1212,6 +1212,15 @@
    "heroisPiores": [],
    "partidas": [
     {
+     "matchId": 9087621155,
+     "inicio": 1794525712,
+     "venceu": true,
+     "heroiA": 88,
+     "heroiB": 14,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9084847370,
      "inicio": 1794340147,
      "venceu": false,
@@ -1271,15 +1280,6 @@
      "venceu": true,
      "heroiA": 119,
      "heroiB": 41,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9083605926,
-     "inicio": 1794254907,
-     "venceu": true,
-     "heroiA": 26,
-     "heroiB": 91,
      "posA": 5,
      "posB": 1
     }
@@ -17386,6 +17386,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 14,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
     "heroi": 68,
     "pos": 5,
     "jogos": 1,
@@ -17906,6 +17912,18 @@
    {
     "heroi": 33,
     "pos": 5,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 21,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 88,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -34834,6 +34852,43 @@
      3,
      1,
      -1
+    ]
+   ]
+  },
+  {
+   "id": 9087580086,
+   "t": 1794521897,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     21,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9087621155,
+   "t": 1794525712,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     88,
+     0,
+     null,
+     null
+    ],
+    [
+     "1000265186",
+     14,
+     0,
+     null,
+     null
     ]
    ]
   }
