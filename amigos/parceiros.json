@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-13T00:26:40Z",
+ "atualizadoEm": "2026-11-13T01:02:17Z",
  "desde": "2025-12-21",
  "partidasLidas": 1287,
  "jogadores": {
@@ -1149,18 +1149,18 @@
    "winRate": 53,
    "rotas": [
     {
+     "posA": 4,
+     "posB": 3,
+     "jogos": 4,
+     "vitorias": 3,
+     "winRate": 75
+    },
+    {
      "posA": 5,
      "posB": 1,
      "jogos": 11,
      "vitorias": 8,
      "winRate": 73
-    },
-    {
-     "posA": 4,
-     "posB": 3,
-     "jogos": 3,
-     "vitorias": 2,
-     "winRate": 67
     },
     {
      "posA": 4,
@@ -1217,8 +1217,8 @@
      "venceu": true,
      "heroiA": 88,
      "heroiB": 14,
-     "posA": null,
-     "posB": null
+     "posA": 4,
+     "posB": 3
     },
     {
      "matchId": 9084847370,
@@ -17387,7 +17387,7 @@
    },
    {
     "heroi": 14,
-    "pos": 0,
+    "pos": 3,
     "jogos": 1,
     "vitorias": 1
    },
@@ -17628,15 +17628,15 @@
   ],
   "111257540": [
    {
+    "heroi": 21,
+    "pos": 4,
+    "jogos": 8,
+    "vitorias": 3
+   },
+   {
     "heroi": 86,
     "pos": 4,
     "jogos": 8,
-    "vitorias": 2
-   },
-   {
-    "heroi": 21,
-    "pos": 4,
-    "jogos": 7,
     "vitorias": 2
    },
    {
@@ -17724,6 +17724,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 88,
+    "pos": 4,
+    "jogos": 3,
+    "vitorias": 1
+   },
+   {
     "heroi": 128,
     "pos": 4,
     "jogos": 3,
@@ -17798,12 +17804,6 @@
    {
     "heroi": 12,
     "pos": 1,
-    "jogos": 2,
-    "vitorias": 0
-   },
-   {
-    "heroi": 88,
-    "pos": 4,
     "jogos": 2,
     "vitorias": 0
    },
@@ -17912,18 +17912,6 @@
    {
     "heroi": 33,
     "pos": 5,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 21,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 88,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -34864,9 +34852,9 @@
     [
      "111257540",
      21,
-     0,
-     null,
-     null
+     4,
+     3,
+     1
     ]
    ]
   },
@@ -34879,16 +34867,16 @@
     [
      "111257540",
      88,
-     0,
+     4,
      null,
      null
     ],
     [
      "1000265186",
      14,
-     0,
-     null,
-     null
+     3,
+     3,
+     1
     ]
    ]
   }
