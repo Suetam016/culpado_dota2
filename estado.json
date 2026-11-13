@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2998",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-12T23:41:36Z",
+  "quando": "2026-11-13T00:21:18Z",
   "restante": {
-   "dia": 2991,
-   "minuto": 52
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -481,7 +481,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-12T23:41:28Z",
+   "em": "2026-11-13T00:21:18Z",
    "partidas": {
     "9067252567": 1793288747,
     "9067682312": 1793307420,
@@ -731,15 +731,6 @@
   }
  },
  "lo": {
-  "9043986939": {
-   "companheiros": [
-    71861775,
-    77621319,
-    101882024,
-    377946989
-   ],
-   "inicio": 1791935743
-  },
   "9044035283": {
    "companheiros": [
     111997561,
@@ -2153,7 +2144,6 @@
   "1008435916": "MEIY",
   "1016615889": "ychigo.kurosaky",
   "101716841": "victeck",
-  "101882024": "5HURR0",
   "1019756848": "darckness",
   "102212531": "mat1aek-",
   "103098079": "Véio",
@@ -2311,7 +2301,6 @@
   "373260113": "DarkMarck",
   "373561644": "Ri2Ci",
   "376491207": "☭",
-  "377946989": "Madruguinha",
   "381222789": "caça rato",
   "383761271": "Menina Veneno Meu Pinto é Pequen",
   "391297659": "Molly",
@@ -2342,7 +2331,6 @@
   "63823788": "dlh-",
   "672861582": "NeonEagle6775",
   "69874576": "Petris",
-  "71861775": "s4x",
   "728280074": "elói",
   "748007181": "NegoBrimba 3.0",
   "77189829": "PAPAI BADÁ",
@@ -2403,22 +2391,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 11,
-   "descartadas": [],
-   "faltam": 2,
-   "fim": "fila vazia",
-   "inicio": "2026-11-11T18:41:19Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 2,
-   "restante": {
-    "dia": 2989,
-    "minuto": 49
-   },
-   "sobra_do_dia": 2590
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -3167,10 +3139,25 @@
     "minuto": 52
    },
    "sobra_do_dia": 2588
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-13T00:21:18Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2799
   }
  ],
  "uso": {
-  "2026-10-30": 84,
   "2026-10-31": 86,
   "2026-11-01": 143,
   "2026-11-02": 146,
@@ -3183,6 +3170,7 @@
   "2026-11-09": 263,
   "2026-11-10": 242,
   "2026-11-11": 260,
-  "2026-11-12": 212
+  "2026-11-12": 212,
+  "2026-11-13": 1
  }
 }
