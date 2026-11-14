@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-14T01:01:36Z",
+  "quando": "2026-11-14T01:42:40Z",
   "restante": {
-   "dia": 2998,
-   "minuto": 58
+   "dia": 2997,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -374,7 +374,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-14T01:01:35Z",
+   "em": "2026-11-14T01:41:40Z",
    "partidas": {
     "9067884042": 1793325695,
     "9067919311": 1793329554,
@@ -625,15 +625,6 @@
   }
  },
  "lo": {
-  "9045537420": {
-   "companheiros": [
-    77621319,
-    402258503,
-    1000265186,
-    1254464470
-   ],
-   "inicio": 1792028000
-  },
   "9045574799": {
    "companheiros": [
     77621319,
@@ -2155,7 +2146,6 @@
   "381222789": "caça rato",
   "383761271": "Menina Veneno Meu Pinto é Pequen",
   "391297659": "Molly",
-  "402258503": "Troche",
   "415891584": "SÓ CALL ERRADA",
   "438401371": "メ BΣKIПΗӨ.",
   "4414574": "xD",
@@ -2241,22 +2231,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 2,
-   "fim": "fila vazia",
-   "inicio": "2026-11-12T21:01:20Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 2,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2621
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -3008,6 +2982,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2786
+  },
+  {
+   "basicas": 0,
+   "chamadas": 3,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-14T01:41:20Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2997,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2783
   }
  ],
  "uso": {
@@ -3024,6 +3014,6 @@
   "2026-11-11": 260,
   "2026-11-12": 212,
   "2026-11-13": 213,
-  "2026-11-14": 14
+  "2026-11-14": 17
  }
 }
