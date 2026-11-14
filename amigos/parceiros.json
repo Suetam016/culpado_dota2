@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-14T03:02:18Z",
+ "atualizadoEm": "2026-11-14T03:18:03Z",
  "desde": "2025-12-21",
- "partidasLidas": 1306,
+ "partidasLidas": 1307,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,7 +11,7 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 240,
+   "jogos": 241,
    "vitorias": 120,
    "winRate": 50
   },
@@ -35,9 +35,9 @@
   },
   "111257540": {
    "nome": "Kuscomem",
-   "jogos": 103,
+   "jogos": 104,
    "vitorias": 51,
-   "winRate": 50
+   "winRate": 49
   },
   "77621319": {
    "nome": "Jalim",
@@ -3749,7 +3749,7 @@
    "b": "111257540",
    "nomeA": "Suéter",
    "nomeB": "Kuscomem",
-   "jogos": 46,
+   "jogos": 47,
    "vitorias": 20,
    "winRate": 43,
    "rotas": [
@@ -3860,6 +3860,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9089128927,
+     "inicio": 1794621651,
+     "venceu": false,
+     "heroiA": 87,
+     "heroiB": 119,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9082102056,
      "inicio": 1794159426,
      "venceu": false,
@@ -3921,15 +3930,6 @@
      "heroiB": 37,
      "posA": 2,
      "posB": 5
-    },
-    {
-     "matchId": 9073698416,
-     "inicio": 1793650935,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 21,
-     "posA": 2,
-     "posB": 4
     }
    ]
   },
@@ -16843,6 +16843,12 @@
     "pos": 4,
     "jogos": 1,
     "vitorias": 0
+   },
+   {
+    "heroi": 87,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
    }
   ],
   "26668150": [
@@ -18017,6 +18023,12 @@
    {
     "heroi": 138,
     "pos": 1,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 119,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -34994,6 +35006,28 @@
      4,
      3,
      -1
+    ]
+   ]
+  },
+  {
+   "id": 9089128927,
+   "t": 1794621651,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "111257540",
+     119,
+     0,
+     null,
+     null
+    ],
+    [
+     "81918076",
+     87,
+     0,
+     null,
+     null
     ]
    ]
   }
