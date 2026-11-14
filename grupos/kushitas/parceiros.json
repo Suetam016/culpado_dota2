@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-14T00:24:21Z",
+ "atualizadoEm": "2026-11-14T03:02:25Z",
  "desde": "2026-03-31",
- "partidasLidas": 1304,
+ "partidasLidas": 1306,
  "jogadores": {
   "85686824": {
    "nome": "Rannis",
@@ -11,15 +11,15 @@
   },
   "86736516": {
    "nome": "Madruga",
-   "jogos": 52,
+   "jogos": 53,
    "vitorias": 22,
    "winRate": 42
   },
   "200957620": {
    "nome": "Danylera",
-   "jogos": 40,
+   "jogos": 41,
    "vitorias": 18,
-   "winRate": 45
+   "winRate": 44
   }
  },
  "pares": [
@@ -28,9 +28,9 @@
    "b": "200957620",
    "nomeA": "Madruga",
    "nomeB": "Danylera",
-   "jogos": 38,
+   "jogos": 39,
    "vitorias": 18,
-   "winRate": 47,
+   "winRate": 46,
    "rotas": [
     {
      "posA": 3,
@@ -104,6 +104,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9089069559,
+     "inicio": 1794615646,
+     "venceu": false,
+     "heroiA": 91,
+     "heroiB": 8,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9086296667,
      "inicio": 1794436895,
      "venceu": true,
@@ -165,15 +174,6 @@
      "heroiB": 93,
      "posA": 1,
      "posB": 5
-    },
-    {
-     "matchId": 9070584010,
-     "inicio": 1793474870,
-     "venceu": true,
-     "heroiA": 43,
-     "heroiB": 93,
-     "posA": 2,
-     "posB": 1
     }
    ]
   },
@@ -855,6 +855,12 @@
     "vitorias": 0
    },
    {
+    "heroi": 91,
+    "pos": 0,
+    "jogos": 2,
+    "vitorias": 0
+   },
+   {
     "heroi": 88,
     "pos": 3,
     "jogos": 1,
@@ -1285,6 +1291,12 @@
    {
     "heroi": 102,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 8,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -10081,6 +10093,43 @@
      3,
      1,
      1
+    ]
+   ]
+  },
+  {
+   "id": 9089025010,
+   "t": 1794611501,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     91,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9089069559,
+   "t": 1794615646,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     91,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     8,
+     0,
+     null,
+     null
     ]
    ]
   }
