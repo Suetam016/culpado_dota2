@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-15T23:12:01.269Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-15T23:42:03.005Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -39,6 +39,18 @@
       "mmrPerdido": 3200
     },
     {
+      "accountId": "83300280",
+      "nome": "ptn",
+      "culpados": 13,
+      "craques": 2,
+      "partidas": 60,
+      "vitorias": 32,
+      "winRate": 53,
+      "streak": "culpado",
+      "mmrGanho": 725,
+      "mmrPerdido": 675
+    },
+    {
       "accountId": "111257540",
       "nome": "Kuscomem",
       "culpados": 13,
@@ -61,18 +73,6 @@
       "streak": "culpado",
       "mmrGanho": 350,
       "mmrPerdido": 575
-    },
-    {
-      "accountId": "83300280",
-      "nome": "ptn",
-      "culpados": 12,
-      "craques": 2,
-      "partidas": 60,
-      "vitorias": 32,
-      "winRate": 53,
-      "streak": "culpado",
-      "mmrGanho": 725,
-      "mmrPerdido": 675
     },
     {
       "accountId": "77621319",
@@ -1707,9 +1707,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 108,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.226,
+        "merito": 0.38
       }
     ],
     "81918076": [
@@ -4614,9 +4613,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.208,
+        "merito": 0.21
       }
     ],
     "83300280": [
@@ -5272,14 +5270,13 @@
       {
         "matchId": 9092142593,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1794778956,
         "comStack": true,
         "ranqueada": true,
         "heroi": 31,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.242,
+        "merito": 0.204
       }
     ],
     "96286191": [
@@ -6314,9 +6311,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 93,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.124,
+        "merito": 0.015
       }
     ],
     "111257540": [
@@ -8011,9 +8007,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 21,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.2,
+        "merito": 0.191
       }
     ],
     "241782761": [
