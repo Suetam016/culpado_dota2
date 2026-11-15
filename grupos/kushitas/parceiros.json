@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-15T11:31:37Z",
+ "atualizadoEm": "2026-11-15T12:02:18Z",
  "desde": "2026-03-31",
- "partidasLidas": 1322,
+ "partidasLidas": 1323,
  "jogadores": {
   "85686824": {
    "nome": "Rannis",
@@ -11,15 +11,15 @@
   },
   "86736516": {
    "nome": "Madruga",
-   "jogos": 53,
+   "jogos": 54,
    "vitorias": 22,
-   "winRate": 42
+   "winRate": 41
   },
   "200957620": {
    "nome": "Danylera",
-   "jogos": 41,
+   "jogos": 42,
    "vitorias": 18,
-   "winRate": 44
+   "winRate": 43
   }
  },
  "pares": [
@@ -28,9 +28,9 @@
    "b": "200957620",
    "nomeA": "Madruga",
    "nomeB": "Danylera",
-   "jogos": 39,
+   "jogos": 40,
    "vitorias": 18,
-   "winRate": 46,
+   "winRate": 45,
    "rotas": [
     {
      "posA": 3,
@@ -104,6 +104,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9091182480,
+     "inicio": 1794738961,
+     "venceu": false,
+     "heroiA": 14,
+     "heroiB": 8,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9089069559,
      "inicio": 1794615646,
      "venceu": false,
@@ -165,15 +174,6 @@
      "heroiB": 93,
      "posA": 3,
      "posB": 1
-    },
-    {
-     "matchId": 9072907052,
-     "inicio": 1793616656,
-     "venceu": true,
-     "heroiA": 73,
-     "heroiB": 93,
-     "posA": 1,
-     "posB": 5
     }
    ]
   },
@@ -835,6 +835,12 @@
     "pos": 4,
     "jogos": 1,
     "vitorias": 0
+   },
+   {
+    "heroi": 8,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
    }
   ],
   "86736516": [
@@ -983,16 +989,16 @@
     "vitorias": 3
    },
    {
-    "heroi": 155,
-    "pos": 3,
+    "heroi": 7,
+    "pos": 2,
     "jogos": 5,
     "vitorias": 2
    },
    {
-    "heroi": 7,
-    "pos": 2,
-    "jogos": 4,
-    "vitorias": 1
+    "heroi": 155,
+    "pos": 3,
+    "jogos": 5,
+    "vitorias": 2
    },
    {
     "heroi": 19,
@@ -1157,12 +1163,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 7,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
     "heroi": 39,
     "pos": 3,
     "jogos": 1,
@@ -1297,6 +1297,12 @@
    {
     "heroi": 119,
     "pos": 3,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 14,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -10262,6 +10268,28 @@
     [
      "86736516",
      7,
+     2,
+     2,
+     -1
+    ]
+   ]
+  },
+  {
+   "id": 9091182480,
+   "t": 1794738961,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     14,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     8,
      0,
      null,
      null
