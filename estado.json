@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-15T01:56:45Z",
+  "quando": "2026-11-15T02:41:29Z",
   "restante": {
-   "dia": 2999,
-   "minuto": 59
+   "dia": 2993,
+   "minuto": 53
   }
  },
  "desistencias": {
@@ -367,7 +367,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-15T01:56:45Z",
+   "em": "2026-11-15T02:41:22Z",
    "partidas": {
     "9070513422": 1793472051,
     "9070632597": 1793476930,
@@ -616,15 +616,6 @@
   }
  },
  "lo": {
-  "9046982569": {
-   "companheiros": [
-    96286191,
-    241782761,
-    1000265186,
-    1254464470
-   ],
-   "inicio": 1792118291
-  },
   "9047004166": {
    "companheiros": [
     96286191,
@@ -1941,13 +1932,19 @@
   },
   "9090487282": {
    "companheiros": [
-    111257540
+    91200909,
+    111257540,
+    838308714,
+    1254464470
    ],
    "inicio": 1794689527
   },
   "9090575632": {
    "companheiros": [
-    111257540
+    102171653,
+    111257540,
+    996565080,
+    1254464470
    ],
    "inicio": 1794694192
   }
@@ -1960,6 +1957,7 @@
   "1008435916": "MEIY",
   "1016615889": "ychigo.kurosaky",
   "101716841": "victeck",
+  "102171653": "EL PATRON DEL MAL",
   "102212531": "mat1aek-",
   "103098079": "Véio",
   "103594857": "DanDanDoMel",
@@ -2149,6 +2147,7 @@
   "80989545": "Thatoso",
   "83300280": "ptn",
   "83692187": "Raks",
+  "838308714": "schneider *",
   "840831822": "Dialminha",
   "84356647": "Capitão Barba-Olho",
   "847060475": "DRACOLICH",
@@ -2169,6 +2168,7 @@
   "89623996": "FoRga",
   "900189898": "KaIpIrA",
   "90410560": "LzN1",
+  "91200909": "poor man's shield",
   "91591310": "Marlene",
   "919689978": "`[REX}COLAPSO´´´´´TM",
   "92488746": "Catatau!",
@@ -2179,70 +2179,12 @@
   "969496875": "Wallace",
   "97359011": "Jay, The Rubick",
   "99140295": "·NEO·GEO·",
+  "996565080": "kintaro",
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9089969000": {
-   "inicio": 1794669193,
-   "pedido_em": "2026-11-15T01:41:39Z",
-   "primeira_vez": "2026-11-15T01:41:39Z",
-   "proxima": "2026-11-15T02:11:39Z",
-   "tentativas": 0
-  },
-  "9090050284": {
-   "inicio": 1794672103,
-   "pedido_em": "2026-11-15T01:41:42Z",
-   "primeira_vez": "2026-11-15T01:41:41Z",
-   "proxima": "2026-11-15T02:11:41Z",
-   "tentativas": 0
-  },
-  "9090326684": {
-   "inicio": 1794682577,
-   "pedido_em": "2026-11-15T01:42:45Z",
-   "primeira_vez": "2026-11-15T01:41:44Z",
-   "proxima": "2026-11-15T02:11:44Z",
-   "tentativas": 0
-  },
-  "9090410595": {
-   "inicio": 1794686066,
-   "pedido_em": "2026-11-15T01:42:47Z",
-   "primeira_vez": "2026-11-15T01:42:47Z",
-   "proxima": "2026-11-15T02:12:47Z",
-   "tentativas": 0
-  },
-  "9090487282": {
-   "inicio": 1794689527,
-   "pedido_em": "2026-11-15T01:41:23Z",
-   "primeira_vez": "2026-11-15T01:41:22Z",
-   "proxima": "2026-11-15T02:11:22Z",
-   "tentativas": 0
-  },
-  "9090575632": {
-   "inicio": 1794694192,
-   "pedido_em": "2026-11-15T01:41:24Z",
-   "primeira_vez": "2026-11-15T01:41:24Z",
-   "proxima": "2026-11-15T02:11:24Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 9,
-   "descartadas": [],
-   "faltam": 5,
-   "fim": "fila vazia",
-   "inicio": "2026-11-13T13:21:27Z",
-   "novas": 0,
-   "pedidos": 3,
-   "pendentes": 5,
-   "restante": {
-    "dia": 2964,
-    "minuto": 24
-   },
-   "sobra_do_dia": 2669
-  },
   {
    "basicas": 0,
    "chamadas": 4,
@@ -2991,6 +2933,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2774
+  },
+  {
+   "basicas": 0,
+   "chamadas": 7,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-15T02:41:19Z",
+   "novas": 6,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2993,
+    "minuto": 53
+   },
+   "sobra_do_dia": 2767
   }
  ],
  "uso": {
@@ -3007,6 +2965,6 @@
   "2026-11-12": 212,
   "2026-11-13": 213,
   "2026-11-14": 194,
-  "2026-11-15": 26
+  "2026-11-15": 33
  }
 }
