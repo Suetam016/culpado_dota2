@@ -1,24 +1,24 @@
 {
-  "atualizadoEm": "2026-11-15T15:08:10.612Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-15T15:44:08.756Z",
+  "semAnalise": 2,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
       "culpados": 87,
       "craques": 43,
-      "partidas": 361,
-      "vitorias": 174,
+      "partidas": 362,
+      "vitorias": 175,
       "winRate": 48,
       "streak": null,
-      "mmrGanho": 4350,
+      "mmrGanho": 4375,
       "mmrPerdido": 4675
     },
     {
       "accountId": "200957620",
       "nome": "Danylera",
       "culpados": 38,
-      "craques": 39,
+      "craques": 40,
       "partidas": 222,
       "vitorias": 104,
       "winRate": 47,
@@ -4319,9 +4319,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 14,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.259,
+        "merito": 0.201
       },
       {
         "matchId": 9091372526,
@@ -4331,9 +4330,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 119,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.196,
+        "merito": 0.456
       },
       {
         "matchId": 9091453180,
@@ -4343,6 +4341,17 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 19,
+        "culpa": 0.253,
+        "merito": 0.24
+      },
+      {
+        "matchId": 9091527621,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794752497,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 14,
         "culpa": null,
         "merito": null,
         "provisoria": true
@@ -6761,14 +6770,13 @@
       {
         "matchId": 9091286064,
         "lado": "dire",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1794743562,
         "comStack": true,
         "ranqueada": true,
         "heroi": 6,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.156,
+        "merito": 0.251
       },
       {
         "matchId": 9091372526,
@@ -6778,9 +6786,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 94,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.121,
+        "merito": 0.174
       },
       {
         "matchId": 9091453180,
@@ -6790,9 +6797,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 6,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.181,
+        "merito": 0.202
       }
     ]
   },
