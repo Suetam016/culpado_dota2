@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-16T01:02:18Z",
+ "atualizadoEm": "2026-11-16T01:42:29Z",
  "desde": "2025-12-21",
- "partidasLidas": 1336,
+ "partidasLidas": 1340,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -2062,8 +2062,8 @@
      "venceu": false,
      "heroiA": 85,
      "heroiB": 76,
-     "posA": null,
-     "posB": null
+     "posA": 3,
+     "posB": 2
     },
     {
      "matchId": 9092205660,
@@ -2913,9 +2913,9 @@
     {
      "posA": 2,
      "posB": 4,
-     "jogos": 31,
+     "jogos": 32,
      "vitorias": 18,
-     "winRate": 58
+     "winRate": 56
     },
     {
      "posA": 2,
@@ -3015,8 +3015,8 @@
      "venceu": false,
      "heroiA": 76,
      "heroiB": 45,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 4
     },
     {
      "matchId": 9092205660,
@@ -3109,9 +3109,9 @@
     {
      "posA": 3,
      "posB": 4,
-     "jogos": 9,
+     "jogos": 10,
      "vitorias": 5,
-     "winRate": 56
+     "winRate": 50
     },
     {
      "posA": 3,
@@ -3190,8 +3190,8 @@
      "venceu": false,
      "heroiA": 85,
      "heroiB": 45,
-     "posA": null,
-     "posB": null
+     "posA": 3,
+     "posB": 4
     },
     {
      "matchId": 9092205660,
@@ -7947,9 +7947,9 @@
       "81918076": 2,
       "1254464470": 4
      },
-     "jogos": 2,
+     "jogos": 3,
      "vitorias": 2,
-     "winRate": 100
+     "winRate": 67
     }
    ],
    "partidas": [
@@ -7960,15 +7960,15 @@
      "herois": {
       "77621319": {
        "heroi": 85,
-       "pos": null
+       "pos": 3
       },
       "81918076": {
        "heroi": 76,
-       "pos": null
+       "pos": 2
       },
       "1254464470": {
        "heroi": 45,
-       "pos": null
+       "pos": 4
       }
      }
     },
@@ -16824,15 +16824,15 @@
     "vitorias": 3
    },
    {
-    "heroi": 30,
-    "pos": 5,
+    "heroi": 45,
+    "pos": 4,
     "jogos": 8,
     "vitorias": 5
    },
    {
-    "heroi": 45,
-    "pos": 4,
-    "jogos": 7,
+    "heroi": 30,
+    "pos": 5,
+    "jogos": 8,
     "vitorias": 5
    },
    {
@@ -16990,12 +16990,6 @@
     "pos": 1,
     "jogos": 1,
     "vitorias": 0
-   },
-   {
-    "heroi": 45,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
    }
   ],
   "81918076": [
@@ -17038,7 +17032,7 @@
    {
     "heroi": 76,
     "pos": 2,
-    "jogos": 7,
+    "jogos": 8,
     "vitorias": 6
    },
    {
@@ -17200,12 +17194,6 @@
    {
     "heroi": 79,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 76,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -18460,6 +18448,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 85,
+    "pos": 3,
+    "jogos": 3,
+    "vitorias": 2
+   },
+   {
     "heroi": 108,
     "pos": 3,
     "jogos": 3,
@@ -18470,12 +18464,6 @@
     "pos": 1,
     "jogos": 3,
     "vitorias": 0
-   },
-   {
-    "heroi": 85,
-    "pos": 3,
-    "jogos": 2,
-    "vitorias": 2
    },
    {
     "heroi": 81,
@@ -18642,12 +18630,6 @@
    {
     "heroi": 43,
     "pos": 2,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 85,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -35756,23 +35738,23 @@
     [
      "81918076",
      76,
-     0,
-     null,
-     null
+     2,
+     2,
+     0
     ],
     [
      "77621319",
      85,
-     0,
-     null,
-     null
+     3,
+     3,
+     -1
     ],
     [
      "1254464470",
      45,
-     0,
-     null,
-     null
+     4,
+     3,
+     -1
     ]
    ]
   }
