@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-16T15:01:42Z",
+  "quando": "2026-11-16T15:41:24Z",
   "restante": {
-   "dia": 2944,
-   "minuto": 4
+   "dia": 2995,
+   "minuto": 55
   }
  },
  "desistencias": {
@@ -328,7 +328,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-16T15:01:21Z",
+   "em": "2026-11-16T15:41:20Z",
    "partidas": {
     "9071897758": 1793548300,
     "9072316763": 1793564945,
@@ -1880,7 +1880,10 @@
   },
   "9092760937": {
    "companheiros": [
-    105531519
+    105531519,
+    123091832,
+    160752163,
+    457363077
    ],
    "inicio": 1794833916
   }
@@ -1947,6 +1950,7 @@
   "122344374": "Assando um caramelow",
   "122704756": "Gambazin",
   "122916942": "MaulGOD",
+  "123091832": "Romenes",
   "123129993": "Digazz",
   "123249568": "ZurK",
   "124172947": "6ix9ine",
@@ -1985,6 +1989,7 @@
   "1540058266": "BlackDoGGi",
   "1560507258": "Sister Hong",
   "1582362165": "TOPSON",
+  "160752163": "SpockJr",
   "161541518": "Kenshin",
   "164111251": "M.r  ßøøgı£ .",
   "167025374": "Ana MODE",
@@ -2058,6 +2063,7 @@
   "4414574": "xD",
   "44393742": "CZRosa - #SABEDENADA",
   "456790083": "SooPsK",
+  "457363077": "Lfzz",
   "459654733": "kAyKuNaPY",
   "463712184": "brunotakahashiii",
   "468404617": "AdalidB",
@@ -2124,53 +2130,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9092637465": {
-   "inicio": 1794827436,
-   "pedido_em": "2026-11-16T15:01:37Z",
-   "primeira_vez": "2026-11-16T15:01:36Z",
-   "proxima": "2026-11-16T15:31:36Z",
-   "tentativas": 0
-  },
-  "9092733570": {
-   "inicio": 1794832626,
-   "pedido_em": "2026-11-16T15:01:40Z",
-   "primeira_vez": "2026-11-16T15:01:38Z",
-   "proxima": "2026-11-16T15:31:38Z",
-   "tentativas": 0
-  },
-  "9092760937": {
-   "inicio": 1794833916,
-   "pedido_em": "2026-11-16T15:01:23Z",
-   "primeira_vez": "2026-11-16T15:01:22Z",
-   "proxima": "2026-11-16T15:31:22Z",
-   "tentativas": 0
-  },
-  "9092789640": {
-   "inicio": 1794835181,
-   "pedido_em": "2026-11-16T15:01:42Z",
-   "primeira_vez": "2026-11-16T15:01:41Z",
-   "proxima": "2026-11-16T15:31:41Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 2,
-   "fim": "fila vazia",
-   "inicio": "2026-11-14T10:21:24Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 2,
-   "restante": {
-    "dia": 2997,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2694
-  },
   {
    "basicas": 0,
    "chamadas": 3,
@@ -2919,6 +2880,22 @@
     "minuto": 4
    },
    "sobra_do_dia": 2681
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-16T15:41:19Z",
+   "novas": 4,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2995,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2676
   }
  ],
  "uso": {
@@ -2935,6 +2912,6 @@
   "2026-11-13": 213,
   "2026-11-14": 194,
   "2026-11-15": 198,
-  "2026-11-16": 119
+  "2026-11-16": 124
  }
 }
