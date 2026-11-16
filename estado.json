@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-16T18:01:47Z",
+  "quando": "2026-11-16T18:41:31Z",
   "restante": {
-   "dia": 2952,
-   "minuto": 12
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -327,7 +327,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-16T18:01:22Z",
+   "em": "2026-11-16T18:41:27Z",
    "partidas": {
     "9072316763": 1793564945,
     "9072417526": 1793570945,
@@ -556,15 +556,6 @@
   }
  },
  "lo": {
-  "9049718112": {
-   "companheiros": [
-    77621319,
-    96286191,
-    241782761,
-    1254464470
-   ],
-   "inicio": 1792261977
-  },
   "9051285470": {
    "companheiros": [
     26668150,
@@ -1881,13 +1872,19 @@
   },
   "9092986912": {
    "companheiros": [
-    101674532
+    86002568,
+    101674532,
+    124207986,
+    153716607
    ],
    "inicio": 1794843406
   },
   "9093101813": {
    "companheiros": [
-    115300728
+    81280789,
+    115300728,
+    127510305,
+    194774950
    ],
    "inicio": 1794848406
   }
@@ -1959,6 +1956,7 @@
   "123129993": "Digazz",
   "123249568": "ZurK",
   "124172947": "6ix9ine",
+  "124207986": "Rato",
   "125247406": "Pantera cor de Pau",
   "1254464470": "Conhecido do Baia",
   "125789198": "Juniorfs",
@@ -1967,6 +1965,7 @@
   "127118246": "bandit",
   "127129533": "Towards to Collection",
   "127358557": "Creeping Death",
+  "127510305": "Gui | NTSKINS",
   "127779902": "Mikasa, Tukasa",
   "127806435": "mario bros",
   "1280918127": "O Advogado do Diabo",
@@ -1991,6 +1990,7 @@
   "153197325": "VINI",
   "1536664773": "MORPHEUS",
   "153690834": "Tarabai",
+  "153716607": "NANK",
   "1560507258": "Sister Hong",
   "1582362165": "TOPSON",
   "160752163": "SpockJr",
@@ -2021,6 +2021,7 @@
   "190125635": "Yokukurama",
   "1921219314": "Ituzin",
   "192410217": "skyy1",
+  "194774950": "Bulldog Venenoso",
   "195881962": "Mata Comunista",
   "196345151": "ª",
   "197895566": "Priester",
@@ -2096,12 +2097,14 @@
   "805395786": "NagatO_xd",
   "80626598": "lezardfleck",
   "80989545": "Thatoso",
+  "81280789": "tmacena",
   "83300280": "ptn",
   "83692187": "Raks",
   "838308714": "schneider *",
   "840831822": "Dialminha",
   "84356647": "Capitão Barba-Olho",
   "847060475": "DRACOLICH",
+  "86002568": "Lula|13",
   "860477957": "Never Fear",
   "860958715": "armaggedon",
   "86725673": "Fēngkuáng jiùshì lìliàng",
@@ -2134,46 +2137,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9092882695": {
-   "inicio": 1794839051,
-   "pedido_em": "2026-11-16T18:01:41Z",
-   "primeira_vez": "2026-11-16T18:01:40Z",
-   "proxima": "2026-11-16T18:31:40Z",
-   "tentativas": 0
-  },
-  "9092986912": {
-   "inicio": 1794843406,
-   "pedido_em": "2026-11-16T18:01:24Z",
-   "primeira_vez": "2026-11-16T18:01:23Z",
-   "proxima": "2026-11-16T18:31:23Z",
-   "tentativas": 0
-  },
-  "9093101813": {
-   "inicio": 1794848406,
-   "pedido_em": "2026-11-16T18:01:27Z",
-   "primeira_vez": "2026-11-16T18:01:25Z",
-   "proxima": "2026-11-16T18:31:25Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 2,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-14T11:21:19Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2990,
-    "minuto": 53
-   },
-   "sobra_do_dia": 2681
-  },
   {
    "basicas": 0,
    "chamadas": 12,
@@ -2922,6 +2887,22 @@
     "minuto": 12
    },
    "sobra_do_dia": 2655
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-16T18:41:27Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2651
   }
  ],
  "uso": {
@@ -2938,6 +2919,6 @@
   "2026-11-13": 213,
   "2026-11-14": 194,
   "2026-11-15": 198,
-  "2026-11-16": 145
+  "2026-11-16": 149
  }
 }
