@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-16T00:22:07.088Z",
+  "atualizadoEm": "2026-11-16T01:02:08.796Z",
   "semAnalise": 4,
   "ranking": [
     {
@@ -29,14 +29,14 @@
     {
       "accountId": "81918076",
       "nome": "Suéter",
-      "culpados": 15,
+      "culpados": 16,
       "craques": 20,
-      "partidas": 265,
+      "partidas": 266,
       "vitorias": 133,
       "winRate": 50,
       "streak": null,
       "mmrGanho": 3175,
-      "mmrPerdido": 3225
+      "mmrPerdido": 3250
     },
     {
       "accountId": "83300280",
@@ -79,24 +79,24 @@
       "nome": "Jalim",
       "culpados": 11,
       "craques": 13,
-      "partidas": 105,
+      "partidas": 106,
       "vitorias": 53,
       "winRate": 50,
       "streak": null,
       "mmrGanho": 1300,
-      "mmrPerdido": 1300
+      "mmrPerdido": 1325
     },
     {
       "accountId": "1254464470",
       "nome": "Conhecido do Baia",
       "culpados": 9,
       "craques": 7,
-      "partidas": 135,
+      "partidas": 136,
       "vitorias": 62,
       "winRate": 46,
       "streak": null,
       "mmrGanho": 1350,
-      "mmrPerdido": 1775
+      "mmrPerdido": 1800
     },
     {
       "accountId": "96286191",
@@ -1718,6 +1718,17 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 5,
+        "culpa": 0.114,
+        "merito": 0.281
+      },
+      {
+        "matchId": 9092231003,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794786841,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 85,
         "culpa": null,
         "merito": null,
         "provisoria": true
@@ -4631,11 +4642,22 @@
       {
         "matchId": 9092205660,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1794784206,
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
+        "culpa": 0.272,
+        "merito": 0.143
+      },
+      {
+        "matchId": 9092231003,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794786841,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 76,
         "culpa": null,
         "merito": null,
         "provisoria": true
@@ -16463,6 +16485,17 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 64,
+        "culpa": 0.165,
+        "merito": 0.382
+      },
+      {
+        "matchId": 9092231003,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1794786841,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 45,
         "culpa": null,
         "merito": null,
         "provisoria": true
