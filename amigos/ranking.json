@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-17T02:06:14.337Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-17T02:42:03.334Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -39,6 +39,18 @@
       "mmrPerdido": 3275
     },
     {
+      "accountId": "111257540",
+      "nome": "Kuscomem",
+      "culpados": 14,
+      "craques": 6,
+      "partidas": 157,
+      "vitorias": 74,
+      "winRate": 47,
+      "streak": "culpado",
+      "mmrGanho": 1850,
+      "mmrPerdido": 2050
+    },
+    {
       "accountId": "83300280",
       "nome": "ptn",
       "culpados": 13,
@@ -49,18 +61,6 @@
       "streak": "culpado",
       "mmrGanho": 725,
       "mmrPerdido": 675
-    },
-    {
-      "accountId": "111257540",
-      "nome": "Kuscomem",
-      "culpados": 13,
-      "craques": 6,
-      "partidas": 157,
-      "vitorias": 74,
-      "winRate": 47,
-      "streak": "culpado",
-      "mmrGanho": 1850,
-      "mmrPerdido": 2050
     },
     {
       "accountId": "26668150",
@@ -8145,14 +8145,13 @@
       {
         "matchId": 9093435776,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1794865746,
         "comStack": false,
         "ranqueada": true,
         "heroi": 36,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.256,
+        "merito": 0.109
       }
     ],
     "241782761": [
