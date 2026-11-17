@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-17T21:21:23Z",
+  "quando": "2026-11-17T22:25:00Z",
   "restante": {
-   "dia": 2998,
-   "minuto": 58
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -296,9 +296,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-17T21:21:21Z",
+   "em": "2026-11-17T22:25:00Z",
    "partidas": {
-    "9073798983": 1793656891,
     "9073852151": 1793661585,
     "9073878417": 1793664425,
     "9073907597": 1793667820,
@@ -514,15 +513,6 @@
   }
  },
  "lo": {
-  "9051739695": {
-   "companheiros": [
-    83692187,
-    96286191,
-    110593143,
-    241782761
-   ],
-   "inicio": 1792359072
-  },
   "9051791878": {
    "companheiros": [
     77621319,
@@ -1857,7 +1847,6 @@
   "108106447": "Igrante",
   "109010624": "@ByCarica",
   "109873249": "Muerte",
-  "110593143": "Magoprost Kommandant",
   "111257540": "O Kulpado",
   "111452285": "bigode",
   "112651822": "Corvus",
@@ -2037,7 +2026,6 @@
   "80989545": "Thatoso",
   "81280789": "tmacena",
   "83300280": "ptn",
-  "83692187": "Raks",
   "838308714": "schneider *",
   "840831822": "Dialminha",
   "84356647": "Capitão Barba-Olho",
@@ -2077,22 +2065,6 @@
  },
  "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-15T16:21:24Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2998,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2666
-  },
   {
    "basicas": 0,
    "chamadas": 13,
@@ -2844,6 +2816,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2643
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-17T22:24:59Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2642
   }
  ],
  "uso": {
@@ -2860,6 +2848,6 @@
   "2026-11-14": 194,
   "2026-11-15": 198,
   "2026-11-16": 191,
-  "2026-11-17": 157
+  "2026-11-17": 158
  }
 }
