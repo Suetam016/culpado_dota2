@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-17T23:10:30Z",
+  "quando": "2026-11-17T23:41:22Z",
   "restante": {
-   "dia": 2976,
-   "minuto": 36
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -292,9 +292,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-17T23:10:14Z",
+   "em": "2026-11-17T23:41:21Z",
    "partidas": {
-    "9073852151": 1793661585,
     "9073878417": 1793664425,
     "9073907597": 1793667820,
     "9073941063": 1793671295,
@@ -510,15 +509,6 @@
   }
  },
  "lo": {
-  "9051821402": {
-   "companheiros": [
-    77621319,
-    96286191,
-    241782761,
-    1045015170
-   ],
-   "inicio": 1792366233
-  },
   "9051867073": {
    "companheiros": [
     77621319,
@@ -1822,7 +1812,6 @@
   "103594857": "DanDanDoMel",
   "103866021": "Alucarde",
   "104167138": "ΩHetzεl©Kill.Mαsτ€я®♣",
-  "1045015170": "ᴋwaи 友",
   "105531519": "John 3:16",
   "1055326038": "†",
   "105551889": "_evilhair_",
@@ -2051,32 +2040,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9094746684": {
-   "inicio": 1794952691,
-   "pedido_em": "2026-11-17T23:10:30Z",
-   "primeira_vez": "2026-11-17T23:10:28Z",
-   "proxima": "2026-11-17T23:40:28Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 5,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-15T17:59:31Z",
-   "novas": 0,
-   "pedidos": 1,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2986,
-    "minuto": 46
-   },
-   "sobra_do_dia": 2648
-  },
   {
    "basicas": 0,
    "chamadas": 3,
@@ -2828,6 +2793,22 @@
     "minuto": 36
    },
    "sobra_do_dia": 2627
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-17T23:41:21Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2625
   }
  ],
  "uso": {
@@ -2844,6 +2825,6 @@
   "2026-11-14": 194,
   "2026-11-15": 198,
   "2026-11-16": 191,
-  "2026-11-17": 173
+  "2026-11-17": 175
  }
 }
