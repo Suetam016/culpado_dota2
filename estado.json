@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-17T04:47:59Z",
+  "quando": "2026-11-17T05:21:22Z",
   "restante": {
-   "dia": 2987,
-   "minuto": 47
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -319,9 +319,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-17T04:47:56Z",
+   "em": "2026-11-17T05:21:21Z",
    "partidas": {
-    "9072669520": 1793596650,
     "9072694802": 1793599345,
     "9072728223": 1793602705,
     "9072764219": 1793605980,
@@ -2153,32 +2152,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9093625612": {
-   "inicio": 1794886009,
-   "pedido_em": "2026-11-17T04:47:59Z",
-   "primeira_vez": "2026-11-17T04:47:58Z",
-   "proxima": "2026-11-17T05:17:58Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 6,
-   "fim": "fila vazia",
-   "inicio": "2026-11-15T01:56:26Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 6,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2774
-  },
   {
    "basicas": 0,
    "chamadas": 7,
@@ -2930,6 +2905,22 @@
     "minuto": 47
    },
    "sobra_do_dia": 2752
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-17T05:21:20Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2750
   }
  ],
  "uso": {
@@ -2946,6 +2937,6 @@
   "2026-11-14": 194,
   "2026-11-15": 198,
   "2026-11-16": 191,
-  "2026-11-17": 48
+  "2026-11-17": 50
  }
 }
