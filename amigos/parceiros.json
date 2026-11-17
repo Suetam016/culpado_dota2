@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-17T03:55:26Z",
+ "atualizadoEm": "2026-11-17T04:48:40Z",
  "desde": "2025-12-21",
- "partidasLidas": 1359,
+ "partidasLidas": 1360,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,7 +11,7 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 251,
+   "jogos": 252,
    "vitorias": 124,
    "winRate": 49
   },
@@ -47,9 +47,9 @@
   },
   "96286191": {
    "nome": "charlinho",
-   "jogos": 95,
+   "jogos": 96,
    "vitorias": 48,
-   "winRate": 51
+   "winRate": 50
   },
   "83300280": {
    "nome": "ptn",
@@ -1750,9 +1750,9 @@
    "b": "96286191",
    "nomeA": "Suéter",
    "nomeB": "charlinho",
-   "jogos": 80,
+   "jogos": 81,
    "vitorias": 39,
-   "winRate": 49,
+   "winRate": 48,
    "rotas": [
     {
      "posA": 1,
@@ -1875,6 +1875,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9093625612,
+     "inicio": 1794886009,
+     "venceu": false,
+     "heroiA": 86,
+     "heroiB": 54,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9092259539,
      "inicio": 1794790106,
      "venceu": false,
@@ -1936,15 +1945,6 @@
      "heroiB": 54,
      "posA": 5,
      "posB": 1
-    },
-    {
-     "matchId": 9083848848,
-     "inicio": 1794277671,
-     "venceu": false,
-     "heroiA": 107,
-     "heroiB": 5,
-     "posA": 2,
-     "posB": 5
     }
    ]
   },
@@ -17036,8 +17036,8 @@
    {
     "heroi": 107,
     "pos": 2,
-    "jogos": 112,
-    "vitorias": 61
+    "jogos": 113,
+    "vitorias": 62
    },
    {
     "heroi": 107,
@@ -17178,12 +17178,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 107,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
     "heroi": 94,
     "pos": 1,
     "jogos": 1,
@@ -17240,6 +17234,12 @@
    {
     "heroi": 79,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 86,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -18792,6 +18792,12 @@
    {
     "heroi": 41,
     "pos": 1,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 54,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -35945,6 +35951,28 @@
     [
      "81918076",
      107,
+     2,
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9093625612,
+   "t": 1794886009,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     86,
+     0,
+     null,
+     null
+    ],
+    [
+     "96286191",
+     54,
      0,
      null,
      null
