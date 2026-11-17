@@ -4521,3 +4521,12 @@ OK 9093435776
   1418 usos de skill/item de 2395 no combat log
 OK 9093389424
 3 mapas novos
+Fila: [9093625612]
+  replay http://replay201.valve.net/570/9093625612_1372856735.dem.bz2 -> HTTP 200 application/octet-stream 70351818 inicio=b'(\xb5/\xfd\x00`\xc41\x0f\x0eH\x9e'
+  9093625612: 246511 eventos; tipos [('actions', 81886), ('DOTA_COMBATLOG_DAMAGE', 57757), ('interval', 36990), ('DOTA_COMBATLOG_MODIFIER_ADD', 16814), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 16690), ('DOTA_COMBATLOG_HEAL', 12765), ('DOTA_COMBATLOG_XP', 6255), ('DOTA_COMBATLOG_DEATH', 6052)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Centaur", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 96, "variant": 0, "facet_hero_id": 96, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ra
+  exemplo de habilidade: {"time": -68, "type": "DOTA_COMBATLOG_ABILITY", "value": 0, "attackername": "npc_dota_courier", "targetname": "npc_dota_hero_slark", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": false, "targethero": true, "attackerillusion": false, "targetillusion": false, "inflictor": "courier_take_stash_and_transfer_items"}
+  5579 registros de dano herói->herói
+  2512 usos de skill/item de 3944 no combat log
+OK 9093625612
+1 mapas novos
