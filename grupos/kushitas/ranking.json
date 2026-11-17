@@ -1,30 +1,30 @@
 {
-  "atualizadoEm": "2026-11-16T23:54:34.959Z",
-  "semAnalise": 1,
+  "atualizadoEm": "2026-11-17T02:07:58.544Z",
+  "semAnalise": 5,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
       "culpados": 92,
       "craques": 46,
-      "partidas": 377,
-      "vitorias": 180,
+      "partidas": 381,
+      "vitorias": 182,
       "winRate": 48,
       "streak": "culpado",
-      "mmrGanho": 4500,
-      "mmrPerdido": 4925
+      "mmrGanho": 4550,
+      "mmrPerdido": 4975
     },
     {
       "accountId": "200957620",
       "nome": "Danylera",
       "culpados": 38,
       "craques": 40,
-      "partidas": 221,
+      "partidas": 220,
       "vitorias": 104,
       "winRate": 47,
       "streak": null,
       "mmrGanho": 2550,
-      "mmrPerdido": 2875
+      "mmrPerdido": 2850
     },
     {
       "accountId": "85686824",
@@ -4519,20 +4519,57 @@
         "heroi": 39,
         "culpa": 0.379,
         "merito": 0.075
-      }
-    ],
-    "200957620": [
+      },
       {
-        "matchId": 8562799158,
+        "matchId": 9093445674,
         "lado": "dire",
         "tipo": "derrota",
-        "inicio": 1763339747,
+        "inicio": 1794866556,
         "comStack": false,
         "ranqueada": true,
         "heroi": 94,
-        "culpa": 0.164,
-        "merito": 0.111
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       },
+      {
+        "matchId": 9093479805,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1794869801,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9093510538,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794873276,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 19,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9093529418,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1794875526,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 43,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      }
+    ],
+    "200957620": [
       {
         "matchId": 8573583018,
         "lado": "dire",
@@ -6972,5 +7009,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-16T18:42:21.729Z"
+  "perfisEm": "2026-11-17T02:07:58.520Z"
 }
