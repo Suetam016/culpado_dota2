@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-18T04:22:14Z",
+  "quando": "2026-11-18T04:43:51Z",
   "restante": {
-   "dia": 2966,
-   "minuto": 28
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -294,9 +294,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-18T04:21:58Z",
+   "em": "2026-11-18T04:43:50Z",
    "partidas": {
-    "9074020563": 1793680270,
     "9075236651": 1793747451,
     "9075269221": 1793750575,
     "9075343936": 1793758790,
@@ -509,15 +508,6 @@
   }
  },
  "lo": {
-  "9051985772": {
-   "companheiros": [
-    86914604,
-    241782761,
-    274480448,
-    391297659
-   ],
-   "inicio": 1792383832
-  },
   "9052019500": {
    "companheiros": [
     97359011,
@@ -1921,7 +1911,6 @@
   "25767820": "WOLVERINEEE",
   "26668150": "3rvinha",
   "267952344": "Raphin",
-  "274480448": "Rem",
   "275621956": "DiBoa No VelhOeste",
   "278089376": "MaX",
   "291649230": "TOBIRAMA SENJU",
@@ -1946,7 +1935,6 @@
   "381222789": "caça rato",
   "383761271": "Menina Veneno Meu Pinto é Pequen",
   "38489943": "Okavango",
-  "391297659": "Molly",
   "438401371": "メ BΣKIПΗӨ.",
   "4414574": "xD",
   "44393742": "CZRosa - #SABEDENADA",
@@ -1990,7 +1978,6 @@
   "86733694": "PITIPIWPIW WIW WIW",
   "86774344": "Downardo11",
   "86885165": "Kruvik",
-  "86914604": "Ark.son",
   "87076353": "Silverwolf",
   "87449376": "†",
   "88054389": "Bruno",
@@ -2033,22 +2020,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-15T22:21:23Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2992,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2621
-  },
   {
    "basicas": 0,
    "chamadas": 17,
@@ -2800,6 +2771,22 @@
     "minuto": 28
    },
    "sobra_do_dia": 2755
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-18T04:43:50Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2754
   }
  ],
  "uso": {
@@ -2816,6 +2803,6 @@
   "2026-11-15": 198,
   "2026-11-16": 191,
   "2026-11-17": 175,
-  "2026-11-18": 45
+  "2026-11-18": 46
  }
 }
