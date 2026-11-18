@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-18T02:41:28Z",
+  "quando": "2026-11-18T03:21:25Z",
   "restante": {
-   "dia": 2984,
-   "minuto": 44
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -293,9 +293,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-18T02:41:21Z",
+   "em": "2026-11-18T03:21:23Z",
    "partidas": {
-    "9073969510": 1793674475,
     "9073990634": 1793676864,
     "9074020563": 1793680270,
     "9075236651": 1793747451,
@@ -510,15 +509,6 @@
   }
  },
  "lo": {
-  "9051933789": {
-   "companheiros": [
-    152767398,
-    241782761,
-    860477957,
-    1582362165
-   ],
-   "inicio": 1792378217
-  },
   "9051958591": {
    "companheiros": [
     62300589,
@@ -1894,13 +1884,11 @@
   "148364503": "Manaos Man",
   "148946557": "Markytos",
   "150437875": "kludd",
-  "152767398": "og8",
   "153197325": "VINI",
   "1536664773": "MORPHEUS",
   "153690834": "Tarabai",
   "153716607": "NANK",
   "1560507258": "Sister Hong",
-  "1582362165": "TOPSON",
   "160752163": "SpockJr",
   "161541518": "Kenshin",
   "164111251": "M.r  ßøøgı£ .",
@@ -2009,7 +1997,6 @@
   "84356647": "Capitão Barba-Olho",
   "847060475": "DRACOLICH",
   "86002568": "Lula|13",
-  "860477957": "Never Fear",
   "860958715": "armaggedon",
   "86725673": "Fēngkuáng jiùshì lìliàng",
   "86733694": "PITIPIWPIW WIW WIW",
@@ -2041,32 +2028,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9094860409": {
-   "inicio": 1794965881,
-   "pedido_em": "2026-11-18T02:41:23Z",
-   "primeira_vez": "2026-11-18T02:41:22Z",
-   "proxima": "2026-11-18T03:11:22Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 5,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-15T21:35:11Z",
-   "novas": 2,
-   "pedidos": 1,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2986,
-    "minuto": 46
-   },
-   "sobra_do_dia": 2624
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -2818,6 +2781,22 @@
     "minuto": 44
    },
    "sobra_do_dia": 2773
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-18T03:21:23Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2771
   }
  ],
  "uso": {
@@ -2834,6 +2813,6 @@
   "2026-11-15": 198,
   "2026-11-16": 191,
   "2026-11-17": 175,
-  "2026-11-18": 27
+  "2026-11-18": 29
  }
 }
