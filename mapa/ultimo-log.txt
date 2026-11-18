@@ -4576,3 +4576,26 @@ OK 9094919525
   1727 usos de skill/item de 2710 no combat log
 OK 9094889918
 2 mapas novos
+Fila: [9095704528, 9095652064, 9095550211]
+  replay http://replay202.valve.net/570/9095704528_960883773.dem.bz2 -> HTTP 200 application/octet-stream 61018193 inicio=b'(\xb5/\xfd\x00`\x84f\x0f\x0e\xdb_'
+  9095704528: 194681 eventos; tipos [('actions', 70893), ('DOTA_COMBATLOG_DAMAGE', 35452), ('interval', 32130), ('DOTA_COMBATLOG_MODIFIER_ADD', 15029), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 14982), ('DOTA_COMBATLOG_DEATH', 4938), ('DOTA_COMBATLOG_XP', 4845), ('DOTA_COMBATLOG_HEAL', 4230)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Juggernaut", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 8, "variant": 0, "facet_hero_id": 8, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "r
+  exemplo de habilidade: {"time": -69, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_elder_titan", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_quelling_blade"}
+  3768 registros de dano herói->herói
+  4154 usos de skill/item de 5178 no combat log
+OK 9095704528
+  replay http://replay202.valve.net/570/9095652064_2061759330.dem.bz2 -> HTTP 200 application/octet-stream 30473706 inicio=b'(\xb5/\xfd\x00`\xac(\x0f>2^'
+  9095652064: 118680 eventos; tipos [('actions', 52854), ('DOTA_COMBATLOG_DAMAGE', 19840), ('interval', 19400), ('DOTA_COMBATLOG_MODIFIER_ADD', 6004), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 5946), ('DOTA_COMBATLOG_HEAL', 4152), ('DOTA_COMBATLOG_XP', 2688), ('DOTA_COMBATLOG_DEATH', 2180)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Juggernaut", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 8, "variant": 0, "facet_hero_id": 8, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "r
+  exemplo de habilidade: {"time": -53, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_sniper", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_observer"}
+  2080 registros de dano herói->herói
+  984 usos de skill/item de 1604 no combat log
+OK 9095652064
+  replay http://replay202.valve.net/570/9095550211_733666376.dem.bz2 -> HTTP 200 application/octet-stream 82771157 inicio=b'(\xb5/\xfd\x00`\xa47\x0f\x1e^\xde'
+  9095550211: 289385 eventos; tipos [('actions', 99364), ('DOTA_COMBATLOG_DAMAGE', 74012), ('interval', 41120), ('DOTA_COMBATLOG_MODIFIER_ADD', 18336), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 18232), ('DOTA_COMBATLOG_HEAL', 8711), ('DOTA_COMBATLOG_DEATH', 7815), ('DOTA_COMBATLOG_XP', 7081)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_NightStalker", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 75.65625, "y": 75.65625, "stuns": 0.0, "hero_id": 60, "variant": 0, "facet_hero_id": 60, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0
+  exemplo de habilidade: {"time": -58, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_disruptor", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  5270 registros de dano herói->herói
+  3559 usos de skill/item de 5728 no combat log
+OK 9095550211
+3 mapas novos
