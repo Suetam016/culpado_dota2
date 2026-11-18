@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-18T02:42:20Z",
+ "atualizadoEm": "2026-11-18T03:22:13Z",
  "desde": "2025-12-21",
  "partidasLidas": 1373,
  "jogadores": {
@@ -656,8 +656,8 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 96,
-     "posA": null,
-     "posB": null
+     "posA": 5,
+     "posB": 4
     },
     {
      "matchId": 9092142593,
@@ -3095,9 +3095,9 @@
     {
      "posA": 5,
      "posB": 2,
-     "jogos": 6,
-     "vitorias": 5,
-     "winRate": 83
+     "jogos": 7,
+     "vitorias": 6,
+     "winRate": 86
     },
     {
      "posA": 3,
@@ -3204,8 +3204,8 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 74,
-     "posA": null,
-     "posB": null
+     "posA": 5,
+     "posB": 2
     },
     {
      "matchId": 9085129964,
@@ -4145,8 +4145,8 @@
      "venceu": true,
      "heroiA": 96,
      "heroiB": 74,
-     "posA": null,
-     "posB": null
+     "posA": 4,
+     "posB": 2
     },
     {
      "matchId": 9085194502,
@@ -11621,15 +11621,15 @@
      "herois": {
       "81918076": {
        "heroi": 107,
-       "pos": null
+       "pos": 5
       },
       "83300280": {
        "heroi": 96,
-       "pos": null
+       "pos": 4
       },
       "1000265186": {
        "heroi": 74,
-       "pos": null
+       "pos": 2
       }
      }
     },
@@ -17123,14 +17123,14 @@
    },
    {
     "heroi": 107,
-    "pos": 4,
+    "pos": 5,
     "jogos": 5,
-    "vitorias": 3
+    "vitorias": 4
    },
    {
     "heroi": 107,
-    "pos": 5,
-    "jogos": 4,
+    "pos": 4,
+    "jogos": 5,
     "vitorias": 3
    },
    {
@@ -17214,12 +17214,6 @@
    {
     "heroi": 76,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 107,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -17476,8 +17470,8 @@
    {
     "heroi": 74,
     "pos": 2,
-    "jogos": 62,
-    "vitorias": 42
+    "jogos": 63,
+    "vitorias": 43
    },
    {
     "heroi": 91,
@@ -17854,12 +17848,6 @@
    {
     "heroi": 47,
     "pos": 3,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 74,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -18947,7 +18935,7 @@
    },
    {
     "heroi": 96,
-    "pos": 0,
+    "pos": 4,
     "jogos": 1,
     "vitorias": 1
    },
@@ -36079,23 +36067,23 @@
     [
      "81918076",
      107,
-     0,
-     null,
-     null
+     5,
+     3,
+     -1
     ],
     [
      "1000265186",
      74,
-     0,
-     null,
-     null
+     2,
+     2,
+     1
     ],
     [
      "83300280",
      96,
-     0,
-     null,
-     null
+     4,
+     3,
+     -1
     ]
    ]
   }
