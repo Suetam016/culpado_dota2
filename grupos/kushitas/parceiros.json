@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-19T22:02:38Z",
+ "atualizadoEm": "2026-11-19T22:42:38Z",
  "desde": "2026-03-31",
  "partidasLidas": 1408,
  "jogadores": {
@@ -35,16 +35,16 @@
     {
      "posA": 3,
      "posB": 1,
-     "jogos": 12,
+     "jogos": 13,
      "vitorias": 8,
-     "winRate": 67
+     "winRate": 62
     },
     {
      "posA": 5,
      "posB": 1,
-     "jogos": 19,
+     "jogos": 20,
      "vitorias": 10,
-     "winRate": 53
+     "winRate": 50
     },
     {
      "posA": 2,
@@ -123,8 +123,8 @@
      "venceu": false,
      "heroiA": 43,
      "heroiB": 36,
-     "posA": null,
-     "posB": null
+     "posA": 3,
+     "posB": 1
     },
     {
      "matchId": 9097197348,
@@ -132,8 +132,8 @@
      "venceu": false,
      "heroiA": 14,
      "heroiB": 6,
-     "posA": null,
-     "posB": null
+     "posA": 5,
+     "posB": 1
     },
     {
      "matchId": 9097132846,
@@ -601,13 +601,13 @@
    {
     "heroi": 6,
     "pos": 1,
-    "jogos": 32,
+    "jogos": 33,
     "vitorias": 15
    },
    {
     "heroi": 36,
     "pos": 1,
-    "jogos": 23,
+    "jogos": 24,
     "vitorias": 12
    },
    {
@@ -849,18 +849,6 @@
     "pos": 4,
     "jogos": 1,
     "vitorias": 0
-   },
-   {
-    "heroi": 6,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 36,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
    }
   ],
   "86736516": [
@@ -879,7 +867,7 @@
    {
     "heroi": 14,
     "pos": 5,
-    "jogos": 22,
+    "jogos": 23,
     "vitorias": 10
    },
    {
@@ -921,7 +909,7 @@
    {
     "heroi": 43,
     "pos": 3,
-    "jogos": 11,
+    "jogos": 12,
     "vitorias": 5
    },
    {
@@ -1323,18 +1311,6 @@
    {
     "heroi": 119,
     "pos": 3,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 14,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 43,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -11112,16 +11088,16 @@
     [
      "200957620",
      6,
-     0,
-     null,
-     null
+     1,
+     1,
+     1
     ],
     [
      "86736516",
      14,
-     0,
-     null,
-     null
+     5,
+     1,
+     1
     ]
    ]
   },
@@ -11134,16 +11110,16 @@
     [
      "200957620",
      36,
-     0,
-     null,
-     null
+     1,
+     1,
+     1
     ],
     [
      "86736516",
      43,
-     0,
-     null,
-     null
+     3,
+     3,
+     0
     ]
    ]
   }

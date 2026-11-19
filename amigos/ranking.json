@@ -1,16 +1,16 @@
 {
-  "atualizadoEm": "2026-11-19T21:36:44.354Z",
-  "semAnalise": 5,
+  "atualizadoEm": "2026-11-19T22:42:18.079Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
-      "culpados": 64,
+      "culpados": 65,
       "craques": 78,
       "partidas": 292,
       "vitorias": 144,
       "winRate": 49,
-      "streak": "craque",
+      "streak": null,
       "mmrGanho": 3525,
       "mmrPerdido": 3675
     },
@@ -41,7 +41,7 @@
     {
       "accountId": "111257540",
       "nome": "Kuscomem",
-      "culpados": 14,
+      "culpados": 15,
       "craques": 6,
       "partidas": 160,
       "vitorias": 76,
@@ -8244,14 +8244,13 @@
       {
         "matchId": 9097130679,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795114320,
         "comStack": true,
         "ranqueada": true,
         "heroi": 43,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.245,
+        "merito": 0.093
       }
     ],
     "241782761": [
@@ -15404,21 +15403,19 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 91,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.236,
+        "merito": 0.264
       },
       {
         "matchId": 9097267886,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795121519,
         "comStack": false,
         "ranqueada": true,
         "heroi": 74,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.321,
+        "merito": 0.297
       }
     ],
     "1254464470": [
@@ -16970,9 +16967,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 123,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.143,
+        "merito": 0.26
       }
     ]
   },
