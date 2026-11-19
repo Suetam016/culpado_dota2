@@ -4,7 +4,7 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-19T15:01:26Z",
+  "quando": "2026-11-19T15:42:48Z",
   "restante": {
    "dia": 2995,
    "minuto": 55
@@ -1941,34 +1941,18 @@
    "inicio": 1795085214,
    "pedido_em": "2026-11-19T11:41:40Z",
    "primeira_vez": "2026-11-19T11:41:39Z",
-   "proxima": "2026-11-19T15:16:23Z",
-   "tentativas": 5
+   "proxima": "2026-11-19T15:57:47Z",
+   "tentativas": 6
   },
   "9096660559": {
    "inicio": 1795094994,
    "pedido_em": "2026-11-19T14:21:41Z",
    "primeira_vez": "2026-11-19T14:21:40Z",
-   "proxima": "2026-11-19T15:16:26Z",
-   "tentativas": 1
+   "proxima": "2026-11-19T15:57:47Z",
+   "tentativas": 2
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 14,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-17T07:41:21Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2986,
-    "minuto": 46
-   },
-   "sobra_do_dia": 2736
-  },
   {
    "basicas": 0,
    "chamadas": 19,
@@ -2720,6 +2704,22 @@
     "minuto": 55
    },
    "sobra_do_dia": 2651
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-19T15:41:25Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2995,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2646
   }
  ],
  "uso": {
@@ -2736,6 +2736,6 @@
   "2026-11-16": 191,
   "2026-11-17": 175,
   "2026-11-18": 161,
-  "2026-11-19": 149
+  "2026-11-19": 154
  }
 }
