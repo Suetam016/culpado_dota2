@@ -8,7 +8,8 @@ on:
   schedule:
     - cron: "*/10 * * * *"
   push:
-    paths: ["mapa/pedidos/**", ".github/workflows/mapa.yml", "mapa/processar.py"]
+    branches: [main]
+    paths: ["mapa/pedidos/**", ".github/workflows/mapa.yml", "mapa/processar.py", "mapa/parser_clones.py"]
 
 permissions:
   contents: write
@@ -39,7 +40,7 @@ jobs:
         id: cache
         with:
           path: parser-jar
-          key: parser-jar-${{ steps.versao.outputs.sha }}
+          key: parser-jar-${{ steps.versao.outputs.sha }}-${{ hashFiles('mapa/parser_clones.py') }}
       - name: Subir o parser e as dependências (em segundo plano)
         run: |
           (pip install -q zstandard > pip.log 2>&1 && touch pip.ok) &
@@ -56,6 +57,7 @@ jobs:
           if [ ! -f parser-jar/parser.jar ]; then
             echo "compilando o parser (sem cache)"
             git clone --depth 1 https://github.com/odota/parser.git parser
+            python mapa/parser_clones.py parser  # posição dos clones do Meepo / Arc Warden
             (cd parser && JAVA_HOME="$JAVA_HOME_21_X64" mvn -q -DskipTests package)
             mkdir -p parser-jar
             cp "$(ls parser/target/*.jar | grep -v original | head -1)" parser-jar/parser.jar
@@ -71,7 +73,7 @@ jobs:
         if: steps.fila.outputs.fila != '0' && steps.cache.outputs.cache-hit != 'true'
         with:
           path: parser-jar
-          key: parser-jar-${{ steps.versao.outputs.sha }}
+          key: parser-jar-${{ steps.versao.outputs.sha }}-${{ hashFiles('mapa/parser_clones.py') }}
       # pedidos do botão "Gerar o mapa agora" primeiro, publicados na hora (quem pediu está esperando na página)
       - name: Processar os pedidos do site
         if: steps.fila.outputs.pedidos != '0' && steps.fila.outputs.pedidos != ''

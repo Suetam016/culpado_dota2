@@ -235,5 +235,23 @@ class Novos(unittest.TestCase):
         self.assertIn("fila=1", saida.read_text())
 
 
+
+class Clones(unittest.TestCase):
+    def test_clone_vira_lista_por_segundo_e_ilusao_curta_sai(self):
+        pos = {t: (float(t), 1.0) for t in range(10, 200) if not 50 <= t < 60}  # morto dos 50 aos 59
+        ilusao = {t: (0.0, 0.0) for t in range(300, 375)}
+        out = P.clones({1: {"slot": 4, "pos": pos}, 2: {"slot": 4, "pos": ilusao}}, [0, 1, 2, 3, 4], 0, 400)
+        self.assertEqual(len(out), 1)
+        k, ini, xs, ys = out[0]
+        self.assertEqual((k, ini, len(xs)), (4, 10, 190))
+        self.assertIsNone(xs[45])
+        self.assertEqual(xs[0], 10.0)
+
+    def test_mapa_de_meepo_sem_clones_volta_para_a_fila(self):
+        self.assertTrue(P.sem_clones('{"v":4,"hab":[["meepo_poof","Poof","h"]]}'))
+        self.assertFalse(P.sem_clones('{"v":4,"hab":[["meepo_poof","Poof","h"]],"clones":[]}'))
+        self.assertFalse(P.sem_clones('{"v":4,"hab":[["pudge_rot","Rot","h"]]}'))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
