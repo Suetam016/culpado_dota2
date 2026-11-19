@@ -1,11 +1,11 @@
 {
-  "atualizadoEm": "2026-11-19T02:50:48.677Z",
-  "semAnalise": 3,
+  "atualizadoEm": "2026-11-19T03:22:21.994Z",
+  "semAnalise": 1,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
-      "culpados": 99,
+      "culpados": 100,
       "craques": 49,
       "partidas": 399,
       "vitorias": 186,
@@ -17,7 +17,7 @@
     {
       "accountId": "200957620",
       "nome": "Danylera",
-      "culpados": 38,
+      "culpados": 39,
       "craques": 40,
       "partidas": 224,
       "vitorias": 105,
@@ -4759,21 +4759,19 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 91,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.179,
+        "merito": 0.281
       },
       {
         "matchId": 9096091994,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795049161,
         "comStack": true,
         "ranqueada": true,
         "heroi": 128,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.256,
+        "merito": 0.176
       }
     ],
     "200957620": [
@@ -7222,14 +7220,13 @@
       {
         "matchId": 9096060850,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795045814,
         "comStack": true,
         "ranqueada": true,
         "heroi": 54,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.274,
+        "merito": 0.094
       },
       {
         "matchId": 9096091994,
@@ -7239,9 +7236,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 54,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.173,
+        "merito": 0.124
       }
     ]
   },
