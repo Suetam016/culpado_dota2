@@ -1,0 +1,36 @@
+name: Baixar notas de patch (protótipo)
+
+# Baixa as notas oficiais do patch (datafeed do dota2.com) + listas de heróis/itens/habilidades
+# e grava em prototipos/patch/<versão>/ no próprio branch. Só para protótipo; não mexe no site.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-80qzmn]
+    paths: [".github/workflows/patch-notas.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Baixar
+        run: |
+          V=7.42; D=prototipos/patch/$V; mkdir -p $D
+          B=https://www.dota2.com/datafeed
+          curl -sSf -A "Mozilla/5.0" "$B/patchnoteslist?language=english" -o $D/lista.json
+          curl -sSf -A "Mozilla/5.0" "$B/patchnotes?version=$V&language=english" -o $D/notas-en.json
+          curl -sSf -A "Mozilla/5.0" "$B/patchnotes?version=$V&language=brazilian" -o $D/notas-br.json || true
+          curl -sSf -A "Mozilla/5.0" "$B/herolist?language=english" -o $D/herois.json
+          curl -sSf -A "Mozilla/5.0" "$B/itemlist?language=english" -o $D/itens.json
+          curl -sSf -A "Mozilla/5.0" "$B/abilitylist?language=english" -o $D/habilidades.json || true
+          curl -sSf -A "Mozilla/5.0" "$B/abilitylist?language=brazilian" -o $D/habilidades-br.json || true
+          curl -sSf -A "Mozilla/5.0" "$B/itemlist?language=brazilian" -o $D/itens-br.json || true
+          ls -la $D
+      - name: Gravar
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/patch; git commit -m "Notas do patch 7.42 (dados brutos para protótipo)" || exit 0
+          git push
