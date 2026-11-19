@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-19T17:01:40Z",
+  "quando": "2026-11-19T17:41:34Z",
   "restante": {
-   "dia": 2979,
-   "minuto": 39
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -307,7 +307,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-19T17:01:28Z",
+   "em": "2026-11-19T17:41:31Z",
    "partidas": {
     "9076561579": 1793827966,
     "9077962020": 1793926890,
@@ -1942,41 +1942,18 @@
    "inicio": 1795085214,
    "pedido_em": "2026-11-19T11:41:40Z",
    "primeira_vez": "2026-11-19T11:41:39Z",
-   "proxima": "2026-11-19T17:16:37Z",
-   "tentativas": 8
+   "proxima": "2026-11-19T17:56:32Z",
+   "tentativas": 9
   },
   "9096660559": {
    "inicio": 1795094994,
    "pedido_em": "2026-11-19T14:21:41Z",
    "primeira_vez": "2026-11-19T14:21:40Z",
-   "proxima": "2026-11-19T17:16:37Z",
-   "tentativas": 4
-  },
-  "9096778602": {
-   "inicio": 1795099679,
-   "pedido_em": "2026-11-19T17:01:40Z",
-   "primeira_vez": "2026-11-19T17:01:38Z",
-   "proxima": "2026-11-19T17:31:38Z",
-   "tentativas": 0
+   "proxima": "2026-11-19T17:56:33Z",
+   "tentativas": 5
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-17T13:01:23Z",
-   "novas": 3,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2695
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -2728,6 +2705,22 @@
     "minuto": 39
    },
    "sobra_do_dia": 2627
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-19T17:41:30Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2623
   }
  ],
  "uso": {
@@ -2744,6 +2737,6 @@
   "2026-11-16": 191,
   "2026-11-17": 175,
   "2026-11-18": 161,
-  "2026-11-19": 173
+  "2026-11-19": 177
  }
 }
