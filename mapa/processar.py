@@ -148,6 +148,7 @@ def processar(match_id: int, parser: str, tmp: Path, amigos=None, espera_replay_
     heroi_do_slot: dict[int, int] = {}
     casts = []  # (tempo, nome do lançador, chave da habilidade, nome do alvo, item?)
     dano_brut: Counter = Counter()  # (segundo, atacante, alvo) -> dano, só herói em herói de verdade
+    clones_brut: dict[int, dict] = {}  # handle -> {"slot", "pos": {segundo: (x, y)}, "chave": Counter} (parser remendado)
     for ev in parsear(dem, parser):
         tipo = ev.get("type")
         tipos[tipo] += 1
@@ -159,6 +160,11 @@ def processar(match_id: int, parser: str, tmp: Path, amigos=None, espera_replay_
             pos.setdefault(int(ev["slot"]), {})[int(ev["time"])] = (round(float(ev["x"]), 1), round(float(ev["y"]), 1))
             if ev.get("hero_id"):
                 heroi_do_slot[int(ev["slot"])] = int(ev["hero_id"])
+        elif tipo == "clone" and ev.get("x") is not None and ev.get("slot") is not None:
+            cl = clones_brut.setdefault(int(ev.get("ehandle") or 0), {"slot": int(ev["slot"]), "pos": {}, "chave": Counter()})
+            cl["chave"][campos_clone(ev.get("key")).get("r", "")] += 1
+            if not ev.get("life_state"):  # 0 = vivo
+                cl["pos"][int(ev["time"])] = (round(float(ev["x"]), 1), round(float(ev["y"]), 1))
         elif tipo == "DOTA_COMBATLOG_DAMAGE" and ev.get("targethero") and not ev.get("targetillusion") and ev.get("value"):
             inf = ev.get("inflictor")
             inf = inf if isinstance(inf, str) and inf not in ("dota_unknown", "") else ""
@@ -193,8 +199,40 @@ def processar(match_id: int, parser: str, tmp: Path, amigos=None, espera_replay_
     dano = danos(dano_brut, ordem, heroi_do_slot, hab) if hab is not None else []
     print(f"  {len(dano)} registros de dano herói->herói")
     print(f"  {len(usos)} usos de skill/item de {len(casts)} no combat log")
+    cls = clones(clones_brut, ordem, t0, t1)
+    if clones_brut:
+        print(f"  clones: {len(clones_brut)} unidades, {len(cls)} no mapa; " + "; ".join(
+            f"slot {c['slot']} {len(c['pos'])}s r={dict(c['chave'])}" for c in list(clones_brut.values())[:12]))
     return {"v": VERSAO if hab is not None else 1, "id": match_id, "t0": t0, "slots": [slot_de.get(s, s) for s in ordem], "x": xs, "y": ys,
-            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos, "dano": dano}
+            "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos, "dano": dano, "clones": cls}
+
+
+def campos_clone(chave) -> dict:
+    """key do evento "clone" do parser remendado: "w=1;r=16777215;il=null;hp=900;mx=1200" -> dict de strings."""
+    out = {}
+    for parte in (chave or "").split(";"):
+        k, _, v = parte.partition("=")
+        if k:
+            out[k] = v
+    return out
+
+
+def clones(brut, ordem, t0, t1):
+    """[[k, ini, xs, ys]]: k = índice em slots do dono, ini = segundo (como t0) da primeira posição, xs/ys um por
+    segundo com null enquanto o clone está morto ou fora do jogo. Só unidades que andaram vivas 20 s ou mais."""
+    k_do_slot = {s: k for k, s in enumerate(ordem)}
+    out = []
+    for c in brut.values():
+        d = c["pos"]
+        k = k_do_slot.get(c["slot"])
+        if k is None or len(d) < 20:
+            continue
+        ini, fim = max(min(d), t0), min(max(d), t1)
+        xs = [d[t][0] if t in d else None for t in range(ini, fim + 1)]
+        ys = [d[t][1] if t in d else None for t in range(ini, fim + 1)]
+        out.append([k, ini, xs, ys])
+    out.sort(key=lambda c: (c[0], c[1]))
+    return out
 
 
 def danos(brut, ordem, heroi_do_slot, hab):
@@ -267,6 +305,11 @@ ESPERA_REPLAY_RODADA_S = 8 * 60  # soma das esperas numa rodada (os outros pedid
 ESPERA_PASSO_S = 20
 FALHA_VELHA_S = 30 * 86400  # falhas.json: entradas mais velhas que isto saem (o arquivo não cresce sem fim)
 ID_PARTIDA = re.compile(r"[0-9]{9,12}")  # só dígitos ASCII (str.isdigit aceita "²" e "١٢٣")
+
+
+def sem_clones(txt: str) -> bool:
+    """Mapa de partida com Meepo/Arc Warden feito antes do remendo dos clones (sem a chave "clones"): refazer."""
+    return ('"meepo_' in txt or '"arc_warden_' in txt) and '"clones":' not in txt
 
 
 def n_falhas(v) -> int:
@@ -360,7 +403,8 @@ def main() -> int:
     for arq in saida.glob("*.json"):
         if ID_PARTIDA.fullmatch(arq.stem):
             # versão antiga entra de novo na fila (no fim) para ganhar as skills
-            (feitos.add if f'"v":{VERSAO},' in arq.read_text()[:20] else antigos.append)(int(arq.stem))
+            txt = arq.read_text()
+            (feitos.add if f'"v":{VERSAO},' in txt[:20] and not sem_clones(txt) else antigos.append)(int(arq.stem))
     pedidos = Path(a.pedidos)
     pedidos_ids = sorted(int(f.name) for f in pedidos.glob("*") if ID_PARTIDA.fullmatch(f.name)) if pedidos.exists() else []
     pendentes = [i for i in pedidos_ids if i not in feitos]
