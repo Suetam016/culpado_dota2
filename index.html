@@ -13137,7 +13137,7 @@ pintarVol();
 let bNevoa = null;
 let bCam = null;
 if (!mini) {
-bCam = h('button', { type: 'button', class: 'mapa-botao m-ctl-cam', 'aria-pressed': String(camGuiada), title: 'A câmera acompanha a jogada; desligada, mostra o lance inteiro parado' }, iconeSvg('camera', 16), 'Câmera guiada');
+bCam = h('button', { type: 'button', class: 'mapa-botao m-ctl-cam', 'data-gtm': 'replay-camera', 'aria-pressed': String(camGuiada), title: 'A câmera acompanha a jogada; desligada, mostra o lance inteiro parado' }, iconeSvg('camera', 16), 'Câmera guiada');
 bCam.addEventListener('click', () => {
 camGuiada = !camGuiada;
 guardar('culpado:camera', camGuiada);
