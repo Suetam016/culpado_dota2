@@ -28,9 +28,11 @@ jobs:
           curl -sSf -A "Mozilla/5.0" "$B/abilitylist?language=english" -o $D/habilidades.json || true
           curl -sSf -A "Mozilla/5.0" "$B/abilitylist?language=brazilian" -o $D/habilidades-br.json || true
           curl -sSf -A "Mozilla/5.0" "$B/itemlist?language=brazilian" -o $D/itens-br.json || true
+          curl -sSf "https://api.opendota.com/api/heroStats" -o $D/herostats.json || true
+          curl -sSf "https://api.opendota.com/api/constants/items" -o $D/od-itens.json || true
           ls -la $D
       - name: Gravar
         run: |
           git config user.name "github-actions[bot]"; git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add prototipos/patch; git commit -m "Notas do patch 7.42 (dados brutos para protótipo)" || exit 0
+          git pull -q --rebase || true; git add prototipos/patch; git commit -m "Notas do patch 7.42 (dados brutos para protótipo)" || exit 0
           git push
