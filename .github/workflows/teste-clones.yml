@@ -21,7 +21,7 @@ jobs:
           python mapa/parser_clones.py parser
           (cd parser && JAVA_HOME="$JAVA_HOME_21_X64" mvn -q -DskipTests package)
           nohup "$JAVA_HOME_21_X64/bin/java" -Xmx5g -jar "$(ls parser/target/*.jar | grep -v original | head -1)" 5600 > parser.log 2>&1 &
-          for i in $(seq 1 120); do nc -z localhost 5600 && break; sleep 0.5; done
+          for i in $(seq 1 360); do nc -z localhost 5600 && break; sleep 0.5; done
       - name: Processar a partida do Meepo
         run: |
           mkdir -p /tmp/replays

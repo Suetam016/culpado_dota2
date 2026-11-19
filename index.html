@@ -11263,18 +11263,6 @@ tokens[p.idx] = g;
 rastros[p.idx] = [0.55, 0.35, 0.2, 0.1].map((op) => { const pth = s('path', { class: `m-trilho ${lado}`, opacity: op }); camadaRastros.append(pth); return pth; });
 }
 
-const tokClone = CLONES.map((c) => {
-const p = todos.find((x) => x.idx === c.dono);
-const lado = nosSet.has(c.dono) ? 'nos' : 'eles';
-const g = s('g', { class: `m-heroi m-clone ${lado}`, opacity: 0 });
-g.append(s('circle', { r: R, cx: 0.35, cy: 0.45, class: 'm-sombra' }), s('circle', { r: R + 0.35, class: 'm-contorno' }), s('circle', { r: R, class: 'm-anel' }));
-if (MOSTRAR_IMAGENS && p && p.heroi.img) {
-g.append(s('image', { href: CDN + p.heroi.img.replace(/\?$/, ''), x: -R * 1.78, y: -R, width: R * 3.56, height: R * 2, 'clip-path': `url(#${recorteId})`, preserveAspectRatio: 'xMidYMid slice' }));
-}
-g.append(s('circle', { r: R, class: 'm-clone-borda' }));
-camadaHerois.prepend(g); // embaixo dos heróis: o Meepo principal fica por cima
-return g;
-});
 const camadaSkills = s('g', { class: 'm-skills' });
 cam.append(camadaSkills);
 const HAB = mapa.hab || [];
@@ -11321,6 +11309,23 @@ if (dist(pa, pb) > SALTO_CLONE) return tt < (c.saltos[c.ini + a] ?? c.ini + a + 
 const f = i - a;
 return [pa[0] + (pb[0] - pa[0]) * f, pa[1] + (pb[1] - pa[1]) * f];
 };
+const tokClone = CLONES.map((c) => {
+const p = todos.find((x) => x.idx === c.dono);
+const lado = nosSet.has(c.dono) ? 'nos' : 'eles';
+const g = s('g', { class: `m-heroi m-clone ${lado}`, opacity: 0 });
+g.append(s('circle', { r: R, cx: 0.35, cy: 0.45, class: 'm-sombra' }), s('circle', { r: R + 0.35, class: 'm-contorno' }), s('circle', { r: R, class: 'm-anel' }));
+const sigla = s('text', { 'text-anchor': 'middle', y: 0.65, class: 'm-sigla' }, p ? p.heroi.nome.replace(/[^A-Za-z]/g, '').slice(0, 3) : '');
+g.append(sigla);
+if (MOSTRAR_IMAGENS && p && p.heroi.img) {
+const img = s('image', { href: CDN + p.heroi.img.replace(/\?$/, ''), x: -R * 1.78, y: -R, width: R * 3.56, height: R * 2, 'clip-path': `url(#${recorteId})`, preserveAspectRatio: 'xMidYMid slice' });
+img.addEventListener('load', () => { sigla.style.display = 'none'; });
+img.addEventListener('error', () => img.remove());
+g.append(img);
+}
+g.append(s('circle', { r: R, class: 'm-clone-borda' }));
+camadaHerois.prepend(g); // embaixo dos heróis: o Meepo principal fica por cima
+return g;
+});
 const DURA = 1.8;
 const candidatosSom = [];
 let ultimoSom = 0;

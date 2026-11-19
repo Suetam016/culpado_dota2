@@ -208,6 +208,9 @@ def processar(match_id: int, parser: str, tmp: Path, amigos=None, espera_replay_
             "limites": [min(todos_x), max(todos_x), min(todos_y), max(todos_y)], "hab": hab or [], "usos": usos, "dano": dano, "clones": cls}
 
 
+VIDA_MIN_CLONE = 90  # s: ilusão de runa dura 75 s, Manta 20 s
+
+
 def campos_clone(chave) -> dict:
     """key do evento "clone" do parser remendado: "w=1;r=16777215;il=null;hp=900;mx=1200" -> dict de strings."""
     out = {}
@@ -220,13 +223,14 @@ def campos_clone(chave) -> dict:
 
 def clones(brut, ordem, t0, t1):
     """[[k, ini, xs, ys]]: k = índice em slots do dono, ini = segundo (como t0) da primeira posição, xs/ys um por
-    segundo com null enquanto o clone está morto ou fora do jogo. Só unidades que andaram vivas 20 s ou mais."""
+    segundo com null enquanto o clone está morto ou fora do jogo. Ilusões (runa, Manta) também são unidades da mesma
+    classe e não se distinguem pelo replay; elas vivem no máximo 75 s, então só entra quem ficou 90 s ou mais no jogo."""
     k_do_slot = {s: k for k, s in enumerate(ordem)}
     out = []
     for c in brut.values():
         d = c["pos"]
         k = k_do_slot.get(c["slot"])
-        if k is None or len(d) < 20:
+        if k is None or not d or max(d) - min(d) < VIDA_MIN_CLONE:
             continue
         ini, fim = max(min(d), t0), min(max(d), t1)
         xs = [d[t][0] if t in d else None for t in range(ini, fim + 1)]
