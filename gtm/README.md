@@ -89,3 +89,7 @@ A caixa do "💬 Feedback" (home e /ranking/) ganhou o botão **🎤 Falar em ve
 `data-gtm="feedback-voz"` (no /ranking/ também `#fb-falar`). A transcrição é do próprio navegador e cai no mesmo campo
 de texto; o envio continua por `.fb-enviar` / `#fb-enviar`. Nenhum id, classe ou evento antigo mudou. O botão não aparece
 no Firefox (não transcreve). Ainda sem gatilho: se quiser medir, um clique em `[data-gtm="feedback-voz"]`.
+
+**Patch 7.42 (desde 19/11/2026):** o `/ranking/` ganhou uma faixa preta "O patch bateu o martelo. E em você?" que leva para
+`/prototipos/patch-742/`. Na Liga é o link `#ranking-patch742`; dentro de um grupo é `#ranking-patch742-grupo`
+(href com `?grupo=<id>`). Nada existente mudou de id. Para medir: clique em `a.patch-faixa` (o id diz de onde veio).

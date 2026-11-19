@@ -1110,3 +1110,12 @@ body.modo-liga .aba-conteudo { display: none !important; }
 .binario-nota { color: var(--muted); font-size: 13px; margin-top: 10px; line-height: 1.5; }
 .binario-nota .r { color: #ff5c6c; } .binario-nota .g { color: #e0a93a; }
 @media (max-width: 700px) { .binario-palco { height: 420px; } }
+
+/* Faixa do patch 7.42 (leva para /prototipos/patch-742/ com o grupo) */
+.patch-faixa { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 0 0 22px; padding: 14px 18px;
+  background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 4px solid #d93a2b; border-radius: var(--radius); color: #fff; text-decoration: none; }
+.patch-faixa:hover { border-color: #d93a2b; }
+.patch-faixa-tag { font: 700 11px/1 "Archivo Black","Arial Black",sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #d93a2b; }
+.patch-faixa-txt { flex: 1; min-width: 220px; font-size: 14px; color: #c9c9c9; }
+.patch-faixa-txt b { color: #fff; margin-right: 6px; }
+.patch-faixa-ir { font: 700 13px "Archivo Black","Arial Black",sans-serif; text-transform: uppercase; letter-spacing: .06em; background: #d93a2b; color: #fff; padding: 8px 12px; }
