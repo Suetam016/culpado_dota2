@@ -2,11 +2,11 @@ name: Baixar notas de patch (protótipo)
 
 # Baixa as notas oficiais do patch (datafeed do dota2.com) + listas de heróis/itens/habilidades
 # e grava em prototipos/patch/<versão>/ no próprio branch. Só para protótipo; não mexe no site.
+# Os brutos do 7.42 ficam na pasta do projeto (patch-7-42/dados-brutos); a página é prototipos/patch-742/index.html.
 on:
   workflow_dispatch:
-  push:
-    branches: [claude/project-thread-80qzmn]
-    paths: [".github/workflows/patch-notas.yml"]
+    inputs:
+      versao: { description: "Versão do patch (ex.: 7.42a)", required: true, default: "7.42" }
 
 permissions:
   contents: write
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Baixar
         run: |
-          V=7.42; D=prototipos/patch/$V; mkdir -p $D
+          V=${{ inputs.versao }}; D=prototipos/patch/$V; mkdir -p $D
           B=https://www.dota2.com/datafeed
           curl -sSf -A "Mozilla/5.0" "$B/patchnoteslist?language=english" -o $D/lista.json
           curl -sSf -A "Mozilla/5.0" "$B/patchnotes?version=$V&language=english" -o $D/notas-en.json
