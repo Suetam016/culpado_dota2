@@ -1,18 +1,18 @@
 {
-  "atualizadoEm": "2026-11-19T03:22:12.671Z",
-  "semAnalise": 3,
+  "atualizadoEm": "2026-11-19T05:44:16.637Z",
+  "semAnalise": 6,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
       "culpados": 62,
       "craques": 75,
-      "partidas": 283,
-      "vitorias": 140,
+      "partidas": 286,
+      "vitorias": 141,
       "winRate": 49,
       "streak": "craque",
-      "mmrGanho": 3425,
-      "mmrPerdido": 3550
+      "mmrGanho": 3450,
+      "mmrPerdido": 3600
     },
     {
       "accountId": "241782761",
@@ -31,12 +31,12 @@
       "nome": "Suéter",
       "culpados": 18,
       "craques": 20,
-      "partidas": 273,
+      "partidas": 274,
       "vitorias": 137,
       "winRate": 50,
       "streak": "culpado",
       "mmrGanho": 3225,
-      "mmrPerdido": 3300
+      "mmrPerdido": 3325
     },
     {
       "accountId": "111257540",
@@ -4747,6 +4747,18 @@
         "heroi": 107,
         "culpa": 0.117,
         "merito": 0.218
+      },
+      {
+        "matchId": 9096170127,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795057903,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "83300280": [
@@ -15273,6 +15285,42 @@
         "heroi": 46,
         "culpa": 0.119,
         "merito": 0.319
+      },
+      {
+        "matchId": 9096170127,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795057903,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 34,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9096199099,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1795061078,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 91,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9096221494,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795063529,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 88,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "1254464470": [
@@ -16843,5 +16891,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-18T21:39:38.018Z"
+  "perfisEm": "2026-11-19T05:44:16.552Z"
 }
