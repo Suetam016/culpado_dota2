@@ -162,7 +162,8 @@ def processar(match_id: int, parser: str, tmp: Path, amigos=None, espera_replay_
                 heroi_do_slot[int(ev["slot"])] = int(ev["hero_id"])
         elif tipo == "clone" and ev.get("x") is not None and ev.get("slot") is not None:
             cl = clones_brut.setdefault(int(ev.get("ehandle") or 0), {"slot": int(ev["slot"]), "pos": {}, "chave": Counter()})
-            cl["chave"][campos_clone(ev.get("key")).get("r", "")] += 1
+            cc = campos_clone(ev.get("key"))
+            cl["chave"][f'w={cc.get("w")} il={cc.get("il")}'] += 1
             if not ev.get("life_state"):  # 0 = vivo
                 cl["pos"][int(ev["time"])] = (round(float(ev["x"]), 1), round(float(ev["y"]), 1))
         elif tipo == "DOTA_COMBATLOG_DAMAGE" and ev.get("targethero") and not ev.get("targetillusion") and ev.get("value"):
