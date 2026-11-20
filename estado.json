@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2996",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-20T15:01:53Z",
+  "quando": "2026-11-20T15:41:28Z",
   "restante": {
-   "dia": 2971,
-   "minuto": 34
+   "dia": 2986,
+   "minuto": 46
   }
  },
  "desistencias": {
@@ -321,7 +321,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-20T15:01:45Z",
+   "em": "2026-11-20T15:41:24Z",
    "partidas": {
     "9077962020": 1793926890,
     "9077993525": 1793930614,
@@ -364,7 +364,8 @@
     "9093625612": 1794886009,
     "9094860409": 1794965881,
     "9096170127": 1795057903,
-    "9097396982": 1795132989
+    "9097396982": 1795132989,
+    "9098113102": 1795186810
    }
   },
   "83300280": {
@@ -1704,6 +1705,15 @@
     1565710149
    ],
    "inicio": 1795132989
+  },
+  "9098113102": {
+   "companheiros": [
+    77621319,
+    96286191,
+    411426020,
+    811484036
+   ],
+   "inicio": 1795186810
   }
  },
  "nomes": {
@@ -1859,6 +1869,7 @@
   "381222789": "caça rato",
   "383761271": "Menina Veneno Meu Pinto é Pequen",
   "38489943": "Okavango",
+  "411426020": "';@~~OwnagareeesS~>",
   "438401371": "メ BΣKIПΗӨ.",
   "4414574": "xD",
   "44393742": "CZRosa - #SABEDENADA",
@@ -1889,6 +1900,7 @@
   "805395786": "NagatO_xd",
   "80626598": "lezardfleck",
   "80989545": "Thatoso",
+  "811484036": "not-me",
   "81280789": "tmacena",
   "83300280": "ptn",
   "838308714": "schneider *",
@@ -1944,38 +1956,15 @@
    "proxima": "2026-11-20T20:41:25Z",
    "tentativas": 9
   },
-  "9097923682": {
-   "inicio": 1795179220,
-   "pedido_em": "2026-11-20T15:01:51Z",
-   "primeira_vez": "2026-11-20T15:01:50Z",
-   "proxima": "2026-11-20T15:31:50Z",
-   "tentativas": 0
-  },
-  "9097988133": {
-   "inicio": 1795181969,
-   "pedido_em": "2026-11-20T15:01:53Z",
-   "primeira_vez": "2026-11-20T15:01:52Z",
-   "proxima": "2026-11-20T15:31:52Z",
+  "9098113102": {
+   "inicio": 1795186810,
+   "pedido_em": "2026-11-20T15:41:26Z",
+   "primeira_vez": "2026-11-20T15:41:25Z",
+   "proxima": "2026-11-20T16:11:25Z",
    "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-19T06:21:21Z",
-   "novas": 3,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2730
-  },
   {
    "basicas": 0,
    "chamadas": 17,
@@ -2727,6 +2716,22 @@
     "minuto": 34
    },
    "sobra_do_dia": 2636
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 4,
+   "fim": "fila vazia",
+   "inicio": "2026-11-20T15:41:24Z",
+   "novas": 2,
+   "pedidos": 1,
+   "pendentes": 4,
+   "restante": {
+    "dia": 2986,
+    "minuto": 46
+   },
+   "sobra_do_dia": 2631
   }
  ],
  "uso": {
@@ -2743,6 +2748,6 @@
   "2026-11-17": 175,
   "2026-11-18": 161,
   "2026-11-19": 241,
-  "2026-11-20": 164
+  "2026-11-20": 169
  }
 }
