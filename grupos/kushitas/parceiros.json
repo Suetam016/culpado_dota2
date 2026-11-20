@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-20T19:22:44Z",
+ "atualizadoEm": "2026-11-20T20:22:39Z",
  "desde": "2026-03-31",
- "partidasLidas": 1428,
+ "partidasLidas": 1430,
  "jogadores": {
   "85686824": {
    "nome": "Rannis",
@@ -11,15 +11,15 @@
   },
   "86736516": {
    "nome": "Madruga",
-   "jogos": 69,
-   "vitorias": 27,
-   "winRate": 39
+   "jogos": 70,
+   "vitorias": 28,
+   "winRate": 40
   },
   "200957620": {
    "nome": "Danylera",
-   "jogos": 56,
-   "vitorias": 23,
-   "winRate": 41
+   "jogos": 57,
+   "vitorias": 24,
+   "winRate": 42
   }
  },
  "pares": [
@@ -28,9 +28,9 @@
    "b": "200957620",
    "nomeA": "Madruga",
    "nomeB": "Danylera",
-   "jogos": 54,
-   "vitorias": 23,
-   "winRate": 43,
+   "jogos": 55,
+   "vitorias": 24,
+   "winRate": 44,
    "rotas": [
     {
      "posA": 3,
@@ -87,6 +87,13 @@
    "herois": [
     {
      "heroiA": 73,
+     "heroiB": 20,
+     "jogos": 2,
+     "vitorias": 2,
+     "winRate": 100
+    },
+    {
+     "heroiA": 73,
      "heroiB": 93,
      "jogos": 2,
      "vitorias": 2,
@@ -117,6 +124,15 @@
     }
    ],
    "partidas": [
+    {
+     "matchId": 9098408959,
+     "inicio": 1795198441,
+     "venceu": true,
+     "heroiA": 73,
+     "heroiB": 20,
+     "posA": null,
+     "posB": null
+    },
     {
      "matchId": 9097412964,
      "inicio": 1795134943,
@@ -178,15 +194,6 @@
      "heroiA": 60,
      "heroiB": 6,
      "posA": 3,
-     "posB": 1
-    },
-    {
-     "matchId": 9096091994,
-     "inicio": 1795049161,
-     "venceu": false,
-     "heroiA": 128,
-     "heroiB": 54,
-     "posA": 2,
      "posB": 1
     }
    ]
@@ -797,6 +804,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 20,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
     "heroi": 96,
     "pos": 3,
     "jogos": 1,
@@ -1191,6 +1204,18 @@
    {
     "heroi": 43,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 128,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
+    "heroi": 73,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -11306,6 +11331,43 @@
      2,
      2,
      1
+    ]
+   ]
+  },
+  {
+   "id": 9098344131,
+   "t": 1795195745,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     128,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9098408959,
+   "t": 1795198441,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     73,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     20,
+     0,
+     null,
+     null
     ]
    ]
   }
