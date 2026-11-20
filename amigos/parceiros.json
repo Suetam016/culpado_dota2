@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-20T15:42:25Z",
+ "atualizadoEm": "2026-11-20T16:22:35Z",
  "desde": "2025-12-21",
  "partidasLidas": 1423,
  "jogadores": {
@@ -1639,17 +1639,17 @@
      "winRate": 60
     },
     {
+     "posA": 4,
+     "posB": 3,
+     "jogos": 4,
+     "vitorias": 2,
+     "winRate": 50
+    },
+    {
      "posA": 2,
      "posB": 1,
      "jogos": 20,
      "vitorias": 9,
-     "winRate": 45
-    },
-    {
-     "posA": 5,
-     "posB": 1,
-     "jogos": 11,
-     "vitorias": 5,
      "winRate": 45
     }
    ],
@@ -1670,10 +1670,10 @@
     },
     {
      "posA": 4,
-     "posB": 3,
-     "jogos": 3,
-     "vitorias": 1,
-     "winRate": 33
+     "posB": 5,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
     }
    ],
    "herois": [
@@ -1743,8 +1743,8 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 28,
-     "posA": null,
-     "posB": null
+     "posA": 4,
+     "posB": 3
     },
     {
      "matchId": 9093625612,
@@ -1989,6 +1989,13 @@
      "winRate": 67
     },
     {
+     "posA": 1,
+     "posB": 4,
+     "jogos": 3,
+     "vitorias": 2,
+     "winRate": 67
+    },
+    {
      "posA": 4,
      "posB": 2,
      "jogos": 13,
@@ -2008,13 +2015,6 @@
      "jogos": 7,
      "vitorias": 4,
      "winRate": 57
-    },
-    {
-     "posA": 3,
-     "posB": 4,
-     "jogos": 4,
-     "vitorias": 2,
-     "winRate": 50
     }
    ],
    "rotasPiores": [
@@ -2086,8 +2086,8 @@
      "venceu": true,
      "heroiA": 114,
      "heroiB": 107,
-     "posA": null,
-     "posB": null
+     "posA": 1,
+     "posB": 4
     },
     {
      "matchId": 9097396982,
@@ -3926,8 +3926,8 @@
      "venceu": true,
      "heroiA": 114,
      "heroiB": 28,
-     "posA": null,
-     "posB": null
+     "posA": 1,
+     "posB": 3
     },
     {
      "matchId": 9097567311,
@@ -7794,15 +7794,15 @@
      "herois": {
       "77621319": {
        "heroi": 114,
-       "pos": null
+       "pos": 1
       },
       "81918076": {
        "heroi": 107,
-       "pos": null
+       "pos": 4
       },
       "96286191": {
        "heroi": 28,
-       "pos": null
+       "pos": 3
       }
      }
     },
@@ -17308,15 +17308,15 @@
     "vitorias": 6
    },
    {
+    "heroi": 107,
+    "pos": 4,
+    "jogos": 7,
+    "vitorias": 4
+   },
+   {
     "heroi": 86,
     "pos": 4,
     "jogos": 7,
-    "vitorias": 3
-   },
-   {
-    "heroi": 107,
-    "pos": 4,
-    "jogos": 6,
     "vitorias": 3
    },
    {
@@ -17406,12 +17406,6 @@
    {
     "heroi": 76,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 107,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -18816,6 +18810,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 114,
+    "pos": 1,
+    "jogos": 2,
+    "vitorias": 1
+   },
+   {
     "heroi": 54,
     "pos": 1,
     "jogos": 2,
@@ -18884,12 +18884,6 @@
    {
     "heroi": 40,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 114,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -18964,12 +18958,6 @@
     "pos": 2,
     "jogos": 1,
     "vitorias": 0
-   },
-   {
-    "heroi": 114,
-    "pos": 1,
-    "jogos": 1,
-    "vitorias": 0
    }
   ],
   "96286191": [
@@ -19022,6 +19010,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 28,
+    "pos": 3,
+    "jogos": 3,
+    "vitorias": 2
+   },
+   {
     "heroi": 26,
     "pos": 5,
     "jogos": 3,
@@ -19038,12 +19032,6 @@
     "pos": 1,
     "jogos": 2,
     "vitorias": 2
-   },
-   {
-    "heroi": 28,
-    "pos": 3,
-    "jogos": 2,
-    "vitorias": 1
    },
    {
     "heroi": 2,
@@ -19068,12 +19056,6 @@
     "pos": 1,
     "jogos": 2,
     "vitorias": 0
-   },
-   {
-    "heroi": 28,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
    },
    {
     "heroi": 70,
@@ -36761,23 +36743,23 @@
     [
      "96286191",
      28,
-     0,
-     null,
-     null
+     3,
+     3,
+     1
     ],
     [
      "81918076",
      107,
-     0,
-     null,
-     null
+     4,
+     3,
+     1
     ],
     [
      "77621319",
      114,
-     0,
-     null,
-     null
+     1,
+     1,
+     1
     ]
    ]
   }
