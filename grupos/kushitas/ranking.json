@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-20T00:45:58.364Z",
-  "semAnalise": 5,
+  "atualizadoEm": "2026-11-20T01:22:40.676Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "86736516",
@@ -17,12 +17,12 @@
     {
       "accountId": "200957620",
       "nome": "Danylera",
-      "culpados": 39,
+      "culpados": 40,
       "craques": 43,
       "partidas": 231,
       "vitorias": 108,
       "winRate": 47,
-      "streak": "craque",
+      "streak": null,
       "mmrGanho": 2650,
       "mmrPerdido": 3025
     },
@@ -4882,9 +4882,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 19,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.203,
+        "merito": 0.316
       },
       {
         "matchId": 9097384262,
@@ -4894,9 +4893,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 14,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.23,
+        "merito": 0.217
       }
     ],
     "200957620": [
@@ -7427,21 +7425,19 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 94,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.137,
+        "merito": 0.215
       },
       {
         "matchId": 9097384262,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795131444,
         "comStack": true,
         "ranqueada": true,
         "heroi": 6,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.273,
+        "merito": 0.168
       }
     ]
   },
