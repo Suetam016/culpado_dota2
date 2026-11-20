@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-20T19:21:38Z",
+  "quando": "2026-11-20T20:05:49Z",
   "restante": {
-   "dia": 2980,
-   "minuto": 40
+   "dia": 2993,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -76,7 +76,7 @@
   },
   "85686824": {
    "analisadas": {},
-   "em": "2026-11-19T19:41:47Z"
+   "em": "2026-11-20T20:04:36Z"
   },
   "86736516": {
    "analisadas": {},
@@ -321,7 +321,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-20T19:21:27Z",
+   "em": "2026-11-20T20:01:48Z",
    "partidas": {
     "9077962020": 1793926890,
     "9077993525": 1793930614,
@@ -375,7 +375,7 @@
    "partidas": {}
   },
   "85686824": {
-   "em": "2026-11-20T17:41:32Z",
+   "em": "2026-11-20T20:04:13Z",
    "partidas": {
     "9079357737": 1794013750,
     "9094658584": 1794946719
@@ -1983,32 +1983,9 @@
    "primeira_vez": "2026-11-20T02:37:30Z",
    "proxima": "2026-11-20T20:41:25Z",
    "tentativas": 9
-  },
-  "9098441253": {
-   "inicio": 1795199781,
-   "pedido_em": "2026-11-20T19:21:29Z",
-   "primeira_vez": "2026-11-20T19:21:28Z",
-   "proxima": "2026-11-20T19:51:28Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-19T13:41:22Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2673
-  },
   {
    "basicas": 0,
    "chamadas": 17,
@@ -2760,6 +2737,22 @@
     "minuto": 40
    },
    "sobra_do_dia": 2590
+  },
+  {
+   "basicas": 0,
+   "chamadas": 8,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-20T20:01:24Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2993,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2582
   }
  ],
  "uso": {
@@ -2776,6 +2769,6 @@
   "2026-11-17": 175,
   "2026-11-18": 161,
   "2026-11-19": 241,
-  "2026-11-20": 210
+  "2026-11-20": 218
  }
 }
