@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-20T21:02:24.272Z",
-  "semAnalise": 5,
+  "atualizadoEm": "2026-11-20T21:44:35.679Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -29,7 +29,7 @@
     {
       "accountId": "81918076",
       "nome": "Suéter",
-      "culpados": 18,
+      "culpados": 19,
       "craques": 20,
       "partidas": 279,
       "vitorias": 139,
@@ -4839,14 +4839,13 @@
       {
         "matchId": 9098526229,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795203430,
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.314,
+        "merito": 0.055
       }
     ],
     "83300280": [
@@ -17167,9 +17166,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 45,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.209,
+        "merito": 0.172
       }
     ]
   },
