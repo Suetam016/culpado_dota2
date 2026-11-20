@@ -1,0 +1,27 @@
+name: Builds dos amigos para a leitura do patch
+
+# Puxa no OpenDota os heróis e itens de cada amigo da Liga (prototipos/patch-742/builds.py) e grava
+# prototipos/patch-742/builds-amigos.json no branch que rodou. A leitura (opinião + build de teste) é escrita depois.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-80qzmn]
+    paths: [".github/workflows/patch-builds.yml", "prototipos/patch-742/builds.py"]
+
+permissions:
+  contents: write
+
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Puxar builds
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: python3 prototipos/patch-742/builds.py
+      - name: Gravar
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/patch-742/builds-amigos.json; git commit -m "Builds dos amigos (OpenDota, 120 dias)" || exit 0
+          git pull -q --rebase || true; git push
