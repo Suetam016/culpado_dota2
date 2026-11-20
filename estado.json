@@ -1,12 +1,12 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Day": "2998",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-20T11:41:25Z",
+  "quando": "2026-11-20T11:51:47Z",
   "restante": {
-   "dia": 2998,
+   "dia": 2997,
    "minuto": 58
   }
  },
@@ -60,7 +60,7 @@
   },
   "26668150": {
    "analisadas": {},
-   "em": "2026-11-19T11:41:41Z"
+   "em": "2026-11-20T11:51:47Z"
   },
   "77621319": {
    "analisadas": {},
@@ -321,7 +321,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-20T11:41:24Z",
+   "em": "2026-11-20T11:51:46Z",
    "partidas": {
     "9077962020": 1793926890,
     "9077993525": 1793930614,
@@ -1948,22 +1948,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 20,
-   "descartadas": [],
-   "faltam": 4,
-   "fim": "fila vazia",
-   "inicio": "2026-11-19T00:01:27Z",
-   "novas": 0,
-   "pedidos": 4,
-   "pendentes": 4,
-   "restante": {
-    "dia": 2944,
-    "minuto": 4
-   },
-   "sobra_do_dia": 2744
-  },
-  {
-   "basicas": 0,
    "chamadas": 5,
    "descartadas": [],
    "faltam": 0,
@@ -2713,6 +2697,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2684
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-20T11:51:45Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2997,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2682
   }
  ],
  "uso": {
@@ -2729,6 +2729,6 @@
   "2026-11-17": 175,
   "2026-11-18": 161,
   "2026-11-19": 241,
-  "2026-11-20": 116
+  "2026-11-20": 118
  }
 }
