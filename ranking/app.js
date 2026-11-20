@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   montarPedidoGrupo(pedirGrupo);
   document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => mudarAba(b.dataset.aba)));
+  if (GRUPO && $('ranking-patch742-grupo')) $('ranking-patch742-grupo').href = `../prototipos/patch-742/?grupo=${GRUPO}`; // patch 7.42 com os amigos do grupo
   document.querySelectorAll('[data-ordem]').forEach(b => b.addEventListener('click', () => {
     ordem = b.dataset.ordem;
     document.querySelectorAll('[data-ordem]').forEach(x => x.classList.toggle('chip-ativo', x === b));
