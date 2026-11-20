@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-20T21:02:43Z",
+ "atualizadoEm": "2026-11-20T23:04:04Z",
  "desde": "2026-03-31",
- "partidasLidas": 1431,
+ "partidasLidas": 1434,
  "jogadores": {
   "85686824": {
    "nome": "Rannis",
@@ -11,14 +11,14 @@
   },
   "86736516": {
    "nome": "Madruga",
-   "jogos": 70,
-   "vitorias": 28,
+   "jogos": 73,
+   "vitorias": 29,
    "winRate": 40
   },
   "200957620": {
    "nome": "Danylera",
-   "jogos": 57,
-   "vitorias": 24,
+   "jogos": 60,
+   "vitorias": 25,
    "winRate": 42
   }
  },
@@ -28,9 +28,9 @@
    "b": "200957620",
    "nomeA": "Madruga",
    "nomeB": "Danylera",
-   "jogos": 55,
-   "vitorias": 24,
-   "winRate": 44,
+   "jogos": 58,
+   "vitorias": 25,
+   "winRate": 43,
    "rotas": [
     {
      "posA": 3,
@@ -49,9 +49,9 @@
     {
      "posA": 2,
      "posB": 1,
-     "jogos": 10,
-     "vitorias": 3,
-     "winRate": 30
+     "jogos": 11,
+     "vitorias": 4,
+     "winRate": 36
     },
     {
      "posA": 4,
@@ -72,9 +72,9 @@
     {
      "posA": 2,
      "posB": 1,
-     "jogos": 10,
-     "vitorias": 3,
-     "winRate": 30
+     "jogos": 11,
+     "vitorias": 4,
+     "winRate": 36
     },
     {
      "posA": 5,
@@ -125,6 +125,33 @@
    ],
    "partidas": [
     {
+     "matchId": 9098681209,
+     "inicio": 1795211445,
+     "venceu": false,
+     "heroiA": 39,
+     "heroiB": 8,
+     "posA": null,
+     "posB": null
+    },
+    {
+     "matchId": 9098607299,
+     "inicio": 1795207389,
+     "venceu": true,
+     "heroiA": 43,
+     "heroiB": 8,
+     "posA": 2,
+     "posB": 1
+    },
+    {
+     "matchId": 9098496883,
+     "inicio": 1795202125,
+     "venceu": false,
+     "heroiA": 19,
+     "heroiB": 8,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9098408959,
      "inicio": 1795198441,
      "venceu": true,
@@ -166,33 +193,6 @@
      "venceu": false,
      "heroiA": 43,
      "heroiB": 36,
-     "posA": 3,
-     "posB": 1
-    },
-    {
-     "matchId": 9097197348,
-     "inicio": 1795117680,
-     "venceu": false,
-     "heroiA": 14,
-     "heroiB": 6,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9097132846,
-     "inicio": 1795114424,
-     "venceu": true,
-     "heroiA": 14,
-     "heroiB": 6,
-     "posA": 3,
-     "posB": 1
-    },
-    {
-     "matchId": 9097054910,
-     "inicio": 1795110945,
-     "venceu": true,
-     "heroiA": 60,
-     "heroiB": 6,
      "posA": 3,
      "posB": 1
     }
@@ -666,6 +666,12 @@
     "vitorias": 2
    },
    {
+    "heroi": 8,
+    "pos": 1,
+    "jogos": 7,
+    "vitorias": 1
+   },
+   {
     "heroi": 36,
     "pos": 3,
     "jogos": 6,
@@ -676,12 +682,6 @@
     "pos": 1,
     "jogos": 6,
     "vitorias": 2
-   },
-   {
-    "heroi": 8,
-    "pos": 1,
-    "jogos": 6,
-    "vitorias": 0
    },
    {
     "heroi": 4,
@@ -730,6 +730,12 @@
     "pos": 1,
     "jogos": 2,
     "vitorias": 1
+   },
+   {
+    "heroi": 8,
+    "pos": 0,
+    "jogos": 2,
+    "vitorias": 0
    },
    {
     "heroi": 4,
@@ -862,8 +868,8 @@
    {
     "heroi": 43,
     "pos": 2,
-    "jogos": 54,
-    "vitorias": 28
+    "jogos": 55,
+    "vitorias": 29
    },
    {
     "heroi": 39,
@@ -1318,6 +1324,18 @@
    {
     "heroi": 119,
     "pos": 3,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 19,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 39,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -11350,6 +11368,72 @@
      1,
      1,
      0
+    ]
+   ]
+  },
+  {
+   "id": 9098496883,
+   "t": 1795202125,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     19,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     8,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9098607299,
+   "t": 1795207389,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     43,
+     2,
+     2,
+     1
+    ],
+    [
+     "200957620",
+     8,
+     1,
+     3,
+     0
+    ]
+   ]
+  },
+  {
+   "id": 9098681209,
+   "t": 1795211445,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     39,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     8,
+     0,
+     null,
+     null
     ]
    ]
   }
