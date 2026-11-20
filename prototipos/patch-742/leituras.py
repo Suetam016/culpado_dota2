@@ -200,3 +200,110 @@ PORHEROI = {
 48:[(F,"Luna derruba torre e tem Eclipse: o meteoro soma no empurrão e queima quem sair do controle."),(Q,"Peça barata do caminho de MKB e Borboleta, que ficaram mais baratos.")],
 1:[(S,"Anti-Mage corpo a corpo: o Juramento dá dano e resistência a retardo, e a bota vem junto."),(Q,"Peça barata do caminho de Borboleta e MKB, que ficaram mais baratos.")],
 }
+
+# Versão 2 (20/11, pedido do Mat: capricho por herói). Base: o que ~100 partidas recentes de cada herói
+# compram no OpenDota (popularidade-brutas.json), Hotspawn e Team Smurf (primeiras impressões do 7.42).
+# Veredito: vale | talvez | nao.  "N de ~100" = quantas das ~100 partidas recentes do herói têm aquela peça.
+R2 = {
+"Earth Spirit":("Nenhum item novo é pra ele. Siga com Urna/Vaso, Kaya e Sange e BKB.",[
+ (C,"nao","Parece bom pelo Force e pelos atributos, mas o passivo só dispara em feitiço com alvo em unidade, e quase todo feitiço do ES é em ponto ou área (Rolamento, Magnetizar); o Chute e o Agarrão até miram unidade, mas quase sempre miram a pedra. Das ~100 partidas recentes, nenhum ES fez Force nem Filactério.")]),
+"Invoker":("O Invoker ganhou o melhor upgrade do patch.",[
+ (F,"vale","91 de ~100 Invokers já fazem Martelo Meteorítico, e a Forja é o upgrade direto (+ Orbe Supremo). Hotspawn cita o Invoker, e a Team Smurf diz que é pra mid com muito controle: Tornado, Frio Glacial e Explosão Ensurdecedora acendem a Chama Celestial."),
+ (C,"nao","Só o Frio Glacial é em alvo; o resto é área. Não paga 5.400.")]),
+"Hoodwink":("Bloodslinger sim. O resto, só se o jogo for longe.",[
+ (B,"vale","98 de ~100 Hoodwinks já compram a Granada de Sangue, e o Lança-Sangue é o upgrade dela. A Hotspawn cita a Hoodwink entre os suportes que rodam. Cada granada custa 75 de vida, então use pra fechar abate, não pra trocar à toa."),
+ (C,"talvez","32 de ~100 já fazem Force. Bolota é em alvo e ganharia o dano extra, mas o Tiro Certeiro é em ponto. É item tardio (5.400), só depois de Blink e Force.")]),
+"Rubick":("Os dois itens de suporte servem nele.",[
+ (B,"vale","96 de ~100 Rubicks compram Granada de Sangue; a Hotspawn cita o Rubick no Lança-Sangue."),
+ (C,"vale","Telecinese e Rajada Desvanecedora são em alvo, e a Hotspawn cita o Rubick como exemplo de Caduceu. Item de fim de jogo: depois de Blink e Cetro.")]),
+"Crystal Maiden":("Dá pra testar, mas com cuidado.",[
+ (B,"talvez","84 de ~100 CMs compram Granada, mas a CM é frágil e cada granada custa 75 de vida. A Team Smurf diz que é mau negócio pra quem não pode perder vida na rota."),
+ (C,"talvez","Congelar é em alvo e o Force é item comum dela (27 de ~100). Mas Glimmer e Blink vêm antes.")]),
+"Disruptor":("O Disruptor saiu fortalecido e o Lança-Sangue encaixa.",[
+ (B,"vale","95 de ~100 Disruptors compram Granada de Sangue, e o Golpe Trovejante mais a granada fecham abate cedo."),
+ (C,"talvez","Golpe Trovejante e Vislumbre são em alvo. Só no fim de jogo, depois de Blink e Cetro.")]),
+"Outworld Destroyer":("Os dois caminhos que o OD já faz viram item novo.",[
+ (F,"vale","25 de ~100 ODs já fazem Martelo Meteorítico, e a Hotspawn cita o OD na Forja. Aprisionamento Astral seguido de meteoro é combo fácil."),
+ (C,"talvez","77 de ~100 já fazem Force. Aprisionamento é em alvo e ganharia 175 de dano, mas o OD core prefere Hurricane Pike ao Filactério.")]),
+"Io":("Nenhum item novo é prioridade.",[
+ (R,"talvez","O Io fica sempre colado no aliado do Elo, então a aura bate no seu carry. Só se ninguém do time fizer Vladmir.")]),
+"Witch Doctor":("Lança-Sangue sim, Caduceu não.",[
+ (B,"vale","99 de ~100 WDs compram Granada de Sangue, e a Hotspawn cita a WD como exemplo do Lança-Sangue."),
+ (C,"nao","Só o Cask é em alvo; Maldição e Vudu da Morte são em área. Force sozinho já resolve.")]),
+"Razor":("Nenhum item novo é pra ele.",[
+ (K,"nao","29 de ~100 Razors fazem Sange (indo pra Sange e Yasha), mas ninguém faz Alabarda nem Talismã. O caminho fica caro pra pouco ganho.")]),
+"Spectre":("O Perfurador Celeste é o item novo dele.",[
+ (K,"vale","91 de ~100 Spectres já fazem Talismã da Evasão e 27 fazem Sange: são duas das três peças. O Desarmar recarrega rápido perto de inimigos, e o Spectre luta colado.")]),
+"Viper":("Nenhum item novo é pra ela. Siga com Dragon Lance, Hurricane e BKB.",[
+ (C,"nao","76 de ~100 Vipers fazem Force, mas pra virar Hurricane Pike. O Caduceu é item de suporte.")]),
+"Jakiro":("Lança-Sangue sim, Caduceu não.",[
+ (B,"vale","93 de ~100 Jakiros compram Granada de Sangue, e a granada mais a Respiração Dupla tiram muita vida na rota."),
+ (C,"nao","Respiração Dupla, Caminho de Gelo e Macropira são em ponto. Ele faz Force (49 de ~100), mas o passivo quase não dispara.")]),
+"Axe":("Nada novo pra comprar cedo.",[
+ (R,"talvez","Só em jogo de briga de time: a aura dá roubo de vida e dano pro time que entra junto com o Berro. A Team Smurf diz que é item de luta de time e empurrão, não de rota."),
+ (S,"nao","99 de ~100 Axes fazem Botas de Fase, mas nenhum faz Bracelete. Blade Mail e BKB rendem mais.")]),
+"Windranger":("Depende da posição.",[
+ (B,"vale","Na posição 4: 64 de ~100 Windrangers compram Granada de Sangue."),
+ (Q,"talvez","Na posição 1/2: peça barata do caminho de MKB, que ficou mais barato.")]),
+"Grimstroke":("Os dois itens de suporte servem nele.",[
+ (B,"vale","96 de ~100 Grimstrokes compram Granada de Sangue."),
+ (C,"vale","Tem vários feitiços em alvo: Golpe Fantasma e Laço de Alma no inimigo, Banho de Tinta no aliado (que ganha a cura de 200 e a velocidade). É o perfil que a Team Smurf descreve. Item tardio.")]),
+"Lina":("Nenhum item novo é pra ela.",[
+ (F,"nao","A Team Smurf avisa que a Forja rende menos em quem só tem um controle curto, que é o caso do Golpe Iluminado. E nenhuma Lina faz Martelo Meteorítico.")]),
+"Tinker":("A Forja até aparece, mas não é prioridade.",[
+ (F,"talvez","A Hotspawn cita o Tinker, e o meteoro empurra torre. Mas o passivo precisa de controle, que o Tinker quase não tem, e ele não costuma fazer Martelo Meteorítico.")]),
+"Lifestealer":("O herói que mais ganhou item novo.",[
+ (S,"vale","72 de ~100 já fazem Bracelete e 100 de ~100 fazem Botas de Fase: são exatamente as duas peças. Hotspawn e GosuGamers citam o Lifestealer."),
+ (K,"vale","103 Talismãs da Evasão e 53 Sanges em ~100 partidas: duas das três peças já estão na build.")]),
+"Pugna":("Depende da posição.",[
+ (B,"talvez","Na posição 4/5: 66 de ~100 Pugnas compram Granada de Sangue."),
+ (C,"talvez","Decrepitar e Dreno da Vida são em alvo, mas o Pugna prefere Glimmer e Lente do Éter. Só no fim de jogo.")]),
+"Phantom Assassin":("Nenhum item novo é pra ela.",[
+ (S,"nao","Quase nenhuma PA faz Bracelete ou Botas de Fase. Desolador, Basher e BKB continuam.")]),
+"Nature's Prophet":("Bastão no caminho do dano.",[
+ (Q,"vale","33 de ~100 Furions fazem Borboleta e 17 fazem MKB. Os dois agora usam o Bastão e ficaram mais baratos."),
+ (F,"nao","Empurra torre, mas nenhum Furion faz Martelo Meteorítico.")]),
+"Dawnbreaker":("Dá pra testar em jogo de luta de time.",[
+ (R,"talvez","Luta junto do time e já cura o grupo; a Team Smurf diz que a Devoção é pra offlaner que luta e empurra."),
+ (S,"talvez","99 de ~100 já fazem Botas de Fase, mas ninguém faz Bracelete.")]),
+"Lich":("Os dois itens de suporte servem nele.",[
+ (B,"vale","95 de ~100 Lichs compram Granada de Sangue."),
+ (C,"vale","Explosão Gélida, Corrente Gélida e Escudo Gélido (no aliado) são em alvo. É o perfil que a Team Smurf descreve. Item tardio.")]),
+"Techies":("Lança-Sangue sim, Caduceu não.",[
+ (B,"vale","99 de ~100 Techies compram Granada de Sangue."),
+ (C,"nao","Faz Force (50 de ~100), mas Bomba Grudenta e Decolar são em ponto. O passivo não dispara.")]),
+"Silencer":("Lança-Sangue sim; Caduceu só no fim.",[
+ (B,"vale","87 de ~100 Silencers compram Granada de Sangue."),
+ (C,"talvez","41 de ~100 fazem Force e Último Verbo é em alvo, mas é um feitiço só.")]),
+"Ringmaster":("Lança-Sangue sim.",[
+ (B,"vale","98 de ~100 Ringmasters compram Granada de Sangue."),
+ (C,"talvez","20 de ~100 fazem Force. Item tardio.")]),
+"Underlord":("Dá pra testar em jogo de luta de time.",[
+ (R,"talvez","Ele fica no meio da luta perto do time. A Team Smurf diz que a Devoção é pra offlaner que luta e empurra.")]),
+"Winter Wyvern":("Os dois itens de suporte servem nela.",[
+ (B,"vale","99 de ~100 Wyverns compram Granada de Sangue."),
+ (C,"vale","Abraço Gélido (no aliado, ganha a cura e a velocidade), Rajada Estilhaçante e Maldição são em alvo. 36 de ~100 já fazem Force.")]),
+"Tidehunter":("A Devoção é o item novo dele.",[
+ (R,"vale","20 de ~100 Tides já fazem Vladmir, e a Hotspawn cita o Tidehunter na Devoção de Ristul. Depois do Crepúsculo, o time inteiro ganha roubo de vida e dano.")]),
+"Necrophos":("Perfurador Celeste dá pra testar.",[
+ (K,"talvez","93 de ~100 Necros já fazem Talismã da Evasão, mas faltam Sange e Alabarda. Só se a luta for contra carry de ataque.")]),
+"Mirana":("Lança-Sangue sim, Caduceu não.",[
+ (B,"vale","92 de ~100 Miranas compram Granada de Sangue."),
+ (C,"nao","Flecha é em ponto, Chuva de Estrelas e Salto não têm alvo.")]),
+"Phantom Lancer":("Bastão no caminho da Borboleta.",[
+ (Q,"talvez","19 de ~100 PLs fazem Borboleta, que agora usa o Bastão.")]),
+"Warlock":("Lança-Sangue sim, e a Devoção se você já faz Vladmir.",[
+ (B,"vale","97 de ~100 Warlocks compram Granada de Sangue."),
+ (R,"talvez","Vladmir aparece na build do Warlock, e a Devoção é o upgrade dele.")]),
+"Slardar":("Nenhum item novo é pra ele.",[
+ (K,"nao","Nenhum Slardar faz Sange, Alabarda ou Talismã. Blink, BKB e Anulador continuam.")]),
+"Juggernaut":("Bastão no caminho do dano.",[
+ (Q,"vale","44 de ~100 Juggernauts fazem Borboleta e 22 fazem MKB. Os dois agora usam o Bastão e ficaram mais baratos."),
+ (S,"nao","Só 22 de ~100 fazem Botas de Fase e nenhum faz Bracelete.")]),
+"Drow Ranger":("Bastão no caminho da Borboleta.",[
+ (Q,"vale","35 de ~100 Drows fazem Borboleta, que agora usa o Bastão e ficou mais barata.")]),
+"Death Prophet":("Nenhum item novo é pra ela.",[
+ (F,"nao","Empurra torre, mas nenhuma DP faz Martelo Meteorítico.")]),
+"Queen of Pain":("Nenhum item novo é pra ela. Kaya e Sange continua.",[
+ (C,"nao","Golpe de Sombra é o único feitiço em alvo, e a QoP não faz Force.")]),
+}

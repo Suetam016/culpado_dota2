@@ -1,0 +1,21 @@
+name: Popularidade dos itens por herói (OpenDota)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-80qzmn]
+    paths: [".github/workflows/patch-popularidade.yml", "prototipos/patch-742/popularidade.py"]
+
+permissions:
+  contents: write
+
+jobs:
+  pop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 prototipos/patch-742/popularidade.py
+      - run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/patch-742/popularidade-brutas.json; git commit -m "Popularidade dos itens por herói" || exit 0
+          git pull -q --rebase || true; git push
