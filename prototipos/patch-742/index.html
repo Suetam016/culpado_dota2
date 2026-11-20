@@ -30,6 +30,18 @@ h1 em{font-style:normal;color:var(--verm)}
 .busca input::placeholder{color:#666}
 .btn{background:var(--verm);border:0;color:#fff;height:58px;padding:0 24px;font:400 17px var(--disp);text-transform:uppercase;white-space:nowrap;border-radius:0}
 .btn:hover{background:#c23223}
+.quadros{position:relative;margin:4px auto 0;max-width:820px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.quadros .rot{width:100%;font:700 11px var(--nar);letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);margin-bottom:2px}
+.qd{width:124px;position:relative;background:#111;border:1px solid #2a2a2a;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform .15s,border-color .15s}
+.qd:hover{border-color:var(--verm);transform:translateY(-3px)}
+.qd.on{border-color:var(--verm);background:#1a0e0c}
+.qd .av{width:64px;height:64px;background:#222 center/cover;display:grid;place-items:center;font:400 26px var(--disp);color:#555}
+.qd b{font:700 14px/1.15 var(--nar);letter-spacing:.03em;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qd .vc{position:absolute;top:6px;right:6px;font:700 9px/1 var(--nar);letter-spacing:.16em;text-transform:uppercase;background:var(--verm);padding:3px 5px}
+.qd.carrega .av{animation:pis 1s infinite alternate}@keyframes pis{to{opacity:.4}}
+.outro{position:relative;background:none;border:0;border-bottom:1px solid #444;color:var(--cinza);font:600 13px var(--nar);letter-spacing:.06em;margin:18px auto 14px;padding:2px 0}
+.outro:hover{color:#fff;border-color:var(--verm)}
+@media (max-width:720px){.quadros{gap:8px}.qd{width:calc(33.3% - 6px)}.qd .av{width:52px;height:52px}}
 .amigos{position:relative;margin:16px auto 0;max-width:720px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
 .amigos span{font:700 11px var(--nar);letter-spacing:.18em;text-transform:uppercase;color:var(--cinza);margin-right:6px}
 .chip{background:#111;border:1px solid #2a2a2a;padding:6px 10px;font:600 13px var(--nar);letter-spacing:.04em;color:#ddd}
@@ -185,12 +197,13 @@ footer{max-width:1120px;margin:0 auto;padding:30px 16px 60px;color:#666;font:600
     <div class="luz"></div>
     <p class="eyebrow">Patch 7.42 · saiu em 18/11</p>
     <h1>O patch bateu o martelo.<br><em>E em você?</em></h1>
-    <p class="sub">Digite seu nick. A gente olha os heróis que você pega e os itens que você faz e mostra o que o 7.42 mudou pra você.</p>
-    <form class="busca" id="form">
+    <p class="sub" id="sub">Clique em você. A gente olha os heróis que você pega e os itens que você faz e mostra o que o 7.42 mudou pra você.</p>
+    <div class="quadros" id="amigos"></div>
+    <button type="button" class="outro" id="outro">Não está aqui? Digitar nick</button>
+    <form class="busca esconde" id="form">
       <input id="nick" autocomplete="off" placeholder="Nick da Steam, ID do Dota ou link do perfil" aria-label="Nick ou ID">
       <button class="btn" type="submit">Julgar meu patch</button>
     </form>
-    <div class="amigos" id="amigos"></div>
     <div class="estado" id="estado"></div>
     <div class="achados" id="achados"></div>
   </div>
@@ -231,7 +244,8 @@ let AMIGOS={
   "77621319": "Jalim",
   "26668150": "3rvinha"
 }
-; // Marocas embutido; ?grupo=<id> troca pelos amigos daquele grupo da Liga
+;
+const AVATARES={"26668150": "https://avatars.steamstatic.com/8ed984648ba4b209cedfeb128c4859dbba253c3e_full.jpg", "77621319": "https://avatars.steamstatic.com/946c963dd98ec6ffe1f4332c5405cc97b756c69a_full.jpg", "81918076": "https://avatars.steamstatic.com/c590b3e2a3d8afd8a11914f9381a58053313e73d_full.jpg", "83300280": "https://avatars.steamstatic.com/5b6eb362809ae38fdd30a4a84cbe55da330576d8_full.jpg", "96286191": "https://avatars.steamstatic.com/75d20ae6b4dbbcf1d66b88bcc5cd769ba91f6c07_full.jpg", "111257540": "https://avatars.steamstatic.com/4d68f577e0c70dae1c5df81f21bfd973013b1e8a_full.jpg", "241782761": "https://avatars.steamstatic.com/0f60b23488f593182554cbf7deaef8e7eed75965_full.jpg", "1000265186": "https://avatars.steamstatic.com/740cfa81e42ad1e100c8e53da9db583c7e2dd29b_full.jpg", "1254464470": "https://avatars.steamstatic.com/f9b3cdb020596a3e1392d09b1cbae2e2ec291676_full.jpg"}; // Marocas embutido; ?grupo=<id> troca pelos amigos daquele grupo da Liga
 const CDN='https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/';
 const OD='https://api.opendota.com/api';
 const $=s=>document.querySelector(s);
@@ -343,19 +357,21 @@ function paraId(txt){
 }
 (function(){
   let eu=null;try{eu=localStorage.getItem('culpado-eu')}catch(e){}
-  const chips=(rot)=>{const nomes=Object.entries(AMIGOS);
-    $('#amigos').innerHTML=nomes.length?`<span>${esc(rot)}</span>`+nomes.map(([id,n])=>`<button class="chip ${id===eu?'on':''}" data-id="${id}">${esc(n)}${id===eu?' (você)':''}</button>`).join(''):''};
-  chips('Do grupo');
+  const quadros=(rot,AV)=>{const nomes=Object.entries(AMIGOS).sort((a,b)=>(b[0]===eu)-(a[0]===eu));
+    if(!nomes.length){$('#amigos').innerHTML='';$('#form').classList.remove('esconde');$('#outro').classList.add('esconde');$('#sub').textContent='Digite seu nick. A gente olha os heróis que você pega e os itens que você faz e mostra o que o 7.42 mudou pra você.';return}
+    $('#amigos').innerHTML=`<div class="rot">${esc(rot)}</div>`+nomes.map(([id,n])=>`<button class="qd" data-id="${id}">${id===eu?'<span class="vc">você</span>':''}<span class="av" style="${AV&&AV[id]?`background-image:url('${esc(AV[id])}')`:''}">${AV&&AV[id]?'':esc(n.trim()[0]||'?').toUpperCase()}</span><b>${esc(n)}</b></button>`).join('')};
+  quadros('Do grupo Marocas',AVATARES);
   const g=new URLSearchParams(location.search).get('grupo');
   if(g&&/^[a-z0-9-]+$/.test(g)&&g!=='marocas'){
-    Promise.all([fetch(`../../grupos/${g}/amigos.json`).then(r=>r.ok?r.json():null),fetch('../../grupos/grupos.json').then(r=>r.ok?r.json():[]).catch(()=>[])])
-      .then(([am,gs])=>{if(!am)return;AMIGOS=am;const n=(gs||[]).find(x=>x.id===g);chips(n?n.nome:'Do grupo')}).catch(()=>{});
+    Promise.all([fetch(`../../grupos/${g}/amigos.json`).then(r=>r.ok?r.json():null),fetch('../../grupos/grupos.json').then(r=>r.ok?r.json():[]).catch(()=>[]),fetch(`../../grupos/${g}/ranking.json`).then(r=>r.ok?r.json():null).catch(()=>null)])
+      .then(([am,gs,rk])=>{if(!am)return;AMIGOS=am;const n=(gs||[]).find(x=>x.id===g);const av={};Object.entries((rk&&rk.perfis)||{}).forEach(([k,v])=>{if(v&&v.avatar)av[k]=v.avatar});quadros('Do grupo '+(n?n.nome:''),av)}).catch(()=>{});
   }
-  $('#amigos').onclick=e=>{const b=e.target.closest('[data-id]');if(b)julgar(b.dataset.id)};
+  $('#amigos').onclick=e=>{const b=e.target.closest('[data-id]');if(!b)return;$('#amigos').querySelectorAll('.qd').forEach(x=>x.classList.toggle('on',x===b));julgar(b.dataset.id)};
+  $('#outro').onclick=()=>{$('#form').classList.remove('esconde');$('#outro').classList.add('esconde');$('#nick').focus()};
   $('#form').onsubmit=async e=>{e.preventDefault();const v=$('#nick').value.trim();if(!v)return;const id=paraId(v);if(id)return julgar(id);buscar(v)};
   $('#achados').onclick=e=>{const b=e.target.closest('[data-id]');if(b){$('#achados').innerHTML='';julgar(b.dataset.id)}};
   const p=new URLSearchParams(location.search).get('conta');
-  if(p) julgar(p); else if(eu&&AMIGOS[eu]) est(`Você está no grupo como ${AMIGOS[eu]}. Clique no seu nome ou digite outro nick.`);
+  if(p) julgar(p); 
 })();
 async function buscar(q){
   est('Procurando "'+q+'"...');$('#achados').innerHTML='';
