@@ -1,17 +1,17 @@
 {
- "atualizadoEm": "2026-11-20T20:22:31Z",
+ "atualizadoEm": "2026-11-20T21:02:33Z",
  "desde": "2025-12-21",
- "partidasLidas": 1430,
+ "partidasLidas": 1431,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
-   "jogos": 141,
+   "jogos": 142,
    "vitorias": 65,
    "winRate": 46
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 258,
+   "jogos": 259,
    "vitorias": 127,
    "winRate": 49
   },
@@ -2929,9 +2929,9 @@
    "b": "1254464470",
    "nomeA": "Suéter",
    "nomeB": "Conhecido do Baia",
-   "jogos": 108,
+   "jogos": 109,
    "vitorias": 47,
-   "winRate": 44,
+   "winRate": 43,
    "rotas": [
     {
      "posA": 1,
@@ -3040,6 +3040,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9098526229,
+     "inicio": 1795203430,
+     "venceu": false,
+     "heroiA": 107,
+     "heroiB": 45,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9092259539,
      "inicio": 1794790106,
      "venceu": false,
@@ -3099,15 +3108,6 @@
      "venceu": true,
      "heroiA": 107,
      "heroiB": 31,
-     "posA": 2,
-     "posB": 5
-    },
-    {
-     "matchId": 9090487282,
-     "inicio": 1794689527,
-     "venceu": true,
-     "heroiA": 107,
-     "heroiB": 64,
      "posA": 2,
      "posB": 5
     }
@@ -17262,6 +17262,12 @@
     "pos": 1,
     "jogos": 1,
     "vitorias": 0
+   },
+   {
+    "heroi": 45,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
    }
   ],
   "81918076": [
@@ -17466,6 +17472,12 @@
    {
     "heroi": 79,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 107,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -36804,6 +36816,28 @@
      3,
      3,
      0
+    ]
+   ]
+  },
+  {
+   "id": 9098526229,
+   "t": 1795203430,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     107,
+     0,
+     null,
+     null
+    ],
+    [
+     "1254464470",
+     45,
+     0,
+     null,
+     null
     ]
    ]
   }
