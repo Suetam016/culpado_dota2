@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-20T01:22:34.690Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-20T02:02:23.084Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -77,12 +77,12 @@
     {
       "accountId": "77621319",
       "nome": "Jalim",
-      "culpados": 11,
+      "culpados": 12,
       "craques": 13,
       "partidas": 108,
       "vitorias": 53,
       "winRate": 49,
-      "streak": null,
+      "streak": "culpado",
       "mmrGanho": 1300,
       "mmrPerdido": 1375
     },
@@ -1746,14 +1746,13 @@
       {
         "matchId": 9097396982,
         "lado": "dire",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795132989,
         "comStack": true,
         "ranqueada": true,
         "heroi": 114,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.321,
+        "merito": 0.07
       }
     ],
     "81918076": [
@@ -4779,9 +4778,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.082,
+        "merito": 0.341
       }
     ],
     "83300280": [
