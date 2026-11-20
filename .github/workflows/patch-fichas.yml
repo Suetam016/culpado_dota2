@@ -1,0 +1,21 @@
+name: Fichas dos itens para o tooltip do patch
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/project-thread-80qzmn]
+    paths: [".github/workflows/patch-fichas.yml", "prototipos/patch-742/fichas.py"]
+
+permissions:
+  contents: write
+
+jobs:
+  fichas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 prototipos/patch-742/fichas.py
+      - run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add prototipos/patch-742/fichas-itens-brutas.json; git commit -m "Fichas oficiais dos itens (tooltip do patch)" || exit 0
+          git pull -q --rebase || true; git push
