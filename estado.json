@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2997",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-20T06:01:26Z",
+  "quando": "2026-11-20T06:41:28Z",
   "restante": {
    "dia": 2996,
-   "minuto": 58
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -166,7 +166,7 @@
    }
   },
   "111257540": {
-   "em": "2026-11-20T04:41:25Z",
+   "em": "2026-11-20T06:41:26Z",
    "partidas": {
     "9078907539": 1793987671,
     "9079021291": 1793992346,
@@ -320,7 +320,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-20T06:01:25Z",
+   "em": "2026-11-20T06:41:25Z",
    "partidas": {
     "9077962020": 1793926890,
     "9077993525": 1793930614,
@@ -1929,8 +1929,8 @@
    "inicio": 1795085214,
    "pedido_em": "2026-11-19T11:41:40Z",
    "primeira_vez": "2026-11-19T11:41:39Z",
-   "proxima": "2026-11-20T06:21:27Z",
-   "tentativas": 10
+   "proxima": "2026-11-20T18:41:27Z",
+   "tentativas": 11
   },
   "9096660559": {
    "inicio": 1795094994,
@@ -1943,27 +1943,11 @@
    "inicio": 1795139649,
    "pedido_em": "2026-11-20T02:37:31Z",
    "primeira_vez": "2026-11-20T02:37:30Z",
-   "proxima": "2026-11-20T06:16:26Z",
-   "tentativas": 5
+   "proxima": "2026-11-20T06:56:28Z",
+   "tentativas": 6
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-18T13:01:23Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2998,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2702
-  },
   {
    "basicas": 0,
    "chamadas": 1,
@@ -2715,6 +2699,22 @@
     "minuto": 58
    },
    "sobra_do_dia": 2732
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-20T06:41:23Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2728
   }
  ],
  "uso": {
@@ -2731,6 +2731,6 @@
   "2026-11-17": 175,
   "2026-11-18": 161,
   "2026-11-19": 241,
-  "2026-11-20": 68
+  "2026-11-20": 72
  }
 }
