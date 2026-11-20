@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-20T01:21:52Z",
+  "quando": "2026-11-20T02:01:31Z",
   "restante": {
-   "dia": 2986,
-   "minuto": 46
+   "dia": 2997,
+   "minuto": 57
   }
  },
  "desistencias": {
@@ -168,7 +168,7 @@
    }
   },
   "111257540": {
-   "em": "2026-11-20T00:01:29Z",
+   "em": "2026-11-20T02:01:31Z",
    "partidas": {
     "9078907539": 1793987671,
     "9079021291": 1793992346,
@@ -321,7 +321,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-20T01:21:47Z",
+   "em": "2026-11-20T02:01:28Z",
    "partidas": {
     "9077962020": 1793926890,
     "9077993525": 1793930614,
@@ -537,15 +537,6 @@
   }
  },
  "lo": {
-  "9054647016": {
-   "companheiros": [
-    96286191,
-    124172947,
-    241782761,
-    1000265186
-   ],
-   "inicio": 1792547913
-  },
   "9054679725": {
    "companheiros": [
     25734425,
@@ -1784,7 +1775,6 @@
   "123091832": "Romenes",
   "123129993": "Digazz",
   "123249568": "ZurK",
-  "124172947": "6ix9ine",
   "124207986": "Rato",
   "124633829": "Pacheco",
   "125247406": "Pantera cor de Pau",
@@ -1959,32 +1949,9 @@
    "primeira_vez": "2026-11-19T14:21:40Z",
    "proxima": "2026-11-20T08:59:12Z",
    "tentativas": 10
-  },
-  "9097396982": {
-   "inicio": 1795132989,
-   "pedido_em": "2026-11-20T01:21:48Z",
-   "primeira_vez": "2026-11-20T01:21:47Z",
-   "proxima": "2026-11-20T01:51:47Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 2,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-18T03:21:23Z",
-   "novas": 1,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2998,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2771
-  },
   {
    "basicas": 0,
    "chamadas": 16,
@@ -2736,6 +2703,22 @@
     "minuto": 46
    },
    "sobra_do_dia": 2775
+  },
+  {
+   "basicas": 0,
+   "chamadas": 3,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-20T02:01:27Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2997,
+    "minuto": 57
+   },
+   "sobra_do_dia": 2772
   }
  ],
  "uso": {
@@ -2752,6 +2735,6 @@
   "2026-11-17": 175,
   "2026-11-18": 161,
   "2026-11-19": 241,
-  "2026-11-20": 25
+  "2026-11-20": 28
  }
 }
