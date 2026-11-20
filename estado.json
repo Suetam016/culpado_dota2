@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Day": "2997",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-20T20:21:37Z",
+  "quando": "2026-11-20T21:01:34Z",
   "restante": {
-   "dia": 2973,
-   "minuto": 33
+   "dia": 2983,
+   "minuto": 45
   }
  },
  "desistencias": {
@@ -322,7 +322,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-20T20:21:28Z",
+   "em": "2026-11-20T21:01:30Z",
    "partidas": {
     "9077962020": 1793926890,
     "9077993525": 1793930614,
@@ -368,7 +368,8 @@
     "9097396982": 1795132989,
     "9098113102": 1795186810,
     "9098218753": 1795190755,
-    "9098441253": 1795199781
+    "9098441253": 1795199781,
+    "9098526229": 1795203430
    }
   },
   "83300280": {
@@ -1737,6 +1738,15 @@
     400007804
    ],
    "inicio": 1795199781
+  },
+  "9098526229": {
+   "companheiros": [
+    80989545,
+    109865783,
+    149638439,
+    1254464470
+   ],
+   "inicio": 1795203430
   }
  },
  "nomes": {
@@ -1766,6 +1776,7 @@
   "1077646785": "3",
   "108106447": "Igrante",
   "109010624": "@ByCarica",
+  "109865783": "SABITO",
   "111257540": "O Kulpado",
   "111452285": "bigode",
   "112651822": "Corvus",
@@ -1831,6 +1842,7 @@
   "148131975": "Borys o Dragão de Athas",
   "148364503": "Manaos Man",
   "148946557": "Markytos",
+  "149638439": "DEX",
   "150437875": "kludd",
   "153197325": "VINI",
   "153690834": "Tarabai",
@@ -1982,41 +1994,18 @@
    "inicio": 1795139649,
    "pedido_em": "2026-11-20T02:37:31Z",
    "primeira_vez": "2026-11-20T02:37:30Z",
-   "proxima": "2026-11-20T20:41:25Z",
-   "tentativas": 9
+   "proxima": "2026-11-21T09:01:33Z",
+   "tentativas": 10
   },
-  "9098344131": {
-   "inicio": 1795195745,
-   "pedido_em": "2026-11-20T20:21:32Z",
-   "primeira_vez": "2026-11-20T20:21:31Z",
-   "proxima": "2026-11-20T20:51:31Z",
-   "tentativas": 0
-  },
-  "9098408959": {
-   "inicio": 1795198441,
-   "pedido_em": "2026-11-20T20:21:34Z",
-   "primeira_vez": "2026-11-20T20:21:33Z",
-   "proxima": "2026-11-20T20:51:33Z",
+  "9098526229": {
+   "inicio": 1795203430,
+   "pedido_em": "2026-11-20T21:01:31Z",
+   "primeira_vez": "2026-11-20T21:01:30Z",
+   "proxima": "2026-11-20T21:31:30Z",
    "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 5,
-   "descartadas": [],
-   "faltam": 2,
-   "fim": "fila vazia",
-   "inicio": "2026-11-19T15:01:22Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 2,
-   "restante": {
-    "dia": 2995,
-    "minuto": 55
-   },
-   "sobra_do_dia": 2651
-  },
   {
    "basicas": 0,
    "chamadas": 5,
@@ -2768,6 +2757,22 @@
     "minuto": 33
    },
    "sobra_do_dia": 2573
+  },
+  {
+   "basicas": 0,
+   "chamadas": 6,
+   "descartadas": [],
+   "faltam": 4,
+   "fim": "fila vazia",
+   "inicio": "2026-11-20T21:01:28Z",
+   "novas": 2,
+   "pedidos": 1,
+   "pendentes": 4,
+   "restante": {
+    "dia": 2983,
+    "minuto": 45
+   },
+   "sobra_do_dia": 2567
   }
  ],
  "uso": {
@@ -2784,6 +2789,6 @@
   "2026-11-17": 175,
   "2026-11-18": 161,
   "2026-11-19": 241,
-  "2026-11-20": 227
+  "2026-11-20": 233
  }
 }
