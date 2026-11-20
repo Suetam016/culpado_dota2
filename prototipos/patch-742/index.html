@@ -245,7 +245,10 @@ let AMIGOS={
   "26668150": "3rvinha"
 }
 ;
-const AVATARES={"26668150": "https://avatars.steamstatic.com/8ed984648ba4b209cedfeb128c4859dbba253c3e_full.jpg", "77621319": "https://avatars.steamstatic.com/946c963dd98ec6ffe1f4332c5405cc97b756c69a_full.jpg", "81918076": "https://avatars.steamstatic.com/c590b3e2a3d8afd8a11914f9381a58053313e73d_full.jpg", "83300280": "https://avatars.steamstatic.com/5b6eb362809ae38fdd30a4a84cbe55da330576d8_full.jpg", "96286191": "https://avatars.steamstatic.com/75d20ae6b4dbbcf1d66b88bcc5cd769ba91f6c07_full.jpg", "111257540": "https://avatars.steamstatic.com/4d68f577e0c70dae1c5df81f21bfd973013b1e8a_full.jpg", "241782761": "https://avatars.steamstatic.com/0f60b23488f593182554cbf7deaef8e7eed75965_full.jpg", "1000265186": "https://avatars.steamstatic.com/740cfa81e42ad1e100c8e53da9db583c7e2dd29b_full.jpg", "1254464470": "https://avatars.steamstatic.com/f9b3cdb020596a3e1392d09b1cbae2e2ec291676_full.jpg"}; // Marocas embutido; ?grupo=<id> troca pelos amigos daquele grupo da Liga
+const AVATARES={"26668150": "https://avatars.steamstatic.com/8ed984648ba4b209cedfeb128c4859dbba253c3e_full.jpg", "77621319": "https://avatars.steamstatic.com/946c963dd98ec6ffe1f4332c5405cc97b756c69a_full.jpg", "81918076": "https://avatars.steamstatic.com/c590b3e2a3d8afd8a11914f9381a58053313e73d_full.jpg", "83300280": "https://avatars.steamstatic.com/5b6eb362809ae38fdd30a4a84cbe55da330576d8_full.jpg", "96286191": "https://avatars.steamstatic.com/75d20ae6b4dbbcf1d66b88bcc5cd769ba91f6c07_full.jpg", "111257540": "https://avatars.steamstatic.com/4d68f577e0c70dae1c5df81f21bfd973013b1e8a_full.jpg", "241782761": "https://avatars.steamstatic.com/0f60b23488f593182554cbf7deaef8e7eed75965_full.jpg", "1000265186": "https://avatars.steamstatic.com/740cfa81e42ad1e100c8e53da9db583c7e2dd29b_full.jpg", "1254464470": "https://avatars.steamstatic.com/f9b3cdb020596a3e1392d09b1cbae2e2ec291676_full.jpg"};
+let PASTA='../../amigos'; // ranking do grupo atual (Marocas por padrão)
+const cacheJ={};
+const pegaLocal=u=>cacheJ[u]??=fetch(u).then(r=>r.ok?r.json():null).catch(()=>null); // Marocas embutido; ?grupo=<id> troca pelos amigos daquele grupo da Liga
 const CDN='https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/';
 const OD='https://api.opendota.com/api';
 const $=s=>document.querySelector(s);
@@ -363,6 +366,7 @@ function paraId(txt){
   quadros('Do grupo Marocas',AVATARES);
   const g=new URLSearchParams(location.search).get('grupo');
   if(g&&/^[a-z0-9-]+$/.test(g)&&g!=='marocas'){
+    PASTA=`../../grupos/${g}`;
     Promise.all([fetch(`../../grupos/${g}/amigos.json`).then(r=>r.ok?r.json():null),fetch('../../grupos/grupos.json').then(r=>r.ok?r.json():[]).catch(()=>[]),fetch(`../../grupos/${g}/ranking.json`).then(r=>r.ok?r.json():null).catch(()=>null)])
       .then(([am,gs,rk])=>{if(!am)return;AMIGOS=am;const n=(gs||[]).find(x=>x.id===g);const av={};Object.entries((rk&&rk.perfis)||{}).forEach(([k,v])=>{if(v&&v.avatar)av[k]=v.avatar});quadros('Do grupo '+(n?n.nome:''),av)}).catch(()=>{});
   }
@@ -384,21 +388,34 @@ async function buscar(q){
   }catch(e){est(e.message,true)}
 }
 const IGNORA=new Set([46,42,43,188,39,44,216,40,38,237,241,265,257,1123,29,0]); // tp, wards, fumaça, consumíveis
+async function salvas(id){ // partidas que o robô do site já guardou para os amigos do grupo
+  const rk=await pegaLocal(PASTA+'/ranking.json'); const hs=rk?.historicos?.[id];
+  if(!hs||!hs.length) return null;
+  const lim=Date.now()/1000-120*86400;
+  let l=hs.filter(x=>x.inicio>lim); if(l.length<15) l=hs.slice(-60);
+  const ms=l.map(x=>({hero_id:x.heroi,player_slot:0,radiant_win:x.tipo==='vitoria'||x.tipo==='craque'}));
+  const bd=await pegaLocal('builds-amigos.json');
+  const pes=bd?.grupos?.flatMap(g=>g.pessoas).find(p=>String(p.conta)===String(id));
+  return {ms,perfil:{profile:{personaname:AMIGOS[id],avatarfull:rk?.perfis?.[id]?.avatar}},itens:pes?Object.fromEntries(pes.herois.map(h=>[h.id,{j:h.j,it:h.itens}])):null};
+}
 async function julgar(id){
-  est('Puxando suas partidas no OpenDota...');
+  est('Puxando suas partidas...');
   $('#resultado').innerHTML=`<div class="sec carregando"><div class="sentenca esq" style="height:190px"></div></div>`;
   try{
+    const s=AMIGOS[id]?await salvas(id):null;
+    if(s){est('');try{history.replaceState(null,'','?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)),conta:id})+location.hash)}catch(e){};return render(s.perfil,s.ms,id,s.itens)}
     const proj=['hero_id','player_slot','radiant_win','item_0','item_1','item_2','item_3','item_4','item_5','start_time'].map(p=>'project='+p).join('&');
-    const [perfil,ms0]=await Promise.all([pega(`${OD}/players/${id}`),pega(`${OD}/players/${id}/matches?date=120&${proj}`)]);
-    let ms=ms0;
-    if(ms.length<15) ms=await pega(`${OD}/players/${id}/matches?limit=60&${proj}`);
-    if(!ms.length) return est('Esse perfil não tem partidas públicas. No Dota: Configurações > Social > "Expor dados públicos de partidas".',true), $('#resultado').innerHTML='';
+    const [perfil,ms0]=await Promise.all([pega(`${OD}/players/${id}`).catch(()=>null),pega(`${OD}/players/${id}/matches?date=120&${proj}`)]);
+    let ms=Array.isArray(ms0)?ms0:[];
+    if(ms.length<15){const m2=await pega(`${OD}/players/${id}/matches?limit=60&${proj}`);if(Array.isArray(m2)&&m2.length>ms.length)ms=m2}
+    if(!Array.isArray(ms0)&&!ms.length) throw new Error('O OpenDota não respondeu direito agora. Tente de novo em um minuto.');
+    if(!ms.length) return est('Não achei partidas públicas desse perfil no OpenDota. No Dota: Configurações > Social > "Expor dados públicos de partidas".',true), $('#resultado').innerHTML='';
     est('');
     try{history.replaceState(null,'','?conta='+id+location.hash)}catch(e){}
     render(perfil,ms,id);
   }catch(e){est(e.message,true);$('#resultado').innerHTML=''}
 }
-function render(perfil,ms,id){
+function render(perfil,ms,id,salvos){
   const nome=perfil?.profile?.personaname||AMIGOS[id]||('Jogador '+id), av=perfil?.profile?.avatarfull;
   const porH={},porI={};
   for(const m of ms){
@@ -406,6 +423,10 @@ function render(perfil,ms,id){
     const h=porH[m.hero_id]??={j:0,v:0,it:{}};h.j++;if(w)h.v++;
     const vistos=new Set();
     for(let k=0;k<6;k++){const it=m['item_'+k];if(it&&!vistos.has(it)){vistos.add(it);porI[it]=(porI[it]||0)+1;h.it[it]=(h.it[it]||0)+1}}
+  }
+  if(salvos){ // itens vindos do builds-amigos.json (o histórico salvo não guarda itens)
+    for(const [hid,x] of Object.entries(salvos)){const h=porH[hid];if(!h)continue;const f=h.j/(x.j||h.j);
+      for(const [it,c] of x.it){const n=Math.round(c*f);if(n){h.it[it]=n;porI[it]=(porI[it]||0)+n}}}
   }
   const N=ms.length;
   const herois=Object.entries(porH).map(([hid,x])=>({h:HER[hid],...x})).filter(x=>x.h).sort((a,b)=>b.j-a.j);
