@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-21T20:45:50.956Z",
+  "atualizadoEm": "2026-11-21T21:24:13.051Z",
   "semAnalise": 5,
   "ranking": [
     {
@@ -31,11 +31,11 @@
       "nome": "Suéter",
       "culpados": 19,
       "craques": 20,
-      "partidas": 280,
-      "vitorias": 139,
+      "partidas": 281,
+      "vitorias": 140,
       "winRate": 50,
       "streak": "culpado",
-      "mmrGanho": 3275,
+      "mmrGanho": 3300,
       "mmrPerdido": 3425
     },
     {
@@ -91,12 +91,12 @@
       "nome": "Conhecido do Baia",
       "culpados": 9,
       "craques": 7,
-      "partidas": 144,
+      "partidas": 145,
       "vitorias": 65,
       "winRate": 45,
       "streak": null,
       "mmrGanho": 1425,
-      "mmrPerdido": 1925
+      "mmrPerdido": 1950
     },
     {
       "accountId": "96286191",
@@ -4874,9 +4874,20 @@
         "lado": "radiant",
         "tipo": "derrota",
         "inicio": 1795284532,
-        "comStack": false,
+        "comStack": true,
         "ranqueada": true,
         "heroi": 86,
+        "culpa": 0.064,
+        "merito": 0.247
+      },
+      {
+        "matchId": 9100066232,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1795288857,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 107,
         "culpa": null,
         "merito": null,
         "provisoria": true
@@ -17246,6 +17257,17 @@
         "heroi": 64,
         "culpa": 0.091,
         "merito": 0.392
+      },
+      {
+        "matchId": 9099961618,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1795284532,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 68,
+        "culpa": 0.176,
+        "merito": 0.153
       }
     ]
   },
@@ -17296,5 +17318,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-21T15:04:25.031Z"
+  "perfisEm": "2026-11-21T21:24:12.977Z"
 }
