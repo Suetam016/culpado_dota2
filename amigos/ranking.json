@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-21T21:24:13.051Z",
-  "semAnalise": 5,
+  "atualizadoEm": "2026-11-21T21:55:16.419Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -91,11 +91,11 @@
       "nome": "Conhecido do Baia",
       "culpados": 9,
       "craques": 7,
-      "partidas": 145,
-      "vitorias": 65,
+      "partidas": 146,
+      "vitorias": 66,
       "winRate": 45,
       "streak": null,
-      "mmrGanho": 1425,
+      "mmrGanho": 1450,
       "mmrPerdido": 1950
     },
     {
@@ -4885,12 +4885,11 @@
         "lado": "radiant",
         "tipo": "vitoria",
         "inicio": 1795288857,
-        "comStack": false,
+        "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.265,
+        "merito": 0.2
       }
     ],
     "83300280": [
@@ -17268,6 +17267,17 @@
         "heroi": 68,
         "culpa": 0.176,
         "merito": 0.153
+      },
+      {
+        "matchId": 9100066232,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1795288857,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 64,
+        "culpa": 0.052,
+        "merito": 0.163
       }
     ]
   },

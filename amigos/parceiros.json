@@ -1,18 +1,18 @@
 {
- "atualizadoEm": "2026-11-21T21:24:22Z",
+ "atualizadoEm": "2026-11-21T21:55:23Z",
  "desde": "2025-12-21",
  "partidasLidas": 1443,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
-   "jogos": 145,
-   "vitorias": 65,
+   "jogos": 146,
+   "vitorias": 66,
    "winRate": 45
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 260,
-   "vitorias": 127,
+   "jogos": 261,
+   "vitorias": 128,
    "winRate": 49
   },
   "26668150": {
@@ -2929,8 +2929,8 @@
    "b": "1254464470",
    "nomeA": "Suéter",
    "nomeB": "Conhecido do Baia",
-   "jogos": 110,
-   "vitorias": 47,
+   "jogos": 111,
+   "vitorias": 48,
    "winRate": 43,
    "rotas": [
     {
@@ -2978,18 +2978,18 @@
      "winRate": 0
     },
     {
-     "posA": 4,
-     "posB": 5,
-     "jogos": 5,
-     "vitorias": 1,
-     "winRate": 20
-    },
-    {
      "posA": 3,
      "posB": 4,
      "jogos": 17,
      "vitorias": 4,
      "winRate": 24
+    },
+    {
+     "posA": 4,
+     "posB": 5,
+     "jogos": 6,
+     "vitorias": 2,
+     "winRate": 33
     }
    ],
    "herois": [
@@ -3010,9 +3010,9 @@
     {
      "heroiA": 107,
      "heroiB": 64,
-     "jogos": 9,
-     "vitorias": 5,
-     "winRate": 56
+     "jogos": 10,
+     "vitorias": 6,
+     "winRate": 60
     }
    ],
    "heroisPiores": [
@@ -3039,6 +3039,15 @@
     }
    ],
    "partidas": [
+    {
+     "matchId": 9100066232,
+     "inicio": 1795288857,
+     "venceu": true,
+     "heroiA": 107,
+     "heroiB": 64,
+     "posA": 4,
+     "posB": 5
+    },
     {
      "matchId": 9099961618,
      "inicio": 1795284532,
@@ -3097,15 +3106,6 @@
      "matchId": 9092008624,
      "inicio": 1794771402,
      "venceu": false,
-     "heroiA": 107,
-     "heroiB": 64,
-     "posA": 2,
-     "posB": 5
-    },
-    {
-     "matchId": 9091928113,
-     "inicio": 1794767783,
-     "venceu": true,
      "heroiA": 107,
      "heroiB": 64,
      "posA": 2,
@@ -17169,8 +17169,8 @@
    {
     "heroi": 64,
     "pos": 5,
-    "jogos": 16,
-    "vitorias": 9
+    "jogos": 17,
+    "vitorias": 10
    },
    {
     "heroi": 30,
@@ -17393,8 +17393,8 @@
    {
     "heroi": 107,
     "pos": 4,
-    "jogos": 9,
-    "vitorias": 5
+    "jogos": 10,
+    "vitorias": 6
    },
    {
     "heroi": 108,
@@ -17501,12 +17501,6 @@
    {
     "heroi": 76,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 107,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -37019,9 +37013,16 @@
     [
      "81918076",
      107,
-     0,
-     null,
-     null
+     4,
+     3,
+     1
+    ],
+    [
+     "1254464470",
+     64,
+     5,
+     1,
+     -1
     ]
    ]
   }
