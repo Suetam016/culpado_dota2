@@ -1,16 +1,16 @@
 {
-  "atualizadoEm": "2026-11-21T15:06:10.457Z",
-  "semAnalise": 6,
+  "atualizadoEm": "2026-11-21T15:42:24.694Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
       "culpados": 107,
-      "craques": 51,
+      "craques": 52,
       "partidas": 428,
       "vitorias": 200,
       "winRate": 47,
-      "streak": "culpado",
+      "streak": null,
       "mmrGanho": 5000,
       "mmrPerdido": 5700
     },
@@ -18,7 +18,7 @@
       "accountId": "200957620",
       "nome": "Danylera",
       "culpados": 40,
-      "craques": 45,
+      "craques": 46,
       "partidas": 237,
       "vitorias": 111,
       "winRate": 47,
@@ -5064,14 +5064,13 @@
       {
         "matchId": 9099208229,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795254402,
         "comStack": false,
         "ranqueada": true,
         "heroi": 43,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.144,
+        "merito": 0.253
       },
       {
         "matchId": 9099248777,
@@ -5081,9 +5080,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 14,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.511,
+        "merito": 0.081
       },
       {
         "matchId": 9099359795,
@@ -5093,9 +5091,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 43,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.148,
+        "merito": 0.249
       }
     ],
     "200957620": [
@@ -7698,14 +7695,13 @@
       {
         "matchId": 9099359795,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795262018,
         "comStack": true,
         "ranqueada": true,
         "heroi": 94,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.127,
+        "merito": 0.37
       }
     ]
   },

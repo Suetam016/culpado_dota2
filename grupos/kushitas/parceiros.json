@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-21T15:06:17Z",
+ "atualizadoEm": "2026-11-21T15:42:34Z",
  "desde": "2026-03-31",
  "partidasLidas": 1440,
  "jogadores": {
@@ -42,9 +42,9 @@
     {
      "posA": 5,
      "posB": 1,
-     "jogos": 24,
-     "vitorias": 11,
-     "winRate": 46
+     "jogos": 25,
+     "vitorias": 12,
+     "winRate": 48
     },
     {
      "posA": 2,
@@ -79,9 +79,9 @@
     {
      "posA": 5,
      "posB": 1,
-     "jogos": 24,
-     "vitorias": 11,
-     "winRate": 46
+     "jogos": 25,
+     "vitorias": 12,
+     "winRate": 48
     }
    ],
    "herois": [
@@ -130,8 +130,8 @@
      "venceu": true,
      "heroiA": 43,
      "heroiB": 94,
-     "posA": null,
-     "posB": null
+     "posA": 5,
+     "posB": 1
     },
     {
      "matchId": 9098681209,
@@ -654,16 +654,16 @@
     "vitorias": 4
    },
    {
+    "heroi": 94,
+    "pos": 1,
+    "jogos": 10,
+    "vitorias": 3
+   },
+   {
     "heroi": 20,
     "pos": 1,
     "jogos": 9,
     "vitorias": 6
-   },
-   {
-    "heroi": 94,
-    "pos": 1,
-    "jogos": 9,
-    "vitorias": 2
    },
    {
     "heroi": 8,
@@ -804,12 +804,6 @@
     "vitorias": 1
    },
    {
-    "heroi": 94,
-    "pos": 0,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
     "heroi": 96,
     "pos": 3,
     "jogos": 1,
@@ -868,8 +862,8 @@
    {
     "heroi": 43,
     "pos": 2,
-    "jogos": 55,
-    "vitorias": 29
+    "jogos": 56,
+    "vitorias": 30
    },
    {
     "heroi": 39,
@@ -896,16 +890,16 @@
     "vitorias": 8
    },
    {
+    "heroi": 43,
+    "pos": 5,
+    "jogos": 15,
+    "vitorias": 11
+   },
+   {
     "heroi": 32,
     "pos": 1,
     "jogos": 15,
     "vitorias": 8
-   },
-   {
-    "heroi": 43,
-    "pos": 5,
-    "jogos": 14,
-    "vitorias": 10
    },
    {
     "heroi": 73,
@@ -956,16 +950,16 @@
     "vitorias": 1
    },
    {
+    "heroi": 14,
+    "pos": 2,
+    "jogos": 8,
+    "vitorias": 5
+   },
+   {
     "heroi": 19,
     "pos": 5,
     "jogos": 7,
     "vitorias": 5
-   },
-   {
-    "heroi": 14,
-    "pos": 2,
-    "jogos": 7,
-    "vitorias": 4
    },
    {
     "heroi": 14,
@@ -1124,12 +1118,6 @@
     "vitorias": 2
    },
    {
-    "heroi": 43,
-    "pos": 0,
-    "jogos": 2,
-    "vitorias": 2
-   },
-   {
     "heroi": 129,
     "pos": 3,
     "jogos": 2,
@@ -1210,12 +1198,6 @@
    {
     "heroi": 43,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 1
-   },
-   {
-    "heroi": 14,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 1
    },
@@ -11461,9 +11443,9 @@
     [
      "86736516",
      43,
-     0,
-     null,
-     null
+     2,
+     2,
+     1
     ]
    ]
   },
@@ -11476,9 +11458,9 @@
     [
      "86736516",
      14,
-     0,
-     null,
-     null
+     2,
+     2,
+     -1
     ]
    ]
   },
@@ -11491,16 +11473,16 @@
     [
      "86736516",
      43,
-     0,
-     null,
-     null
+     5,
+     1,
+     0
     ],
     [
      "200957620",
      94,
-     0,
-     null,
-     null
+     1,
+     1,
+     0
     ]
    ]
   }
