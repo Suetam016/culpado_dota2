@@ -1,12 +1,12 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Day": "2998",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-21T12:22:03Z",
+  "quando": "2026-11-21T13:03:32Z",
   "restante": {
-   "dia": 2993,
+   "dia": 2983,
    "minuto": 57
   }
  },
@@ -48,7 +48,7 @@
   },
   "1254464470": {
    "analisadas": {},
-   "em": "2026-11-20T13:01:45Z"
+   "em": "2026-11-21T13:03:32Z"
   },
   "200957620": {
    "analisadas": {},
@@ -64,7 +64,7 @@
   },
   "77621319": {
    "analisadas": {},
-   "em": "2026-11-20T13:01:37Z"
+   "em": "2026-11-21T13:02:53Z"
   },
   "81918076": {
    "analisadas": {},
@@ -72,7 +72,7 @@
   },
   "83300280": {
    "analisadas": {},
-   "em": "2026-11-20T13:01:39Z"
+   "em": "2026-11-21T13:02:54Z"
   },
   "85686824": {
    "analisadas": {},
@@ -84,7 +84,7 @@
   },
   "96286191": {
    "analisadas": {},
-   "em": "2026-11-20T13:01:40Z"
+   "em": "2026-11-21T13:02:55Z"
   }
  },
  "listas": {
@@ -310,7 +310,7 @@
    }
   },
   "26668150": {
-   "em": "2026-11-21T10:21:36Z",
+   "em": "2026-11-21T13:02:03Z",
    "partidas": {}
   },
   "77621319": {
@@ -365,7 +365,7 @@
    }
   },
   "83300280": {
-   "em": "2026-11-21T10:21:37Z",
+   "em": "2026-11-21T13:02:04Z",
    "partidas": {}
   },
   "85686824": {
@@ -1969,22 +1969,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-20T08:01:23Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2990,
-    "minuto": 50
-   },
-   "sobra_do_dia": 2708
-  },
-  {
-   "basicas": 0,
    "chamadas": 2,
    "descartadas": [],
    "faltam": 3,
@@ -2734,6 +2718,22 @@
     "minuto": 57
    },
    "sobra_do_dia": 2705
+  },
+  {
+   "basicas": 0,
+   "chamadas": 16,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-21T13:01:26Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2983,
+    "minuto": 57
+   },
+   "sobra_do_dia": 2689
   }
  ],
  "uso": {
@@ -2750,6 +2750,6 @@
   "2026-11-18": 161,
   "2026-11-19": 241,
   "2026-11-20": 260,
-  "2026-11-21": 95
+  "2026-11-21": 111
  }
 }
