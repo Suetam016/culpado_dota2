@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-21T21:21:33Z",
+  "quando": "2026-11-21T21:54:28Z",
   "restante": {
-   "dia": 2981,
-   "minuto": 41
+   "dia": 2995,
+   "minuto": 55
   }
  },
  "desistencias": {
@@ -217,7 +217,7 @@
    }
   },
   "1254464470": {
-   "em": "2026-11-21T19:21:29Z",
+   "em": "2026-11-21T21:54:27Z",
    "partidas": {}
   },
   "200957620": {
@@ -317,7 +317,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-21T21:21:23Z",
+   "em": "2026-11-21T21:54:23Z",
    "partidas": {
     "9079434192": 1794021161,
     "9079463876": 1794023960,
@@ -526,7 +526,7 @@
    }
   },
   "96286191": {
-   "em": "2026-11-21T19:21:28Z",
+   "em": "2026-11-21T21:54:26Z",
    "partidas": {}
   }
  },
@@ -1731,7 +1731,9 @@
   "9100066232": {
    "companheiros": [
     100361097,
-    118600299
+    118600299,
+    399720606,
+    1254464470
    ],
    "inicio": 1795288857
   }
@@ -1895,6 +1897,7 @@
   "381222789": "caça rato",
   "383761271": "Menina Veneno Meu Pinto é Pequen",
   "38489943": "Okavango",
+  "399720606": "Blanzi",
   "400007804": "Virto",
   "411426020": "';@~~OwnagareeesS~>",
   "438401371": "メ BΣKIПΗӨ.",
@@ -1981,34 +1984,11 @@
    "inicio": 1795139649,
    "pedido_em": "2026-11-20T02:37:31Z",
    "primeira_vez": "2026-11-20T02:37:30Z",
-   "proxima": "2026-11-21T21:21:49Z",
-   "tentativas": 11
-  },
-  "9100066232": {
-   "inicio": 1795288857,
-   "pedido_em": "2026-11-21T21:21:26Z",
-   "primeira_vez": "2026-11-21T21:21:25Z",
-   "proxima": "2026-11-21T21:51:25Z",
-   "tentativas": 0
+   "proxima": "2026-11-22T09:54:28Z",
+   "tentativas": 12
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 11,
-   "descartadas": [],
-   "faltam": 4,
-   "fim": "fila vazia",
-   "inicio": "2026-11-20T17:01:21Z",
-   "novas": 0,
-   "pedidos": 1,
-   "pendentes": 4,
-   "restante": {
-    "dia": 2980,
-    "minuto": 40
-   },
-   "sobra_do_dia": 2618
-  },
   {
    "basicas": 0,
    "chamadas": 11,
@@ -2760,6 +2740,22 @@
     "minuto": 41
    },
    "sobra_do_dia": 2583
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-21T21:54:23Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2995,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2578
   }
  ],
  "uso": {
@@ -2776,6 +2772,6 @@
   "2026-11-18": 161,
   "2026-11-19": 241,
   "2026-11-20": 260,
-  "2026-11-21": 217
+  "2026-11-21": 222
  }
 }
