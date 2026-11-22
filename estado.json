@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T01:24:01Z",
+  "quando": "2026-11-22T02:03:15Z",
   "restante": {
-   "dia": 2993,
-   "minuto": 59
+   "dia": 2995,
+   "minuto": 55
   }
  },
  "desistencias": {
@@ -311,7 +311,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-22T01:21:36Z",
+   "em": "2026-11-22T02:01:38Z",
    "partidas": {
     "9079434192": 1794021161,
     "9079463876": 1794023960,
@@ -525,15 +525,6 @@
   }
  },
  "lo": {
-  "9057385248": {
-   "companheiros": [
-    83300280,
-    96286191,
-    99140295,
-    148364503
-   ],
-   "inicio": 1792719430
-  },
   "9057420656": {
    "companheiros": [
     83300280,
@@ -1823,7 +1814,6 @@
   "142965109": "mutty™",
   "1444300274": "RaoH",
   "148131975": "Borys o Dragão de Athas",
-  "148364503": "Manaos Man",
   "148946557": "Markytos",
   "149638439": "DEX",
   "150437875": "kludd",
@@ -1954,7 +1944,6 @@
   "95336818": "Judas",
   "96286191": "charlinho",
   "969256392": "Prezida",
-  "99140295": "·NEO·GEO·",
   "996565080": "kintaro",
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
@@ -1983,22 +1972,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 6,
-   "descartadas": [],
-   "faltam": 4,
-   "fim": "fila vazia",
-   "inicio": "2026-11-20T21:01:28Z",
-   "novas": 2,
-   "pedidos": 1,
-   "pendentes": 4,
-   "restante": {
-    "dia": 2983,
-    "minuto": 45
-   },
-   "sobra_do_dia": 2567
-  },
   {
    "basicas": 0,
    "chamadas": 11,
@@ -2750,6 +2723,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2778
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T02:01:11Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2995,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2773
   }
  ],
  "uso": {
@@ -2766,6 +2755,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 22
+  "2026-11-22": 27
  }
 }
