@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-22T16:23:52.507Z",
-  "semAnalise": 5,
+  "atualizadoEm": "2026-11-22T17:03:33.377Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -30,11 +30,11 @@
       "accountId": "81918076",
       "nome": "Suéter",
       "culpados": 19,
-      "craques": 20,
+      "craques": 21,
       "partidas": 282,
       "vitorias": 141,
       "winRate": 50,
-      "streak": "culpado",
+      "streak": null,
       "mmrGanho": 3325,
       "mmrPerdido": 3425
     },
@@ -55,11 +55,11 @@
       "nome": "Jalim",
       "culpados": 13,
       "craques": 14,
-      "partidas": 112,
-      "vitorias": 54,
-      "winRate": 48,
+      "partidas": 113,
+      "vitorias": 55,
+      "winRate": 49,
       "streak": null,
-      "mmrGanho": 1325,
+      "mmrGanho": 1350,
       "mmrPerdido": 1450
     },
     {
@@ -1797,6 +1797,17 @@
         "heroi": 114,
         "culpa": 0.197,
         "merito": 0.105
+      },
+      {
+        "matchId": 9101336013,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1795360519,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 8,
+        "culpa": 0.204,
+        "merito": 0.209
       }
     ],
     "81918076": [
@@ -4894,14 +4905,13 @@
       {
         "matchId": 9101336013,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795360519,
-        "comStack": false,
+        "comStack": true,
         "ranqueada": true,
         "heroi": 86,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.057,
+        "merito": 0.255
       }
     ],
     "83300280": [
