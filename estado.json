@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T19:42:39Z",
+  "quando": "2026-11-22T20:27:03Z",
   "restante": {
-   "dia": 2993,
-   "minuto": 57
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -43,6 +43,22 @@
    "n": 0,
    "proxima": "2026-11-22T08:36:37Z",
    "quando": "2026-11-22T08:06:37Z",
+   "t": 1
+  },
+  "9101437333": {
+   "inicio": 1795364264,
+   "motivo": "rede: TimeoutError: The read operation timed out",
+   "n": 0,
+   "proxima": "2026-11-22T20:53:07Z",
+   "quando": "2026-11-22T20:23:07Z",
+   "t": 1
+  },
+  "9101661300": {
+   "inicio": 1795373368,
+   "motivo": "rede: TimeoutError: The read operation timed out",
+   "n": 0,
+   "proxima": "2026-11-22T20:54:07Z",
+   "quando": "2026-11-22T20:24:07Z",
    "t": 1
   }
  },
@@ -313,9 +329,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-22T16:21:13Z",
+   "em": "2026-11-22T20:22:06Z",
    "partidas": {
-    "9080403360": 1794071382,
     "9081115725": 1794115130,
     "9081169561": 1794119211,
     "9081995118": 1794155332,
@@ -353,7 +368,9 @@
     "9098526229": 1795203430,
     "9099961618": 1795284532,
     "9100066232": 1795288857,
-    "9101336013": 1795360519
+    "9101336013": 1795360519,
+    "9101437333": 1795364264,
+    "9101661300": 1795373368
    }
   },
   "83300280": {
@@ -1955,22 +1972,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 6,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T15:41:21Z",
-   "novas": 3,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2994,
-    "minuto": 54
-   },
-   "sobra_do_dia": 2644
-  },
-  {
-   "basicas": 0,
    "chamadas": 1,
    "descartadas": [],
    "faltam": 3,
@@ -2699,6 +2700,22 @@
     "minuto": 57
    },
    "sobra_do_dia": 2554
+  },
+  {
+   "basicas": 0,
+   "chamadas": 9,
+   "descartadas": [],
+   "faltam": 5,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T20:21:14Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2545
   }
  ],
  "uso": {
@@ -2715,6 +2732,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 246
+  "2026-11-22": 255
  }
 }
