@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T10:02:03Z",
+  "quando": "2026-11-22T10:19:27Z",
   "restante": {
-   "dia": 2997,
-   "minuto": 57
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -1944,22 +1944,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 5,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T06:01:26Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2995,
-    "minuto": 55
-   },
-   "sobra_do_dia": 2751
-  },
-  {
-   "basicas": 0,
    "chamadas": 1,
    "descartadas": [],
    "faltam": 3,
@@ -2697,6 +2681,22 @@
     "minuto": 57
    },
    "sobra_do_dia": 2680
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T10:19:15Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2679
   }
  ],
  "uso": {
@@ -2713,6 +2713,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 120
+  "2026-11-22": 121
  }
 }
