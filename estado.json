@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2997",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T11:39:50Z",
+  "quando": "2026-11-22T12:21:19Z",
   "restante": {
-   "dia": 2969,
-   "minuto": 31
+   "dia": 2997,
+   "minuto": 57
   }
  },
  "desistencias": {
@@ -314,7 +314,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-22T11:39:39Z",
+   "em": "2026-11-22T12:21:17Z",
    "partidas": {
     "9080160818": 1794062628,
     "9080270625": 1794066488,
@@ -1939,39 +1939,9 @@
    "primeira_vez": "2026-11-20T02:37:30Z",
    "proxima": "2026-11-22T22:01:39Z",
    "tentativas": 13
-  },
-  "9100804908": {
-   "inicio": 1795339124,
-   "pedido_em": "2026-11-22T11:39:47Z",
-   "primeira_vez": "2026-11-22T11:39:46Z",
-   "proxima": "2026-11-22T12:09:46Z",
-   "tentativas": 0
-  },
-  "9100867535": {
-   "inicio": 1795342404,
-   "pedido_em": "2026-11-22T11:39:49Z",
-   "primeira_vez": "2026-11-22T11:39:48Z",
-   "proxima": "2026-11-22T12:09:48Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 8,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T08:01:21Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2992,
-    "minuto": 52
-   },
-   "sobra_do_dia": 2740
-  },
   {
    "basicas": 0,
    "chamadas": 5,
@@ -2711,6 +2681,22 @@
     "minuto": 31
    },
    "sobra_do_dia": 2655
+  },
+  {
+   "basicas": 0,
+   "chamadas": 3,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T12:21:17Z",
+   "novas": 2,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2997,
+    "minuto": 57
+   },
+   "sobra_do_dia": 2652
   }
  ],
  "uso": {
@@ -2727,6 +2713,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 145
+  "2026-11-22": 148
  }
 }
