@@ -1,10 +1,14 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "Retry-After": "120"
+   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T03:16:56Z",
-  "restante": {}
+  "quando": "2026-11-22T04:02:03Z",
+  "restante": {
+   "dia": 2996,
+   "minuto": 56
+  }
  },
  "desistencias": {
   "9054546751": {
@@ -515,15 +519,6 @@
   }
  },
  "lo": {
-  "9057442189": {
-   "companheiros": [
-    83300280,
-    96286191,
-    119559567,
-    1254464470
-   ],
-   "inicio": 1792725641
-  },
   "9057466937": {
    "companheiros": [
     83300280,
@@ -1955,22 +1950,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-20T23:41:25Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2979,
-    "minuto": 58
-   },
-   "sobra_do_dia": 2540
-  },
-  {
-   "basicas": 0,
    "chamadas": 8,
    "descartadas": [],
    "faltam": 3,
@@ -2717,6 +2696,22 @@
    "pendentes": 3,
    "restante": {},
    "sobra_do_dia": 2759
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T04:01:14Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2755
   }
  ],
  "uso": {
@@ -2733,6 +2728,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 41
+  "2026-11-22": 45
  }
 }
