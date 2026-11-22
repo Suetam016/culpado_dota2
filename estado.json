@@ -1,10 +1,14 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "Retry-After": "60"
+   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T18:50:16Z",
-  "restante": {}
+  "quando": "2026-11-22T19:22:19Z",
+  "restante": {
+   "dia": 2988,
+   "minuto": 48
+  }
  },
  "desistencias": {
   "9054546751": {
@@ -217,7 +221,7 @@
    }
   },
   "1254464470": {
-   "em": "2026-11-22T16:21:18Z",
+   "em": "2026-11-22T19:22:16Z",
    "partidas": {}
   },
   "200957620": {
@@ -301,11 +305,11 @@
    }
   },
   "26668150": {
-   "em": "2026-11-22T16:21:19Z",
+   "em": "2026-11-22T19:22:17Z",
    "partidas": {}
   },
   "77621319": {
-   "em": "2026-11-22T16:21:16Z",
+   "em": "2026-11-22T19:22:13Z",
    "partidas": {}
   },
   "81918076": {
@@ -353,7 +357,7 @@
    }
   },
   "83300280": {
-   "em": "2026-11-22T16:21:20Z",
+   "em": "2026-11-22T19:22:18Z",
    "partidas": {}
   },
   "85686824": {
@@ -512,7 +516,7 @@
    }
   },
   "96286191": {
-   "em": "2026-11-22T16:21:17Z",
+   "em": "2026-11-22T19:22:15Z",
    "partidas": {}
   }
  },
@@ -1951,22 +1955,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T14:21:23Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2990,
-    "minuto": 50
-   },
-   "sobra_do_dia": 2669
-  },
-  {
-   "basicas": 0,
    "chamadas": 19,
    "descartadas": [],
    "faltam": 6,
@@ -2695,6 +2683,22 @@
    "pendentes": 3,
    "restante": {},
    "sobra_do_dia": 2573
+  },
+  {
+   "basicas": 0,
+   "chamadas": 12,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T19:21:13Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2988,
+    "minuto": 48
+   },
+   "sobra_do_dia": 2561
   }
  ],
  "uso": {
@@ -2711,6 +2715,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 227
+  "2026-11-22": 239
  }
 }
