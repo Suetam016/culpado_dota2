@@ -1,14 +1,10 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
-   "X-Rate-Limit-Remaining-Minute": "59"
+   "Retry-After": "60"
   },
-  "quando": "2026-11-22T22:34:57Z",
-  "restante": {
-   "dia": 2979,
-   "minuto": 58
-  }
+  "quando": "2026-11-22T23:06:19Z",
+  "restante": {}
  },
  "desistencias": {
   "9054546751": {
@@ -45,13 +41,21 @@
    "quando": "2026-11-22T22:31:14Z",
    "t": 3
   },
+  "9096660559": {
+   "inicio": 1795094994,
+   "motivo": "HTTP 521",
+   "n": 0,
+   "proxima": "2026-11-22T23:36:15Z",
+   "quando": "2026-11-22T23:06:15Z",
+   "t": 1
+  },
   "9101437333": {
    "inicio": 1795364264,
-   "motivo": "HTTP 520",
+   "motivo": "rede: TimeoutError: The read operation timed out",
    "n": 0,
-   "proxima": "2026-11-22T22:01:16Z",
-   "quando": "2026-11-22T21:01:16Z",
-   "t": 2
+   "proxima": "2026-11-23T01:03:17Z",
+   "quando": "2026-11-22T23:03:17Z",
+   "t": 3
   },
   "9101661300": {
    "inicio": 1795373368,
@@ -1983,22 +1987,6 @@
  "rodadas": [
   {
    "basicas": 0,
-   "chamadas": 3,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T17:33:18Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2997,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2629
-  },
-  {
-   "basicas": 0,
    "chamadas": 6,
    "descartadas": [],
    "faltam": 4,
@@ -2724,6 +2712,19 @@
     "minuto": 58
    },
    "sobra_do_dia": 2504
+  },
+  {
+   "basicas": 0,
+   "chamadas": 12,
+   "descartadas": [],
+   "faltam": 5,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T23:01:16Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 4,
+   "restante": {},
+   "sobra_do_dia": 2492
   }
  ],
  "uso": {
@@ -2740,6 +2741,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 296
+  "2026-11-22": 308
  }
 }
