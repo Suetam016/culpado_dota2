@@ -1,10 +1,14 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "Retry-After": "60"
+   "X-Rate-Limit-Remaining-Day": "2993",
+   "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-22T23:06:19Z",
-  "restante": {}
+  "quando": "2026-11-22T23:41:30Z",
+  "restante": {
+   "dia": 2983,
+   "minuto": 49
+  }
  },
  "desistencias": {
   "9054546751": {
@@ -30,6 +34,12 @@
    "motivo": "o OpenDota não analisou em 3 dias",
    "quando": "2026-11-14T11:23:22Z",
    "salva": true
+  },
+  "9096660559": {
+   "inicio": 1795094994,
+   "motivo": "o OpenDota não analisou em 3 dias",
+   "quando": "2026-11-22T23:41:27Z",
+   "salva": true
   }
  },
  "falhas": {
@@ -40,14 +50,6 @@
    "proxima": "2026-11-23T00:31:14Z",
    "quando": "2026-11-22T22:31:14Z",
    "t": 3
-  },
-  "9096660559": {
-   "inicio": 1795094994,
-   "motivo": "HTTP 521",
-   "n": 0,
-   "proxima": "2026-11-22T23:36:15Z",
-   "quando": "2026-11-22T23:06:15Z",
-   "t": 1
   },
   "9101437333": {
    "inicio": 1795364264,
@@ -1962,13 +1964,6 @@
    "proxima": "2026-11-22T20:41:34Z",
    "tentativas": 15
   },
-  "9096660559": {
-   "inicio": 1795094994,
-   "pedido_em": "2026-11-19T14:21:41Z",
-   "primeira_vez": "2026-11-19T14:21:40Z",
-   "proxima": "2026-11-22T23:03:55Z",
-   "tentativas": 15
-  },
   "9097449397": {
    "inicio": 1795139649,
    "pedido_em": "2026-11-20T02:37:31Z",
@@ -1985,22 +1980,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 6,
-   "descartadas": [],
-   "faltam": 4,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T18:01:25Z",
-   "novas": 0,
-   "pedidos": 1,
-   "pendentes": 4,
-   "restante": {
-    "dia": 2985,
-    "minuto": 45
-   },
-   "sobra_do_dia": 2623
-  },
   {
    "basicas": 0,
    "chamadas": 2,
@@ -2725,6 +2704,22 @@
    "pendentes": 4,
    "restante": {},
    "sobra_do_dia": 2492
+  },
+  {
+   "basicas": 1,
+   "chamadas": 11,
+   "descartadas": [],
+   "faltam": 4,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T23:41:19Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2983,
+    "minuto": 49
+   },
+   "sobra_do_dia": 2481
   }
  ],
  "uso": {
@@ -2741,6 +2736,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 308
+  "2026-11-22": 319
  }
 }
