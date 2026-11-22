@@ -1,14 +1,10 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
-   "X-Rate-Limit-Remaining-Minute": "59"
+   "Retry-After": "60"
   },
-  "quando": "2026-11-22T20:27:03Z",
-  "restante": {
-   "dia": 2999,
-   "minuto": 59
-  }
+  "quando": "2026-11-22T21:03:25Z",
+  "restante": {}
  },
  "desistencias": {
   "9054546751": {
@@ -39,27 +35,27 @@
  "falhas": {
   "9096462755": {
    "inicio": 1795085214,
-   "motivo": "HTTP 521",
+   "motivo": "rede: TimeoutError: The read operation timed out",
    "n": 0,
-   "proxima": "2026-11-22T08:36:37Z",
-   "quando": "2026-11-22T08:06:37Z",
-   "t": 1
+   "proxima": "2026-11-22T22:02:25Z",
+   "quando": "2026-11-22T21:02:25Z",
+   "t": 2
   },
   "9101437333": {
    "inicio": 1795364264,
-   "motivo": "rede: TimeoutError: The read operation timed out",
+   "motivo": "HTTP 520",
    "n": 0,
-   "proxima": "2026-11-22T20:53:07Z",
-   "quando": "2026-11-22T20:23:07Z",
-   "t": 1
+   "proxima": "2026-11-22T22:01:16Z",
+   "quando": "2026-11-22T21:01:16Z",
+   "t": 2
   },
   "9101661300": {
    "inicio": 1795373368,
-   "motivo": "rede: TimeoutError: The read operation timed out",
+   "motivo": "HTTP 520",
    "n": 0,
-   "proxima": "2026-11-22T20:54:07Z",
-   "quando": "2026-11-22T20:24:07Z",
-   "t": 1
+   "proxima": "2026-11-22T22:01:17Z",
+   "quando": "2026-11-22T21:01:17Z",
+   "t": 2
   }
  },
  "historico": {
@@ -1976,22 +1972,6 @@
    "descartadas": [],
    "faltam": 3,
    "fim": "fila vazia",
-   "inicio": "2026-11-21T16:21:22Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2643
-  },
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
    "inicio": "2026-11-21T16:25:06Z",
    "novas": 0,
    "pedidos": 0,
@@ -2716,6 +2696,19 @@
     "minuto": 59
    },
    "sobra_do_dia": 2545
+  },
+  {
+   "basicas": 0,
+   "chamadas": 11,
+   "descartadas": [],
+   "faltam": 5,
+   "fim": "fila vazia",
+   "inicio": "2026-11-22T21:01:15Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 3,
+   "restante": {},
+   "sobra_do_dia": 2534
   }
  ],
  "uso": {
@@ -2732,6 +2725,6 @@
   "2026-11-19": 241,
   "2026-11-20": 260,
   "2026-11-21": 232,
-  "2026-11-22": 255
+  "2026-11-22": 266
  }
 }
