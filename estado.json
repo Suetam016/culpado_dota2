@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2998",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-23T01:04:32Z",
+  "quando": "2026-11-23T01:14:49Z",
   "restante": {
-   "dia": 2981,
-   "minuto": 57
+   "dia": 2998,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -49,14 +49,6 @@
   }
  },
  "falhas": {
-  "9101437333": {
-   "inicio": 1795364264,
-   "motivo": "rede: TimeoutError: The read operation timed out",
-   "n": 0,
-   "proxima": "2026-11-23T01:03:17Z",
-   "quando": "2026-11-22T23:03:17Z",
-   "t": 3
-  },
   "9101661300": {
    "inicio": 1795373368,
    "motivo": "rede: TimeoutError: The read operation timed out",
@@ -1722,7 +1714,12 @@
    "inicio": 1795360519
   },
   "9101437333": {
-   "companheiros": [],
+   "companheiros": [
+    77621319,
+    128804152,
+    129663939,
+    164183234
+   ],
    "inicio": 1795364264
   },
   "9101661300": {
@@ -1810,9 +1807,11 @@
   "1280918127": "O Advogado do Diabo",
   "1283248392": "FTA VIEIRA",
   "128354487": "_.<{(\"error 404\")}>._",
+  "128804152": "SoGaKiLL",
   "128975356": "Xoros",
   "129059626": "[LUL]DARIEN",
   "1296352131": "dafterzero",
+  "129663939": "caHú",
   "130533998": "Loirinha Rosa🌸",
   "132075872": "ShoiNeo",
   "132983978": "_ez_",
@@ -1837,6 +1836,7 @@
   "16044192": "LaFlamme",
   "160752163": "SpockJr",
   "161541518": "Kenshin",
+  "164183234": "Silveira",
   "167025374": "Ana MODE",
   "168201926": "Viva Cristo Rey",
   "168656641": "FazBiuldParapartidaPLZ",
@@ -1971,13 +1971,6 @@
    "proxima": "2026-11-23T10:31:57Z",
    "tentativas": 14
   },
-  "9101437333": {
-   "inicio": 1795364264,
-   "pedido_em": null,
-   "primeira_vez": "2026-11-22T22:22:13Z",
-   "proxima": "2026-11-22T22:52:13Z",
-   "tentativas": 0
-  },
   "9101661300": {
    "inicio": 1795373368,
    "pedido_em": "2026-11-23T00:55:28Z",
@@ -1987,22 +1980,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 9,
-   "descartadas": [],
-   "faltam": 4,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T20:41:22Z",
-   "novas": 0,
-   "pedidos": 1,
-   "pendentes": 4,
-   "restante": {
-    "dia": 2982,
-    "minuto": 57
-   },
-   "sobra_do_dia": 2593
-  },
   {
    "basicas": 0,
    "chamadas": 10,
@@ -2727,6 +2704,22 @@
     "minuto": 57
    },
    "sobra_do_dia": 2777
+  },
+  {
+   "basicas": 0,
+   "chamadas": 11,
+   "descartadas": [],
+   "faltam": 2,
+   "fim": "fila vazia",
+   "inicio": "2026-11-23T01:04:48Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 2,
+   "restante": {
+    "dia": 2998,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2766
   }
  ],
  "uso": {
@@ -2743,6 +2736,6 @@
   "2026-11-20": 260,
   "2026-11-21": 232,
   "2026-11-22": 334,
-  "2026-11-23": 23
+  "2026-11-23": 34
  }
 }
