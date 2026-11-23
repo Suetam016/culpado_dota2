@@ -1,13 +1,12 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
-   "X-Rate-Limit-Remaining-Minute": "59"
+   "Retry-After": "120"
   },
-  "quando": "2026-11-23T06:24:49Z",
+  "quando": "2026-11-23T07:03:04Z",
   "restante": {
-   "dia": 2852,
-   "minuto": 37
+   "dia": 2993,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -42,7 +41,48 @@
    "salva": true
   }
  },
- "falhas": {},
+ "falhas": {
+  "9101737580": {
+   "inicio": 1795376854,
+   "motivo": "HTTP 521",
+   "n": 0,
+   "proxima": "2026-11-23T07:31:37Z",
+   "quando": "2026-11-23T07:01:37Z",
+   "t": 1
+  },
+  "9101918918": {
+   "inicio": 1795388888,
+   "motivo": "HTTP 522",
+   "n": 0,
+   "proxima": "2026-11-23T07:31:57Z",
+   "quando": "2026-11-23T07:01:57Z",
+   "t": 1
+  },
+  "9101937304": {
+   "inicio": 1795390728,
+   "motivo": "HTTP 522",
+   "n": 0,
+   "proxima": "2026-11-23T07:32:17Z",
+   "quando": "2026-11-23T07:02:17Z",
+   "t": 1
+  },
+  "9101956389": {
+   "inicio": 1795392858,
+   "motivo": "HTTP 522",
+   "n": 0,
+   "proxima": "2026-11-23T07:32:36Z",
+   "quando": "2026-11-23T07:02:36Z",
+   "t": 1
+  },
+  "9102017287": {
+   "inicio": 1795399853,
+   "motivo": "HTTP 522",
+   "n": 0,
+   "proxima": "2026-11-23T07:32:57Z",
+   "quando": "2026-11-23T07:02:57Z",
+   "t": 1
+  }
+ },
  "historico": {
   "1000265186": {
    "analisadas": {},
@@ -521,15 +561,6 @@
   }
  },
  "lo": {
-  "9059125948": {
-   "companheiros": [
-    52973903,
-    192410217,
-    241782761,
-    1000265186
-   ],
-   "inicio": 1792824853
-  },
   "9059172324": {
    "companheiros": [
     126401886,
@@ -1749,8 +1780,10 @@
   },
   "9101993387": {
    "companheiros": [
+    96286191,
     101213158,
-    233203466
+    233203466,
+    881055432
    ],
    "inicio": 1795397143
   },
@@ -1898,7 +1931,6 @@
   "187139386": "Miss Anthropocene",
   "189987102": "IceTrucKkiller",
   "1921219314": "Ituzin",
-  "192410217": "skyy1",
   "194774950": "Bulldog Venenoso",
   "195881962": "Mata Comunista",
   "196345151": "ª",
@@ -1958,7 +1990,6 @@
   "49180617": "Loky",
   "49353273": "Morodo",
   "51945162": "Nights",
-  "52973903": "qisso",
   "53524148": "SilverTape",
   "56418387": "GordoSoporte",
   "56965232": "kaiomm",
@@ -1991,6 +2022,7 @@
   "87076353": "Silverwolf",
   "88054389": "Bruno",
   "880654998": "MuFaza",
+  "881055432": "CUST4-",
   "88227562": "SkullOfHell",
   "887627645": "BIZ 110 NOVINHAAA",
   "890209361": "LoKoMoTiOm",
@@ -2018,53 +2050,11 @@
    "proxima": "2026-11-23T10:31:57Z",
    "tentativas": 14
   },
-  "9101225807": {
-   "inicio": 1795356644,
-   "pedido_em": "2026-11-23T06:23:37Z",
-   "primeira_vez": "2026-11-23T06:23:37Z",
-   "proxima": "2026-11-23T06:53:37Z",
-   "tentativas": 0
-  },
-  "9101330139": {
-   "inicio": 1795360299,
-   "pedido_em": "2026-11-23T06:23:39Z",
-   "primeira_vez": "2026-11-23T06:23:39Z",
-   "proxima": "2026-11-23T06:53:39Z",
-   "tentativas": 0
-  },
-  "9101509003": {
-   "inicio": 1795367059,
-   "pedido_em": "2026-11-23T06:23:42Z",
-   "primeira_vez": "2026-11-23T06:23:41Z",
-   "proxima": "2026-11-23T06:53:41Z",
-   "tentativas": 0
-  },
-  "9101596265": {
-   "inicio": 1795370615,
-   "pedido_em": "2026-11-23T06:23:44Z",
-   "primeira_vez": "2026-11-23T06:23:43Z",
-   "proxima": "2026-11-23T06:53:43Z",
-   "tentativas": 0
-  },
-  "9101676623": {
-   "inicio": 1795374020,
-   "pedido_em": "2026-11-23T06:24:46Z",
-   "primeira_vez": "2026-11-23T06:24:45Z",
-   "proxima": "2026-11-23T06:54:45Z",
-   "tentativas": 0
-  },
   "9101737580": {
    "inicio": 1795376854,
    "pedido_em": "2026-11-23T06:21:18Z",
    "primeira_vez": "2026-11-23T06:21:17Z",
    "proxima": "2026-11-23T06:51:17Z",
-   "tentativas": 0
-  },
-  "9101854176": {
-   "inicio": 1795383554,
-   "pedido_em": "2026-11-23T06:24:48Z",
-   "primeira_vez": "2026-11-23T06:24:48Z",
-   "proxima": "2026-11-23T06:54:48Z",
    "tentativas": 0
   },
   "9101918918": {
@@ -2088,13 +2078,6 @@
    "proxima": "2026-11-23T06:51:23Z",
    "tentativas": 0
   },
-  "9101993387": {
-   "inicio": 1795397143,
-   "pedido_em": "2026-11-23T06:21:26Z",
-   "primeira_vez": "2026-11-23T06:21:25Z",
-   "proxima": "2026-11-23T06:51:25Z",
-   "tentativas": 0
-  },
   "9102017287": {
    "inicio": 1795399853,
    "pedido_em": "2026-11-23T06:23:31Z",
@@ -2104,22 +2087,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 5,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-22T02:01:11Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2995,
-    "minuto": 55
-   },
-   "sobra_do_dia": 2773
-  },
   {
    "basicas": 0,
    "chamadas": 8,
@@ -2838,6 +2805,22 @@
     "minuto": 37
    },
    "sobra_do_dia": 2648
+  },
+  {
+   "basicas": 0,
+   "chamadas": 13,
+   "descartadas": [],
+   "faltam": 6,
+   "fim": "fila vazia",
+   "inicio": "2026-11-23T07:01:17Z",
+   "novas": 7,
+   "pedidos": 0,
+   "pendentes": 6,
+   "restante": {
+    "dia": 2993,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2635
   }
  ],
  "uso": {
@@ -2854,6 +2837,6 @@
   "2026-11-20": 260,
   "2026-11-21": 232,
   "2026-11-22": 334,
-  "2026-11-23": 152
+  "2026-11-23": 165
  }
 }
