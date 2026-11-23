@@ -1,18 +1,18 @@
 {
-  "atualizadoEm": "2026-11-23T20:05:37.639Z",
-  "semAnalise": 3,
+  "atualizadoEm": "2026-11-23T21:27:25.593Z",
+  "semAnalise": 6,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
-      "culpados": 112,
+      "culpados": 111,
       "craques": 56,
-      "partidas": 447,
+      "partidas": 449,
       "vitorias": 210,
       "winRate": 47,
       "streak": null,
       "mmrGanho": 5250,
-      "mmrPerdido": 5925
+      "mmrPerdido": 5975
     },
     {
       "accountId": "200957620",
@@ -384,17 +384,6 @@
       }
     ],
     "86736516": [
-      {
-        "matchId": 8573730516,
-        "lado": "radiant",
-        "tipo": "culpado",
-        "inicio": 1763932448,
-        "comStack": false,
-        "ranqueada": true,
-        "heroi": 21,
-        "culpa": 0.331,
-        "merito": 0.083
-      },
       {
         "matchId": 8586129401,
         "lado": "dire",
@@ -5300,6 +5289,42 @@
         "heroi": 43,
         "culpa": 0.281,
         "merito": 0.109
+      },
+      {
+        "matchId": 9102929480,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795459074,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 32,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9103005946,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795462829,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 43,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9103053717,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1795465489,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 128,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "200957620": [
