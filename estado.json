@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-23T16:22:38Z",
+  "quando": "2026-11-23T17:01:18Z",
   "restante": {
-   "dia": 2941,
-   "minuto": 59
+   "dia": 2995,
+   "minuto": 55
   }
  },
  "desistencias": {
@@ -299,9 +299,8 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-23T16:21:14Z",
+   "em": "2026-11-23T17:01:13Z",
    "partidas": {
-    "9081995118": 1794155332,
     "9082102056": 1794159426,
     "9082187416": 1794162846,
     "9082259352": 1794165921,
@@ -518,15 +517,6 @@
   }
  },
  "lo": {
-  "9059947342": {
-   "companheiros": [
-    96286191,
-    121382254,
-    129059626,
-    170177199
-   ],
-   "inicio": 1792859669
-  },
   "9062176055": {
    "companheiros": [
     96286191,
@@ -1810,7 +1800,6 @@
   "120604854": "ᵗʷᶦᵗᶜʰ PêagáAfonso",
   "1208195885": "DISK MILICIA",
   "121094559": "Desastroso",
-  "121382254": "W i i Gar\"",
   "121469682": "kOyOte ︻デ 一:",
   "1220690919": "Topeti",
   "122209757": "Miokey'",
@@ -1836,7 +1825,6 @@
   "128354487": "_.<{(\"error 404\")}>._",
   "128804152": "SoGaKiLL",
   "128975356": "Xoros",
-  "129059626": "[LUL]DARIEN",
   "1296352131": "dafterzero",
   "129663939": "caHú",
   "130533998": "Loirinha Rosa🌸",
@@ -1872,7 +1860,6 @@
   "168479655": "低手坟墓",
   "168656641": "FazBiuldParapartidaPLZ",
   "168751990": "100noção",
-  "170177199": "VIZCARRY",
   "170655174": "C4nNi",
   "1713250760": "amirali-",
   "176383419": "Nego",
@@ -2003,53 +1990,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9102435105": {
-   "inicio": 1795437154,
-   "pedido_em": "2026-11-23T16:21:28Z",
-   "primeira_vez": "2026-11-23T16:21:27Z",
-   "proxima": "2026-11-23T16:51:27Z",
-   "tentativas": 0
-  },
-  "9102523114": {
-   "inicio": 1795441174,
-   "pedido_em": "2026-11-23T16:21:30Z",
-   "primeira_vez": "2026-11-23T16:21:29Z",
-   "proxima": "2026-11-23T16:51:29Z",
-   "tentativas": 0
-  },
-  "9102584558": {
-   "inicio": 1795443780,
-   "pedido_em": "2026-11-23T16:21:32Z",
-   "primeira_vez": "2026-11-23T16:21:31Z",
-   "proxima": "2026-11-23T16:51:31Z",
-   "tentativas": 0
-  },
-  "9102666805": {
-   "inicio": 1795447268,
-   "pedido_em": "2026-11-23T16:21:35Z",
-   "primeira_vez": "2026-11-23T16:21:34Z",
-   "proxima": "2026-11-23T16:51:34Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 21,
-   "descartadas": [],
-   "faltam": 7,
-   "fim": "fila vazia",
-   "inicio": "2026-11-22T08:41:12Z",
-   "novas": 0,
-   "pedidos": 4,
-   "pendentes": 7,
-   "restante": {
-    "dia": 2943,
-    "minuto": 3
-   },
-   "sobra_do_dia": 2688
-  },
   {
    "basicas": 0,
    "chamadas": 5,
@@ -2780,6 +2722,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2545
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-23T17:01:13Z",
+   "novas": 4,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2995,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2540
   }
  ],
  "uso": {
@@ -2796,6 +2754,6 @@
   "2026-11-20": 260,
   "2026-11-21": 232,
   "2026-11-22": 334,
-  "2026-11-23": 255
+  "2026-11-23": 260
  }
 }
