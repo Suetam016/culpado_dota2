@@ -1,11 +1,11 @@
 {
-  "atualizadoEm": "2026-11-23T06:25:39.766Z",
-  "semAnalise": 9,
+  "atualizadoEm": "2026-11-23T07:03:47.046Z",
+  "semAnalise": 3,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
-      "culpados": 109,
+      "culpados": 110,
       "craques": 55,
       "partidas": 440,
       "vitorias": 207,
@@ -17,8 +17,8 @@
     {
       "accountId": "200957620",
       "nome": "Danylera",
-      "culpados": 40,
-      "craques": 46,
+      "culpados": 41,
+      "craques": 49,
       "partidas": 247,
       "vitorias": 116,
       "winRate": 47,
@@ -5188,9 +5188,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 14,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.259,
+        "merito": 0.147
       },
       {
         "matchId": 9101330139,
@@ -5200,21 +5199,19 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 73,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.165,
+        "merito": 0.222
       },
       {
         "matchId": 9101596265,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795370615,
         "comStack": true,
         "ranqueada": true,
         "heroi": 85,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.336,
+        "merito": 0.096
       },
       {
         "matchId": 9101676623,
@@ -5224,9 +5221,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 14,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.358,
+        "merito": 0.167
       }
     ],
     "200957620": [
@@ -7889,21 +7885,19 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 32,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.165,
+        "merito": 0.178
       },
       {
         "matchId": 9101330139,
         "lado": "dire",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795360299,
         "comStack": true,
         "ranqueada": true,
         "heroi": 32,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.235,
+        "merito": 0.352
       },
       {
         "matchId": 9101509003,
@@ -7913,45 +7907,41 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 8,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.3,
+        "merito": 0.2
       },
       {
         "matchId": 9101596265,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795370615,
         "comStack": true,
         "ranqueada": true,
         "heroi": 8,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.291,
+        "merito": 0.175
       },
       {
         "matchId": 9101676623,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795374020,
         "comStack": true,
         "ranqueada": true,
         "heroi": 6,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.128,
+        "merito": 0.258
       },
       {
         "matchId": 9101854176,
         "lado": "dire",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795383554,
         "comStack": false,
         "ranqueada": true,
         "heroi": 95,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.125,
+        "merito": 0.377
       }
     ]
   },

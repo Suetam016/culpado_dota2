@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-23T06:25:32.331Z",
-  "semAnalise": 10,
+  "atualizadoEm": "2026-11-23T07:03:38.612Z",
+  "semAnalise": 9,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -103,11 +103,11 @@
       "nome": "charlinho",
       "culpados": 7,
       "craques": 11,
-      "partidas": 100,
-      "vitorias": 50,
+      "partidas": 101,
+      "vitorias": 51,
       "winRate": 50,
       "streak": null,
-      "mmrGanho": 1250,
+      "mmrGanho": 1275,
       "mmrPerdido": 1250
     }
   ],
@@ -4999,12 +4999,11 @@
         "lado": "dire",
         "tipo": "vitoria",
         "inicio": 1795397143,
-        "comStack": false,
+        "comStack": true,
         "ranqueada": true,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.243,
+        "merito": 0.15
       },
       {
         "matchId": 9102017287,
@@ -6792,6 +6791,17 @@
         "heroi": 2,
         "culpa": 0.26,
         "merito": 0.128
+      },
+      {
+        "matchId": 9101993387,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1795397143,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 2,
+        "culpa": 0.443,
+        "merito": 0.148
       }
     ],
     "111257540": [
