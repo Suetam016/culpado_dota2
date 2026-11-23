@@ -4,7 +4,7 @@
    "X-Rate-Limit-Remaining-Day": "2998",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-23T01:14:49Z",
+  "quando": "2026-11-23T01:51:14Z",
   "restante": {
    "dia": 2998,
    "minuto": 59
@@ -48,16 +48,7 @@
    "salva": true
   }
  },
- "falhas": {
-  "9101661300": {
-   "inicio": 1795373368,
-   "motivo": "rede: TimeoutError: The read operation timed out",
-   "n": 0,
-   "proxima": "2026-11-23T00:24:14Z",
-   "quando": "2026-11-22T22:24:14Z",
-   "t": 3
-  }
- },
+ "falhas": {},
  "historico": {
   "1000265186": {
    "analisadas": {},
@@ -1724,6 +1715,8 @@
   },
   "9101661300": {
    "companheiros": [
+    96100809,
+    100825696,
     228284378,
     1028786714
    ],
@@ -1736,6 +1729,7 @@
   "100112408": "Jurupa",
   "100361097": "pgz",
   "100722951": "Neoxa.Mauwek",
+  "100825696": "Rutgar",
   "1016615889": "ychigo.kurosaky",
   "101674532": "' - Faço Supp, Não Milagre'",
   "101716841": "victeck",
@@ -1957,6 +1951,7 @@
   "92488746": "Catatau!",
   "92576496": "raawr",
   "95336818": "Judas",
+  "96100809": "Nico",
   "96286191": "charlinho",
   "969256392": "Prezida",
   "996565080": "kintaro",
@@ -1970,32 +1965,9 @@
    "primeira_vez": "2026-11-20T02:37:30Z",
    "proxima": "2026-11-23T10:31:57Z",
    "tentativas": 14
-  },
-  "9101661300": {
-   "inicio": 1795373368,
-   "pedido_em": "2026-11-23T00:55:28Z",
-   "primeira_vez": "2026-11-23T00:55:28Z",
-   "proxima": "2026-11-23T01:25:28Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 4,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T21:21:22Z",
-   "novas": 1,
-   "pedidos": 1,
-   "pendentes": 4,
-   "restante": {
-    "dia": 2981,
-    "minuto": 41
-   },
-   "sobra_do_dia": 2583
-  },
   {
    "basicas": 0,
    "chamadas": 5,
@@ -2720,6 +2692,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2766
+  },
+  {
+   "basicas": 0,
+   "chamadas": 11,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-23T01:41:12Z",
+   "novas": 1,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2998,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2755
   }
  ],
  "uso": {
@@ -2736,6 +2724,6 @@
   "2026-11-20": 260,
   "2026-11-21": 232,
   "2026-11-22": 334,
-  "2026-11-23": 34
+  "2026-11-23": 45
  }
 }
