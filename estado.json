@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2999",
+   "X-Rate-Limit-Remaining-Day": "2998",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-23T00:21:24Z",
+  "quando": "2026-11-23T01:04:32Z",
   "restante": {
-   "dia": 2990,
-   "minuto": 50
+   "dia": 2981,
+   "minuto": 57
   }
  },
  "desistencias": {
@@ -35,6 +35,12 @@
    "quando": "2026-11-14T11:23:22Z",
    "salva": true
   },
+  "9096462755": {
+   "inicio": 1795085214,
+   "motivo": "o OpenDota não analisou em 3 dias",
+   "quando": "2026-11-23T01:01:31Z",
+   "salva": true
+  },
   "9096660559": {
    "inicio": 1795094994,
    "motivo": "o OpenDota não analisou em 3 dias",
@@ -43,14 +49,6 @@
   }
  },
  "falhas": {
-  "9096462755": {
-   "inicio": 1795085214,
-   "motivo": "rede: TimeoutError: The read operation timed out",
-   "n": 0,
-   "proxima": "2026-11-23T00:31:14Z",
-   "quando": "2026-11-22T22:31:14Z",
-   "t": 3
-  },
   "9101437333": {
    "inicio": 1795364264,
    "motivo": "rede: TimeoutError: The read operation timed out",
@@ -1726,6 +1724,13 @@
   "9101437333": {
    "companheiros": [],
    "inicio": 1795364264
+  },
+  "9101661300": {
+   "companheiros": [
+    228284378,
+    1028786714
+   ],
+   "inicio": 1795373368
   }
  },
  "nomes": {
@@ -1743,6 +1748,7 @@
   "102189165": "GORDELICIA_",
   "102212531": "mat1aek-",
   "102572685": "W⁹",
+  "1028786714": "jesvcitotlv",
   "103098079": "Véio",
   "103594857": "DanDanDoMel",
   "104167138": "ΩHetzεl©Kill.Mαsτ€я®♣",
@@ -1861,6 +1867,7 @@
   "200324864": "Pablo",
   "200846786": "Andrada",
   "209094068": "Gandin",
+  "228284378": "RafaRocha",
   "239728989": "MenuZZera   xD",
   "241782761": "[Pau]DeCamelo Vulgo Orlinax",
   "246923912": "Z E R O",
@@ -1957,13 +1964,6 @@
   "99803497": "CORREDOR OBESO"
  },
  "pendentes": {
-  "9096462755": {
-   "inicio": 1795085214,
-   "pedido_em": "2026-11-19T11:41:40Z",
-   "primeira_vez": "2026-11-19T11:41:39Z",
-   "proxima": "2026-11-22T20:41:34Z",
-   "tentativas": 15
-  },
   "9097449397": {
    "inicio": 1795139649,
    "pedido_em": "2026-11-20T02:37:31Z",
@@ -1977,25 +1977,16 @@
    "primeira_vez": "2026-11-22T22:22:13Z",
    "proxima": "2026-11-22T22:52:13Z",
    "tentativas": 0
+  },
+  "9101661300": {
+   "inicio": 1795373368,
+   "pedido_em": "2026-11-23T00:55:28Z",
+   "primeira_vez": "2026-11-23T00:55:28Z",
+   "proxima": "2026-11-23T01:25:28Z",
+   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-21T20:01:28Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2990,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2602
-  },
   {
    "basicas": 0,
    "chamadas": 9,
@@ -2720,6 +2711,22 @@
     "minuto": 50
    },
    "sobra_do_dia": 2790
+  },
+  {
+   "basicas": 1,
+   "chamadas": 13,
+   "descartadas": [],
+   "faltam": 3,
+   "fim": "fila vazia",
+   "inicio": "2026-11-23T00:54:27Z",
+   "novas": 0,
+   "pedidos": 1,
+   "pendentes": 3,
+   "restante": {
+    "dia": 2981,
+    "minuto": 57
+   },
+   "sobra_do_dia": 2777
   }
  ],
  "uso": {
@@ -2736,6 +2743,6 @@
   "2026-11-20": 260,
   "2026-11-21": 232,
   "2026-11-22": 334,
-  "2026-11-23": 10
+  "2026-11-23": 23
  }
 }
