@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-24T19:41:55.791Z",
+  "atualizadoEm": "2026-11-24T20:22:07.223Z",
   "semAnalise": 5,
   "ranking": [
     {
@@ -30,7 +30,7 @@
       "accountId": "81918076",
       "nome": "Suéter",
       "culpados": 20,
-      "craques": 21,
+      "craques": 22,
       "partidas": 293,
       "vitorias": 146,
       "winRate": 50,
@@ -43,11 +43,11 @@
       "nome": "Kuscomem",
       "culpados": 15,
       "craques": 6,
-      "partidas": 161,
-      "vitorias": 76,
-      "winRate": 47,
+      "partidas": 162,
+      "vitorias": 77,
+      "winRate": 48,
       "streak": "culpado",
-      "mmrGanho": 1900,
+      "mmrGanho": 1925,
       "mmrPerdido": 2100
     },
     {
@@ -5059,14 +5059,13 @@
       {
         "matchId": 9104179656,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795545395,
         "comStack": false,
         "ranqueada": false,
         "heroi": 107,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.18,
+        "merito": 0.336
       }
     ],
     "83300280": [
@@ -8637,6 +8636,18 @@
         "heroi": 86,
         "culpa": 0.2,
         "merito": 0.215
+      },
+      {
+        "matchId": 9104218870,
+        "lado": "radiant",
+        "tipo": "vitoria",
+        "inicio": 1795547290,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 101,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "241782761": [
