@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-24T04:59:31Z",
+  "quando": "2026-11-24T05:41:17Z",
   "restante": {
-   "dia": 2968,
-   "minuto": 28
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -278,7 +278,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-24T04:59:17Z",
+   "em": "2026-11-24T05:41:14Z",
    "partidas": {
     "9083848848": 1794277671,
     "9085035012": 1794354961,
@@ -317,7 +317,8 @@
     "9101937304": 1795390728,
     "9101956389": 1795392858,
     "9101993387": 1795397143,
-    "9102017287": 1795399853
+    "9102017287": 1795399853,
+    "9103277110": 1795487184
    }
   },
   "83300280": {
@@ -1717,6 +1718,15 @@
     157412376
    ],
    "inicio": 1795399853
+  },
+  "9103277110": {
+   "companheiros": [
+    27641165,
+    156623879,
+    1161243136,
+    1254464470
+   ],
+   "inicio": 1795487184
   }
  },
  "nomes": {
@@ -1763,6 +1773,7 @@
   "115300728": "xrafariax",
   "115357158": "RicoSuave",
   "115364841": "uNnder",
+  "1161243136": "<HelloWorld/>",
   "116584611": "The Clansman",
   "117024581": "É o Ucão, é o cânhamo...",
   "1174444135": "MEIK0",
@@ -1827,6 +1838,7 @@
   "155371129": "Meu sup é um lixo",
   "1560507258": "Sister Hong",
   "1565710149": "Monge",
+  "156623879": "Zurik",
   "157412376": "JACK É SAL, SAFADO NÃO ATRAVESSA",
   "16044192": "LaFlamme",
   "160752163": "SpockJr",
@@ -1872,6 +1884,7 @@
   "26668150": "3rvinha",
   "267952344": "Raphin",
   "275621956": "DiBoa No VelhOeste",
+  "27641165": "Welling",
   "278089376": "MaX",
   "291649230": "TOBIRAMA SENJU",
   "29201426": "Casa_do_fervo",
@@ -1974,39 +1987,9 @@
    "primeira_vez": "2026-11-23T21:26:34Z",
    "proxima": "2026-11-24T16:01:15Z",
    "tentativas": 10
-  },
-  "9103264946": {
-   "inicio": 1795485829,
-   "pedido_em": "2026-11-24T04:59:29Z",
-   "primeira_vez": "2026-11-24T04:59:28Z",
-   "proxima": "2026-11-24T05:29:28Z",
-   "tentativas": 0
-  },
-  "9103293759": {
-   "inicio": 1795489079,
-   "pedido_em": "2026-11-24T04:59:31Z",
-   "primeira_vez": "2026-11-24T04:59:30Z",
-   "proxima": "2026-11-24T05:29:30Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 12,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-22T19:21:13Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2988,
-    "minuto": 48
-   },
-   "sobra_do_dia": 2561
-  },
   {
    "basicas": 0,
    "chamadas": 7,
@@ -2746,6 +2729,22 @@
     "minuto": 28
    },
    "sobra_do_dia": 2737
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-24T05:41:14Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2733
   }
  ],
  "uso": {
@@ -2762,6 +2761,6 @@
   "2026-11-21": 232,
   "2026-11-22": 334,
   "2026-11-23": 307,
-  "2026-11-24": 63
+  "2026-11-24": 67
  }
 }
