@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-24T05:00:12.521Z",
-  "semAnalise": 6,
+  "atualizadoEm": "2026-11-24T05:41:56.286Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -31,12 +31,12 @@
       "nome": "Suéter",
       "culpados": 20,
       "craques": 21,
-      "partidas": 290,
+      "partidas": 291,
       "vitorias": 144,
-      "winRate": 50,
+      "winRate": 49,
       "streak": null,
       "mmrGanho": 3375,
-      "mmrPerdido": 3500
+      "mmrPerdido": 3525
     },
     {
       "accountId": "111257540",
@@ -91,12 +91,12 @@
       "nome": "Conhecido do Baia",
       "culpados": 9,
       "craques": 7,
-      "partidas": 146,
+      "partidas": 147,
       "vitorias": 66,
       "winRate": 45,
       "streak": null,
       "mmrGanho": 1450,
-      "mmrPerdido": 1950
+      "mmrPerdido": 1975
     },
     {
       "accountId": "96286191",
@@ -5033,6 +5033,17 @@
         "heroi": 107,
         "culpa": 0.029,
         "merito": 0.201
+      },
+      {
+        "matchId": 9103277110,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795487184,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.177,
+        "merito": 0.074
       }
     ],
     "83300280": [
@@ -12574,9 +12585,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 68,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.047,
+        "merito": 0.332
       },
       {
         "matchId": 9103293759,
@@ -12586,9 +12596,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 67,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.224,
+        "merito": 0.196
       }
     ],
     "1000265186": [
@@ -17477,6 +17486,17 @@
         "heroi": 64,
         "culpa": 0.052,
         "merito": 0.163
+      },
+      {
+        "matchId": 9103277110,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795487184,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 45,
+        "culpa": 0.183,
+        "merito": 0.279
       }
     ]
   },
