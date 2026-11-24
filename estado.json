@@ -3,7 +3,7 @@
   "cabecalhos_primeira_resposta": {
    "Retry-After": "120"
   },
-  "quando": "2026-11-24T11:25:50Z",
+  "quando": "2026-11-24T12:05:53Z",
   "restante": {}
  },
  "desistencias": {
@@ -1987,22 +1987,6 @@
  },
  "rodadas": [
   {
-   "basicas": 1,
-   "chamadas": 13,
-   "descartadas": [],
-   "faltam": 3,
-   "fim": "fila vazia",
-   "inicio": "2026-11-23T00:54:27Z",
-   "novas": 0,
-   "pedidos": 1,
-   "pendentes": 3,
-   "restante": {
-    "dia": 2981,
-    "minuto": 57
-   },
-   "sobra_do_dia": 2777
-  },
-  {
    "basicas": 0,
    "chamadas": 11,
    "descartadas": [],
@@ -2723,6 +2707,19 @@
    "pendentes": 1,
    "restante": {},
    "sobra_do_dia": 2635
+  },
+  {
+   "basicas": 0,
+   "chamadas": 14,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-24T12:01:19Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {},
+   "sobra_do_dia": 2621
   }
  ],
  "uso": {
@@ -2739,6 +2736,6 @@
   "2026-11-21": 232,
   "2026-11-22": 334,
   "2026-11-23": 307,
-  "2026-11-24": 165
+  "2026-11-24": 179
  }
 }
