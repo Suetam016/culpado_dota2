@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2792",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-25T13:41:41Z",
+  "quando": "2026-11-25T14:21:22Z",
   "restante": {
-   "dia": 2780,
-   "minuto": 47
+   "dia": 2995,
+   "minuto": 55
   }
  },
  "desistencias": {
@@ -72,11 +72,11 @@
   },
   "26668150": {
    "analisadas": {},
-   "em": "2026-11-24T14:01:23Z"
+   "em": "2026-11-25T14:21:18Z"
   },
   "77621319": {
    "analisadas": {},
-   "em": "2026-11-24T14:01:24Z"
+   "em": "2026-11-25T14:21:20Z"
   },
   "81918076": {
    "analisadas": {},
@@ -84,7 +84,7 @@
   },
   "83300280": {
    "analisadas": {},
-   "em": "2026-11-24T14:01:25Z"
+   "em": "2026-11-25T14:21:21Z"
   },
   "85686824": {
    "analisadas": {},
@@ -96,7 +96,7 @@
   },
   "96286191": {
    "analisadas": {},
-   "em": "2026-11-24T14:01:26Z"
+   "em": "2026-11-25T14:21:22Z"
   }
  },
  "listas": {
@@ -263,7 +263,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-25T13:41:28Z",
+   "em": "2026-11-25T14:21:18Z",
    "partidas": {
     "9085035012": 1794354961,
     "9085097789": 1794361996,
@@ -1999,19 +1999,6 @@
    "descartadas": [],
    "faltam": 1,
    "fim": "fila vazia",
-   "inicio": "2026-11-24T09:21:14Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {},
-   "sobra_do_dia": 2675
-  },
-  {
-   "basicas": 0,
-   "chamadas": 13,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
    "inicio": "2026-11-24T10:01:24Z",
    "novas": 0,
    "pedidos": 0,
@@ -2742,6 +2729,22 @@
     "minuto": 47
    },
    "sobra_do_dia": 2580
+  },
+  {
+   "basicas": 0,
+   "chamadas": 5,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-25T14:21:17Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2995,
+    "minuto": 55
+   },
+   "sobra_do_dia": 2676
   }
  ],
  "uso": {
@@ -2758,6 +2761,6 @@
   "2026-11-22": 334,
   "2026-11-23": 307,
   "2026-11-24": 335,
-  "2026-11-25": 119
+  "2026-11-25": 124
  }
 }
