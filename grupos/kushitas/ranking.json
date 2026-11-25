@@ -1,17 +1,17 @@
 {
-  "atualizadoEm": "2026-11-25T19:42:05.133Z",
-  "semAnalise": 4,
+  "atualizadoEm": "2026-11-25T21:22:29.212Z",
+  "semAnalise": 7,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
       "culpados": 114,
       "craques": 58,
-      "partidas": 462,
-      "vitorias": 218,
+      "partidas": 464,
+      "vitorias": 219,
       "winRate": 47,
       "streak": null,
-      "mmrGanho": 5425,
+      "mmrGanho": 5450,
       "mmrPerdido": 6100
     },
     {
@@ -19,12 +19,12 @@
       "nome": "Danylera",
       "culpados": 42,
       "craques": 52,
-      "partidas": 251,
-      "vitorias": 118,
+      "partidas": 254,
+      "vitorias": 119,
       "winRate": 47,
       "streak": null,
-      "mmrGanho": 2875,
-      "mmrPerdido": 3275
+      "mmrGanho": 2900,
+      "mmrPerdido": 3300
     },
     {
       "accountId": "85686824",
@@ -5466,6 +5466,30 @@
         "heroi": 94,
         "culpa": 0.091,
         "merito": 0.318
+      },
+      {
+        "matchId": 9105474147,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1795634261,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 14,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9105525930,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1795636981,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 25,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ],
     "200957620": [
@@ -8229,6 +8253,42 @@
         "heroi": 8,
         "culpa": 0.13,
         "merito": 0.419
+      },
+      {
+        "matchId": 9105412895,
+        "lado": "dire",
+        "tipo": "derrota",
+        "inicio": 1795631286,
+        "comStack": false,
+        "ranqueada": true,
+        "heroi": 102,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9105474147,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1795634261,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 102,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
+      },
+      {
+        "matchId": 9105525930,
+        "lado": "radiant",
+        "tipo": "derrota",
+        "inicio": 1795636981,
+        "comStack": true,
+        "ranqueada": false,
+        "heroi": 9,
+        "culpa": null,
+        "merito": null,
+        "provisoria": true
       }
     ]
   },

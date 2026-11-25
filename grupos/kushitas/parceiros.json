@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-25T20:13:25Z",
+ "atualizadoEm": "2026-11-25T21:22:36Z",
  "desde": "2026-03-31",
- "partidasLidas": 1524,
+ "partidasLidas": 1527,
  "jogadores": {
   "85686824": {
    "nome": "Rannis",
@@ -11,14 +11,14 @@
   },
   "86736516": {
    "nome": "Madruga",
-   "jogos": 83,
-   "vitorias": 34,
+   "jogos": 85,
+   "vitorias": 35,
    "winRate": 41
   },
   "200957620": {
    "nome": "Danylera",
-   "jogos": 70,
-   "vitorias": 30,
+   "jogos": 72,
+   "vitorias": 31,
    "winRate": 43
   }
  },
@@ -28,8 +28,8 @@
    "b": "200957620",
    "nomeA": "Madruga",
    "nomeB": "Danylera",
-   "jogos": 68,
-   "vitorias": 30,
+   "jogos": 70,
+   "vitorias": 31,
    "winRate": 44,
    "rotas": [
     {
@@ -146,6 +146,24 @@
    ],
    "partidas": [
     {
+     "matchId": 9105525930,
+     "inicio": 1795636981,
+     "venceu": false,
+     "heroiA": 25,
+     "heroiB": 9,
+     "posA": null,
+     "posB": null
+    },
+    {
+     "matchId": 9105474147,
+     "inicio": 1795634261,
+     "venceu": true,
+     "heroiA": 14,
+     "heroiB": 102,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9105037412,
      "inicio": 1795614606,
      "venceu": false,
@@ -197,24 +215,6 @@
      "heroiA": 14,
      "heroiB": 32,
      "posA": 3,
-     "posB": 1
-    },
-    {
-     "matchId": 9101130524,
-     "inicio": 1795353319,
-     "venceu": false,
-     "heroiA": 19,
-     "heroiB": 44,
-     "posA": 5,
-     "posB": 1
-    },
-    {
-     "matchId": 9101047143,
-     "inicio": 1795350248,
-     "venceu": false,
-     "heroiA": 91,
-     "heroiB": 8,
-     "posA": 5,
      "posB": 1
     }
    ]
@@ -981,6 +981,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 14,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 1
+   },
+   {
     "heroi": 38,
     "pos": 3,
     "jogos": 1,
@@ -1085,6 +1091,12 @@
    {
     "heroi": 119,
     "pos": 3,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 25,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -1217,6 +1229,12 @@
     "vitorias": 1
    },
    {
+    "heroi": 102,
+    "pos": 0,
+    "jogos": 2,
+    "vitorias": 1
+   },
+   {
     "heroi": 4,
     "pos": 3,
     "jogos": 1,
@@ -1339,6 +1357,12 @@
    {
     "heroi": 102,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 9,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -1484,6 +1508,10 @@
   "22": [
    "zuus",
    "Zeus"
+  ],
+  "25": [
+   "lina",
+   "Lina"
   ],
   "26": [
    "lion",
@@ -12178,6 +12206,65 @@
      1,
      3,
      1
+    ]
+   ]
+  },
+  {
+   "id": 9105412895,
+   "t": 1795631286,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "200957620",
+     102,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9105474147,
+   "t": 1795634261,
+   "v": 1,
+   "r": 1,
+   "j": [
+    [
+     "86736516",
+     14,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     102,
+     0,
+     null,
+     null
+    ]
+   ]
+  },
+  {
+   "id": 9105525930,
+   "t": 1795636981,
+   "v": 0,
+   "r": 0,
+   "j": [
+    [
+     "86736516",
+     25,
+     0,
+     null,
+     null
+    ],
+    [
+     "200957620",
+     9,
+     0,
+     null,
+     null
     ]
    ]
   }
