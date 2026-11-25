@@ -1,13 +1,13 @@
 {
  "cota": {
   "cabecalhos_primeira_resposta": {
-   "X-Rate-Limit-Remaining-Day": "2533",
+   "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-25T21:21:42Z",
+  "quando": "2026-11-25T22:01:21Z",
   "restante": {
-   "dia": 2488,
-   "minuto": 14
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -267,7 +267,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-25T21:21:22Z",
+   "em": "2026-11-25T22:01:18Z",
    "partidas": {
     "9085035012": 1794354961,
     "9085097789": 1794361996,
@@ -493,15 +493,6 @@
   }
  },
  "lo": {
-  "9063540993": {
-   "companheiros": [
-    83300280,
-    355855763,
-    373561644,
-    463712184
-   ],
-   "inicio": 1793050571
-  },
   "9063567259": {
    "companheiros": [
     26668150,
@@ -1909,12 +1900,10 @@
   "338267325": "Lalo",
   "34737534": "seupai",
   "352857330": "Stu Ungar",
-  "355855763": "L-GAMNPI",
   "355999818": "TG.Ancient",
   "359784192": "Sagal Orions",
   "36520158": "Gu4x1",
   "371989688": "elmugripanda☆☆☆",
-  "373561644": "Ri2Ci",
   "376491207": "☭",
   "383761271": "Menina Veneno Meu Pinto é Pequen",
   "38489943": "Okavango",
@@ -1929,7 +1918,6 @@
   "456790083": "SooPsK",
   "457347477": "Spar-Ativ",
   "457363077": "Lfzz",
-  "463712184": "brunotakahashiii",
   "468404617": "AdalidB",
   "470699725": "Skye",
   "483724352": "SHIFULL´-`",
@@ -1997,46 +1985,9 @@
    "primeira_vez": "2026-11-23T21:26:34Z",
    "proxima": "2026-11-26T04:21:30Z",
    "tentativas": 13
-  },
-  "9105412895": {
-   "inicio": 1795631286,
-   "pedido_em": "2026-11-25T21:21:37Z",
-   "primeira_vez": "2026-11-25T21:21:36Z",
-   "proxima": "2026-11-25T21:51:36Z",
-   "tentativas": 0
-  },
-  "9105474147": {
-   "inicio": 1795634261,
-   "pedido_em": "2026-11-25T21:21:39Z",
-   "primeira_vez": "2026-11-25T21:21:38Z",
-   "proxima": "2026-11-25T21:51:38Z",
-   "tentativas": 0
-  },
-  "9105525930": {
-   "inicio": 1795636981,
-   "pedido_em": "2026-11-25T21:21:42Z",
-   "primeira_vez": "2026-11-25T21:21:41Z",
-   "proxima": "2026-11-25T21:51:41Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-24T17:01:16Z",
-   "novas": 3,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2555
-  },
   {
    "basicas": 0,
    "chamadas": 3,
@@ -2788,6 +2739,22 @@
     "minuto": 14
    },
    "sobra_do_dia": 2288
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-25T22:01:17Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2588
   }
  ],
  "uso": {
@@ -2804,6 +2771,6 @@
   "2026-11-22": 334,
   "2026-11-23": 307,
   "2026-11-24": 335,
-  "2026-11-25": 208
+  "2026-11-25": 212
  }
 }
