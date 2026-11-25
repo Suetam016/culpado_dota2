@@ -1,28 +1,28 @@
 {
- "atualizado": "2026-11-25T02:30:14Z",
+ "atualizado": "2026-11-25T03:01:20Z",
  "conta_principal": 81918076,
  "regra": "colega de time (mesmo lado, conta visível) em >= 3 partidas do LO, em >= 2 sessões diferentes, nos últimos 14 dias (sessão nova depois de > 7 h entre o início de uma partida do LO e o da seguinte); mais a lista manual do amigos.json do site",
- "partidas_do_lo_na_janela": 42,
+ "partidas_do_lo_na_janela": 41,
  "amigos": {
-  "96286191": {
-   "nome": "charlinho",
-   "jogos": 13,
-   "sessoes": 5,
-   "ultima": "2026-11-23T02:10:53Z",
-   "fonte": "detectado+manual"
-  },
-  "1254464470": {
-   "nome": "Conhecido do Baia",
-   "jogos": 13,
-   "sessoes": 6,
-   "ultima": "2026-11-24T02:26:24Z",
-   "fonte": "detectado+manual"
-  },
   "77621319": {
    "nome": "Jalim",
    "jogos": 12,
    "sessoes": 5,
    "ultima": "2026-11-25T00:18:00Z",
+   "fonte": "detectado+manual"
+  },
+  "96286191": {
+   "nome": "charlinho",
+   "jogos": 12,
+   "sessoes": 4,
+   "ultima": "2026-11-23T02:10:53Z",
+   "fonte": "detectado+manual"
+  },
+  "1254464470": {
+   "nome": "Conhecido do Baia",
+   "jogos": 12,
+   "sessoes": 5,
+   "ultima": "2026-11-24T02:26:24Z",
    "fonte": "detectado+manual"
   },
   "111257540": {
@@ -34,16 +34,9 @@
   },
   "83300280": {
    "nome": "ptn",
-   "jogos": 4,
-   "sessoes": 3,
-   "ultima": "2026-11-18T01:38:01Z",
-   "fonte": "detectado+manual"
-  },
-  "1000265186": {
-   "nome": "gustavoDotinhaPro",
    "jogos": 3,
-   "sessoes": 3,
-   "ultima": "2026-11-19T03:11:43Z",
+   "sessoes": 2,
+   "ultima": "2026-11-18T01:38:01Z",
    "fonte": "detectado+manual"
   },
   "26668150": {
@@ -80,7 +73,21 @@
    "sessoes": 0,
    "ultima": null,
    "fonte": "manual"
+  },
+  "1000265186": {
+   "nome": "gustavoDotinhaPro",
+   "jogos": 0,
+   "sessoes": 0,
+   "ultima": null,
+   "fonte": "manual"
   }
  },
- "quase": {}
+ "quase": {
+  "1000265186": {
+   "nome": "gustavoDotinhaPro",
+   "jogos": 2,
+   "sessoes": 2,
+   "ultima": "2026-11-19T03:11:43Z"
+  }
+ }
 }

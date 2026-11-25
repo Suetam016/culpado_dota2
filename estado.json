@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-25T02:30:14Z",
+  "quando": "2026-11-25T03:01:20Z",
   "restante": {
-   "dia": 2999,
-   "minuto": 59
+   "dia": 2998,
+   "minuto": 58
   }
  },
  "desistencias": {
@@ -156,7 +156,7 @@
    }
   },
   "111257540": {
-   "em": "2026-11-25T01:01:16Z",
+   "em": "2026-11-25T03:01:20Z",
    "partidas": {
     "9084590415": 1794328267,
     "9084702404": 1794333272,
@@ -264,7 +264,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-25T02:30:14Z",
+   "em": "2026-11-25T03:01:19Z",
    "partidas": {
     "9085035012": 1794354961,
     "9085097789": 1794361996,
@@ -488,15 +488,6 @@
   }
  },
  "lo": {
-  "9062321346": {
-   "companheiros": [
-    96286191,
-    127129533,
-    969256392,
-    1000265186
-   ],
-   "inicio": 1792982370
-  },
   "9062351268": {
    "companheiros": [
     86725673,
@@ -1822,7 +1813,6 @@
   "1254464470": "Conhecido do Baia",
   "125789198": "Juniorfs",
   "127118246": "bandit",
-  "127129533": "Towards to Collection",
   "127358557": "Creeping Death",
   "127510305": "Gui | NTSKINS",
   "127779902": "Mikasa, Tukasa",
@@ -2002,7 +1992,6 @@
   "95336818": "Judas",
   "96100809": "Nico",
   "96286191": "charlinho",
-  "969256392": "Prezida",
   "996565080": "kintaro",
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
@@ -2017,22 +2006,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 4,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-23T22:01:16Z",
-   "novas": 2,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2996,
-    "minuto": 56
-   },
-   "sobra_do_dia": 2497
-  },
   {
    "basicas": 0,
    "chamadas": 2,
@@ -2754,6 +2727,22 @@
     "minuto": 59
    },
    "sobra_do_dia": 2773
+  },
+  {
+   "basicas": 0,
+   "chamadas": 2,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-25T03:01:18Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2998,
+    "minuto": 58
+   },
+   "sobra_do_dia": 2771
   }
  ],
  "uso": {
@@ -2770,6 +2759,6 @@
   "2026-11-22": 334,
   "2026-11-23": 307,
   "2026-11-24": 335,
-  "2026-11-25": 27
+  "2026-11-25": 29
  }
 }
