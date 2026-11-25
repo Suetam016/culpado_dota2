@@ -1,11 +1,11 @@
 {
-  "atualizadoEm": "2026-11-25T16:24:35.063Z",
-  "semAnalise": 7,
+  "atualizadoEm": "2026-11-25T17:05:52.026Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
-      "culpados": 113,
+      "culpados": 114,
       "craques": 57,
       "partidas": 461,
       "vitorias": 217,
@@ -17,12 +17,12 @@
     {
       "accountId": "200957620",
       "nome": "Danylera",
-      "culpados": 41,
-      "craques": 51,
+      "culpados": 42,
+      "craques": 52,
       "partidas": 251,
       "vitorias": 118,
       "winRate": 47,
-      "streak": "craque",
+      "streak": null,
       "mmrGanho": 2875,
       "mmrPerdido": 3275
     },
@@ -5437,14 +5437,13 @@
       {
         "matchId": 9105037412,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795614606,
         "comStack": true,
         "ranqueada": true,
         "heroi": 91,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.323,
+        "merito": 0.181
       },
       {
         "matchId": 9105119921,
@@ -5454,9 +5453,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 102,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.121,
+        "merito": 0.232
       }
     ],
     "200957620": [
@@ -8202,26 +8200,24 @@
       {
         "matchId": 9105037412,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795614606,
         "comStack": true,
         "ranqueada": true,
         "heroi": 6,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.284,
+        "merito": 0.106
       },
       {
         "matchId": 9105126821,
         "lado": "dire",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795618401,
         "comStack": false,
         "ranqueada": false,
         "heroi": 8,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.13,
+        "merito": 0.419
       }
     ]
   },
@@ -8242,5 +8238,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-25T10:34:09.500Z"
+  "perfisEm": "2026-11-25T17:05:52.001Z"
 }

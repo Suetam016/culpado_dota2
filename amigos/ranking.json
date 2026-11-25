@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-25T16:24:27.392Z",
-  "semAnalise": 7,
+  "atualizadoEm": "2026-11-25T17:04:05.597Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "1000265186",
@@ -18,11 +18,11 @@
       "accountId": "241782761",
       "nome": "[Pau]DeCamelo",
       "culpados": 46,
-      "craques": 34,
+      "craques": 35,
       "partidas": 376,
       "vitorias": 176,
       "winRate": 47,
-      "streak": null,
+      "streak": "craque",
       "mmrGanho": 4225,
       "mmrPerdido": 4900
     },
@@ -12844,14 +12844,13 @@
       {
         "matchId": 9104989689,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795612456,
         "comStack": false,
         "ranqueada": true,
         "heroi": 15,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.054,
+        "merito": 0.266
       },
       {
         "matchId": 9105063752,
@@ -12861,9 +12860,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 47,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.162,
+        "merito": 0.149
       },
       {
         "matchId": 9105164657,
@@ -12873,9 +12871,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 35,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.198,
+        "merito": 0.173
       }
     ],
     "1000265186": [
@@ -17847,5 +17844,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-25T10:32:21.545Z"
+  "perfisEm": "2026-11-25T17:04:05.535Z"
 }
