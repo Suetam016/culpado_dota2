@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-25T01:41:27Z",
+  "quando": "2026-11-25T02:21:17Z",
   "restante": {
-   "dia": 2997,
-   "minuto": 57
+   "dia": 2999,
+   "minuto": 59
   }
  },
  "desistencias": {
@@ -264,7 +264,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-25T01:41:25Z",
+   "em": "2026-11-25T02:21:17Z",
    "partidas": {
     "9083848848": 1794277671,
     "9085035012": 1794354961,
@@ -489,15 +489,6 @@
   }
  },
  "lo": {
-  "9062297114": {
-   "companheiros": [
-    96286191,
-    128975356,
-    186656988,
-    1000265186
-   ],
-   "inicio": 1792979805
-  },
   "9062321346": {
    "companheiros": [
     96286191,
@@ -1839,7 +1830,6 @@
   "1280918127": "O Advogado do Diabo",
   "1283248392": "FTA VIEIRA",
   "128804152": "SoGaKiLL",
-  "128975356": "Xoros",
   "1296352131": "dafterzero",
   "129663939": "caHú",
   "130533998": "Loirinha Rosa🌸",
@@ -1892,7 +1882,6 @@
   "1801300811": "Bumba",
   "181258503": "Pode Quitar",
   "184355916": "pphpp",
-  "186656988": "13",
   "186837016": "Tklyma",
   "187139386": "Miss Anthropocene",
   "187967536": "The Wonder",
@@ -2029,22 +2018,6 @@
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 1,
-   "descartadas": [],
-   "faltam": 0,
-   "fim": "fila vazia",
-   "inicio": "2026-11-23T20:34:46Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 0,
-   "restante": {
-    "dia": 2999,
-    "minuto": 59
-   },
-   "sobra_do_dia": 2519
-  },
   {
    "basicas": 0,
    "chamadas": 18,
@@ -2766,6 +2739,22 @@
     "minuto": 57
    },
    "sobra_do_dia": 2775
+  },
+  {
+   "basicas": 0,
+   "chamadas": 1,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-25T02:21:16Z",
+   "novas": 0,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2999,
+    "minuto": 59
+   },
+   "sobra_do_dia": 2774
   }
  ],
  "uso": {
@@ -2782,6 +2771,6 @@
   "2026-11-22": 334,
   "2026-11-23": 307,
   "2026-11-24": 335,
-  "2026-11-25": 25
+  "2026-11-25": 26
  }
 }
