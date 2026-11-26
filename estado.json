@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-26T21:21:23Z",
+  "quando": "2026-11-26T22:01:21Z",
   "restante": {
-   "dia": 2964,
-   "minuto": 24
+   "dia": 2994,
+   "minuto": 54
   }
  },
  "desistencias": {
@@ -268,7 +268,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-26T21:21:15Z",
+   "em": "2026-11-26T22:01:16Z",
    "partidas": {
     "9089128927": 1794621651,
     "9090487282": 1794689527,
@@ -319,7 +319,7 @@
    "partidas": {}
   },
   "85686824": {
-   "em": "2026-11-26T19:21:17Z",
+   "em": "2026-11-26T22:01:17Z",
    "partidas": {
     "9094658584": 1794946719
    }
@@ -485,7 +485,7 @@
    }
   },
   "96286191": {
-   "em": "2026-11-26T20:01:16Z",
+   "em": "2026-11-26T22:01:18Z",
    "partidas": {}
   }
  },
@@ -1932,46 +1932,9 @@
    "primeira_vez": "2026-11-23T21:26:34Z",
    "proxima": "2026-11-27T05:21:27Z",
    "tentativas": 15
-  },
-  "9106648662": {
-   "inicio": 1795716798,
-   "pedido_em": "2026-11-26T21:21:19Z",
-   "primeira_vez": "2026-11-26T21:21:18Z",
-   "proxima": "2026-11-26T21:51:18Z",
-   "tentativas": 0
-  },
-  "9106701132": {
-   "inicio": 1795719258,
-   "pedido_em": "2026-11-26T21:21:21Z",
-   "primeira_vez": "2026-11-26T21:21:20Z",
-   "proxima": "2026-11-26T21:51:20Z",
-   "tentativas": 0
-  },
-  "9106772512": {
-   "inicio": 1795722843,
-   "pedido_em": "2026-11-26T21:21:23Z",
-   "primeira_vez": "2026-11-26T21:21:22Z",
-   "proxima": "2026-11-26T21:51:22Z",
-   "tentativas": 0
   }
  },
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 10,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-25T17:01:15Z",
-   "novas": 6,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2990,
-    "minuto": 50
-   },
-   "sobra_do_dia": 2637
-  },
   {
    "basicas": 0,
    "chamadas": 2,
@@ -2723,6 +2686,22 @@
     "minuto": 24
    },
    "sobra_do_dia": 2607
+  },
+  {
+   "basicas": 0,
+   "chamadas": 6,
+   "descartadas": [],
+   "faltam": 1,
+   "fim": "fila vazia",
+   "inicio": "2026-11-26T22:01:15Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 1,
+   "restante": {
+    "dia": 2994,
+    "minuto": 54
+   },
+   "sobra_do_dia": 2601
   }
  ],
  "uso": {
@@ -2739,6 +2718,6 @@
   "2026-11-23": 307,
   "2026-11-24": 335,
   "2026-11-25": 232,
-  "2026-11-26": 193
+  "2026-11-26": 199
  }
 }
