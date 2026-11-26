@@ -1,12 +1,12 @@
 {
-  "atualizadoEm": "2026-11-25T23:45:44.620Z",
-  "semAnalise": 7,
+  "atualizadoEm": "2026-11-26T00:22:10.768Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "86736516",
       "nome": "Madruga",
       "culpados": 115,
-      "craques": 58,
+      "craques": 59,
       "partidas": 467,
       "vitorias": 222,
       "winRate": 48,
@@ -18,11 +18,11 @@
       "accountId": "200957620",
       "nome": "Danylera",
       "culpados": 42,
-      "craques": 52,
+      "craques": 53,
       "partidas": 256,
       "vitorias": 121,
       "winRate": 47,
-      "streak": null,
+      "streak": "craque",
       "mmrGanho": 2925,
       "mmrPerdido": 3300
     },
@@ -5492,14 +5492,13 @@
       {
         "matchId": 9105577854,
         "lado": "dire",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795640145,
         "comStack": true,
         "ranqueada": false,
         "heroi": 97,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.15,
+        "merito": 0.244
       },
       {
         "matchId": 9105609448,
@@ -5509,9 +5508,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 14,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.191,
+        "merito": 0.177
       },
       {
         "matchId": 9105642661,
@@ -5521,9 +5519,8 @@
         "comStack": false,
         "ranqueada": true,
         "heroi": 60,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.431,
+        "merito": 0.099
       }
     ],
     "200957620": [
@@ -8329,21 +8326,19 @@
         "comStack": true,
         "ranqueada": false,
         "heroi": 53,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.059,
+        "merito": 0.243
       },
       {
         "matchId": 9105609448,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795642406,
         "comStack": true,
         "ranqueada": true,
         "heroi": 6,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.142,
+        "merito": 0.283
       }
     ]
   },
