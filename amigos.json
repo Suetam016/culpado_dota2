@@ -1,8 +1,8 @@
 {
- "atualizado": "2026-11-27T03:01:32Z",
+ "atualizado": "2026-11-27T03:41:21Z",
  "conta_principal": 81918076,
  "regra": "colega de time (mesmo lado, conta visível) em >= 3 partidas do LO, em >= 2 sessões diferentes, nos últimos 14 dias (sessão nova depois de > 7 h entre o início de uma partida do LO e o da seguinte); mais a lista manual do amigos.json do site",
- "partidas_do_lo_na_janela": 43,
+ "partidas_do_lo_na_janela": 44,
  "amigos": {
   "77621319": {
    "nome": "Jalim",
@@ -39,6 +39,13 @@
    "ultima": "2026-11-18T01:38:01Z",
    "fonte": "detectado+manual"
   },
+  "1000265186": {
+   "nome": "gustavoDotinhaPro",
+   "jogos": 3,
+   "sessoes": 3,
+   "ultima": "2026-11-27T02:27:48Z",
+   "fonte": "detectado+manual"
+  },
   "26668150": {
    "nome": "3rvinha",
    "jogos": 0,
@@ -73,21 +80,7 @@
    "sessoes": 0,
    "ultima": null,
    "fonte": "manual"
-  },
-  "1000265186": {
-   "nome": "gustavoDotinhaPro",
-   "jogos": 0,
-   "sessoes": 0,
-   "ultima": null,
-   "fonte": "manual"
   }
  },
- "quase": {
-  "1000265186": {
-   "nome": "gustavoDotinhaPro",
-   "jogos": 2,
-   "sessoes": 2,
-   "ultima": "2026-11-19T03:11:43Z"
-  }
- }
+ "quase": {}
 }
