@@ -1,17 +1,17 @@
 {
-  "atualizadoEm": "2026-11-27T03:41:52.203Z",
+  "atualizadoEm": "2026-11-27T04:22:06.245Z",
   "semAnalise": 5,
   "ranking": [
     {
       "accountId": "1000265186",
       "nome": "gustavoDotinhaPro",
       "culpados": 69,
-      "craques": 80,
-      "partidas": 305,
-      "vitorias": 150,
+      "craques": 81,
+      "partidas": 306,
+      "vitorias": 151,
       "winRate": 49,
       "streak": null,
-      "mmrGanho": 3675,
+      "mmrGanho": 3700,
       "mmrPerdido": 3850
     },
     {
@@ -31,11 +31,11 @@
       "nome": "Suéter",
       "culpados": 20,
       "craques": 22,
-      "partidas": 300,
-      "vitorias": 150,
+      "partidas": 301,
+      "vitorias": 151,
       "winRate": 50,
       "streak": null,
-      "mmrGanho": 3425,
+      "mmrGanho": 3450,
       "mmrPerdido": 3550
     },
     {
@@ -5160,6 +5160,17 @@
         "lado": "radiant",
         "tipo": "vitoria",
         "inicio": 1795746468,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 107,
+        "culpa": 0.198,
+        "merito": 0.194
+      },
+      {
+        "matchId": 9107056163,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1795748877,
         "comStack": true,
         "ranqueada": true,
         "heroi": 107,
@@ -16323,11 +16334,22 @@
       {
         "matchId": 9107035038,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795746468,
         "comStack": true,
         "ranqueada": true,
         "heroi": 84,
+        "culpa": 0.403,
+        "merito": 0.302
+      },
+      {
+        "matchId": 9107056163,
+        "lado": "dire",
+        "tipo": "vitoria",
+        "inicio": 1795748877,
+        "comStack": true,
+        "ranqueada": true,
+        "heroi": 74,
         "culpa": null,
         "merito": null,
         "provisoria": true
