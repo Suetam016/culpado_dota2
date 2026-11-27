@@ -1,6 +1,6 @@
 {
-  "atualizadoEm": "2026-11-27T01:02:17.026Z",
-  "semAnalise": 6,
+  "atualizadoEm": "2026-11-27T01:45:28.331Z",
+  "semAnalise": 4,
   "ranking": [
     {
       "accountId": "86736516",
@@ -17,12 +17,12 @@
     {
       "accountId": "200957620",
       "nome": "Danylera",
-      "culpados": 42,
-      "craques": 53,
+      "culpados": 43,
+      "craques": 54,
       "partidas": 258,
       "vitorias": 122,
       "winRate": 47,
-      "streak": "craque",
+      "streak": null,
       "mmrGanho": 2950,
       "mmrPerdido": 3325
     },
@@ -5662,9 +5662,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 73,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.202,
+        "merito": 0.15
       },
       {
         "matchId": 9106964950,
@@ -5674,9 +5673,8 @@
         "comStack": true,
         "ranqueada": true,
         "heroi": 19,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.203,
+        "merito": 0.136
       }
     ],
     "200957620": [
@@ -8499,26 +8497,24 @@
       {
         "matchId": 9106932250,
         "lado": "radiant",
-        "tipo": "vitoria",
+        "tipo": "craque",
         "inicio": 1795734477,
         "comStack": true,
         "ranqueada": true,
         "heroi": 102,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.186,
+        "merito": 0.301
       },
       {
         "matchId": 9106964950,
         "lado": "radiant",
-        "tipo": "derrota",
+        "tipo": "culpado",
         "inicio": 1795738127,
         "comStack": true,
         "ranqueada": true,
         "heroi": 102,
-        "culpa": null,
-        "merito": null,
-        "provisoria": true
+        "culpa": 0.289,
+        "merito": 0.131
       }
     ]
   },
@@ -8539,5 +8535,5 @@
       "leaderboard": null
     }
   },
-  "perfisEm": "2026-11-26T19:25:34.562Z"
+  "perfisEm": "2026-11-27T01:45:28.308Z"
 }
