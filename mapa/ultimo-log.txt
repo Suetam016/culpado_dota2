@@ -5281,3 +5281,19 @@ OK 9107035038
   870 usos de skill/item de 1477 no combat log
 OK 9107018077
 2 mapas novos
+Fila: [9107082755, 9107056163]
+  replay http://replay201.valve.net/570/9107082755_1661494726.dem.bz2 -> HTTP 200 application/octet-stream 57530677 inicio=b'(\xb5/\xfd\x00`\xecJ\x0f^\xb0\xde'
+  9107082755: 196518 eventos; tipos [('actions', 72681), ('DOTA_COMBATLOG_DAMAGE', 34901), ('interval', 30490), ('DOTA_COMBATLOG_MODIFIER_ADD', 15366), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 15302), ('DOTA_COMBATLOG_HEAL', 10147), ('DOTA_COMBATLOG_XP', 4468), ('DOTA_COMBATLOG_DEATH', 3644)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_Nyx_Assassin", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 72.5, "y": 80.4375, "stuns": 0.0, "hero_id": 88, "variant": 0, "facet_hero_id": 88, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0, "ra
+  exemplo de habilidade: {"time": -42, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_riki", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_quelling_blade"}
+  3901 registros de dano herói->herói
+  1942 usos de skill/item de 3066 no combat log
+OK 9107082755
+  replay http://replay201.valve.net/570/9107056163_1122934450.dem.bz2 -> HTTP 200 application/octet-stream 36450111 inicio=b'(\xb5/\xfd\x00`LJ\x0f\x1e\xad^'
+  9107056163: 136089 eventos; tipos [('actions', 60990), ('interval', 20980), ('DOTA_COMBATLOG_DAMAGE', 20533), ('DOTA_COMBATLOG_MODIFIER_ADD', 7917), ('DOTA_COMBATLOG_MODIFIER_REMOVE', 7879), ('DOTA_COMBATLOG_HEAL', 5575), ('DOTA_COMBATLOG_XP', 2662), ('DOTA_COMBATLOG_DEATH', 2350)]
+  exemplo de interval: {"time": -89, "type": "interval", "unit": "CDOTA_Unit_Hero_AncientApparition", "slot": 0, "gold": 0, "tower_damage": 0, "lh": 0, "xp": 0, "x": 72.5, "y": 80.4375, "stuns": 0.0, "hero_id": 68, "variant": 0, "facet_hero_id": 68, "life_state": 0, "level": 1, "kills": 0, "deaths": 0, "assists": 0, "denies": 0, "obs_placed": 0, "sen_placed": 0, "creeps_stacked": 0, "camps_stacked": 0, "rune_pickups": 0
+  exemplo de habilidade: {"time": -58, "type": "DOTA_COMBATLOG_ITEM", "value": 0, "attackername": "npc_dota_hero_grimstroke", "targetname": "dota_unknown", "sourcename": "dota_unknown", "targetsourcename": "dota_unknown", "attackerhero": true, "targethero": false, "attackerillusion": false, "targetillusion": false, "inflictor": "item_ward_dispenser"}
+  2464 registros de dano herói->herói
+  2263 usos de skill/item de 3138 no combat log
+OK 9107056163
+2 mapas novos
