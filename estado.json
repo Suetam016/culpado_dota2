@@ -4,10 +4,10 @@
    "X-Rate-Limit-Remaining-Day": "2999",
    "X-Rate-Limit-Remaining-Minute": "59"
   },
-  "quando": "2026-11-28T01:01:33Z",
+  "quando": "2026-11-28T01:41:19Z",
   "restante": {
-   "dia": 2955,
-   "minuto": 15
+   "dia": 2996,
+   "minuto": 56
   }
  },
  "desistencias": {
@@ -264,7 +264,7 @@
    "partidas": {}
   },
   "81918076": {
-   "em": "2026-11-28T01:01:14Z",
+   "em": "2026-11-28T01:41:16Z",
    "partidas": {
     "9089128927": 1794621651,
     "9090487282": 1794689527,
@@ -1946,46 +1946,8 @@
   "997735338": "Pedr.nha",
   "99803497": "CORREDOR OBESO"
  },
- "pendentes": {
-  "9108192130": {
-   "inicio": 1795814914,
-   "pedido_em": "2026-11-28T01:01:29Z",
-   "primeira_vez": "2026-11-28T01:01:27Z",
-   "proxima": "2026-11-28T01:31:27Z",
-   "tentativas": 0
-  },
-  "9108233094": {
-   "inicio": 1795817533,
-   "pedido_em": "2026-11-28T01:01:31Z",
-   "primeira_vez": "2026-11-28T01:01:30Z",
-   "proxima": "2026-11-28T01:31:30Z",
-   "tentativas": 0
-  },
-  "9108268569": {
-   "inicio": 1795820233,
-   "pedido_em": "2026-11-28T01:01:33Z",
-   "primeira_vez": "2026-11-28T01:01:32Z",
-   "proxima": "2026-11-28T01:31:32Z",
-   "tentativas": 0
-  }
- },
+ "pendentes": {},
  "rodadas": [
-  {
-   "basicas": 0,
-   "chamadas": 3,
-   "descartadas": [],
-   "faltam": 1,
-   "fim": "fila vazia",
-   "inicio": "2026-11-26T09:41:17Z",
-   "novas": 0,
-   "pedidos": 0,
-   "pendentes": 1,
-   "restante": {
-    "dia": 2997,
-    "minuto": 57
-   },
-   "sobra_do_dia": 2715
-  },
   {
    "basicas": 0,
    "chamadas": 11,
@@ -2737,6 +2699,22 @@
     "minuto": 15
    },
    "sobra_do_dia": 2755
+  },
+  {
+   "basicas": 0,
+   "chamadas": 4,
+   "descartadas": [],
+   "faltam": 0,
+   "fim": "fila vazia",
+   "inicio": "2026-11-28T01:41:15Z",
+   "novas": 3,
+   "pedidos": 0,
+   "pendentes": 0,
+   "restante": {
+    "dia": 2996,
+    "minuto": 56
+   },
+   "sobra_do_dia": 2778
   }
  ],
  "uso": {
@@ -2753,6 +2731,6 @@
   "2026-11-25": 232,
   "2026-11-26": 216,
   "2026-11-27": 182,
-  "2026-11-28": 18
+  "2026-11-28": 22
  }
 }
