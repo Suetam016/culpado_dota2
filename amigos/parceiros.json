@@ -1,7 +1,7 @@
 {
- "atualizadoEm": "2026-11-28T06:22:10Z",
+ "atualizadoEm": "2026-11-28T08:42:19Z",
  "desde": "2025-12-21",
- "partidasLidas": 1570,
+ "partidasLidas": 1571,
  "jogadores": {
   "1254464470": {
    "nome": "Conhecido do Baia",
@@ -11,9 +11,9 @@
   },
   "81918076": {
    "nome": "Suéter",
-   "jogos": 274,
+   "jogos": 275,
    "vitorias": 136,
-   "winRate": 50
+   "winRate": 49
   },
   "26668150": {
    "nome": "3rvinha",
@@ -53,9 +53,9 @@
   },
   "83300280": {
    "nome": "ptn",
-   "jogos": 61,
+   "jogos": 62,
    "vitorias": 33,
-   "winRate": 54
+   "winRate": 53
   }
  },
  "pares": [
@@ -554,9 +554,9 @@
    "b": "83300280",
    "nomeA": "Suéter",
    "nomeB": "ptn",
-   "jogos": 45,
+   "jogos": 46,
    "vitorias": 28,
-   "winRate": 62,
+   "winRate": 61,
    "rotas": [
     {
      "posA": 2,
@@ -651,6 +651,15 @@
    ],
    "partidas": [
     {
+     "matchId": 9108515098,
+     "inicio": 1795844208,
+     "venceu": false,
+     "heroiA": 76,
+     "heroiB": 31,
+     "posA": null,
+     "posB": null
+    },
+    {
      "matchId": 9094860409,
      "inicio": 1794965881,
      "venceu": true,
@@ -708,15 +717,6 @@
      "matchId": 9081169561,
      "inicio": 1794119211,
      "venceu": false,
-     "heroiA": 107,
-     "heroiB": 8,
-     "posA": 2,
-     "posB": 1
-    },
-    {
-     "matchId": 9081115725,
-     "inicio": 1794115130,
-     "venceu": true,
      "heroiA": 107,
      "heroiB": 8,
      "posA": 2,
@@ -16866,6 +16866,12 @@
     "pos": 5,
     "jogos": 1,
     "vitorias": 0
+   },
+   {
+    "heroi": 76,
+    "pos": 0,
+    "jogos": 1,
+    "vitorias": 0
    }
   ],
   "26668150": [
@@ -19386,6 +19392,12 @@
    {
     "heroi": 31,
     "pos": 4,
+    "jogos": 1,
+    "vitorias": 0
+   },
+   {
+    "heroi": 31,
+    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -38042,6 +38054,28 @@
      4,
      1,
      -1
+    ]
+   ]
+  },
+  {
+   "id": 9108515098,
+   "t": 1795844208,
+   "v": 0,
+   "r": 1,
+   "j": [
+    [
+     "81918076",
+     76,
+     0,
+     null,
+     null
+    ],
+    [
+     "83300280",
+     31,
+     0,
+     null,
+     null
     ]
    ]
   }
