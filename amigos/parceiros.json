@@ -1,5 +1,5 @@
 {
- "atualizadoEm": "2026-11-28T08:42:19Z",
+ "atualizadoEm": "2026-11-28T09:22:18Z",
  "desde": "2025-12-21",
  "partidasLidas": 1571,
  "jogadores": {
@@ -581,16 +581,16 @@
     },
     {
      "posA": 2,
-     "posB": 5,
-     "jogos": 6,
-     "vitorias": 3,
-     "winRate": 50
-    },
-    {
-     "posA": 2,
      "posB": 4,
      "jogos": 4,
      "vitorias": 2,
+     "winRate": 50
+    },
+    {
+     "posA": 1,
+     "posB": 3,
+     "jogos": 2,
+     "vitorias": 1,
      "winRate": 50
     }
    ],
@@ -601,6 +601,13 @@
      "jogos": 2,
      "vitorias": 0,
      "winRate": 0
+    },
+    {
+     "posA": 2,
+     "posB": 5,
+     "jogos": 7,
+     "vitorias": 3,
+     "winRate": 43
     }
    ],
    "herois": [
@@ -656,8 +663,8 @@
      "venceu": false,
      "heroiA": 76,
      "heroiB": 31,
-     "posA": null,
-     "posB": null
+     "posA": 2,
+     "posB": 5
     },
     {
      "matchId": 9094860409,
@@ -16688,16 +16695,16 @@
     "vitorias": 8
    },
    {
+    "heroi": 76,
+    "pos": 2,
+    "jogos": 9,
+    "vitorias": 6
+   },
+   {
     "heroi": 108,
     "pos": 3,
     "jogos": 9,
     "vitorias": 5
-   },
-   {
-    "heroi": 76,
-    "pos": 2,
-    "jogos": 8,
-    "vitorias": 6
    },
    {
     "heroi": 86,
@@ -16864,12 +16871,6 @@
    {
     "heroi": 72,
     "pos": 5,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 76,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -19294,6 +19295,12 @@
     "vitorias": 3
    },
    {
+    "heroi": 31,
+    "pos": 5,
+    "jogos": 3,
+    "vitorias": 1
+   },
+   {
     "heroi": 99,
     "pos": 3,
     "jogos": 2,
@@ -19320,12 +19327,6 @@
    {
     "heroi": 44,
     "pos": 1,
-    "jogos": 2,
-    "vitorias": 1
-   },
-   {
-    "heroi": 31,
-    "pos": 5,
     "jogos": 2,
     "vitorias": 1
    },
@@ -19392,12 +19393,6 @@
    {
     "heroi": 31,
     "pos": 4,
-    "jogos": 1,
-    "vitorias": 0
-   },
-   {
-    "heroi": 31,
-    "pos": 0,
     "jogos": 1,
     "vitorias": 0
    }
@@ -38066,16 +38061,16 @@
     [
      "81918076",
      76,
-     0,
-     null,
-     null
+     2,
+     2,
+     1
     ],
     [
      "83300280",
      31,
-     0,
-     null,
-     null
+     5,
+     3,
+     1
     ]
    ]
   }
